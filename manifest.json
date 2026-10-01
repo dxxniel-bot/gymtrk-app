@@ -1,0 +1,10 @@
+{
+  "name": "gym//TRK",
+  "short_name": "gym//TRK",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#000000"
+}
