@@ -776,6 +776,11 @@
   .shxr.dr,.shxr.dr .r,.shxr.dr .g{color:var(--o50);}
   .shxl{margin-top:var(--s5); font-size:var(--t-label); color:var(--o40); text-align:center;}
   .shvt{margin:var(--s5) 0 0;}
+  /* v281 · compartir sesión "cajas": la misma tabla con las cajas de la sesión viva (.inp), sin nada que tocar. El dueño (1-oct): "quiero uno como el de la sesión, pero más sintetizado, sin las opciones de poder alterar" */
+  .shxr.bx{grid-template-columns:18px 14px minmax(0,1.5fr) 56px 48px 56px; align-items:center;}
+  .shxr.bx:not(.hd){margin-bottom:var(--s2);}
+  .shxr.bx:not(.hd) .w,.shxr.bx:not(.hd) .c{height:28px; line-height:27px; border:var(--bw-box) solid var(--o20); border-radius:var(--r-ctl);}
+  .shxr.bx:not(.hd) .w{padding-left:var(--s3);}
   .srw{display:grid; grid-template-columns:64px minmax(0,1fr); column-gap:var(--s3); align-items:baseline; font-size:var(--t-data); line-height:var(--lh-share);}
   .srw + .srw{margin-top:var(--s5);}
   .srm{font-size:var(--t-label); color:var(--o40); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
@@ -1097,7 +1102,7 @@
 
 <script>
 "use strict";
-const APP_V='v280';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v281';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -5406,19 +5411,20 @@ function paintExShare(swap){ const L=document.getElementById('exsh'), S=state._e
 // ([bi]/[uni] al frente · nº · R/L · peso unidad · reps · rir) en texto: sin cajas, sin ✓, sin botones. Cada serie lleva su σ
 // y cada ejercicio su ▲▼ de capacidad contra la sesión equivalente anterior (histProgress). Sale del MISMO modelo que la
 // lista (shSessModel); la lista (su vista RECENT, 21-sep) se conserva como segunda vista. La vista elegida vive en memoria.
-const SHSESS_V=[['sesion','sesión'],['lista','lista']];
-function shSessView(){ return state._shv==='lista'?'lista':'sesion'; }
+// v281 · tres vistas mientras el dueño elige usándolas ("ver las dos en mi teléfono"): cajas (como la sesión viva) · columnas (la misma tabla en texto) · lista (RECENT)
+const SHSESS_V=[['cajas','cajas'],['sesion','columnas'],['lista','lista']];
+function shSessView(){ return state._shv==='lista'?'lista':state._shv==='sesion'?'sesion':'cajas'; }
 function shSessTabsHTML(){ const v=shSessView();
   return `<div class="mdtabs tall shvt" data-tk="shv" role="tablist">${SHSESS_V.map(([k,l])=>`<span role="tab" aria-selected="${k===v}" class="${k===v?'on':''}" data-act="shview" data-v="${k}">${l}</span>`).join('')}</div>`; }
 function shSigTxt(g){ return g?((g.est?'~':'')+g.t.toFixed(2)):'—'; }
 // ▲ +3% / ▼ −4% (signo menos real, BRAND §3); el color sale de progBadgeParts, el mismo de la sesión, y va solo en el glifo y el número
 function shProgHTML(pr){ const p=progBadgeParts(pr,'exact'); if(!p)return ''; const n=Math.abs(pr.pct||0);
   return `<span class="shxp" style="color:${p.col}">${p.ar}${n?' '+(pr.pct>0?'+':'−')+n+'%':''}</span>`; }
-function shSetRowHTML(t,uni){ const n=t.drop?'↓':String(t.ord).replace(/[RL]$/,''), sd=uni?String(t.ord).slice(-1):'';
-  return `<div class="shxr${t.drop?' dr':''}"><span class="o">${escTxt(n)}</span><span class="sd">${escTxt(sd)}</span><span class="w">${escTxt(t.w)}<i>${escTxt(t.unit)}</i></span><span class="c">${escTxt(t.r)}</span><span class="c r">${escTxt(t.rir||'—')}</span><span class="g">${shSigTxt(t.sg)}</span></div>`; }
-function shSessTableHTML(M){ let pm=null; const hd=`<div class="shxr hd"><span></span><span></span><span class="w">peso</span><span class="c">reps</span><span class="c">${_shM}</span><span class="g">σ</span></div>`;
+function shSetRowHTML(t,uni,bx){ const n=t.drop?'↓':String(t.ord).replace(/[RL]$/,''), sd=uni?String(t.ord).slice(-1):'';
+  return `<div class="shxr${bx?' bx':''}${t.drop?' dr':''}"><span class="o">${escTxt(n)}</span><span class="sd">${escTxt(sd)}</span><span class="w">${escTxt(t.w)}<i>${escTxt(t.unit)}</i></span><span class="c">${escTxt(t.r)}</span><span class="c r">${escTxt(t.rir||'—')}</span><span class="g">${shSigTxt(t.sg)}</span></div>`; }
+function shSessTableHTML(M,bx){ let pm=null; const hd=`<div class="shxr hd${bx?' bx':''}"><span></span><span></span><span class="w">peso</span><span class="c">reps</span><span class="c">${_shM}</span><span class="g">σ</span></div>`;
   const h=M.exs.map((x,i)=>{ const m=x.muscle&&x.muscle!==pm?`<div class="shxm">#${escTxt(x.muscle)}</div>`:''; pm=x.muscle;   // las etiquetas de columna van UNA vez (B-10), en el primer ejercicio
-    return m+`<div class="shx"><div class="shxh"><span class="shxn">${escTxt((x.lat?x.lat+' ':'')+x.name)}</span>${shProgHTML(x.prog)}</div>${i?'':hd}${x.toks.map(t=>shSetRowHTML(t,x.uni)).join('')}</div>`; }).join('');
+    return m+`<div class="shx"><div class="shxh"><span class="shxn">${escTxt((x.lat?x.lat+' ':'')+x.name)}</span>${shProgHTML(x.prog)}</div>${i?'':hd}${x.toks.map(t=>shSetRowHTML(t,x.uni,bx)).join('')}</div>`; }).join('');
   return h?h+`<div class="shxl">σ 1.00 = una serie al fallo · ▲▼ vs la sesión anterior</div>`:''; }
 // self-check de v285 (síncrono; no está en la lista del arranque: lo corre el integrador). Monta una base de juguete, pinta
 // la tarjeta en un nodo suelto y restaura todo en finally.
@@ -5440,7 +5446,7 @@ function _shareSessSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
     A('sin sesión anterior no hay ▲▼', shSessModel(db.sessions.find(x=>x.id==='p0')).exs[0].prog==null);
     state.shareType='session'; state.shareId='p1'; delete state._shv;
     let box=paint(), card=box.querySelector('.sharecard'); const X=card.querySelectorAll('.shx');
-    A('la vista por defecto es la de la sesión', shSessView()==='sesion'&&X.length===2&&!card.querySelector('.srw'));
+    A('la vista por defecto es la de la sesión, con cajas', shSessView()==='cajas'&&X.length===2&&!card.querySelector('.srw')&&card.querySelectorAll('.shxr.bx:not(.hd)').length===7);
     A('solo lectura: nada que tocar dentro de la tarjeta', !card.querySelector('[data-act],input,select,textarea,button'));
     A('[bi]/[uni] al frente del nombre', tx(card,'.shxn')==='[bi] press banca,[uni] curl');
     A('una fila por serie: peso, unidad, reps, rir y σ', tx(X[0],'.shxr:not(.hd) .w')==='110lbs,110lbs,60lbs'&&tx(X[0],'.shxr:not(.hd) .c')==='8,1,7,1,10,0'&&[...X[0].querySelectorAll('.shxr:not(.hd) .g')].every(e=>/^~?\d\.\d\d$/.test(e.textContent)));
@@ -5450,7 +5456,8 @@ function _shareSessSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
     A('las columnas se rotulan una vez', card.querySelectorAll('.shxr.hd').length===1&&tx(card,'.shxr.hd span')===',,peso,reps,rir,σ');
     A('cabecera: día, fecha, gym y duración', tx(card,'.shsn')==='push A'&&tx(card,'.shsm').indexOf(fmtShort('2026-09-27'))>=0&&tx(card,'.shsm').indexOf('g1')>=0&&tx(card,'.shsum').indexOf(fmtDur(75))===0);
     A('marca gym//TRK', tx(card,'.shfoot')==='gym//TRK');
-    A('el selector va fuera de la imagen, con la sesión primero', !card.querySelector('.shvt')&&tx(box,'.shvt [role="tab"]')==='sesión,lista'&&box.querySelector('.shvt .on').dataset.v==='sesion');
+    A('el selector va fuera de la imagen, con la sesión primero', !card.querySelector('.shvt')&&tx(box,'.shvt [role="tab"]')==='cajas,columnas,lista'&&box.querySelector('.shvt .on').dataset.v==='cajas');
+    state._shv='sesion'; box=paint(); A('columnas = la misma tabla sin cajas', box.querySelectorAll('.shxr:not(.hd)').length===7&&!box.querySelector('.shxr.bx')&&box.querySelector('.shvt .on').dataset.v==='sesion'); delete state._shv;
     s.metric='rpe'; box=paint(); A('una sesión en RPE se lee en RPE', tx(box,'.shxr.hd span')===',,peso,reps,rpe,σ'&&tx(box,'.shxr:not(.hd) .r').indexOf('9,9,10')===0); delete s.metric;
     let n=0; reRender=function(){ n++; }; btn=document.createElement('button'); btn.type='button'; btn.hidden=true; btn.dataset.act='shview'; btn.dataset.v='lista'; document.getElementById('app').appendChild(btn); btn.click();
     A('tocar [lista] cambia la vista y repinta una vez', state._shv==='lista'&&n===1);
@@ -5470,7 +5477,7 @@ function renderShareSession(id){
   let prevM=null;
   const body=M.exs.map(x=>{ const m=x.muscle&&x.muscle!==prevM?'#'+x.muscle:''; prevM=x.muscle;
     return `<div class="srw"><span class="srm">${escTxt(m)}</span><span class="srb"><span class="srn">${escTxt(x.name)}</span> ${x.toks.map(shTokHTML).join('<span class="srsep">&nbsp;/</span> ')}</span></div>`; }).join('');
-  return summaryShell(top,(shSessView()==='lista'?body:shSessTableHTML(M))||'<div class="empty">sin series registradas</div>',shSessTabsHTML()); }
+  return summaryShell(top,(shSessView()==='lista'?body:shSessTableHTML(M,shSessView()==='cajas'))||'<div class="empty">sin series registradas</div>',shSessTabsHTML()); }
 function shFoodModel(iso){
   const {items,t}=macroTotals(); const food=items.filter(m=>!isWaterItem(m));
   const P=dayMealParts(iso,food,t.kcal);
@@ -5552,6 +5559,10 @@ async function shareImage(){
         if(cs.fill&&cs.fill!=='none'){ x.globalAlpha=A*_n(cs.fillOpacity,1); x.fillStyle=cs.fill; x.fill(p); }
         if(cs.stroke&&cs.stroke!=='none'){ x.globalAlpha=A*_n(cs.strokeOpacity,1); x.strokeStyle=cs.stroke; x.lineWidth=_n(cs.strokeWidth,1); x.lineJoin=cs.strokeLinejoin||'miter'; x.lineCap=cs.strokeLinecap||'butt'; x.stroke(p); } });
       x.restore(); x.globalAlpha=1; });
+    // v281 · las cajas de la vista "cajas": borde con su radio (el pintor solo sabía de texto, barras y SVG)
+    card.querySelectorAll('.shxr.bx:not(.hd) .w,.shxr.bx:not(.hd) .c').forEach(el=>{ const cs=getComputedStyle(el), bw=_n(cs.borderTopWidth,0), r=el.getBoundingClientRect(); if(!(bw>0)||!r.width)return;
+      const lw=Math.max(1,bw*K), rx=_n(cs.borderTopLeftRadius,0)*K, X0=(r.left-box.left)*K+lw/2, Y0=(r.top-box.top)*K+lw/2, W=r.width*K-lw, H=r.height*K-lw;
+      x.strokeStyle=cs.borderTopColor; x.lineWidth=lw; x.beginPath(); if(x.roundRect)x.roundRect(X0,Y0,W,H,rx); else x.rect(X0,Y0,W,H); x.stroke(); });
     // texto, nodo por nodo, en su posición y con su fuente/color
     const tw=document.createTreeWalker(card,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.nodeValue.trim()&&!n.parentElement.closest('[hidden]')&&!n.parentElement.closest('svg')?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT});
     let n; while((n=tw.nextNode())){ const el=n.parentElement, cs=getComputedStyle(el); const rg=document.createRange(); rg.selectNodeContents(n); const rects=rg.getClientRects(); if(!rects.length)continue;
@@ -8672,7 +8683,7 @@ document.getElementById('app').addEventListener('click',e=>{
     try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,()=>trkPrompt({title:'copiar',label:'TEXTO',value:txt,ok:'listo'},()=>{})); }
       else trkPrompt({title:'copiar',label:'TEXTO',value:txt,ok:'listo'},()=>{}); }catch(_){ trkPrompt({title:'copiar',label:'TEXTO',value:txt,ok:'listo'},()=>{}); } }
   else if(a==='shimg'){ shareImage(); }
-  else if(a==='shview'){ state._shv=el.dataset.v==='lista'?'lista':'sesion'; reRender(); }   // v285 · sesión (formato de la sesión) | lista
+  else if(a==='shview'){ state._shv=({lista:'lista',sesion:'sesion'})[el.dataset.v]||'cajas'; reRender(); }   // v285 · sesión (formato de la sesión) | lista
   else if(a==='shareweight'){ state.shareType='weight'; go('share'); }
   else if(a==='mealsummary'){ openMealSummary(el.dataset.tag); }
   else if(a==='mealrename'){ const tag=el.dataset.tag; state.renamingTag=tag; render();
