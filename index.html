@@ -425,15 +425,18 @@
   .mrec{--mcol:32px;} .mrec+.mrec{border-top:var(--bw-sep) solid var(--o10);}
   .mhd{display:grid; grid-template-columns:minmax(0,1fr) auto auto var(--mcol); align-items:center; min-height:44px;}
   .mhd .madd{margin:0 var(--s2) 0 var(--s3); color:var(--o60);}   /* v271 · [+ food] a la derecha de la comida: "el add food se pierde" */
-  .mtg{display:block; min-width:0; height:44px; padding:0; border:0; background:none; color:inherit; font-family:inherit; text-align:left; line-height:44px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;}
-  .mchev{display:inline-block; width:var(--s5); font-size:var(--t-section); color:var(--o30); transition:transform var(--dur-2) var(--ease-out);} .mrec.open .mchev{transform:rotate(90deg);}
-  .mnm{font-size:var(--t-section); font-weight:800; color:var(--fg);}
-  .mmeta{margin-left:var(--s3); font-size:var(--t-label); color:var(--o40);}
-  .mkc{height:44px; padding:0 0 0 var(--s3); border:0; background:none; color:var(--o70); font-family:inherit; font-size:var(--t-section); font-weight:700; letter-spacing:var(--ls-num); text-align:right; cursor:pointer;}
+  .mtg{display:grid; grid-template-columns:var(--s5) minmax(0,1fr); align-content:center; align-self:stretch; row-gap:var(--s1); min-width:0; min-height:44px; padding:var(--s2) 0; border:0; background:none; color:inherit; font-family:inherit; text-align:left; line-height:var(--lh-ui); cursor:pointer;}   /* v280 · dos renglones: nombre arriba, hora y P C F abajo; nada lleva "…" ("el desglose sale con puntos suspensivos porque no cabe") */
+  .mchev{display:inline-block; grid-column:1; grid-row:1; align-self:start; width:var(--s5); font-size:var(--t-section); color:var(--o30); transform-origin:.3em 50%; transition:transform var(--dur-2) var(--ease-out);} .mrec.open .mchev{transform:rotate(90deg);}   /* gira sobre el centro del glifo (medio avance de la mono), no de su caja: abierto queda en su sitio */
+  .mnm{grid-column:2; font-size:var(--t-section); font-weight:800; color:var(--fg); overflow-wrap:anywhere;}   /* un nombre largo baja de renglón, no se corta (B-12) */
+  .mmeta{grid-column:2; display:flex; gap:var(--s3); font-size:var(--t-label); color:var(--o50);}
+  /* v283 · hora y P C F en COLUMNAS alineadas entre comidas (el dueño, 1-oct: "como terminal, con el tab para espaciar o separar, organizar, que tenga jerarquía") */
+  .mmeta .mt{flex:0 0 5ch;} .mmeta .mc{flex:0 0 5ch; text-align:right;}
+  .mkc{height:44px; min-width:calc(5ch + var(--s3)); padding:0 0 0 var(--s3); border:0; background:none; color:var(--o70); font-family:inherit; font-size:var(--t-section); font-weight:700; letter-spacing:var(--ls-num); text-align:right; cursor:pointer;}   /* ancho fijo de 5 cifras ("9,999"): [+ food] cae en la misma columna en todas las comidas */
   .mhd .gmore{grid-column:4; width:44px; height:44px; margin:0 -12px 0 0; padding:0 12px 0 0; display:flex; align-items:center; justify-content:flex-end; color:var(--o50);}   /* la regla base de .gmore lo manda a la columna 4 (rejilla vieja de .ghead) */
-  /* v257 · "más acciones": tres puntos dibujados (3 px, 3 px de aire) — el texto ··· a 16 salía diminuto y pegado al
-     total. Toque de 44×44 que se mete 12 px en el margen de la página; 17 px entre el total y el primer punto. */
-  .dots3{display:block; width:3px; height:3px; margin-right:12px; border-radius:50%; background:currentColor; box-shadow:6px 0 0 currentColor, 12px 0 0 currentColor/*ds:exempt*/;}   /* la "sombra" dibuja los puntos 2 y 3 */
+  /* v257 · "más acciones": tres puntos dibujados — el texto ··· a 16 salía diminuto y pegado al total. Toque de 44×44
+     que se mete 12 px en el margen de la página. v280 · de 3 a 2 px (3 de aire), el grueso del punto de la tipografía:
+     "los tres puntitos siguen estando muy grandes para el estilo gráfico que llevamos"; 20 px entre el total y el primero. */
+  .dots3{display:block; width:2px; height:2px; margin-right:10px; border-radius:50%; background:currentColor; box-shadow:5px 0 0 currentColor, 10px 0 0 currentColor/*ds:exempt*/;}   /* la "sombra" dibuja los puntos 2 y 3 */
   .mlbody{padding-bottom:var(--s2);}
   .mit{display:flex; align-items:center; gap:var(--s3); width:100%; min-height:36px; padding:0 var(--mcol) 0 var(--s5); border:0; background:none; color:inherit; font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
   .mit .nm{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--o70);} .mit .q{font-weight:700; color:var(--o70);} .mit .kc{flex:0 0 auto; color:var(--o50);}
@@ -574,6 +577,10 @@
   .tselr{display:flex; gap:var(--s2);} .tselr.wrap{flex-wrap:wrap;} .tselr.wrap .tselo{flex:1 0 calc(20% - var(--s2));}   /* v273 · RPE en 2 filas de 44 */
   .tselo{flex:1; min-width:0; height:44px; border:var(--bw-box) solid var(--o20); border-radius:var(--r-ctl); background:transparent; color:var(--fg); font-size:var(--t-section); font-weight:700; cursor:pointer;}
   .tselo.on{background:var(--fill); border-color:var(--fill); color:var(--bg);} .tselo:active{background:var(--o10);}
+  /* v280 · TRKSelect de nombres (mealPick): cajas al ancho de su texto que saltan de renglón, y un pie con dos [verbos] */
+  .tsel.tnm .tselr{flex-wrap:wrap;} .tsel.tnm .tselo{flex:1 1 auto; height:auto; min-height:44px; padding:0 var(--s4); font-family:inherit; font-size:var(--t-data); overflow-wrap:anywhere;}
+  .tsel.tnm .tselo .tx{margin-left:var(--s3); font-weight:400; color:var(--o50);}
+  .tself{display:flex; align-items:center; justify-content:space-between; margin-top:var(--s1);} .tself .b:only-child{margin-left:auto;}
   .tselx{display:block; margin:var(--s2) 0 0 auto; background:none; border:0; color:var(--o50); font-size:var(--t-label); padding:var(--s2) var(--s1); cursor:pointer;}
   .fs{height:36px; padding:0; border:var(--bw-box) solid var(--o20); border-radius:var(--r-ctl); background:transparent; color:var(--o40); font-size:var(--t-label); font-weight:700; cursor:pointer;} .fs.on{background:var(--fill); border-color:var(--fill); color:var(--on-fill);} .fs.ds{display:flex; align-items:center; justify-content:center; border:0; background:none; color:var(--o50); cursor:default;}
   .droppct{float:left; font-size:var(--t-label); font-weight:400; color:var(--o35);}
@@ -879,6 +886,8 @@
   @keyframes faPop{to{opacity:1; transform:translateY(0)}}
   @keyframes faFade{to{opacity:.5}}
   .fa-listwrap{flex:1; overflow-y:auto; min-height:0; -webkit-overflow-scrolling:touch; margin-top:var(--s4);}
+  .fa-lblrow{display:flex; align-items:center; justify-content:space-between;} .fa-lblrow .b{margin:calc(-1 * var(--s4)) 0;}   /* v280 · [limpiar] a la derecha del rótulo: 44 de toque sin engordar el renglón */
+  .fa-listwrap .pickitem{display:flow-root; min-height:44px; align-content:center;}   /* filas de 44 (elegir o ✕). Un nombre largo manda las kcal (o la ✕) al renglón de abajo: la fila crece con ellas en vez de pisar a la siguiente */
   /* scanner reticle overlay */
   .scan-reticle{position:absolute; inset:0; pointer-events:none; display:flex; align-items:center; justify-content:center;}
   .scan-reticle .frame2{width:78%; height:46%; border:var(--bw-mark) solid var(--fg); border-radius:var(--r-ctl); box-shadow:0 0 0 2000px rgba(0,0,0,.35);}
@@ -1117,7 +1126,7 @@
 
 <script>
 "use strict";
-const APP_V='v282';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v283';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -5263,10 +5272,10 @@ function foodSecHTML(iso,items,dayKcal){
   const om=state._mealOpen[iso];
   const meals=tags.map(tag=>{ const list=byTag[tag], mt={kcal:0,protein:0,carbs:0,fat:0}; list.forEach(m=>{ for(const k in mt)mt[k]+=+m[k]||0; });
     const op=!!om[tag], tm=mealTime(iso,tag), et=escTxt(tag), kc=DP.meal[tags.indexOf(tag)];
-    const meta=[tm,Math.round(mt.protein)+'P '+Math.round(mt.carbs)+'C '+Math.round(mt.fat)+'F'].filter(Boolean).join(' · ');
+    const meta=`<span class="mt">${escTxt(tm||'')}</span><span class="mc">${Math.round(mt.protein)}P</span><span class="mc">${Math.round(mt.carbs)}C</span><span class="mc">${Math.round(mt.fat)}F</span>`;   // v283 · columnas
     const kp=kcalParts(list,kc);
     const rows=op?`<div class="mlbody">${list.map((m,i)=>mealItemRow(m,kp[i])).join('')}</div>`:'';
-    return `<div class="mrec${op?' open':''}" data-tag="${et}" data-rk="ml:${et}"><div class="mhd"><button type="button" class="mtg" data-act="mealfold" data-tag="${et}" aria-expanded="${op}"><span class="mchev" aria-hidden="true">›</span><span class="mnm">${et}</span><span class="mmeta">${escTxt(meta)}</span></button>`
+    return `<div class="mrec${op?' open':''}" data-tag="${et}" data-rk="ml:${et}"><div class="mhd"><button type="button" class="mtg" data-act="mealfold" data-tag="${et}" aria-expanded="${op}"><span class="mchev" aria-hidden="true">›</span><span class="mnm">${et}</span><span class="mmeta">${meta}</span></button>`
       +`<button type="button" class="b madd" data-act="addtomeal" data-tag="${et}" aria-label="agregar alimento a ${et}">+ food</button>`
       +`<button type="button" class="mkc" data-act="mealsummary" data-tag="${et}" aria-label="desglose de ${et} · ${kc} kcal"><span data-nk="mk:${et}" data-nv="${kc}">${kc.toLocaleString()}</span></button>`
       +`<button type="button" class="gmore" data-act="mealmenu" data-tag="${et}" aria-label="acciones de ${et}"><span class="dots3" aria-hidden="true"></span></button></div>${rows}</div>`; }).join('');
@@ -8695,13 +8704,13 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='ringtog'){ const k=el.dataset.k; state.ringRem=state.ringRem||{}; state.ringRem[k]=!state.ringRem[k]; reRender(); }
   else if(a==='viewmeal'){ state.expandedMeal = state.expandedMeal===el.dataset.id ? null : el.dataset.id; if(state.expandedMeal)state._enter={sel:'.mdmeal'}; reRender(); }
   else if(a==='viewtag'){ state._scroll=document.getElementById('view').scrollTop; state.expandedTag = state.expandedTag===el.dataset.tag ? null : el.dataset.tag; render(); }
-  else if(a==='famealwheel'){ faMealWheel(); }
+  else if(a==='famealwheel'){ faMealWheel(el); }
   else if(a==='faapprox'){ openApproxMeal(curTag()); }
   else if(a==='editmeal'){ const t=curDate(); const m=(db.meals[t]||[]).find(x=>x.id===window._mealId); if(m){ closeModal();
       if(m._food){ openLog(m._food,{editId:m.id,qty:m.qty||1,unit:m._unit,tag:m.tag}); }
       else { const q=m.qty||1; const per={}; ['kcal','protein','carbs','fat','sugar','sodium','potassium','fiber','caffeine','alcohol','water'].forEach(k=>per[k]=(+m[k]||0)/q); openLog({name:(m.name||'').replace(/ ×[\d.]+$/,''),serving:m.serving||'1 serving',per},{editId:m.id,qty:q,tag:m.tag}); } } }
   else if(a==='delmealnow'){ state._scroll=document.getElementById('view').scrollTop; const t=curDate(); db.meals[t]=(db.meals[t]||[]).filter(m=>m.id!==window._mealId); save(); closeModal(); reRender(); }
-  else if(a==='delmealgroup'){ const tag=el.dataset.tag; const _go1=()=>{ state._scroll=document.getElementById('view').scrollTop; const t=curDate(); db.meals[t]=(db.meals[t]||[]).filter(m=>m.tag!==tag); save(); closeModal(); reRender(); }; if(!tag) return; return holdConfirm({title:'borrar la comida "'+tag+'"',detail:'todos sus alimentos de este día',verb:'borrar'},_go1);}
+  else if(a==='delmealgroup'){ const tag=el.dataset.tag; if(!tag) return; closeModal(); mealDelete(curDate(),tag); reRender(); }   // v283 · un solo camino para borrar una comida (mealDelete: [deshacer], no se lleva el agua); antes este filtraba por tag y se llevaba el agua del día
   else if(a==='editmealx'){ const id=el.dataset.id; const t=curDate(); const m=(db.meals[t]||[]).find(x=>x.id===id); if(m){ if(m._food){ openLog(m._food,{editId:m.id,qty:m.qty||1,unit:m._unit,tag:m.tag}); } else { const q=m.qty||1; const per={}; ['kcal','protein','carbs','fat','sugar','sodium','potassium','fiber','caffeine','alcohol','water'].forEach(k=>per[k]=(+m[k]||0)/q); openLog({name:(m.name||'').replace(/ ×[\d.]+$/,''),serving:m.serving||'1 serving',per},{editId:m.id,qty:q,tag:m.tag}); } } }
   else if(a==='delmealx'){ const id=el.dataset.id, t=curDate(), arr=db.meals[t]||[], i=arr.findIndex(m=>m.id===id); if(i<0)return;
     // v256: antes un toque en [borrar] perdía el alimento para siempre, sin preguntar ni red
@@ -8725,7 +8734,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='mealfold'){ const d=curDate(), tag=el.dataset.tag; state._mealOpen=state._mealOpen||{}; const om=state._mealOpen[d]=state._mealOpen[d]||{}; om[tag]=!om[tag];
     if(om[tag])state._enter={sel:'.mrec[data-tag="'+CSS.escape(tag)+'"] .mit'}; reRender(); }
   else if(a==='waterpick'){ trkSelect(el,['250','500','750','1 L','otro'],'',v=>{ if(v==='otro')return openDrink(); logWater(v==='1 L'?1000:+v); reRender(); },{title:'WATER · ml'}); }
-  else if(a==='newmeal'){ openMealWheel(); }
+  else if(a==='newmeal'){ openMealWheel(el); }
   else if(a==='mealmenu'){ openMealMenu(el.dataset.tag); }
   else if(a==='water'){ logWater(+el.dataset.ml||0); reRender(); }
   else if(a==='waterother'){ openDrink(); }
@@ -9738,7 +9747,7 @@ function normalizeExtract(d){ d=d||{}; const svStr=d.serving||d.serving_label||'
   if(d.piece_g)sizes.piece=d.piece_g; else if(d.container_g&&d.pieces_per_container)sizes.piece=Math.round(d.container_g/d.pieces_per_container*100)/100;
   if(d.container_g)sizes.container=d.container_g; else if(sg&&d.servings_per_container)sizes.container=Math.round(sg*d.servings_per_container*100)/100;
   return {name:d.name||'',brand:d.brand||'',barcode:d.barcode||'',base,per100,sizes,servingLabel:(gramsUnknown?svStr:(d.serving_label||'')),gramsUnknown}; }
-function mealSuggestions(){ const def=db.mealTags||['breakfast','lunch','snack','dinner']; const used=new Set(); Object.values(db.meals||{}).forEach(arr=>arr.forEach(m=>{ if(m.tag&&m.tag!=='drink')used.add(m.tag); })); return [...new Set([...def,...used])]; }
+function mealSuggestions(){ const def=db.mealTags||['breakfast','lunch','snack','dinner']; const used=new Set(); Object.values(db.meals||{}).forEach(arr=>arr.forEach(m=>{ if(m.tag&&m.tag!=='drink')used.add(m.tag); })); return [...new Set([...def,...used])].filter(t=>mealHidden().indexOf(t)<0); }   // v280 · sin los nombres quitados con [limpiar]
 function curTag(){ const e=document.getElementById('fa_tagtxt'); const v=e?e.value.trim():''; return v||'meal'; }
 function nextMealTag(){ const h=(new Date()).getHours(); if(h<11)return 'breakfast'; if(h<16)return 'lunch'; if(h<21)return 'dinner'; return 'snack'; }
 function nextAfterCurrent(){ const seq=['breakfast','lunch','dinner']; const i=seq.indexOf(nextMealTag()); return (i>=0&&i<2)?seq[i+1]:'snack'; }
@@ -9768,11 +9777,69 @@ function trkWheel(o,onPick){
     if(b.dataset.whl==='other'){ closeAsk(true); trkPrompt({title:o.title||'',label:o.otherLabel||'NOMBRE',ok:'usar'},v=>{ v=(v||'').trim(); if(!v){ toast('⚠ escribe un nombre','err'); return false; } onPick(v); }); return; }
     closeAsk(); });
 }
-// U1 (E2): [+ comida] — se elige el nombre en la rueda y se entra directo a agregar alimento a esa comida
-function openMealWheel(){
-  const used=(db.meals[curDate()]||[]).map(m=>m.tag);
-  const opts=[...new Set([...mealSuggestions(),'breakfast','lunch','snack','dinner','pre workout','post workout'])].filter(t=>t&&t!=='drink');
-  trkWheel({title:'comida',opts,cur:used.indexOf(nextMealTag())<0?nextMealTag():opts.find(t=>used.indexOf(t)<0)||nextMealTag(),other:'otro nombre…',otherLabel:'NOMBRE DE LA COMIDA'},tag=>openFoodAdd(tag,true));
+// ---- v280 · comidas: quitar lo que estorba y elegir el nombre junto al dedo ----
+// La interfaz llama "comida" a tres cosas y las tres se quitan desde ella: (1) la comida de un día: ··· → borrar la comida,
+// al instante y con [deshacer]; (2) un nombre recordado: el selector de + meal → [limpiar]; (3) un alimento guardado: la
+// lista de la hoja de agregar → [limpiar] (foodForget). Quitar un nombre solo lo saca de las sugerencias: los días que lo
+// usaron no se tocan (aditivo: db.mealTagsHidden) y vuelve si lo escribes otra vez en [otro nombre…] o al renombrar.
+function mealHidden(){ return Array.isArray(db.mealTagsHidden)?db.mealTagsHidden:[]; }
+function mealNameHide(t){ const h=mealHidden(); if(t&&h.indexOf(t)<0)db.mealTagsHidden=h.concat([t]); }
+function mealNameShow(t){ const h=mealHidden(); if(h.indexOf(t)>=0)db.mealTagsHidden=h.filter(x=>x!==t); }
+function mealNames(){ return [...new Set([...mealSuggestions(),'breakfast','lunch','snack','dinner','pre workout','post workout'])].filter(t=>t&&t!=='drink'&&mealHidden().indexOf(t)<0); }
+// la comida de un día = sus alimentos con esa etiqueta. El agua vive en `drink` sin kcal y NO es comida: borrar o renombrar
+// "#drink" no la toca (antes se la llevaba). La hora de la comida se va con ella y vuelve con el deshacer.
+function mealDelete(d,tag){ const arr=db.meals[d]||[], gone=[]; arr.forEach((m,i)=>{ if(!isWaterItem(m)&&String(m.tag)===String(tag))gone.push([i,m]); });
+  if(!gone.length)return 0;
+  const mm=(db.mealMeta||{})[d], meta=(mm&&mm[tag])?JSON.parse(JSON.stringify(mm[tag])):null;
+  db.meals[d]=arr.filter(m=>!gone.some(g=>g[1]===m));
+  if(meta){ delete mm[tag]; if(!Object.keys(mm).length)delete db.mealMeta[d]; }
+  if(gone.some(g=>g[1].id===state.expandedMeal))state.expandedMeal=null;
+  save(); reRender();
+  toast('✓ comida borrada','ok',{undo:()=>{ const a=db.meals[d]=db.meals[d]||[]; gone.forEach(g=>a.splice(Math.min(g[0],a.length),0,g[1]));
+    if(meta){ db.mealMeta=db.mealMeta||{}; (db.mealMeta[d]=db.mealMeta[d]||{})[tag]=meta; } }});
+  return gone.length; }
+// un alimento guardado ("mis alimentos") que estorba en la lista: fuera, con [deshacer]. Lo ya registrado no cambia
+// (cada registro lleva su propia copia en `_food`).
+function foodForget(id,after){ const arr=db.foods||[], i=arr.findIndex(f=>f&&f.id===id); if(i<0)return false; const f=arr[i];
+  arr.splice(i,1); save(); if(after)after();
+  toast('✓ alimento quitado','ok',{undo:()=>{ (db.foods=db.foods||[]).splice(Math.min(i,db.foods.length),0,f); if(after)after(); }});
+  return true; }
+// TRKSelect de nombres (mismo popover que + water: pegado al control que tocaste, no una hoja arriba de la pantalla).
+// o = {skip:[nombres que no se ofrecen], onPick(nombre)}. Un toque elige. [otro nombre…] abre el campo; [limpiar] pone ✕
+// en cada nombre para quitarlo de la lista. Se cierra como todo popover (tocar fuera, scroll o repintar).
+function mealPick(anchor,o){ o=o||{}; popClose(); const app=document.getElementById('app'); if(!app||!anchor)return null;
+  const p=document.createElement('div'); p.id='tsel'; p.className='tsel tnm'; p.setAttribute('role','group'); p.setAttribute('aria-label','comida');
+  let clean=false; const skip=o.skip||[];
+  const mk=(tag,cls,txt)=>{ const e=document.createElement(tag); e.className=cls; e.textContent=txt; if(tag==='button')e.type='button'; return e; };
+  const place=()=>{ const r=anchor.getBoundingClientRect(), fr=app.getBoundingClientRect(); const w=Math.min(348,fr.width-36); p.style.width=w+'px';
+    p.style.left=Math.max(18,Math.min(fr.width-18-w,r.left-fr.left+r.width/2-w/2))+'px';
+    const below=r.bottom-fr.top+6, ph=p.offsetHeight; p.style.top=(below+ph>fr.height-90?Math.max(8,r.top-fr.top-6-ph):below)+'px'; };
+  const paint=()=>{ p.textContent=''; const all=mealNames(), names=clean?all:all.filter(t=>skip.indexOf(t)<0);
+    p.appendChild(mk('div','tselh',clean?'comida · quitar':'comida'));
+    if(names.length){ const row=mk('div','tselr','');
+      names.forEach(t=>{ const b=mk('button','tselo',t);
+        if(clean){ b.setAttribute('aria-label','quitar '+t); const x=mk('span','tx','✕'); x.setAttribute('aria-hidden','true'); b.appendChild(x); }
+        b.addEventListener('click',ev=>{ ev.stopPropagation();
+          if(!clean){ popClose(); o.onPick(t); return; }
+          mealNameHide(t); save(); paint(); toast('✓ nombre quitado','ok',{undo:()=>mealNameShow(t)}); });
+        row.appendChild(b); });
+      p.appendChild(row); }
+    const ft=mk('div','tself','');
+    if(clean){ const d=mk('button','b','listo'); d.addEventListener('click',ev=>{ ev.stopPropagation(); clean=false; paint(); }); ft.appendChild(d); }
+    else { if(all.length){ const c=mk('button','b','limpiar'); c.addEventListener('click',ev=>{ ev.stopPropagation(); clean=true; paint(); }); ft.appendChild(c); }
+      const n=mk('button','b','otro nombre…');
+      // trkPrompt cierra la hoja al volver: aquí se cierra ANTES de elegir y se devuelve false, o cerraría la hoja de agregar que
+      // onPick acaba de abrir (pasaba con la rueda: un nombre nuevo abría "add food" y la cerraba en el mismo toque).
+      n.addEventListener('click',ev=>{ ev.stopPropagation(); popClose(); trkPrompt({title:'comida',label:'NOMBRE DE LA COMIDA',ok:'usar'},v=>{ v=(v||'').trim(); if(!v){ toast('⚠ escribe un nombre','err'); return false; }
+        mealNameShow(v); closeModal(); o.onPick(v); return false; }); });
+      ft.appendChild(n); }
+    p.appendChild(ft); place(); };
+  app.appendChild(p); paint(); window._tselEl=anchor; return p; }
+// [+ meal] — el nombre se elige en el popover y se entra directo a agregar alimento a esa comida. Las comidas que ya tiene
+// el día no salen: cada una lleva su [+ food]. (Conserva el nombre de cuando era la rueda de U1.)
+function openMealWheel(el){
+  const used=(db.meals[curDate()]||[]).filter(m=>!isWaterItem(m)).map(m=>m.tag);
+  mealPick(el||document.querySelector('#view [data-act="newmeal"]'),{skip:used,onPick:tag=>openFoodAdd(tag,true)});
 }
 // U1 (E3): [···] de cada comida — todas sus acciones en filas de 44 px (MyFitnessPal)
 function openMealMenu(tag){
@@ -9783,15 +9850,101 @@ function openMealMenu(tag){
     ['ver desglose',()=>openMealSummary(tag)],
     ['renombrar',()=>{ trkPrompt({title:'renombrar comida',label:'NOMBRE',value:tag,ok:'guardar'},v=>{ v=(v||'').trim(); if(!v){ toast('⚠ escribe un nombre','err'); return false; } renameMealTag(tag,v); }); }],
     ['hora de la comida',()=>{ trkPrompt({title:'hora de #'+tag,label:'HH:MM',value:mealTime(d,tag)||'',type:'time',ok:'guardar'},v=>{ setMealTime(d,tag,(v||'').trim()||null); save(); reRender(); toast('✓ hora guardada'); }); }],
-    ['borrar la comida',()=>holdConfirm({title:'borrar #'+tag,detail:'se quitan todos sus alimentos de este día',verb:'borrar'},()=>{ db.meals[d]=(db.meals[d]||[]).filter(m=>m.tag!==tag); save(); reRender(); toast('✓ comida borrada'); })],
+    ['borrar la comida',()=>mealDelete(d,tag)],   // v280 · con [deshacer]; antes había que sostener un botón arriba de la pantalla
   ]);
 }
 function renameMealTag(from,to){
   if(!to||to===from)return; const d=curDate();
-  (db.meals[d]||[]).forEach(m=>{ if(m.tag===from)m.tag=to; });
+  (db.meals[d]||[]).forEach(m=>{ if(m.tag===from&&!isWaterItem(m))m.tag=to; }); mealNameShow(to);   // v280 · el agua no es comida
   try{ const mm=(db.mealMeta||{})[d]; if(mm&&mm[from]){ mm[to]=mm[from]; delete mm[from]; } }catch(_){}
   if(Array.isArray(db.mealTags)){ const i=db.mealTags.indexOf(from); if(i>=0&&db.mealTags.indexOf(to)<0)db.mealTags[i]=to; }
   save(); reRender(); toast('✓ comida renombrada');
+}
+// v280 · self-check de comida (síncrono; no está en la lista del arranque: lo registra el integrador). Base de juguete:
+// cabecera sin "…" a 357 px, controles de 44, borrar una comida con deshacer (sin tocar el agua ni otros días), quitar
+// un nombre sin reescribir la historia, quitar un alimento guardado y un nombre nuevo que sí abre la hoja de agregar.
+function _comidaSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK comida: '+nm); };
+  const real=db, _t=toast, _rr=reRender, md0=state.macroDate, em0=state.expandedMeal, lf0=state._lfold, lfd0=state._lfoldD, mo0=state._mealOpen;
+  const app=document.getElementById('app'); let undo=null, host=null, an=null;
+  try{ toast=(m,t,o)=>{ undo=(o&&o.undo)||null; return null; }; reRender=()=>null;
+    const D='2026-09-20', E='2026-09-19', F='2026-09-21', LONG='desayuno largo de domingo en casa';
+    const I=(id,tag,o)=>Object.assign({id:id,tag:tag,name:id,qty:1,kcal:100,protein:10,carbs:10,fat:2},o||{});
+    const W=(id)=>({id:id,tag:'drink',name:'agua',qty:1,kcal:0,water:.5});
+    const m={}; m[D]=[I('a','lunch'),W('w1'),I('b','breakfast'),I('c','lunch'),I('k','drink',{kcal:140,water:.33})];
+    m[E]=[I('z','lunch1'),I('y','lunch')];
+    m[F]=[I('p1','post workout',{kcal:1840,protein:156,carbs:244,fat:103}),I('p2',LONG,{kcal:12980,protein:311,carbs:1420,fat:665}),I('p3','snack',{kcal:90,protein:1,carbs:20,fat:0})];
+    const mt={}; mt[D]={lunch:{time:'14:10'},breakfast:{time:'08:00'}}; mt[F]={'post workout':{time:'17:05'}}; mt[F][LONG]={time:'10:30'};
+    const fd=(id,nm)=>({id:id,name:nm,brand:'',base:'g',per100:{kcal:100,protein:10,carbs:10,fat:2},sizes:{},lastUsed:1});
+    db=migrate({profile:{username:'t'},sessions:[],mealTags:['breakfast','lunch','q'],meals:m,mealMeta:mt,foods:[fd('f1','pollo'),fd('f2','arroz'),fd('f3','atun')]});
+    bumpIdx(); state.macroDate=D; state._lfold={food:true,water:false,supps:false}; state._lfoldD=F; state._mealOpen={};
+    const ids=d=>(db.meals[d]||[]).map(x=>x.id).join();
+    // 1 · la cabecera a 393 de pantalla (357 de contenido): nada lleva "…", los controles se tocan a 44 y van en su orden
+    host=document.createElement('div'); host.style.cssText='position:absolute;left:0;top:0;width:357px;visibility:hidden;pointer-events:none'; app.appendChild(host);
+    host.innerHTML=foodSecHTML(F,db.meals[F],14910);
+    const recs=[...host.querySelectorAll('.mrec')]; A('una cabecera por comida', recs.length===3);
+    recs.forEach(r=>{ const q=s=>r.querySelector(s), R=s=>q(s).getBoundingClientRect(), tg=r.dataset.tag;
+      ['.mtg','.mnm','.mmeta'].forEach(s=>{ const e=q(s); A(tg+' '+s+' no corta con "…"', getComputedStyle(e).textOverflow!=='ellipsis'&&e.scrollWidth<=e.clientWidth+1); });
+      A(tg+': [+ food], total y ··· se tocan a 44', ['.madd','.mkc','.gmore'].every(s=>R(s).width>=43.5&&R(s).height>=43.5));
+      A(tg+': nombre | [+ food] | total | ···', R('.mtg').right<=R('.madd').left+1&&R('.madd').right<=R('.mkc').left+1&&R('.mkc').left<R('.gmore').left);
+      A(tg+': la hora y los macros van bajo el nombre', R('.mmeta').top>=R('.mnm').bottom-1); });
+    { const ml=t=>recs.find(r=>r.dataset.tag===t).querySelector('.madd').getBoundingClientRect().left; A('[+ food] cae en la misma columna con totales de 2 a 4 cifras', Math.abs(ml('post workout')-ml('snack'))<=.5); }
+    const mmTxt=r=>[...r.querySelectorAll('.mmeta span')].map(e=>e.textContent).join(' ');
+    A('el desglose sale completo', recs.some(r=>mmTxt(r)==='17:05 156P 244C 103F')&&recs.some(r=>mmTxt(r)==='10:30 311P 1420C 665F'));
+    A('v283 · hora y P C F caen en la misma columna en todas las comidas', (()=>{ const xs=recs.map(r=>[...r.querySelectorAll('.mmeta .mc')].map(e=>Math.round(e.getBoundingClientRect().right))); return xs.length>1&&xs.every(a=>a.length===3&&a.join()===xs[0].join()); })());
+    A('el nombre largo sale entero', recs.some(r=>r.querySelector('.mnm').textContent===LONG));
+    A('los tres puntos son finos', getComputedStyle(host.querySelector('.dots3')).width==='2px');
+    // 2 · borrar una comida: solo sus alimentos de ese día, con su hora, y todo vuelve con el deshacer
+    A('borra los dos alimentos de #lunch', mealDelete(D,'lunch')===2&&ids(D)==='w1,b,k');
+    A('su hora se va con ella y la de otra comida se queda', mealTime(D,'lunch')===''&&mealTime(D,'breakfast')==='08:00');
+    A('otro día no se toca', ids(E)==='z,y'); A('ofrece deshacer', typeof undo==='function');
+    undo(); A('deshacer la devuelve en su orden y con su hora', ids(D)==='a,w1,b,c,k'&&mealTime(D,'lunch')==='14:10');
+    A('borrar #drink no se lleva el agua', mealDelete(D,'drink')===1&&ids(D)==='a,w1,b,c'); undo(); A('…y vuelve', ids(D)==='a,w1,b,c,k');
+    db.meals[D].push({id:'u',name:'sin etiqueta',qty:1,kcal:50});
+    A('una comida sin etiqueta también se borra', mealDelete(D,'undefined')===1&&ids(D)==='a,w1,b,c,k');
+    A('una comida que no existe no hace nada', mealDelete(D,'nope')===0&&ids(D)==='a,w1,b,c,k');
+    undo=null; openMealMenu('breakfast'); const del=[...document.querySelectorAll('#asklayer .nvm')].find(x=>/borrar/.test(x.textContent));
+    A('el menú ··· trae borrar', !!del); del.click();
+    A('borra de un toque (sin sostener) y con deshacer', ids(D)==='a,w1,c,k'&&!document.querySelector('#asklayer .hold')&&typeof undo==='function'); undo(); A('…deshecho', ids(D)==='a,w1,b,c,k');
+    // 3 · un nombre recordado que estorba: sale de las sugerencias, la historia no se reescribe
+    A('los nombres usados se sugieren', mealNames().indexOf('lunch1')>=0&&mealNames().indexOf('q')>=0&&mealNames().indexOf('drink')<0);
+    mealNameHide('lunch1'); mealNameHide('q');
+    A('quitado: ya no se sugiere', mealNames().indexOf('lunch1')<0&&mealSuggestions().indexOf('lunch1')<0&&mealNames().indexOf('q')<0);
+    A('…y el día que lo usó sigue igual', db.meals[E][0].tag==='lunch1'&&db.mealTags.indexOf('q')>=0);
+    mealNameShow('q'); A('…y vuelve', mealNames().indexOf('q')>=0);
+    A('un respaldo conserva los nombres quitados', (migrate(JSON.parse(JSON.stringify(db))).mealTagsHidden||[]).join()==='lunch1');
+    an=document.createElement('button'); an.style.cssText='position:absolute;right:18px;top:300px;width:96px;height:32px;visibility:hidden'; app.appendChild(an);
+    let picked=''; mealPick(an,{skip:['lunch'],onPick:v=>{ picked=v; }});
+    const chips=()=>[...document.querySelectorAll('#tsel .tselo')], foot=t=>[...document.querySelectorAll('#tsel .tself .b')].find(b=>b.textContent===t);
+    A('el selector se abre junto al control', !!document.getElementById('tsel')&&Math.abs(document.getElementById('tsel').getBoundingClientRect().top-an.getBoundingClientRect().bottom)<=8);
+    A('no ofrece la comida que ya tiene el día ni lo quitado', chips().length>0&&chips().every(b=>b.textContent!=='lunch'&&b.textContent!=='lunch1'));
+    A('cada nombre se toca a 44', chips().every(b=>b.getBoundingClientRect().height>=43.5&&b.getBoundingClientRect().width>=43.5));
+    chips().find(b=>b.textContent==='breakfast').click(); A('un toque elige y cierra', picked==='breakfast'&&!document.getElementById('tsel'));
+    mealPick(an,{skip:['lunch'],onPick:v=>{ picked=v; }}); foot('limpiar').click();
+    const qx=chips().find(b=>b.getAttribute('aria-label')==='quitar q'); A('[limpiar] pone ✕ en cada nombre (también los del día)', !!qx&&chips().some(b=>b.getAttribute('aria-label')==='quitar lunch')&&!!foot('listo'));
+    undo=null; qx.click(); A('quitar un nombre no cierra el selector y se puede deshacer', mealHidden().indexOf('q')>=0&&!!document.getElementById('tsel')&&!chips().some(b=>b.getAttribute('aria-label')==='quitar q')&&typeof undo==='function');
+    undo(); A('…deshecho', mealHidden().indexOf('q')<0); foot('listo').click(); A('[listo] vuelve a elegir', !!foot('limpiar')&&!!foot('otro nombre…')); popClose();
+    // un nombre nuevo abre la hoja de agregar y la deja abierta (la rueda la cerraba en el mismo toque), y revive un nombre quitado
+    state.macroDate=D; openMealWheel(an); foot('otro nombre…').click(); const tp=document.getElementById('tp_in'); A('otro nombre abre el campo', !!tp);
+    tp.value='lunch1'; document.getElementById('tp_ok').click();
+    A('nombre nuevo → hoja de agregar abierta en esa comida', !!document.querySelector('#modal #fa_q')&&curTag()==='lunch1');
+    A('escribir un nombre quitado lo devuelve a la lista', mealHidden().indexOf('lunch1')<0);
+    // 4 · un alimento guardado que estorba: [limpiar] en la lista de la hoja de agregar
+    const cb=document.getElementById('fa_clean'), rows=s=>document.querySelectorAll('#fa_list '+s).length, h44=()=>[...document.querySelectorAll('#fa_list .pickitem')].every(r=>r.getBoundingClientRect().height>=43.5);
+    A('la lista trae [limpiar]', !!cb&&rows('[data-act="pickfood"]')===3&&rows('[data-del]')===0);
+    A('[limpiar] y cada fila se tocan a 44', cb.getBoundingClientRect().height>=43.5&&h44());
+    cb.click(); A('[limpiar] cambia las filas a ✕', rows('[data-del]')===3&&rows('[data-act="pickfood"]')===0&&cb.textContent==='listo'&&document.getElementById('fa_lbl').textContent==='TUYOS');
+    A('las filas ✕ también son de 44', h44());
+    undo=null; document.querySelector('#fa_list [data-del="f2"]').click();
+    A('quita el alimento y la fila', db.foods.map(f=>f.id).join()==='f1,f3'&&rows('[data-del]')===2&&typeof undo==='function');
+    undo(); A('deshacer lo devuelve a su lugar y a la lista', db.foods.map(f=>f.id).join()==='f1,f2,f3'&&rows('[data-del]')===3);
+    for(let i=0;i<42;i++)db.foods.push(fd('g'+i,'extra '+i)); cb.click(); A('la lista normal trae los 40 recientes', rows('[data-act="pickfood"]')===40);
+    cb.click(); A('[limpiar] los trae todos', rows('[data-del]')===45); db.foods.length=3;
+    cb.click(); A('[listo] vuelve a la lista normal', rows('[data-act="pickfood"]')===3&&cb.textContent==='limpiar'); closeModal();
+    // 5 · renombrar tampoco arrastra el agua
+    renameMealTag('drink','bebidas'); A('renombrar #drink deja el agua en su sitio', db.meals[D].find(x=>x.id==='k').tag==='bebidas'&&isWaterItem(db.meals[D].find(x=>x.id==='w1')));
+    console.log('comida self-check OK');
+  } finally { try{ popClose(); }catch(_){} try{ closeAsk(true); }catch(_){} try{ closeModal(); }catch(_){} if(host)host.remove(); if(an)an.remove();
+    db=real; toast=_t; reRender=_rr; state.macroDate=md0; state.expandedMeal=em0; state._lfold=lf0; state._lfoldD=lfd0; state._mealOpen=mo0; bumpIdx(); }
 }
 // meal "aproximada": ingresas P/C/G totales (comidas fuera de casa); kcal 4-4-9; crea 1 item sintético que suma al día
 function openApproxMeal(preset){
@@ -10282,26 +10435,29 @@ function openFoodAdd(preset, lockTag){
        <input id="fa_q" placeholder="buscar — huevo / egg, pollo / chicken…" autocomplete="off"/>
        <div class="fa-acts"><a data-act="fbarcode">[escanear]</a><a data-act="faapprox">[aproximada]</a><a data-act="fregister">[registrar]</a></div>
      </div>
-     <div class="fa-listwrap"><div class="grp-label first" id="fa_lbl">RECIENTES</div><div id="fa_list"></div></div>
+     <div class="fa-listwrap"><div class="fa-lblrow" id="fa_lblrow"><div class="grp-label first" id="fa_lbl">RECIENTES</div><button type="button" class="b" id="fa_clean">limpiar</button></div><div id="fa_list"></div></div>
    </div>`,'tall');
   const q=document.getElementById('fa_q');
   const foodRow=(f,act)=>`<div class="pickitem" data-act="${act}" data-id="${f.id}">${escTxt(f.name)}${srcMark(f)}${f.brand?' <span class="u-o35 u-label">'+escTxt(f.brand)+'</span>':''} <span class="u-fr u-o50">${Math.round(foodKcal100(f))} /100${f.base==='ml'?'ml':'g'}</span></div>`;
   // el vacío deja de ser un diagrama de 3 tarjetas con 5 tamaños: una línea, y los atajos ya están arriba
   const emptyHTML=`<div class="fa-empty">sin resultados todavía · también se busca en línea</div>`;
   let _offT=0, _offSeq=0;
+  // v280 · [limpiar]: tus alimentos guardados que estorban se quitan aquí — ✕ en cada fila (foodForget, con [deshacer]) y [listo]
+  let _clean=false;
+  const delRow=f=>`<div class="pickitem" role="button" tabindex="0" data-del="${escTxt(f.id)}" aria-label="quitar ${escTxt(f.name)}">${escTxt(f.name)}${srcMark(f)}${f.brand?' <span class="u-o35 u-label">'+escTxt(f.brand)+'</span>':''} <span class="u-fr u-o50" aria-hidden="true">✕</span></div>`;
   const renderList=()=>{ const s=(q.value||'').toLowerCase().trim();
     const mine=(db.foods||[]).slice().filter(f=>!s||searchScore(s,f)>0).map(f=>({f,sc:s?searchScore(s,f):0,lu:f.lastUsed||0}))
-      .sort((a,b)=>s?(b.sc-a.sc)||(b.lu-a.lu):(b.lu-a.lu)).slice(0,40).map(x=>x.f);
-    const base=s?BASE_FOODS.map(f=>({f,sc:searchScore(s,f)})).filter(x=>x.sc>0 && !mine.some(m=>m.id===x.f.id||bfNorm(m.name)===bfNorm(x.f.name)))
+      .sort((a,b)=>s?(b.sc-a.sc)||(b.lu-a.lu):(b.lu-a.lu)).slice(0,_clean?1e4:40).map(x=>x.f);   // v280 · al limpiar salen todos, no solo los 40 recientes
+    const base=(s&&!_clean)?BASE_FOODS.map(f=>({f,sc:searchScore(s,f)})).filter(x=>x.sc>0 && !mine.some(m=>m.id===x.f.id||bfNorm(m.name)===bfNorm(x.f.name)))
       .sort((a,b)=>b.sc-a.sc).slice(0,80).map(x=>x.f):[];
-    const lbl=document.getElementById('fa_lbl'); if(lbl)lbl.textContent=s?'TUYOS':'RECIENTES';   // grupos con su propio encabezado (MacroFactor)
-    let html=mine.map(f=>foodRow(f,'pickfood')).join('');
+    const lbl=document.getElementById('fa_lbl'); if(lbl)lbl.textContent=(s||_clean)?'TUYOS':'RECIENTES';   // grupos con su propio encabezado (MacroFactor)
+    let html=mine.map(f=>_clean?delRow(f):foodRow(f,'pickfood')).join('');
     if(base.length)html+=(mine.length?'<div class="grp-label sub">BASICS</div>':'')+base.map(f=>foodRow(f,'pickbase')).join('');
-    if(lbl)lbl.style.display=(mine.length?'':'none');
+    { const lr=document.getElementById('fa_lblrow'); if(lr)lr.style.display=((mine.length||_clean)?'':'none'); }
     const list=document.getElementById('fa_list');
-    if(html){ list.innerHTML=html; if(s && s.length>=2){ scheduleOFF(s); } }
+    if(html){ list.innerHTML=html; if(s && s.length>=2 && !_clean){ scheduleOFF(s); } }
     else if(!s){ list.innerHTML=`<div class="submeta u-py6 u-px0">busca un alimento (huevo / egg, pollo / chicken…) o usa scan / register</div>`; }
-    else { list.innerHTML=emptyHTML; if(s.length>=2)scheduleOFF(s); } };
+    else { list.innerHTML=emptyHTML; if(s.length>=2&&!_clean)scheduleOFF(s); } };
   function scheduleOFF(term){ clearTimeout(_offT); const seq=++_offSeq; _offT=setTimeout(async()=>{
     const list=document.getElementById('fa_list'); if(!list)return;
     if(q.value.trim()!==term||seq!==_offSeq)return;     // stale query, user kept typing
@@ -10315,15 +10471,18 @@ function openFoodAdd(preset, lockTag){
       }
     }catch(_){ const oldh=document.getElementById('fa_offhint'); if(oldh)oldh.remove(); } }, 450); }
   q.oninput=renderList; renderList();
+  { const cb=document.getElementById('fa_clean'), fl=document.getElementById('fa_list');
+    cb.onclick=()=>{ _clean=!_clean; cb.textContent=_clean?'listo':'limpiar'; renderList(); };
+    fl.addEventListener('click',ev=>{ const r=ev.target.closest('[data-del]'); if(!r)return; ev.stopPropagation(); foodForget(r.dataset.del,()=>{ if(document.getElementById('fa_list')===fl)renderList(); }); });
+    fl.addEventListener('keydown',ev=>{ const r=ev.target.closest('[data-del]'); if(r&&(ev.key==='Enter'||ev.key===' ')){ ev.preventDefault(); r.click(); } }); }   // la fila ✕ es role=button: también con teclado
 }
-// U2: cambiar la comida destino sin salir del sheet — la rueda escribe en el campo oculto que lee curTag()
-function faMealWheel(){
-  const opts=[...new Set([...mealSuggestions(),'breakfast','lunch','snack','dinner','pre workout','post workout'])].filter(t=>t&&t!=='drink');
-  const cur=curTag();
-  trkWheel({title:'comida',opts,cur,other:'otro nombre…',otherLabel:'NOMBRE DE LA COMIDA'},v=>{
+// U2: cambiar la comida destino sin salir del sheet — el selector escribe en el campo oculto que lee curTag()
+// (v280: el mismo popover de nombres de + meal, mealPick; antes la rueda)
+function faMealWheel(el){
+  mealPick(el||document.querySelector('#modal [data-act="famealwheel"]'),{skip:[curTag()],onPick:v=>{
     const i=document.getElementById('fa_tagtxt'), n=document.getElementById('fa_tagname');
     if(i)i.value=v; if(n)n.textContent='#'+v; else openFoodAdd(v,false);
-  });
+  }});
 }
 function wireLongPress(el,fn){ let t=null; const start=()=>{ t=setTimeout(()=>{ t=null; fn(); },550); }; const cancel=()=>{ if(t){clearTimeout(t); t=null;} };
   el.addEventListener('touchstart',start,{passive:true}); el.addEventListener('touchend',cancel); el.addEventListener('touchmove',cancel);
@@ -11336,7 +11495,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 try{ bootScreen(()=>{ try{
   if(/[?&]wrap=1\b/.test(location.search)){ monthlyWrap(prevMonthYm(), true); return; }
