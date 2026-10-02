@@ -121,6 +121,14 @@
   .whdr .wlbl{font-size:var(--t-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--o50); line-height:var(--lh-ui); margin-bottom:var(--s2);} .whdr .wlbl .s{color:var(--o40);}
   .whdr .wname{font-size:var(--t-display); font-weight:800; letter-spacing:var(--ls-num); line-height:var(--lh-tight);}
   .whdr .wmeta{font-size:var(--t-label); color:var(--o40); line-height:var(--lh-ui); letter-spacing:var(--ls-ui); margin-top:var(--s2);}
+  /* v291 · racha como logro (R1): //STREAK · nivel · mejor / el número / [████░░] 24/30 · faltan 6. El número sube de gris a blanco por nivel
+     y desde el nivel 4 va invertido (bloque blanco). Tocar abre el calendario. */
+  .stkh{display:block; width:100%; margin:0 0 var(--s5); padding:0; border:0; background:none; color:inherit; font-family:inherit; text-align:left; cursor:pointer;}
+  .stkh-h{display:flex; justify-content:space-between; align-items:baseline;} .stkh-h .lbl{font-size:var(--t-label); color:var(--o60); letter-spacing:var(--ls-caps);} .stkh-h .lbl .s{color:var(--o40);} .stkh-h .meta{font-size:var(--t-label); color:var(--o50);}
+  .stkh-n{display:block; margin:var(--s2) 0; font-size:var(--t-hero); line-height:var(--lh-tight); letter-spacing:var(--ls-num); color:var(--o40);} .stkh-n b{font-weight:800;}
+  .stkh.lv1 .stkh-n{color:var(--o50);} .stkh.lv2 .stkh-n{color:var(--o70);} .stkh.lv3 .stkh-n{color:var(--fg);}
+  .stkh.lv4 .stkh-n b,.stkh.lv5 .stkh-n b,.stkh.lv6 .stkh-n b,.stkh.lv7 .stkh-n b{display:inline-block; padding:0 var(--s3); background:var(--fill); color:var(--on-fill);}
+  .stkh-p{display:block; font-size:var(--t-label); color:var(--o50); white-space:nowrap;}
 
   .section{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:var(--sp-section);}
   .section .h{font-size:var(--t-section); font-weight:800;} .section .h .s{color:var(--o50);}
@@ -1002,8 +1010,8 @@
   @media (prefers-reduced-motion:reduce){ .bootov .bcur{animation:none;} }
   /* monthly wrap — tap-through story, mono/terminal, screenshot-shareable */
   .wrapov{justify-content:space-between; padding:0; cursor:pointer;}
-  .wtop{padding:var(--s6) var(--s6) 0;}
-  .wdots{display:flex; gap:6px;}
+  .wtop{display:flex; align-items:center; gap:var(--s4); padding:var(--s6) var(--s6) 0;} .wx{flex:0 0 auto; width:44px; height:44px; margin:-14px -14px -14px 0; padding:0; border:0; background:none; color:var(--o60); font-family:inherit; font-size:var(--t-section); cursor:pointer;}
+  .wdots{flex:1; display:flex; gap:6px;}
   .wdot{flex:1; height:3px; border-radius:var(--r-sm); background:var(--o20);} .wdot.on{background:var(--fill);} .wdot.done{background:var(--o50);}
   .wstage{flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:0 var(--s7); animation:wsin var(--dur-3) var(--ease-out);}
   @keyframes wsin{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
@@ -1180,7 +1188,7 @@
 
 <script>
 "use strict";
-const APP_V='v290';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v291';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2302,6 +2310,36 @@ function stripCalHTML(n,mark){ const now=new Date(); let cells='';
 function streakStripHTML(){ const a=activityDays();   // v263 · activada = se dibuja, aunque los 28 puntos estén apagados
   const st=streak(), best=bestStreak(), mark=iso=>{ const v=a[iso]||0; return {lv:(v&1?1:0)+(v&2?1:0)}; };
   return `<button type="button" class="strk" data-act="streakcal" aria-label="racha ${st} días · mejor ${best} · ver calendario"><span class="strk-h"><span class="strk-k">racha</span><span class="strk-b">mejor <b>${best}</b><span class="rchev">›</span></span></span>${stripCalHTML(28,mark)}</button>`; }
+// ---------- v291 · R1 · la racha como logro: número grande + niveles ----------
+// El dueño (1-oct): "que se sienta como un logro… que se vaya siendo más intenso" · eligió **número grande + niveles**.
+// Niveles en 7 · 14 · 30 · 60 · 100 · 200 · 365 días. El número sube de gris a blanco por nivel y desde el nivel 4 va invertido.
+// El día que subes de nivel: 2 s de terminal, UNA vez por nivel (db.streakLv, aditivo; los niveles ya ganados no disparan nada),
+// nunca encima de una sesión ni de una hoja, se salta tocando. Sin confeti.
+const STREAK_LV=[7,14,30,60,100,200,365];
+function streakLevel(n){ let l=0; STREAK_LV.forEach(t=>{ if(n>=t)l++; }); return l; }
+function streakNext(n){ for(let i=0;i<STREAK_LV.length;i++)if(STREAK_LV[i]>n)return STREAK_LV[i]; return null; }
+// la mejor racha SIN contar la que va corriendo (para decir "antes 24" el día que la superas)
+function bestStreakBefore(){ const ks=Object.keys(activityDays()).sort(), st=streak(), t=todayISO(), y=shiftDate(t,-1); let best=0, run=0, prev=null;
+  const close=()=>{ if(!run)return; const cur=st>0&&(prev===t||prev===y); if(!cur&&run>best)best=run; };
+  ks.forEach(k=>{ const g=prev?Math.round((new Date(k+'T12:00:00')-new Date(prev+'T12:00:00'))/86400000):0; if(prev&&g===1)run++; else { close(); run=1; } prev=k; }); close();
+  return best; }
+// arriba de gym, antes de ROTATION: //STREAK · nivel · mejor / el número / [████░░] 24/30 · faltan 6. Tocar abre el calendario de siempre.
+function streakHeroHTML(){ const st=streak(), lv=streakLevel(st), nx=streakNext(st), best=bestStreak();
+  const meta=(lv?'nivel '+lv+' · ':'')+'mejor '+best;
+  const prog=nx?('['+trkBarTxt(st/nx*100,12)+'] '+st+'/'+nx+' · '+(nx-st===1?'falta 1':'faltan '+(nx-st))):('['+trkBarTxt(100,12)+'] nivel máximo');
+  return `<button type="button" class="stkh lv${lv}" data-act="streakcal" aria-label="racha ${st} días${lv?' · nivel '+lv:''} · mejor ${best} · ver calendario"><span class="stkh-h"><span class="lbl"><span class="s">//</span>STREAK</span><span class="meta">${meta}</span></span><span class="stkh-n"><b>${st}</b></span><span class="stkh-p">${prog}</span></button>`; }
+function streakLvShow(st,lv){ const best=bestStreak(), bb=bestStreakBefore(), P=t=>`<div class="bl bp">${t}</div>`;
+  showOverlay(`<div class="bt"><span class="s">//</span>STREAK</div><div class="bboot">`+P('&gt; streak '+st)+P('&gt; nivel '+lv+' ['+'█'.repeat(lv)+'░'.repeat(STREAK_LV.length-lv)+']')
+    +P('&gt; mejor racha: '+best+((st>=best&&bb>0&&bb<st)?' (antes '+bb+')':''))+`<div class="bl bready">ready<span class="bcur">▌</span></div></div>`,{ms:2000});
+  const ov=document.getElementById('bootov'); if(!ov)return; const ls=[...ov.querySelectorAll('.bl')];
+  if(reducedMotion()){ ls.forEach(l=>l.classList.add('on')); return; }
+  ls.forEach((l,i)=>setTimeout(()=>l.classList.add('on'),180*i)); }
+// ¿subiste de nivel? Solo en gym, sin sesión viva, sin hoja, sin aviso y sin otro overlay; si no se puede ahora, se intenta en la siguiente
+function streakLvMaybe(test){ try{ if((_sbx&&!test)||!db.profile||!db.profile.username)return false; const st=streak(), lv=streakLevel(st);
+    if(db.streakLv==null){ db.streakLv=lv; if(!_sbx)saveSoon(); return false; }   // primera vez: lo ya ganado no dispara nada
+    if(lv<=db.streakLv)return false;
+    if(state.screen!=='home'||db.activeWork||document.getElementById('modal')||document.getElementById('asklayer')||document.getElementById('bootov'))return false;
+    db.streakLv=lv; save(); streakLvShow(st,lv); return true; }catch(_){ return false; } }
 function openStreakSheet(){ const a=activityDays(), now=new Date(), el=now.getDate(); let logged=0;
   for(let dd=1;dd<=el;dd++){ if(a[now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(dd)])logged++; }
   const ln=(k,v,g)=>`<div class="line"><span class="k"${g?` data-gloss="${g}"`:''}>${k}</span><span class="dots"></span><span class="v">${v} <span class="u">d</span></span></div>`;
@@ -3181,7 +3219,7 @@ function statusBar(back){
   const d=new Date();
   return `<div class="status"><div class="left"><div class="uname u-tap" data-act="navmenu">u/${escTxt(db.profile.username)} <span class="umcaret">▾</span></div>${back?'<span class="back" data-act="leave">‹ back<i></i></span>':''}</div>`
     +`<div class="center">${fmtDate(todayISO())}<br/>${nowHM()}</div>`
-    +`<div class="sright"><div class="streak u-tap" data-act="nav" data-screen="progress">streak: <b>${streak()}</b></div>`
+    +`<div class="sright">${(state.screen==='home'&&dayCount())?'':`<div class="streak u-tap" data-act="nav" data-screen="progress">streak: <b>${streak()}</b></div>`}`   // v291 · en gym la racha va en su bloque
     // v256 · la meta vive "abajo de streak" (pedido del dueño): dos toques para cambiarla desde cualquier pantalla con nav
     +(STATUS_GOAL.indexOf(state.screen)>=0?`<button type="button" class="sgoal" data-act="goalpick" aria-label="meta: ${GOAL_L[db.profile.goal||'maintain']} · cambiar">meta: <b>${GOAL_L[db.profile.goal||'maintain']}</b><span class="cv">▾</span></button>`:'')
     +`</div></div>`;
@@ -3240,6 +3278,7 @@ function renderHome(){
   }
   return statusBar(false)
     +`<hr class="rule"/>`
+    +streakHeroHTML()   // v291 · la racha como logro: número grande + niveles
     +`<div class="rot"><span class="lbl">ROTATION</span><span class="n"><span class="arrow" data-act="prevday">‹</span> day ${di+1}/${dayCount()}${_plan.mode==='cycle'?' · '+cycleLen()+' d':_plan.mode==='weekly'?' · '+DOW_ES[dowOf(_nx||todayISO())]:''}${offLabel} <span class="arrow" data-act="nextday">›</span></span></div>`
     +`<div class="segs">${segs}</div>`
     +`<div class="ctrls"><a data-act="changesplit">change split</a><a data-act="changegym">change gym</a><a data-act="history">history</a></div>`
@@ -4892,6 +4931,64 @@ function _onbSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK al
   console.log('onboarding self-check OK'); }
 // v290 · self-check: un solo [verbo] a 10 px (TX1), gym con tamaños parejos, sin glifos fuera de la fuente, y los aros de
 // "te queda" arriba de add food / porción / aproximada con vista previa en vivo (M6). Sandbox; restaura todo.
+// v291 · self-check: la racha con niveles en gym (R1), el aviso al subir de nivel y el wrap con atrás/adelante y sus láminas
+// nuevas (WR1). Sandbox; restaura todo.
+function _v291SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v291: '+nm); };
+  const real=db, sb0=_sbx, streak0=streak, K=['screen','_scroll','_paintedKey','_viewScroll','selDay','work','previewDay','macroDate'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
+  const v=document.getElementById('view'), md=()=>document.getElementById('modal'), ov=()=>document.getElementById('bootov');
+  const tap=e=>e.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})), D=k=>shiftDate(todayISO(),-k);
+  const S=(w,r)=>({w:String(w),r:String(r),rir:'1',unit:'lbs',side:null,done:true});
+  const split={name:'s',days:[{id:'d1',name:'A',exercises:[{id:'e1',name:'press',muscle:'chest',type:'machine',sets:2}]}]};
+  _sbx=true;
+  try{ { const o=ov(); if(o)o.remove(); }
+    A('niveles en 7 · 14 · 30 · 60 · 100 · 200 · 365', streakLevel(0)===0&&streakLevel(6)===0&&streakLevel(7)===1&&streakLevel(29)===2&&streakLevel(30)===3&&streakLevel(100)===5&&streakLevel(400)===7&&streakNext(24)===30&&streakNext(365)===null);
+    // 1 · una racha de 9 días (y antes una de 4)
+    const meals={}; for(let k=0;k<9;k++)meals[D(k)]=[{id:'a'+k,tag:'lunch',name:'x',kcal:100,protein:10}]; for(let k=20;k<24;k++)meals[D(k)]=[{id:'b'+k,tag:'lunch',name:'x',kcal:100}];
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',sex:'m',age:25,heightCm:175,weightKg:70},gyms:['AGON'],activeGym:'AGON',settings:{unit:'lbs',goals:{kcal:2400,protein:150,carbs:250,fat:70,water:2.5}},split,sessions:[],meals}); db.activeWork=null; db.rotIdx=0; bumpIdx();
+    A('racha 9 = nivel 1; la mejor anterior es 4', streak()===9&&streakLevel(streak())===1&&bestStreak()===9&&bestStreakBefore()===4);
+    state.screen='home'; state.selDay=null; state.work=null; state.previewDay=false; render();
+    const h=v.querySelector('.stkh');
+    A('gym trae la racha arriba de ROTATION: nivel 1 · mejor 9 / 9 / [barra] 9/14 · faltan 5', !!h&&h.classList.contains('lv1')&&h.querySelector('.meta').textContent==='nivel 1 · mejor 9'&&h.querySelector('.stkh-n').textContent==='9'&&/^\[[█▏▎▍▌▋▊▉░]{12}\] 9\/14 · faltan 5$/.test(h.querySelector('.stkh-p').textContent)&&h.getBoundingClientRect().bottom<=v.querySelector('.rot').getBoundingClientRect().top+1);
+    A('el número mide 28 px y en gym la barra de estado ya no lo repite', getComputedStyle(h.querySelector('.stkh-n')).fontSize==='28px'&&!v.querySelector('.status .streak'));
+    state.screen='macros'; render(); A('…en las demás pantallas sí sale', !!v.querySelector('.status .streak')); state.screen='home'; render();
+    tap(v.querySelector('.stkh')); A('tocarla abre el calendario de siempre', !!md()&&md().querySelector('h3').textContent==='racha'); closeModal();
+    { const t=document.createElement('div'), P=()=>{ t.innerHTML=streakHeroHTML(); return t.firstChild; };
+      streak=()=>3; let e=P(); A('sin nivel todavía: la meta es 7 y no dice nivel', e.classList.contains('lv0')&&!/nivel/.test(e.querySelector('.meta').textContent)&&/ 3\/7 · faltan 4$/.test(e.querySelector('.stkh-p').textContent));
+      streak=()=>29; e=P(); A('a un día del nivel: `falta 1`', e.classList.contains('lv2')&&/ 29\/30 · falta 1$/.test(e.querySelector('.stkh-p').textContent));
+      streak=()=>60; e=P(); A('nivel 4 (60 d): invertido, siguiente 100', e.classList.contains('lv4')&&/ 60\/100 · faltan 40$/.test(e.querySelector('.stkh-p').textContent));
+      streak=()=>365; e=P(); A('365: nivel máximo', e.classList.contains('lv7')&&/nivel máximo$/.test(e.querySelector('.stkh-p').textContent)); streak=streak0; }
+    // 2 · el aviso de nivel: una vez por nivel; lo ya ganado no dispara; nunca sobre una hoja ni una sesión
+    delete db.streakLv; A('la primera vez solo anota el nivel que ya tenías', streakLvMaybe(true)===false&&db.streakLv===1&&!ov());
+    db.streakLv=0; A('subir de nivel avisa', streakLvMaybe(true)===true&&db.streakLv===1&&!!ov());
+    { const tx=ov().textContent; A('…con las líneas de terminal: streak · nivel · mejor (antes) · ready', /> streak 9/.test(tx)&&/> nivel 1 \[█░░░░░░\]/.test(tx)&&/> mejor racha: 9 \(antes 4\)/.test(tx)&&/ready/.test(tx)); }
+    tap(ov()); A('se salta tocando', ov().classList.contains('out')); ov().remove();
+    A('…y no se repite', streakLvMaybe(true)===false&&!ov());
+    db.streakLv=0; openModal('<h3>prueba</h3>'); A('con una hoja abierta espera', streakLvMaybe(true)===false&&db.streakLv===0&&!ov()); closeModal();
+    db.activeWork={id:'w',date:todayISO(),dayId:'d1',gym:'AGON',startMs:1,exercises:[]}; A('con una sesión viva espera', streakLvMaybe(true)===false&&db.streakLv===0); db.activeWork=null;
+    state.screen='macros'; A('fuera de gym espera', streakLvMaybe(true)===false&&db.streakLv===0); state.screen='home';
+    // 3 · wrap: láminas nuevas con lo que la app ya calcula, y atrás / adelante
+    const ex=s=>[{exId:'e1',name:'press',muscle:'chest',type:'machine',sets:s}], P=g=>[{id:'p'+g,tag:'lunch',name:'x',kcal:800,protein:g}];
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['AGON'],activeGym:'AGON',settings:{unit:'lbs',goals:{kcal:2400,protein:150}},split,
+      sessions:[{id:'s1',date:'2026-08-03',dayId:'d1',gym:'AGON',exercises:ex([S(100,8),S(110,6)])},{id:'s2',date:'2026-08-10',dayId:'d1',gym:'AGON',exercises:ex([S(100,8)])},{id:'s3',date:'2026-08-12',dayId:'d1',gym:'AGON',exercises:ex([S(100,7)])}],
+      meals:{'2026-08-03':P(120),'2026-08-04':P(140),'2026-08-05':P(160)}}); bumpIdx();
+    const d=wrapMonthData(2026,7), X=wrapExtra(d), sl=buildWrapSlides(d).join('\n');
+    A('constancia: 5 días registrados de 31, racha más larga 3, tu día: lunes', X.logged===5&&X.dim===31&&X.stMax===3&&X.dowTop.name==='lunes'&&X.dowTop.n===2);
+    A('ejercicios: la mejor marca del mes es 110 × 6 (por capacidad, no por peso solo ni por reps)', !!X.exBest&&X.exBest.name==='press'&&X.exBest.w==='110'&&X.exBest.r==='6'&&X.exBest.unit==='lbs');
+    A('proteína: promedio de los días con comida', X.protAvg===140&&X.protDays===3);
+    A('músculos: los de más σ del mes', X.mus.length>=1&&X.mus[0].T>0);
+    A('el wrap trae las láminas nuevas', /músculos · σ del mes/.test(sl)&&/mejor marca · press/.test(sl)&&/días registrados/.test(sl)&&/racha más larga: 3 d · tu día: lunes \(2\)/.test(sl)&&/proteína · promedio diario/.test(sl)&&/meta 150 g · 93 %/.test(sl));
+    db.sessions=[]; bumpIdx(); { const d2=wrapMonthData(2026,7), s2=buildWrapSlides(d2).join('\n'); A('una lámina sin datos se salta', !/mejor marca/.test(s2)&&!/músculos · σ/.test(s2)&&/proteína/.test(s2)); }
+    monthlyWrap('2026-08',true); const o=ov(), at=()=>Array.from(o.querySelectorAll('.wdot')).findIndex(x=>x.classList.contains('on')), R=o.getBoundingClientRect();
+    const click=fx=>o.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,clientX:R.left+R.width*fx,clientY:R.top+R.height/2}));
+    A('el wrap abre en la primera lámina, con ✕ de 44', !!o&&o.classList.contains('wrapov')&&at()===0&&(b=>!!b&&b.getBoundingClientRect().width>=44&&b.getBoundingClientRect().height>=44)(o.querySelector('.wx')));
+    click(.1); A('en la primera, el lado izquierdo también avanza (no hay a dónde regresar)', at()===1);
+    click(.8); A('el resto de la pantalla avanza', at()===2);
+    click(.1); A('el tercio izquierdo regresa', at()===1&&/atrás/.test(o.querySelector('.wnav').textContent));
+    tap(o.querySelector('.wx')); A('✕ cierra en cualquier lámina', o.classList.contains('out')); o.remove();
+    console.log('v291 self-check OK');
+  } finally { streak=streak0; try{ const o=ov(); if(o)o.remove(); }catch(_){} try{ if(md())closeModal(); }catch(_){}
+    db=real; K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; _sheetMem=null; bumpIdx(); _sbx=sb0; try{ render(); }catch(_){} }
+}
 function _v290SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v290: '+nm); };
   const real=db, sb0=_sbx, K=['screen','_scroll','_paintedKey','_viewScroll','macroDate','macroOpen','macroPct','previewDay','selDay','work','_lfold','_lfoldD','_mealOpen'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
   const v=document.getElementById('view'), md=()=>document.getElementById('modal'), el=id=>document.getElementById(id), fa0=window._faCtx, fl0=window._faLock, lg0=window._log;
@@ -8963,7 +9060,9 @@ function applyEnter(root){ const e=state._enter, p=state._pop; state._enter=null
   else if(e){ const el=root.querySelector(e.ex!=null?'.ex[data-exi="'+e.ex+'"]':'.srow[data-exi="'+e.exi+'"][data-si="'+e.si+'"],.pair[data-exi="'+e.exi+'"][data-si="'+e.si+'"]');
     if(el){ el.classList.add('enter'); if(e.scroll)showEl(el.querySelector('.exhd')||el,16); } }
   if(p){ const el=root.querySelector('.dchk[data-exi="'+p.exi+'"][data-si="'+p.si+'"],.pairdone[data-exi="'+p.exi+'"][data-si="'+p.si+'"]'); if(el)el.classList.add('pop'); } }
-function afterPaint(root,swap){ if(!root)return; try{ popClose(); }catch(_){} try{ animNums(root); }catch(_){} try{ animBars(root); }catch(_){} try{ slideTabs(root,swap); }catch(_){} try{ applyEnter(root); }catch(_){} try{ tourMaybe(); }catch(_){} }
+function afterPaint(root,swap){ if(!root)return; try{ popClose(); }catch(_){}
+  if(state.screen==='home'&&!_sbx&&!window._stkT)window._stkT=setTimeout(()=>{ window._stkT=0; streakLvMaybe(); },450);   // v291 · ¿subiste de nivel de racha?
+  try{ animNums(root); }catch(_){} try{ animBars(root); }catch(_){} try{ slideTabs(root,swap); }catch(_){} try{ applyEnter(root); }catch(_){} try{ tourMaybe(); }catch(_){} }
 // ---- R4 · TRKRow reflow (§7.18): lo que queda se reacomoda en vez de saltar ----
 // Cada fila/bloque lleva data-rk = identidad de SU objeto (serie, ejercicio) — un WeakMap en memoria, nunca se guarda.
 // reRender() mide antes de pintar y, después, anima a cada elemento desde donde estaba (FLIP). Un elemento que se mueve
@@ -9190,13 +9289,40 @@ function monthlyWrapDue(){
   }catch(_){ return null; }
 }
 function wrapBig(big,unit,lbl,sub){ return `<div class="ws-big">${big}${unit?`<span>${unit}</span>`:''}</div><div class="ws-lbl">${lbl}</div>${sub?`<div class="ws-sub">${sub}</div>`:''}`; }
+// v291 · WR1 · lo que el wrap no contaba (el dueño, 1-oct: "cosas más interesantes… progresos en músculos"): músculos, ejercicios,
+// constancia y proteína del mes, con lo que la app ya calcula. Solo se arma al abrir el wrap (no en el arranque).
+function wrapExtra(d){ const X={mus:[],musUp:null,exBest:null,exProg:0,exPlat:0,stMax:0,logged:0,dim:0,dowTop:null,protAvg:0,protDays:0};
+  const dim=new Date(d.y,d.m+1,0).getDate(), a=d.pre+'-01', b=d.pre+'-'+pad(dim), inMonth=iso=>!!iso&&iso.slice(0,7)===d.pre; X.dim=dim;
+  // músculos: los 3 con más σ del mes y el que más subió contra el mes anterior
+  try{ const pm=d.m===0?11:d.m-1, py=d.m===0?d.y-1:d.y, pa=py+'-'+pad(pm+1)+'-01', pb=py+'-'+pad(pm+1)+'-'+pad(new Date(py,pm+1,0).getDate());
+    const rows=Object.keys(muscleExposureIndex()).map(id=>({id,T:muscleWindowAgg(id,a,b).T||0,P:muscleWindowAgg(id,pa,pb).T||0})).filter(r=>r.T>0);
+    X.mus=rows.slice().sort((x,y)=>y.T-x.T).slice(0,3).map(r=>({label:muscleLabel(r.id),T:r.T}));
+    const up=rows.filter(r=>r.P>0&&r.T>r.P).sort((x,y)=>(y.T/y.P)-(x.T/x.P))[0]; if(up)X.musUp={label:muscleLabel(up.id),pct:Math.round((up.T/up.P-1)*100),prev:MONFULL[pm]}; }catch(_){}
+  // ejercicios: la mejor marca del mes (peso × reps, por capacidad) y cuántos van progresando o estancados
+  try{ const keys={}; let top=0;
+    (db.sessions||[]).forEach(s=>{ if(!s||s.type==='rest'||!inMonth(s.date))return; (s.exercises||[]).forEach(e=>{ if(!e||isCardio(e))return; keys[exHistKey(e)]=1;
+        (e.sets||[]).forEach(st=>{ if(!st||st._pf||st.bw||!(parseFloat(st.w)>0)||!(parseFloat(st.r)>0))return; const c=kgLoad(st)*(1+Math.min(15,parseFloat(st.r))/30);
+          if(c>top){ top=c; X.exBest={name:e.name,w:String(st.w),unit:unitN(st)||'',r:String(st.r)}; } }); }); });
+    Object.keys(keys).forEach(k=>{ const s=exStatus(k).state; if(s==='progress')X.exProg++; else if(s==='plateau')X.exPlat++; }); }catch(_){}
+  // constancia: días con registro, la racha más larga dentro del mes y tu día más entrenado
+  try{ const act=activityDays(); let run=0; for(let dd=1;dd<=dim;dd++){ const iso=d.pre+'-'+pad(dd); if(act[iso]){ X.logged++; run++; if(run>X.stMax)X.stMax=run; } else run=0; }
+    const dow=[0,0,0,0,0,0,0]; (db.sessions||[]).forEach(s=>{ if(s&&s.type!=='rest'&&inMonth(s.date))dow[new Date(s.date+'T12:00:00').getDay()]++; });
+    const mx=Math.max.apply(null,dow); if(mx>0)X.dowTop={name:DOW_LONG[dow.indexOf(mx)],n:mx}; }catch(_){}
+  // proteína: promedio de los días con comida
+  try{ let ps=0,pn=0; Object.keys(db.meals||{}).forEach(k=>{ if(!inMonth(k))return; const p=(db.meals[k]||[]).reduce((s,m)=>s+(+m.protein||0),0); if(p>0){ ps+=p; pn++; } }); X.protDays=pn; X.protAvg=pn?Math.round(ps/pn):0; }catch(_){}
+  return X; }
 function buildWrapSlides(d){
   const kFmt=n=>n>=10000?(n/1000).toFixed(1)+'k':Math.round(n).toLocaleString();
   const g=(db.settings&&db.settings.goals)||{}; const slides=[];
+  const X=wrapExtra(d), f1=x=>(Math.round(x*10)/10).toFixed(1);   // v291 · músculos, ejercicios, constancia y proteína (se salta la que no tenga datos)
   slides.push(`<div class="ws-intro"><div class="ws-kick">gym<span class="s">//</span>TRK<span class="k"> · wrap</span></div><div class="ws-month">${escTxt(d.monthName)}</div><div class="ws-year">${d.y}</div><div class="ws-sub">tu mes en disciplina</div></div>`);
   if(d.sessions)slides.push(wrapBig(d.sessions,'','sesiones', d.activeDays+' días entrenados'));
   if(d.totalVol)slides.push(wrapBig(kFmt(d.totalVol),' vol','volumen movido', d.bestWeek?('mejor semana: '+kFmt(d.bestWeek)+' vol'):''));
+  if(X.mus.length)slides.push(`<div class="ws-lbl u-mb16">músculos · σ del mes</div><div class="ws-hwrap">${X.mus.map(r=>`<div class="ws-h"><span>${escTxt(r.label)}</span><b>${f1(r.T)}</b></div>`).join('')}</div>${X.musUp?`<div class="ws-sub">más subió: ${escTxt(X.musUp.label)} +${X.musUp.pct} % vs ${escTxt(X.musUp.prev)}</div>`:''}`);
+  if(X.exBest)slides.push(wrapBig(escTxt(X.exBest.w),' '+escTxt(X.exBest.unit)+' × '+escTxt(X.exBest.r),'mejor marca · '+escTxt(X.exBest.name),[X.exProg?X.exProg+(X.exProg===1?' ejercicio progresando':' ejercicios progresando'):'',X.exPlat?X.exPlat+(X.exPlat===1?' estancado':' estancados'):''].filter(Boolean).join(' · ')));
+  if(X.logged)slides.push(wrapBig(X.logged,'/'+X.dim,'días registrados',['racha más larga: '+X.stMax+' d',X.dowTop?'tu día: '+X.dowTop.name+' ('+X.dowTop.n+')':''].filter(Boolean).join(' · ')));
   if(d.kDays)slides.push(wrapBig(kFmt(d.avgKcal),' kcal','promedio diario', d.kDays+' días registrados'+(g.kcal?' · meta '+g.kcal:'')));
+  if(X.protDays)slides.push(wrapBig(X.protAvg,' g','proteína · promedio diario', g.protein?('meta '+g.protein+' g · '+Math.round(X.protAvg/g.protein*100)+' %'):(X.protDays+' días registrados')));
   if(d.bwStart!=null&&d.bwEnd!=null){ const ch=Math.round((d.bwEnd-d.bwStart)*10)/10; const chU=Math.round((bwShow(d.bwEnd)-bwShow(d.bwStart))*10)/10; slides.push(wrapBig(bwShow(d.bwEnd),' '+bwU(),'peso al cierre', (chU>0?'+':'')+chU+' '+bwU()+' en el mes')); void ch; }
   if(d.avgSleep||d.avgWater||d.avgSteps){ let lines=''; if(d.avgSleep)lines+=`<div class="ws-h"><span>sueño</span><b>${fmtH(d.avgSleep)}</b></div>`; if(d.avgWater)lines+=`<div class="ws-h"><span>agua</span><b>${d.avgWater} L</b></div>`; if(d.avgSteps)lines+=`<div class="ws-h"><span>pasos</span><b>${d.avgSteps.toLocaleString()}</b></div>`;
     slides.push(`<div class="ws-lbl u-mb16">hábitos · promedio diario</div><div class="ws-hwrap">${lines}</div>`); }
@@ -9219,9 +9345,12 @@ function monthlyWrap(ym, manual){
     const old=document.getElementById('bootov'); if(old)old.remove();
     const o=document.createElement('div'); o.className='bootov wrapov'; o.id='bootov'; document.getElementById('app').appendChild(o);
     const dots=()=>slides.map((_,k)=>`<i class="wdot${k===i?' on':k<i?' done':''}"></i>`).join('');
-    const paint=()=>{ o.innerHTML=`<div class="wtop"><div class="wdots">${dots()}</div></div><div class="wstage">${slides[i]}</div><div class="wnav">${i<slides.length-1?'tap →':'[ tap para cerrar ]'}</div>`; };
+    const paint=()=>{ o.innerHTML=`<div class="wtop"><div class="wdots">${dots()}</div><button type="button" class="wx" aria-label="cerrar">✕</button></div><div class="wstage">${slides[i]}</div><div class="wnav">${i===0?'tap →':(i<slides.length-1?'‹ atrás · tap →':'‹ atrás · tap para cerrar')}</div>`; };
     let done=false; const kill=()=>{ if(done)return; done=true; o.classList.add('out'); setTimeout(()=>{ try{o.remove();}catch(_){} },190); };
-    o.addEventListener('click',()=>{ if(i<slides.length-1){ i++; paint(); } else kill(); });
+    // v291 · "solamente clic es para adelante": el tercio izquierdo regresa, el resto avanza, ✕ cierra
+    o.addEventListener('click',ev=>{ if(ev.target&&ev.target.closest&&ev.target.closest('.wx')){ kill(); return; }
+      const r=o.getBoundingClientRect(); if(i>0&&(ev.clientX-r.left)<r.width/3){ i--; paint(); return; }
+      if(i<slides.length-1){ i++; paint(); } else kill(); });
     paint();
     if(!manual){ try{ localStorage.setItem('gymtrk_wrap', ym); }catch(_){} }
   }catch(_){ }
@@ -13427,7 +13556,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
@@ -13438,6 +13567,7 @@ try{ bootScreen(()=>{ try{
   if(state.screen==='atajo')return;
   if(/[?&]wrap=1\b/.test(location.search)){ monthlyWrap(prevMonthYm(), true); return; }
   const _due=monthlyWrapDue(); if(_due){ monthlyWrap(_due, false); return; }
+  if(streakLvMaybe())return;   // v291 · subiste de nivel de racha
   snapRecap();
 }catch(_){ try{snapRecap();}catch(__){} } }); }catch(_){}
 // rest timer tick: writes textContent only (never re-renders). Deliberately NOT wired to
