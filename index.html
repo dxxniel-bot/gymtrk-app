@@ -1188,7 +1188,7 @@
 
 <script>
 "use strict";
-const APP_V='v292';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v293';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -4617,13 +4617,12 @@ function _healthPasteSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELF
 // v285 · el Atajo de punta a punta: pegados como los arma un iPhone (español de México, de España e inglés) con TODO —pasos, energía
 // activa y en reposo, peso, grasa, FC en reposo, HRV y sueño con fases— metidos por parseHealthPaste → ingestHealth. No está en la
 // lista del arranque: se corre a mano (_sbx=true; _atajoSelfCheck()).
-// v292 · self-check: el Atajo que no se frena con un dato vacío. Lo que llega incompleto se lee igual (un dato sin registros no es un error),
-// HRV va al final, ?atajo=1 y la hoja dicen los pasos que sí funcionan y el renglón de permisos, y [compartir archivo] solo sale si se puede. Sandbox.
+// v292 · self-check: el Atajo que no se frena con un dato vacío. Lo que llega incompleto se lee igual (un dato sin registros no es un error) y
+// HRV va al final. (La pantalla ?atajo=1 y la hoja de instalar: _v293SelfCheck.) Sandbox.
 function _v292SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v292: '+nm); };
-  const sb0=_sbx, ios0=isIOS, sta0=isStandalone, f0=_bioFile, do0=bioShareDo, K=['screen','_scroll','_paintedKey','_viewScroll'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
-  const v=document.getElementById('view'), md=()=>document.getElementById('modal'), tap=e=>e.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+  const sb0=_sbx;
   _sbx=true;
-  try{ try{ if(md()&&md().classList.contains('open'))closeModal(); }catch(_){}
+  try{
     // 1 · el texto del atajo: completo, sin un dato, y cortado a medias
     const L=HP_EXAMPLE.split('\n'), keyOf=l=>l.split(' ')[0], all=parseHealthPaste(HP_EXAMPLE);
     A('el ejemplo trae las 8 clases y HRV va al final', !!all&&all.kinds.length===8&&keyOf(L[L.length-1])==='hrv'&&L[0]==='trk2');
@@ -4634,26 +4633,60 @@ function _v292SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     { const cut=L.slice(0,L.findIndex(l=>keyOf(l)==='act')).join('\n'), r=parseHealthPaste(cut);
       A('si el atajo se detuviera tras el primer dato, lo copiado hasta ahí se lee', !!r&&r.kinds.join()==='steps'); }
     A('solo el encabezado (ningún dato en Salud) se reconoce como vacío, no como basura', hpEmpty('trk2')&&!parseHealthPaste('trk2'));
-    // 2 · ?atajo=1: los pasos que sí funcionan, permisos, y compartir solo si se puede
-    if(!SHORTCUT_URL){ _bioFile=null; state.screen='atajo'; render();
-      const tx=()=>v.textContent;
-      A('?atajo=1 dice el nombre exacto y que va sin .html', tx().indexOf(BIO_NAME+'.shortcut (sin .html)')>0&&tx().indexOf('agregar atajo')>0);
-      A('…y que Salud pregunta por cada dato, una sola vez', tx().indexOf('no vuelve a preguntar')>0);
-      A('sin poder compartir archivos no sale [compartir archivo]; un solo primario', !v.querySelector('[data-act="atajoshare"]')&&v.querySelectorAll('.start').length===1);
-      _bioFile={name:BIO_NAME+'.shortcut'}; const sent=[]; bioShareDo=fl=>{ sent.push(fl.name); return Promise.resolve(); }; render();
-      const b=v.querySelector('button.b[data-act="atajoshare"]');
-      A('si se puede, [compartir archivo] es un [verbo] de 44 y el primario sigue siendo descargar', !!b&&b.getBoundingClientRect().height>=44&&v.querySelectorAll('.start').length===1&&v.querySelector('a.start').textContent==='▶ descargar atajo');
-      tap(b); A('…y manda el archivo con su nombre', sent.join()===BIO_NAME+'.shortcut');
-      bioShareDo=()=>{ throw new Error('x'); }; let ok=true; try{ tap(b); }catch(_){ ok=false; } A('si compartir truena, no se rompe nada', ok);
-      // 3 · la hoja de instalar
-      state.screen='home'; render(); isIOS=()=>true; isStandalone=()=>false; openBioInstall();
-      A('la hoja (Safari) trae los pasos y el renglón de permisos', md().textContent.indexOf('(sin .html)')>0&&md().textContent.indexOf('no vuelve a preguntar')>0&&md().querySelectorAll('.ok').length===1);
-      closeModal(); isStandalone=()=>true; openBioInstall();
-      A('la hoja (ícono) manda a Safari y avisa de los permisos, sin los pasos', md().textContent.indexOf('(sin .html)')<0&&md().textContent.indexOf('no vuelve a preguntar')>0);
-      closeModal(); }
     console.log('v292 self-check OK');
-  } finally { isIOS=ios0; isStandalone=sta0; _bioFile=f0; bioShareDo=do0; try{ if(md()&&md().classList.contains('open'))closeModal(); }catch(_){}
-    K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; _sheetMem=null; _sbx=sb0; try{ render(); }catch(_){} }
+  } finally { _sbx=sb0; }
+}
+// v293 · self-check: el atajo baja como atajo (sw.js ya no contesta los .shortcut) y se llama TRK Sync. ?atajo=1 vuelve a los renglones de qué
+// tocar, espera al sw.js nuevo (con uno viejo: ▶ recargar, nunca el botón que bajaría .html), [bajar como antes] conserva el camino .html con el
+// paso de mostrar las extensiones, y "ya lo tengo" vale solo para el nombre de hoy. Sandbox; restaura todo (también el espejo de la sesión viva).
+function _v293SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v293: '+nm); };
+  const real=db, sb0=_sbx, ios0=isIOS, sta0=isStandalone, g0=_bioGate, go0=bioGo, K=['screen','_scroll','_paintedKey','_viewScroll'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
+  let live0=null; try{ live0=localStorage.getItem(LS_LIVE); }catch(_){}
+  const v=document.getElementById('view'), md=()=>document.getElementById('modal'), tap=e=>e.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+  _sbx=true;
+  try{ try{ if(md()&&md().classList.contains('open'))closeModal(); }catch(_){}
+    A('el atajo se llama TRK Sync, y el archivo igual', BIO_NAME==='TRK Sync'&&BIO_FILE==='TRK%20Sync.shortcut'&&bioRunURL()==='shortcuts://run-shortcut?name=TRK%20Sync');
+    A('la página de bajarlo lleva la versión (Safari abre una pestaña nueva, no una vieja)', /\?atajo=1&v=\d+$/.test(bioPageURL())&&bioPageURL().indexOf('&v='+APP_V.replace(/^v/,''))>0);
+    if(!SHORTCUT_URL){
+      // 1 · ?atajo=1 con el sw.js al día: un primario que baja el archivo, los renglones, permisos y [bajar como antes]
+      _bioGate=null; state.screen='atajo'; render(); const tx=()=>v.textContent, d=()=>v.querySelector('a.start');
+      A('en la prueba la espera no se anota (no queda pegada para después)', _bioGate===null);
+      A('?atajo=1: ▶ descargar atajo baja el archivo con su nombre', !!d()&&d().textContent==='▶ descargar atajo'&&d().getAttribute('href')===BIO_FILE&&d().getAttribute('download')===BIO_NAME+'.shortcut'&&v.querySelectorAll('.start').length===1);
+      A('…con los renglones de qué tocar, sin renombrar nada, y el nombre que debe tener', tx().indexOf('toca ↓ en la barra de Safari')>0&&tx().indexOf('toca '+BIO_NAME+' · agregar atajo')>0&&tx().indexOf('en Atajos debe llamarse '+BIO_NAME)>0&&tx().indexOf('cámbiale el nombre')<0);
+      A('…y que Salud pregunta por cada dato, una sola vez', tx().indexOf('no vuelve a preguntar')>0);
+      const h=v.querySelector('button.b[data-act="atajohtml"]');
+      A('[bajar como antes] es un [verbo] de 44 y dice cómo ver la extensión antes de quitarla', !!h&&h.getBoundingClientRect().height>=44&&tx().indexOf('mostrar todas las extensiones')>0&&tx().indexOf('quítale .html')>0);
+      { let got=null; const c0=HTMLAnchorElement.prototype.click; HTMLAnchorElement.prototype.click=function(){ got={href:this.getAttribute('href'),dl:this.getAttribute('download')}; };
+        try{ tap(h); } finally { HTMLAnchorElement.prototype.click=c0; }
+        A('…y baja el mismo archivo por el camino viejo (?html=1), con su nombre', !!got&&got.href===BIO_FILE+'?html=1'&&got.dl===BIO_NAME+'.shortcut'&&!document.querySelector('a[href$="?html=1"]')); }
+      // 2 · con un sw.js viejo al mando: espera; si no llega, ▶ recargar (nunca el botón que bajaría .html)
+      _bioGate='wait'; render();
+      A('con el sw.js viejo todavía al mando: sin botón de descargar, "preparando…"', !d()&&!!v.querySelector('.atj-wait [data-spin]')&&!v.querySelector('[data-act="atajohtml"]')&&tx().indexOf('preparando')>0);
+      _bioGate='old'; render(); const rl=v.querySelector('button.start[data-act="atajoreload"]');
+      A('si no llega: ▶ recargar como único primario, sin el botón directo ni sus renglones', !!rl&&!d()&&v.querySelectorAll('.start').length===1&&tx().indexOf('agregar atajo')<0&&rl.getBoundingClientRect().height>=44);
+      A('…y el camino de antes sigue a la mano', !!v.querySelector('[data-act="atajohtml"]'));
+      _bioGate='ok'; render(); A('cuando llega el sw.js nuevo, vuelve el botón', !!d()&&!v.querySelector('[data-act="atajoreload"]'));
+      // 3 · la hoja de instalar: los renglones y los permisos; si tenía el atajo con el nombre viejo, lo dice
+      _bioGate=null; state.screen='home'; render(); isIOS=()=>true; isStandalone=()=>false; db=migrate({profile:{username:'t'}}); bumpIdx(); openBioInstall();
+      A('la hoja (Safari) trae los renglones y el de permisos, un primario', md().textContent.indexOf('toca '+BIO_NAME+' · agregar atajo')>0&&md().textContent.indexOf('no vuelve a preguntar')>0&&md().textContent.indexOf('.html')<0&&md().querySelectorAll('.ok').length===1&&md().textContent.indexOf('ahora se llama')<0);
+      closeModal(); H().shortcut.bio=Date.now()-86400000; isStandalone=()=>true; openBioInstall();
+      A('la hoja (ícono), con el atajo de antes anotado: dice que ahora se llama TRK Sync', md().textContent.indexOf('el atajo ahora se llama '+BIO_NAME+': instálalo de nuevo')>=0&&md().textContent.indexOf('no vuelve a preguntar')>0);
+      closeModal(); }
+    // 4 · "ya lo tengo" es del atajo de hoy: quien anotó el de antes vuelve a ver la hoja de instalar
+    db=migrate({profile:{username:'t'}}); bumpIdx(); isIOS=()=>true; isStandalone=()=>false; const went=[]; bioGo=u=>{ went.push(u); };
+    H().shortcut.bio=Date.now()-86400000;   // lo anotó con el nombre viejo (sin bioName)
+    A('un "ya lo tengo" del atajo viejo no cuenta', !bioHas());
+    state.screen='home'; render(); bioSync();
+    A('…sync biometrics vuelve a ofrecer instalar, sin correr nada', !!md().querySelector('[data-act="biorun"]')&&!went.length);
+    tap(md().querySelector('[data-act="biorun"]'));
+    A('[ya lo tengo] lo anota con el nombre de hoy y corre TRK Sync', bioHas()&&H().shortcut.bioName===BIO_NAME&&went.join()==='shortcuts://run-shortcut?name=TRK%20Sync');
+    H().shortcut.wait=0; went.length=0; bioSync();
+    A('la siguiente vez corre directo', went.length===1&&!document.querySelector('#modal [data-act="biorun"]'));
+    console.log('v293 self-check OK');
+  } finally { isIOS=ios0; isStandalone=sta0; _bioGate=g0; bioGo=go0; try{ if(md()&&md().classList.contains('open'))closeModal(); }catch(_){}
+    db=real; K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; _sheetMem=null; bumpIdx(); _sbx=sb0;
+    try{ if(live0==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,live0); }catch(_){}
+    try{ render(); }catch(_){} }
 }
 function _atajoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK atajo: '+nm); }; const real=db, om=openModal;
   // fechas fijas y pasadas; la zona es la del equipo (como en el iPhone), así el día de despertar no depende de dónde corra la prueba
@@ -4767,13 +4800,13 @@ function _bioSyncSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHEC
     const y0=row().getBoundingClientRect().top, t0=v.scrollTop; tap(row());
     const a=sheet()&&sheet().querySelector('a.ok');
     A('primera vez: hoja con ▶ instalar atajo y [ya lo tengo], un solo primario', has('▶ instalar atajo')&&has('ya lo tengo')&&pri()===1&&!went.length&&!H().shortcut.bio);
-    A('el enlace baja el archivo firmado con el nombre del atajo (o abre su enlace de iCloud)', !!a&&a.getAttribute('target')==='_blank'&&(SHORTCUT_URL?a.getAttribute('href')===SHORTCUT_URL&&!a.hasAttribute('download'):a.getAttribute('href')==='TRK%20Biometrics.shortcut'&&a.getAttribute('download')==='TRK Biometrics.shortcut'));
+    A('el enlace baja el archivo firmado con el nombre del atajo (o abre su enlace de iCloud)', !!a&&a.getAttribute('target')==='_blank'&&(SHORTCUT_URL?a.getAttribute('href')===SHORTCUT_URL&&!a.hasAttribute('download'):a.getAttribute('href')==='TRK%20Sync.shortcut'&&a.getAttribute('download')==='TRK Sync.shortcut'));
     A('abrir la hoja no mueve la fila que tocaste', near(row().getBoundingClientRect().top,y0)&&near(v.scrollTop,t0));
     a.addEventListener('click',e=>e.preventDefault()); tap(a);   // la prueba no baja el archivo; el toque sí pasa por la app
     A('tocar instalar no cambia nada en la app: la hoja sigue ahí para cuando vuelvas', has('ya lo tengo')&&!H().shortcut.bio&&!went.length&&near(row().getBoundingClientRect().top,y0));
     // 3 · [ya lo tengo]: queda anotado y corre el atajo por su nombre
     tap(sheet().querySelector('[data-act="biorun"]'));
-    A('[ya lo tengo] anota el atajo, abre Atajos con el nombre exacto y cierra la hoja', H().shortcut.bio>0&&went.length===1&&went[0]==='shortcuts://run-shortcut?name=TRK%20Biometrics'&&!sheet()&&bioWaiting());
+    A('[ya lo tengo] anota el atajo, abre Atajos con el nombre exacto y cierra la hoja', H().shortcut.bio>0&&went.length===1&&went[0]==='shortcuts://run-shortcut?name=TRK%20Sync'&&!sheet()&&bioWaiting());
     A('y la pantalla sigue donde estaba', near(row().getBoundingClientRect().top,y0)&&near(v.scrollTop,t0));
     // 4 · al volver a la app ofrece traer los datos: nunca con algo encima ni en plena sesión (ahí la espera sigue viva)
     openModal('<h3>otra hoja</h3>'); back(); A('al volver no pisa una hoja que ya estaba abierta', has('otra hoja')&&!has('traer datos')&&bioWaiting());
@@ -5550,7 +5583,7 @@ function _v288SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     // 7 · el Atajo: desde el ícono sale a Safari; en Safari baja el archivo; ?atajo=1 tiene su pantalla
     { closeModal(); db.activeWork=null; state.work=null; state.screen='home'; render(); H().shortcut.bio=0;
       isIOS=()=>true; isStandalone=()=>true; openBioInstall(); let a=document.querySelector('#modal a.ok');
-      A('desde la app del ícono: ▶ instalar atajo abre Safari en ?atajo=1 (sin download)', !!SHORTCUT_URL||!!a&&a.textContent==='▶ instalar atajo'&&/^x-safari-https?:\/\/.+\?atajo=1$/.test(a.getAttribute('href'))&&!a.hasAttribute('download')&&!a.hasAttribute('target'));
+      A('desde la app del ícono: ▶ instalar atajo abre Safari en ?atajo=1 (sin download)', !!SHORTCUT_URL||!!a&&a.textContent==='▶ instalar atajo'&&/^x-safari-https?:\/\/.+\?atajo=1&v=\d+$/.test(a.getAttribute('href'))&&!a.hasAttribute('download')&&!a.hasAttribute('target'));
       A('…con [copiar enlace] y [ya lo tengo], un solo primario', (!!SHORTCUT_URL||!!document.querySelector('#modal [data-act="biocopy"]'))&&!!document.querySelector('#modal [data-act="biorun"]')&&document.querySelectorAll('#modal .ok').length===1);
       closeModal(); isStandalone=()=>false; openBioInstall(); a=document.querySelector('#modal a.ok');
       A('en Safari: baja el archivo firmado y dice qué tocar después', !!SHORTCUT_URL||!!a&&a.getAttribute('href')===BIO_FILE&&a.getAttribute('download')===BIO_NAME+'.shortcut'&&!document.querySelector('#modal [data-act="biocopy"]')&&document.getElementById('modal').textContent.indexOf('agregar atajo')>0);
@@ -7582,12 +7615,13 @@ function healthPasteNow(){ const done=t=>{ t=String(t||''); const k0=(H().shortc
     let msg=[]; try{ const q=t.trim().replace(/^\?/,''); if(/stepsh=|weighth=|stepsq=|sleeph=|(^|&)steps=|(^|&)weight=|(^|&)sleep=/.test(q))msg=importHealth(new URLSearchParams(q)); }catch(_){}
     if(msg.length){ savedToast('✓ '+msg.join(' · ')); reRender(); return; } openHealthImport(); if(hpEmpty(t))toast('⚠ Atajo sin datos · desbloquea el iPhone','err'); };
   try{ if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(done,()=>openHealthImport()); else openHealthImport(); }catch(_){ openHealthImport(); } }
-// v287 · el Atajo se descarga, no se arma. `TRK Biometrics.shortcut` (firmado; lo generan tools/shortcut/build.cjs y sign.cjs) lee 7 días
+// v287 · el Atajo se descarga, no se arma. `TRK Sync.shortcut` (firmado; lo generan tools/shortcut/build.cjs y sign.cjs) lee 7 días
 // de Salud y copia el texto trk2. `sync biometrics`: la 1ª vez abre una hoja con ▶ instalar atajo y [ya lo tengo] · ya instalado, abre Atajos y lo corre ·
 // al volver, ▶ traer datos lee el portapapeles dentro de ese toque (iOS enseña su burbuja "Pegar") y dice qué llegó.
 // El archivo se llama como el atajo: el iPhone le pone al atajo el nombre del archivo, y aquí se corre por nombre.
 // HP_EXAMPLE es, letra por letra, lo que el atajo copia con la Salud de ejemplo de build.cjs (`node tools/shortcut/build.cjs --check` lo compara).
-const BIO_NAME='TRK Biometrics', BIO_FILE='TRK%20Biometrics.shortcut', BIO_WAIT=10*60000;
+// v293 · se llamaba TRK Biometrics: con descargas viejas del mismo nombre, Safari numera la nueva ("… 2.shortcut") y el atajo entra con ese nombre.
+const BIO_NAME='TRK Sync', BIO_FILE='TRK%20Sync.shortcut', BIO_WAIT=10*60000;
 const HP_EXAMPLE='trk2\nsteps 2026-09-22T00:00:00-06:00 8214\nsteps 2026-09-23T00:00:00-06:00 902\nact 2026-09-22T00:00:00-06:00 512.4 kcal\nact 2026-09-23T00:00:00-06:00 41.5 kcal\nweight 2026-09-23T07:05:00-06:00 61.2 kg\nsleep 2026-09-22T23:00:00-06:00 2026-09-23T07:00:00-06:00 En cama\nsleep 2026-09-22T23:10:00-06:00 2026-09-23T00:42:00-06:00 Esencial\nsleep 2026-09-23T00:42:00-06:00 2026-09-23T01:30:00-06:00 Profundo\nsleep 2026-09-23T01:30:00-06:00 2026-09-23T01:38:00-06:00 Despierto\nsleep 2026-09-23T01:38:00-06:00 2026-09-23T03:05:00-06:00 REM\nsleep 2026-09-23T03:05:00-06:00 2026-09-23T06:50:00-06:00 Esencial\nrhr 2026-09-22T23:50:00-06:00 56\nrhr 2026-09-23T06:10:00-06:00 55\nfat 2026-09-23T07:05:00-06:00 14.2\nbas 2026-09-22T00:00:00-06:00 1648.9 kcal\nbas 2026-09-23T00:00:00-06:00 510 kcal\nhrv 2026-09-23T02:10:00-06:00 41.3\nhrv 2026-09-23T03:12:00-06:00 48.3\nhrv 2026-09-23T05:40:00-06:00 60.1';
 function hpEmpty(t){ return /^[\s\ufeff]*trk\s*2\b/i.test(String(t||'')); }   // traía el encabezado del Atajo, pero ningún dato legible
 // qué llegó: cuál de las 8 clases de dato vino (✓) y cuál no (—)
@@ -7595,11 +7629,12 @@ function bioKindsTxt(k){ k=Array.isArray(k)?k:[]; return HP_KINDS.map(x=>x[1]+' 
 function hpLastHTML(){ const sc=H().shortcut||{}; if(!sc.lastPaste)return ''; return '<div class="submeta u-mb10">último pegado · '+escTxt(agoTxt(sc.lastPaste))+(Array.isArray(sc.lastKinds)?'<br>'+bioKindsTxt(sc.lastKinds):'')+'</div>'; }
 let bioGo=u=>{ try{ location.href=u; }catch(_){} };   // salir a la app Atajos (la prueba la cambia por una que solo anota)
 function bioRunURL(){ return 'shortcuts://run-shortcut?name='+encodeURIComponent(BIO_NAME); }
-// shortcut.bio = cuándo dijo "ya lo tengo" (el atajo que se descarga está en su iPhone) · shortcut.wait = cuándo se mandó a correr (0 en cuanto se ofrece traer). Campos nuevos, sin migración.
+// shortcut.bio = cuándo dijo "ya lo tengo" (el atajo que se descarga está en su iPhone) · shortcut.bioName = con qué nombre (v293, aditivo: otro nombre = hay que instalar el nuevo) · shortcut.wait = cuándo se mandó a correr (0 en cuanto se ofrece traer). Campos nuevos, sin migración.
 function bioWaiting(){ const sc=H().shortcut, w=+sc.wait||0; return w>0&&Date.now()-w<BIO_WAIT&&!(+sc.lastPaste>w); }   // corrió hace poco y todavía no trae los datos
-function bioMark(){ const sc=H().shortcut; if(!sc.bio)sc.bio=Date.now(); return sc; }
+function bioHas(){ const sc=H().shortcut; return !!sc.bio&&sc.bioName===BIO_NAME; }
+function bioMark(){ const sc=H().shortcut; if(!bioHas()){ sc.bio=Date.now(); sc.bioName=BIO_NAME; } return sc; }
 function bioSync(){ if(isNative()){ healthSync(); return; } if(!isIOS()){ openHealthImport(); return; }   // sin Atajos (Android, computadora): pegar a mano
-  if(bioWaiting()){ openBioFetch(); return; } if(!H().shortcut.bio){ openBioInstall(); return; } bioRun(); }
+  if(bioWaiting()){ openBioFetch(); return; } if(!bioHas()){ openBioInstall(); return; } bioRun(); }
 function bioRun(){ if(!isIOS()){ openHealthImport(); return; } bioMark().wait=Date.now(); saveSoon(); closeModal(); bioGo(bioRunURL()); }   // shortcuts:// solo existe en iOS: en otro sistema nunca se navega ahí
 function bioFetch(){ H().shortcut.wait=0; closeModal(); healthPasteNow(); }
 // la lista de qué llegó sale la primera vez y cada vez que cambia; si llegó lo mismo que la vez pasada, basta el aviso
@@ -7610,34 +7645,46 @@ function bioDone(r,k0){ H().shortcut.wait=0; savedToast('✓ Salud · '+r.days+(
 // ícono iOS no tiene gestor de descargas: el archivo se abre en un visor y se guarda mal. Ahí el primario abre SAFARI en ?atajo=1
 // (x-safari-https://), y [copiar enlace] queda por si ese iPhone no acepta el esquema. En Safari el mismo botón baja el archivo. Con
 // SHORTCUT_URL (enlace de iCloud) es un toque desde cualquier lado.
-function bioPageURL(){ return location.origin+location.pathname+'?atajo=1'; }
+function bioPageURL(){ return location.origin+location.pathname+'?atajo=1&v='+APP_V.replace(/^v/,''); }
 function bioOut(){ return !SHORTCUT_URL&&isIOS()&&isStandalone(); }   // hay que salir a Safari para bajarlo
-// v292 · el dueño: "no sale para atajos y sigue en .html… en file, al archivo solo lo dejé con .shortcut y ya". Safari guarda la descarga como
-// "TRK Biometrics.shortcut.html" (no respeta `download`) y el iPhone le pone al atajo el nombre del archivo: el paso 2 es ponerle el nombre exacto.
+// v293 · POR QUÉ bajaba como .html (el dueño: "no sale para atajos y sigue en .html" · "ya no está funcionando el dejarle el .shortcut… déjalo como
+// estaba antes"): WebKit le pone text/html a toda NAVEGACIÓN que un service worker contesta con application/octet-stream, y sw.js contestaba todo.
+// El sw.js de v293 ya no contesta los .shortcut: Safari lo baja directo, como atajo, y no hay nada que renombrar (los dos renglones de v288).
 // "que el allow para todo en health sea una sola vez": un atajo no puede juntar los permisos (iOS pregunta por cada dato, una sola vez); se dice.
-const BIO_STEPS='1 · descargar<br/>2 · en Archivos, cámbiale el nombre a<br/>'+BIO_NAME+'.shortcut (sin .html)<br/>3 · tócalo · agregar atajo';
+const BIO_STEPS='toca ↓ en la barra de Safari<br/>toca '+BIO_NAME+' · agregar atajo<br/>en Atajos debe llamarse '+BIO_NAME;   // una 2ª descarga entra como "… 2" y la app no la encuentra
 const BIO_PERM='la primera vez, Salud pregunta por cada dato: permitir.<br/>no vuelve a preguntar.';
-// Si este navegador deja compartir archivos, el mismo archivo sale por la hoja de compartir CON su nombre (ahí "Guardar en Archivos" lo deja sin el
-// .html). Se baja antes: compartir exige el toque y no puede esperar una descarga. Sin probar en un iPhone: la descarga sigue siendo el primario.
-let _bioFile=null, _bioPre=false;
-function bioPrefetch(){ if(_bioPre||_sbx||SHORTCUT_URL)return; _bioPre=true;
-  try{ if(typeof File!=='function'||!navigator.canShare||!navigator.share)return;
-    fetch(BIO_FILE,{cache:'no-cache'}).then(r=>r.ok?r.blob():null).then(b=>b&&b.size?b.slice(0,4).text().then(h=>h==='AEA1'?b:null):null).then(b=>{ if(!b)return;   // AEA1 = el atajo firmado (nunca una página que llegó en su lugar)
-      const fl=new File([b],BIO_NAME+'.shortcut',{type:'application/octet-stream'}); if(navigator.canShare({files:[fl]})){ _bioFile=fl; if(state.screen==='atajo')reRender(); } }).catch(()=>{}); }catch(_){} }
-let bioShareDo=fl=>navigator.share({files:[fl]});   // la prueba lo cambia por uno que solo anota
-function bioShare(){ if(!_bioFile)return; try{ const p=bioShareDo(_bioFile); if(p&&p.catch)p.catch(()=>{}); }catch(_){ toast('⚠ no se pudo compartir · usa descargar'); } }
+// La página puede seguir bajo un sw.js viejo unos segundos (el nuevo se instala al cargar): ese todavía convertiría la descarga en .html.
+// swVer() le pregunta su versión a quien la controla: '' = nadie (baja directo) · 'gymtrk-vN' = uno que ya sabe (v293+) · null = uno viejo, no contesta.
+// bioGate: null sin revisar · 'wait' esperando (hasta 20 s) · 'ok' · 'old' (20 s y sigue el viejo). En 'old' NO se ofrece el botón directo (bajaría
+// .html): sale ▶ recargar y se sigue preguntando; si llega el nuevo, pasa a 'ok' solo. Al salir de la pantalla se olvida. En la prueba (_sbx) no anota nada.
+// La URL de la página lleva la versión (bioPageURL): desde el ícono, Safari abre una pestaña nueva y no una vieja que quedó abierta.
+let _bioGate=null;
+function swVer(){ return new Promise(res=>{ try{ const c=navigator.serviceWorker&&navigator.serviceWorker.controller; if(!c){ res(''); return; }
+    const ch=new MessageChannel(), t=setTimeout(()=>res(null),600); ch.port1.onmessage=ev=>{ clearTimeout(t); res(String(ev.data||'')); }; c.postMessage('ver',[ch.port2]); }catch(_){ res(''); } }); }
+function bioGate(){ if(_bioGate||SHORTCUT_URL||_sbx)return; _bioGate='wait'; const t0=Date.now(), el=()=>Date.now()-t0;
+  const set=g=>{ if(_bioGate===g)return; _bioGate=g; if(state.screen==='atajo')reRender(); };
+  const tick=()=>{ if(state.screen!=='atajo'){ _bioGate=null; return; }
+    swVer().then(v=>{ if(state.screen!=='atajo'){ _bioGate=null; return; } if(v!==null){ set('ok'); return; } if(el()>20000)set('old'); if(el()<180000)setTimeout(tick,el()>20000?1500:400); }); };
+  tick(); }
+// [bajar como antes]: el mismo archivo por el camino viejo (sw.js sí contesta `?html=1`): llega como "….shortcut.html". Archivos esconde las extensiones
+// conocidas: si no se muestran, al renombrar el .html se queda escondido y el tipo no cambia (el dueño, 2-oct: "no se cambia al tipo de archivo").
+function bioHtml(){ try{ const a=document.createElement('a'); a.href=BIO_FILE+'?html=1'; a.download=BIO_NAME+'.shortcut'; a.style.display='none'; document.body.appendChild(a); a.click(); a.remove(); }catch(_){} }
 function openBioInstall(){ const ob=state.screen==='onboard', out=bioOut();
-  openModal('<h3>sync biometrics</h3><div class="submeta u-mb10">un Atajo copia tus datos de Salud y aquí se pegan.'+(out?' se instala desde Safari.':'')+(!out&&!SHORTCUT_URL&&isIOS()?'<br/>'+BIO_STEPS:'')+(isIOS()?'<br/>'+BIO_PERM:'')+'</div><div class="sheetbtns"><a class="ok" href="'+(SHORTCUT_URL||(out?'x-safari-'+bioPageURL():BIO_FILE))+'"'+((SHORTCUT_URL||out)?'':' download="'+BIO_NAME+'.shortcut"')+(out?'':' target="_blank" rel="noopener"')+'>▶ instalar atajo</a>'
+  const renamed=!!H().shortcut.bio&&!bioHas();   // v293: tenía el atajo con su nombre de antes
+  openModal('<h3>sync biometrics</h3><div class="submeta u-mb10">'+(renamed?'el atajo ahora se llama '+BIO_NAME+': instálalo de nuevo.':'un Atajo copia tus datos de Salud y aquí se pegan.')+(out?' se instala desde Safari.':'')+(!out&&!SHORTCUT_URL&&isIOS()?'<br/>'+BIO_STEPS:'')+(isIOS()?'<br/>'+BIO_PERM:'')+'</div><div class="sheetbtns"><a class="ok" href="'+(SHORTCUT_URL||(out?'x-safari-'+bioPageURL():BIO_FILE))+'"'+((SHORTCUT_URL||out)?'':' download="'+BIO_NAME+'.shortcut"')+(out?'':' target="_blank" rel="noopener"')+'>▶ instalar atajo</a>'
     +(out?'</div><div class="sheetbtns"><button class="cancel" data-act="biocopy">copiar enlace</button>':'')
     +(ob?'<button class="cancel" data-act="closemodal">cerrar</button>':'<button class="cancel" data-act="biorun">ya lo tengo</button>')+'</div>'); }
 // traer se ofrece UNA vez por corrida: al abrir la hoja se apaga la espera. Si la cierras sin traer (tocar fuera, [pegar a mano]) no vuelve a salir sola y la fila corre el atajo otra vez.
 // v288 · gymtrk.app/?atajo=1 en Safari: bajar el atajo. Corta a propósito: un primario y qué tocar después (Safari no abre la descarga solo).
-function renderAtajo(){ bioPrefetch(); return `<div class="u-pt96 u-tc"><div class="u-hero u-w8">gym<span class="u-o40">//</span>TRK</div>
+function renderAtajo(){ bioGate(); const g=SHORTCUT_URL?'ok':(_bioGate||'ok'), wait=g==='wait', old=g==='old';
+  return `<div class="u-pt96 u-tc"><div class="u-hero u-w8">gym<span class="u-o40">//</span>TRK</div>
     <div class="u-data u-o50 u-mt10 u-mb16 u-mx0 u-lsui">atajo · ${BIO_NAME}</div>
-    <a class="start u-mt32" href="${SHORTCUT_URL||BIO_FILE}"${SHORTCUT_URL?'':` download="${BIO_NAME}.shortcut"`}>▶ ${SHORTCUT_URL?'agregar atajo':'descargar atajo'}</a>
-    ${SHORTCUT_URL?'':`<div class="submeta u-mt16">${BIO_STEPS}</div>`}
-    ${!SHORTCUT_URL&&_bioFile?'<div class="u-mt16"><button type="button" class="b" data-act="atajoshare">compartir archivo</button></div><div class="submeta">sin renombrar: compartir · guardar en archivos</div>':''}
+    ${wait?`<div class="submeta u-mt32 atj-wait">${trkSpinHTML('preparando')}</div>`
+      :old?`<button type="button" class="start u-mt32" data-act="atajoreload">▶ recargar</button><div class="submeta u-mt16">la página no terminó de prepararse</div>`
+      :`<a class="start u-mt32" href="${SHORTCUT_URL||BIO_FILE}"${SHORTCUT_URL?'':` download="${BIO_NAME}.shortcut"`}>▶ ${SHORTCUT_URL?'agregar atajo':'descargar atajo'}</a>`}
+    ${SHORTCUT_URL||old?'':`<div class="submeta u-mt16">${BIO_STEPS}</div>`}
     <div class="submeta u-mt16">${BIO_PERM}</div>
+    ${SHORTCUT_URL||wait?'':'<div class="u-mt16"><button type="button" class="b" data-act="atajohtml">bajar como antes</button></div><div class="submeta">llega como .html. en Archivos:<br/>··· › opciones de visualización<br/>› mostrar todas las extensiones<br/>y quítale .html al nombre</div>'}
     ${db.profile.username?'<div class="u-mt32"><button type="button" class="b" data-act="atajoback">abrir gym//TRK</button></div>':''}</div>`; }
 function openBioFetch(){ H().shortcut.wait=0; saveSoon(); openModal('<h3>sync biometrics</h3><div class="sheetbtns"><button class="ok" data-act="biofetch">▶ traer datos</button><button class="cancel" data-act="healthimport">pegar a mano</button></div>'); }
 function openBioResult(){ openModal('<h3>sync biometrics</h3><div class="submeta u-o60 u-mb10">'+bioKindsTxt(H().shortcut.lastKinds)+'</div><div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div>'); }
@@ -9885,7 +9932,8 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='biosetup'){ openBioInstall(); }
   else if(a==='biocopy'){ const u=bioPageURL(), no=()=>{ const m=askLayer('<h3>copiar enlace</h3><div class="field"><input readonly value="'+escTxt(u)+'"/></div><div class="sheetbtns"><button class="cancel" data-ask="no">cerrar</button></div>'); m.addEventListener('click',ev=>{ if(ev.target.closest&&ev.target.closest('[data-ask]')){ ev.stopPropagation(); closeAsk(); } }); };   // encima de la hoja: instalar y [ya lo tengo] siguen ahí
     try{ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(()=>toast('✓ enlace copiado · pégalo en Safari'),no); else no(); }catch(_){ no(); } }
-  else if(a==='atajoshare'){ bioShare(); }
+  else if(a==='atajohtml'){ bioHtml(); }
+  else if(a==='atajoreload'){ try{ location.reload(); }catch(_){} }
   else if(a==='atajoback'){ state.screen='home'; try{ if(/[?&]atajo=1\b/.test(location.search))history.replaceState(null,'',location.pathname); }catch(_){} render(); }
   else if(a==='deloadinfo'){ openDeloadInfo(); }
   else if(a==='perfinfo'){ openPerfInfo(); }
@@ -13610,7 +13658,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
