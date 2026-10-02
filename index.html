@@ -393,6 +393,7 @@
   .hpst{display:grid; grid-template-columns:2ch 1fr; gap:var(--s3); font-size:var(--t-data); color:var(--o70); line-height:var(--lh-read); margin-bottom:var(--s3);} .hpst.kv{grid-template-columns:7ch 1fr;} .hpst .hpn{color:var(--o40); font-weight:700;} .hpst b{color:var(--fg);} .hpst code,.hpfmt{font-family:inherit; color:var(--fg);}
   .hpfmt{white-space:pre; overflow-x:auto; font-size:var(--t-label); line-height:var(--lh-read); padding:var(--s3); border:var(--bw-box) solid var(--o20); border-radius:var(--r-ctl); margin:0 0 var(--s4);}
   .sheetbtns a.ok{display:flex; align-items:center; justify-content:center; padding:0; margin:0; text-decoration:none;}   /* v287 · el primario que es un enlace de verdad (▶ instalar atajo): el mismo bloque que el botón */
+  a.start{display:flex; align-items:center; justify-content:center; text-decoration:none;}   /* v288 · ▶ descargar atajo en ?atajo=1 */
   .empty.supempty{text-align:left; padding:var(--s2) 0 var(--s3); line-height:var(--lh-read);}
   .lsmore{flex:0 0 auto; width:44px; height:44px; margin-right:calc(-1 * var(--s4)); padding:0 var(--s4) 0 0; display:flex; align-items:center; justify-content:flex-end; background:none; border:0; color:var(--o50); cursor:pointer;}
   .lhd{display:flex; align-items:center; gap:var(--s3); min-height:44px;}
@@ -740,7 +741,7 @@
   .slsum{font-size:var(--t-label); color:var(--o40); margin:0 0 var(--s3) var(--s5);}
   .slblk{display:flex;gap:var(--s3);align-items:center;margin-bottom:6px;} .slblk input{height:44px;background:transparent;border:var(--bw-field) solid var(--o40);border-radius:var(--r-ctl);color:var(--fg);font:inherit;font-size:var(--t-field);padding:0 var(--s3);min-width:0;} .slblk input[type=time]{flex:0 0 auto;} .slblk .slsep{color:var(--o40);font-size:var(--t-section);} .slblk .sllbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:var(--t-label);color:var(--o50);text-align:right;white-space:nowrap;} .slblk .slx{color:var(--o40);cursor:pointer;padding:0 var(--s2);flex:0 0 auto;font-size:var(--t-section);}
   .sheetbtns{display:flex; gap:10px; margin-top:10px;} .sheetbtns .ok{flex:1; height:var(--h-pri); background:var(--fill); color:var(--on-fill); font-weight:800; border:0; font-size:var(--t-data); cursor:pointer; border-radius:var(--r-ctl);} .sheetbtns .cancel{flex:0 0 auto;}
-  .pickitem{padding:var(--s4) 6px; font-size:var(--t-data); border-bottom:var(--bw-sep) solid var(--o10); cursor:pointer;} .pickitem:hover{color:var(--fg);} .pickitem:active{background:var(--o10);}
+  .pickitem{padding:var(--s4) 6px; min-height:44px; font-size:var(--t-data); border-bottom:var(--bw-sep) solid var(--o10); cursor:pointer;} .pickitem:hover{color:var(--fg);} .pickitem:active{background:var(--o10);}
 
   .empty{font-size:var(--t-label); color:var(--o50); text-align:center; padding:var(--s7) 0; line-height:1.8;}
   .empty::before{content:"// "; color:var(--o30);}
@@ -1171,7 +1172,7 @@
 
 <script>
 "use strict";
-const APP_V='v287';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v288';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -1690,7 +1691,7 @@ async function idbBootCheck(){ const J=_bootJ||(_bootJ={t:Date.now(),flags:[]});
     J.decision=dec;
     if(dec==='adopt-empty'||dec==='adopt'){
       if(dec==='adopt')await idbSnap('adopt',db);
-      db=migrate(inc); _idbForceNext=true; idbReleaseHold(); save(); if(dec==='adopt-empty')go('home'); else render();
+      db=migrate(inc); _idbForceNext=true; idbReleaseHold(); save(); if(dec==='adopt-empty'&&state.screen!=='atajo')go('home'); else render();
       toast(dec==='adopt'?'✓ se recuperó tu versión más reciente':'✓ datos recuperados de la copia interna');
     } else if(dec==='offer'){ const key='offer-'+rec.t; await idbPutCopy(key,rec).catch(()=>{}); offerCopy(key,{t:rec.t,day:rec.day,mass:rec.mass}); }
     else if(dec==='massdrop'){ let ack=null; try{ ack=localStorage.getItem(LS_ACKDROP); }catch(_){}
@@ -1956,7 +1957,18 @@ function pfClearAll(s){ if(!s)return; s._pf=false; if(s._pfF)delete s._pfF; if(s
 function pfAdd(s,f){ if(!s)return; if(!s._pfF){ s._pfF=s._pf?{w:1,r:1,rir:1}:{}; s._pfN=s._pf?3:0; } s._pfF[f]=1; s._pfN=Math.max(s._pfN||0,Object.keys(s._pfF).length); s._pf=true; }
 function pfMark(s,fields){ if(!s)return s; const pf={}; (fields||[]).forEach(f=>{ if(s[f]!==''&&s[f]!=null)pf[f]=1; }); if(Object.keys(pf).length){ s._pfF=pf; s._pfN=Object.keys(pf).length; s._pf=true; } else { pfClearAll(s); } return s; }
 // ¿ya tocaste ALGÚN campo de esta serie sugerida? (quedan menos pendientes de los que nacieron)
-function pfTouched(s){ if(!s||!s._pf||!s._pfF)return false; const born=s._pfN||(s.bw?2:3); return Object.keys(s._pfF).length<born; }
+function pfTouched(s){ if(!s||!s._pf||!s._pfF)return false; const born=s._pfN||(s.bw?2:3); if(Object.keys(s._pfF).length<born)return true;
+  return ['w','r','rir'].some(f=>!s._pfF[f]&&!(f==='w'&&s.bw)&&s[f]!==''&&s[f]!=null); }   // v288 · una fila que nació en blanco y recibió el peso por espejo: sus reps tecleadas son tuyas
+// v288 · ¿esta serie tiene algo tuyo? confirmada, o con algún campo ya tecleado aunque le falte el ✓. Lo usan los pasos que re-siembran
+// o descartan series (cambiar lateralidad, cambiar ejercicio): antes solo miraban lo confirmado y lo tecleado se perdía sin preguntar.
+const CARDIO_DATA_F=['minutes','distance','speed','incline','resistance','rpm','level','floors','strokeRate','calories','hr'];   // sin `intensity`: siempre trae un valor por defecto
+function setHasData(s){ return !!s&&((!s._pf&&(s.done||(!s.bw&&+s.w>0)||(s.bw&&+s.extraW>0)||(+s.r>0)||CARDIO_DATA_F.some(k=>s[k]!==''&&s[k]!=null)))||pfTouched(s)); }
+// v288 · la unidad que el ejercicio usa AHORA vive en sus series (ex.unit casi siempre viene vacío). pinUnit la deja fija tras re-sembrar:
+// una sugerencia que venía en otra unidad NO se usa (se quedan la fila, el lado y el drop, con los números en blanco): re-etiquetar
+// kg ↔ lbs sería un error de 2.2× y las placas no tienen conversión.
+function exLiveUnit(ex){ const s=((ex&&ex.sets)||[]).find(x=>x&&!x.bw&&unitN(x)); return (s&&s.unit)||(ex&&ex.unit)||''; }
+function pinUnit(ex,u0){ if(!u0||!ex||isCardio(ex))return; const u=String(u0).toLowerCase().trim(); (ex.sets||[]).forEach(s=>{ if(!s||s.bw)return; const su=unitN(s);
+  if(su&&su!==u){ s.w=''; s.r=''; s.rir=''; s.extraW=''; s.fsOn=false; pfClearAll(s); } s.unit=u0; }); }
 // series que escribiste a mano pero que nunca confirmaste con su ✓. Hasta v222 tocar UN campo confirmaba
 // la serie entera, así que estas se guardaban; ahora se confirman explícitamente al cerrar la sesión en
 // vez de desaparecer en silencio (setPersistable sigue tirando las sugerencias que nunca tocaste).
@@ -3138,7 +3150,7 @@ function elapsedStr(ms){ if(!ms)return''; const s=Math.max(0,Math.round((Date.no
 function renderNav(){
   const n=document.getElementById('nav'); if(!n) return; const sc=state.screen;
   { const v=document.getElementById('view'); if(v)v.classList.toggle('pedit',sc==='progress'&&!!state.progEdit); }   // v269 · modo editar: la barra ✓ listo baja hasta el borde
-  if(sc==='workout'||sc==='settings'||sc==='splitedit'||sc==='history'||sc==='exhist'||sc==='catalog'||sc==='histedit'||sc==='share'||(sc==='progress'&&state.progEdit)||!db.profile.username){ n.style.display='none'; return; } n.style.display='flex';
+  if(sc==='workout'||sc==='settings'||sc==='splitedit'||sc==='history'||sc==='exhist'||sc==='catalog'||sc==='histedit'||sc==='share'||sc==='atajo'||(sc==='progress'&&state.progEdit)||!db.profile.username){ n.style.display='none'; return; } n.style.display='flex';
   if(n.dataset.built!=='1'){ // construir UNA vez; luego solo toggle .active → la transición CSS anima (innerHTML cada render mataría la animación)
     // v226: stack y agenda salen de la barra (el dueño no las usaba: "ni siquiera me incentiva meterme").
     // Ningún dato se borra — db.stack/db.adhoc siguen, el check diario vive en macros y el ABM en el menú u/.
@@ -4663,7 +4675,7 @@ function _bioSyncSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHEC
     const y0=row().getBoundingClientRect().top, t0=v.scrollTop; tap(row());
     const a=sheet()&&sheet().querySelector('a.ok');
     A('primera vez: hoja con ▶ instalar atajo y [ya lo tengo], un solo primario', has('▶ instalar atajo')&&has('ya lo tengo')&&pri()===1&&!went.length&&!H().shortcut.bio);
-    A('el enlace baja el archivo firmado con el nombre del atajo', !!a&&a.getAttribute('href')==='TRK%20Biometrics.shortcut'&&a.getAttribute('download')==='TRK Biometrics.shortcut'&&a.getAttribute('target')==='_blank');
+    A('el enlace baja el archivo firmado con el nombre del atajo (o abre su enlace de iCloud)', !!a&&a.getAttribute('target')==='_blank'&&(SHORTCUT_URL?a.getAttribute('href')===SHORTCUT_URL&&!a.hasAttribute('download'):a.getAttribute('href')==='TRK%20Biometrics.shortcut'&&a.getAttribute('download')==='TRK Biometrics.shortcut'));
     A('abrir la hoja no mueve la fila que tocaste', near(row().getBoundingClientRect().top,y0)&&near(v.scrollTop,t0));
     a.addEventListener('click',e=>e.preventDefault()); tap(a);   // la prueba no baja el archivo; el toque sí pasa por la app
     A('tocar instalar no cambia nada en la app: la hoja sigue ahí para cuando vuelvas', has('ya lo tengo')&&!H().shortcut.bio&&!went.length&&near(row().getBoundingClientRect().top,y0));
@@ -5230,7 +5242,116 @@ function liveLatSet(exi,to){ const w=db.activeWork, ex=w&&w.exercises[exi]; if(!
     restructureLat(ex,to,{dayId:w.dayId,orderIdx:exi}); if(sx)setLat(sx,to); save(); reRender();
     toast('✓ ['+to+']'+(sx?' · también en tu split':''),'ok',{undo:()=>{ latRestore(ex,s0); ex.sets=sets0; if(sx)latRestore(sx,x0); }}); };
   const touches=(from==='uni')!==(to==='uni');   // hacia o desde uni cambia la forma de las series; bi ↔ alt no
-  if(touches&&(ex.sets||[]).some(s=>s&&!s._pf&&(s.done||(+s.w>0)||(+s.r>0)))) trkAsk({title:'pasar a '+LAT_LBL[to],detail:to==='uni'?('lo ya registrado queda en el lado '+(ex.startSide==='L'?'L':'R')+' · el otro lado sale sugerido'):'cada lado registrado queda como una serie',ok:'cambiar'},go); else go(); }
+  if(touches&&(ex.sets||[]).some(setHasData)) trkAsk({title:'pasar a '+LAT_LBL[to],detail:to==='uni'?('lo ya registrado queda en el lado '+(ex.startSide==='L'?'L':'R')+' · el otro lado sale sugerido'):'cada lado registrado queda como una serie',ok:'cambiar'},go); else go(); }
+// v288 · self-check de la sesión y del Atajo. Corre en sandbox (base de juguete + tus datos en una copia); deja todo como estaba.
+function _v288SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v288: '+nm); };
+  const real=db, sb0=_sbx, lc0=_lastClosed, v=document.getElementById('view'), K=['screen','_scroll','_paintedKey','_viewScroll','work','_wbar','selDay','_curEx','_focusSet','_enter','_align','_autoScroll'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
+  const ax0=window._axList, ac0=window._axCtx, ee0=window._exEdit, ios0=isIOS, sta0=isStandalone, url0=location.href, hs0=history.state; let live0=null; try{ live0=localStorage.getItem(LS_LIVE); }catch(_){}
+  const tap=el=>el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})), near=(a,b)=>Math.abs(a-b)<=1;
+  const ask=k=>document.querySelector('#asklayer [data-ask="'+k+'"]'), units=ex=>ex.sets.map(s=>s.unit).join();
+  _sbx=true;
+  try{
+    // 0 · con tus datos (una copia): en cada día del split, cambiar la lateralidad de cada ejercicio no le cambia la unidad
+    { db=migrate(JSON.parse(JSON.stringify(real))); bumpIdx(); let n=0;
+      ((db.split&&db.split.days)||[]).forEach((d,di)=>{ db.rotIdx=di; db.activeWork=null; const w=newWorkSession(); if(!w||!w.exercises)return; db.activeWork=w;
+        w.exercises.forEach((ex,exi)=>{ if(isCardio(ex))return; const u0=exLiveUnit(ex); if(!u0)return; const from=latOf(ex);
+          ['bi','uni','alt'].filter(t=>t!==from).concat([from]).forEach(to=>{ restructureLat(ex,to,{dayId:w.dayId,orderIdx:exi}); n++;
+            A('datos reales: '+ex.name+' → ['+to+'] conserva su unidad', ex.sets.every(s=>s.bw||!unitN(s)||unitN(s)===String(u0).toLowerCase())); }); }); db.activeWork=null; });
+      A('datos reales: se probó algún ejercicio', n>0||!((db.split&&db.split.days)||[]).length); }
+    const S=(w,o)=>Object.assign({w:String(w),r:'8',rir:'1',unit:'lbs',side:null,done:true},o||{});
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1'],activeGym:'g1',settings:{unit:'lbs'},
+      split:{name:'s',days:[{id:'d1',name:'A',exercises:[{id:'eP',name:'cable pullover',muscle:'lats',type:'cable',unilateral:false,sets:2},{id:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,sets:2},{id:'eH',name:'hammer curl',muscle:'biceps',type:'free',unilateral:false,sets:2},{id:'eL',name:'leg ext',muscle:'quads',type:'pulley',unilateral:false,sets:2}]}]},
+      sessions:[
+        {id:'s1',date:'2026-09-10',dayId:'d1',gym:'g1',exercises:[{exId:'eP',name:'cable pullover',muscle:'lats',type:'cable',unilateral:false,sets:[S(60),S(60)]},{exId:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,sets:[S(30),S(30)]},{exId:'eH',name:'hammer curl',muscle:'biceps',type:'free',unilateral:false,sets:[S(25)]},{exId:'eL',name:'leg ext',muscle:'quads',type:'pulley',unilateral:false,sets:[S(90)]}]},
+        {id:'s2',date:'2026-09-12',gym:'g1',exercises:[{exId:'eQ',name:'cable pullover',muscle:'lats',type:'cable',unilateral:true,startSide:'R',sets:[S(27,{unit:'kg',side:'R'}),S(27,{unit:'kg',side:'L'})]}]}]});
+    bumpIdx(); state.selDay=null; db.rotIdx=0;
+    const w=db.activeWork=newWorkSession(); w.gym='g1'; state.work=w; state.screen='workout'; state._viewScroll={};
+    const cp=w.exercises[0];
+    // 1 · la unidad no cambia al cambiar la lateralidad
+    A('la sesión sale [bi] en lbs, sugerida', latOf(cp)==='bi'&&cp.sets.length===2&&cp.sets.every(s=>s.unit==='lbs'&&s._pf&&s.w==='60'));
+    restructureLat(cp,'uni',{dayId:w.dayId,orderIdx:0});
+    A('bi → uni sin nada confirmado: la unidad sigue en lbs (su [uni] está en kg)', latOf(cp)==='uni'&&cp.sets.length>=2&&cp.sets.every(s=>s.unit==='lbs'));
+    A('…y una sugerencia que venía en kg no se usa: filas en blanco, sin re-etiquetar 27 kg como lbs', cp.sets.every(s=>s.w===''&&s.r===''&&!s._pf)&&cp.sets.map(s=>s.side).join('').indexOf('RL')===0);
+    restructureLat(cp,'bi',{dayId:w.dayId,orderIdx:0});
+    A('uni → bi: vuelve su sugerencia en lbs', latOf(cp)==='bi'&&cp.sets.length>0&&cp.sets.every(s=>s.unit==='lbs'&&s.w==='60'&&s._pf));
+    cp.sets.forEach(s=>{ s.unit='kg'; }); restructureLat(cp,'alt',{dayId:w.dayId,orderIdx:0});
+    A('la unidad que elegiste en filas grises se queda al cambiar la lateralidad', cp.sets.length>0&&cp.sets.every(s=>s.unit==='kg'));
+    restructureLat(cp,'bi',{dayId:w.dayId,orderIdx:0}); cp.sets.forEach(s=>{ s.unit='lbs'; });
+    // 2 · lo tecleado sin ✓ cuenta como dato
+    { const dc=w.exercises[1]; A('db curl sale con dos filas sugeridas', dc.sets.length===2&&dc.sets.every(s=>s._pf));
+      dc.sets[0].w='999'; pfClearField(dc.sets[0],'w');
+      A('una fila con el peso tecleado y lo demás gris cuenta como dato', setHasData(dc.sets[0])&&!setHasData(dc.sets[1])&&!!dc.sets[0]._pf);
+      const keep=dc.sets[0]; restructureLat(dc,'alt',{dayId:w.dayId,orderIdx:1});
+      A('bi → alt: lo tecleado se queda (antes se re-sembraba y se perdía)', dc.sets[0]===keep&&keep.w==='999'&&latOf(dc)==='alt');
+      restructureLat(dc,'uni',{dayId:w.dayId,orderIdx:1});
+      A('→ uni: la fila tecleada queda en su lado con su pareja sugerida; la que no tocaste se va', dc.sets.length===2&&dc.sets[0]===keep&&keep.side==='R'&&dc.sets[1].side==='L'&&!!dc.sets[1]._pf&&dc.sets[1].w==='999');
+      restructureLat(dc,'bi',{dayId:w.dayId,orderIdx:1}); A('→ bi: sigue ahí, sin lado', dc.sets[0]===keep&&keep.w==='999'&&!keep.side);
+      // una fila que nació en blanco, con el peso llegado por espejo y las reps tecleadas: también es tuya
+      const bl=emptySet({type:'free'},'L',false,null); pfAdd(bl,'w'); bl.w='31'; A('el peso por espejo solo no es dato', !setHasData(bl)); bl.r='12'; A('…con las reps tecleadas sí (antes se perdía al cambiar de lado o al guardar)', pfTouched(bl)&&setHasData(bl));
+      const bwr=emptySet({type:'bodyweight'},null,false,null); A('una fila bodyweight recién creada no cuenta como registrada (su peso lo puso la app)', !setHasData(bwr)&&(bwr.extraW='10',setHasData(bwr)));
+      const cd=emptySet({type:'cardio'},null,false,null); A('cardio: en blanco no es dato; con minutos tecleados sí', !setHasData(cd)&&(cd.minutes='30',setHasData(cd))); }
+    render();
+    // 3 · el corchete pregunta también cuando solo hay algo tecleado
+    { const hc=w.exercises[2]; hc.sets[0].w='40'; pfClearField(hc.sets[0],'w'); liveLatSet(2,'uni');
+      A('hacia uni con algo tecleado: pregunta antes', !!ask('ok')&&latOf(hc)==='bi'); tap(ask('no')); A('cancelar no cambia nada', latOf(hc)==='bi'&&hc.sets[0].w==='40'); }
+    // 4 · un "cambio de tipo" que no lo es (pulley = cable) no tira las series
+    { const le=w.exercises[3]; le.sets=[S(95),S(95)]; const keep=le.sets.slice(); openExEdit(null,-1,3);
+      A('el editor en vivo ya no muestra SETS (se ignoraba)', !document.getElementById('ee_sets')&&!!document.getElementById('ee_name'));
+      A('el tipo viejo "pulley" se muestra como cable', (document.querySelector('#ee_type .t.on')||{dataset:{}}).dataset.v==='cable');
+      saveExEdit(); A('guardar sin tocar el tipo conserva las series registradas', le.sets.length===2&&le.sets.every((s,i)=>s===keep[i]&&s.w==='95'&&s.done)&&le.type==='cable');
+      openExEdit(null,-1,3); tap(document.querySelector('#ee_type [data-v="machine"]')); saveExEdit();
+      A('un cambio de tipo real entre fuerza y fuerza tampoco las tira', le.type==='machine'&&le.sets.length===2&&le.sets.every((s,i)=>s===keep[i]&&s.w==='95'));
+      le.sets[0].fsOn=true; le.sets[0].extraW='10'; openExEdit(null,-1,3); tap(document.querySelector('#ee_type [data-v="free"]')); saveExEdit();
+      A('a un tipo sin full stack, el extra se suma al peso (lo que ves es lo que cuenta)', le.type==='free'&&le.sets[0].w==='105'&&!le.sets[0].fsOn&&le.sets[0].extraW===''&&le.sets[1].w==='95');
+      openExEdit(null,-1,3); tap(document.querySelector('#ee_type [data-v="bodyweight"]')); saveExEdit();
+      A('hacia bodyweight (otra forma de fila) con series registradas: pregunta antes y no toca nada', !!ask('ok')&&le.type==='free'&&le.sets.length===2&&le.sets[0].w==='105'&&!!document.getElementById('ee_name'));
+      tap(ask('no')); A('cancelar deja el ejercicio como estaba, con el editor abierto', le.type==='free'&&le.sets[0].w==='105'&&!!document.getElementById('ee_name')); closeModal(); }
+    // 5 · tocar el nombre: editar ejercicio primero
+    render();
+    { const nm=i=>v.querySelector('.exhead [data-act="editexname"][data-exi="'+i+'"]'), items=()=>Array.from(document.querySelectorAll('#asklayer .nvm')).map(x=>x.textContent.replace('›','').trim()).join();
+      const cur=i=>{ state._curEx=i; render(); }; cur(0);
+      const y0=nm(0).getBoundingClientRect().top, t0=v.scrollTop; tap(nm(0));
+      A('con historial: editar ejercicio · historial · cambiar ejercicio, en ese orden', items()==='editar ejercicio,historial,cambiar ejercicio');
+      A('abrir el menú no mueve el nombre', near(nm(0).getBoundingClientRect().top,y0)&&near(v.scrollTop,t0));
+      tap(document.querySelector('#asklayer .nvm')); A('editar ejercicio abre el editor de ESE ejercicio', !!document.getElementById('ee_name')&&document.getElementById('ee_name').value==='cable pullover'&&window._exEdit.liveExi===0); closeModal();
+      w.exercises.push({exId:'eN',name:'zz nuevo',muscle:'lats',type:'free',unilateral:false,startSide:'R',sets:[emptySet({type:'free'},null,false)]}); cur(4);
+      tap(nm(4)); A('sin historial el menú también sale, con editar primero', items()==='editar ejercicio,cambiar ejercicio'); closeAsk(true); w.exercises.pop(); cur(1);
+      // 6 · cambiar ejercicio: solo ese músculo; [cambiar músculo]; el buscador ve todo
+      tap(nm(1)); tap(Array.from(document.querySelectorAll('#asklayer .nvm')).pop());
+      const m=document.getElementById('modal'), rows=()=>Array.from(m.querySelectorAll('.pickitem[data-q]')), vis=()=>rows().filter(x=>!x.hidden).map(x=>(window._axList[+x.dataset.i]||{}).name).sort().join();
+      A('cambiar ejercicio abre con solo los de ese músculo a la vista', !!m&&vis()==='db curl,hammer curl'&&rows().length===4);
+      A('trae [cambiar músculo] y ya no el botón de editar al fondo ni "← músculo"', !!m.querySelector('button.b[data-act="axback"]')&&m.querySelector('button.b[data-act="axback"]').textContent==='cambiar músculo'&&!m.querySelector('[data-act="axdetails"]')&&m.textContent.indexOf('← músculo')<0&&m.textContent.indexOf('otros músculos')<0);
+      const q=document.getElementById('ax_q'); q.value='pullo'; q.dispatchEvent(new Event('input',{bubbles:true}));
+      A('escribir busca en todo el catálogo', vis()==='cable pullover'); q.value=''; q.dispatchEvent(new Event('input',{bubbles:true}));
+      A('borrar el texto vuelve a solo ese músculo', vis()==='db curl,hammer curl'&&document.getElementById('ax_none').hidden);
+      tap(m.querySelector('[data-act="axback"]')); A('[cambiar músculo] lleva a la lista de músculos', !!document.querySelector('#modal [data-act="axmus"]')&&window._axCtx.replaceExi===1);
+      tap(Array.from(document.querySelectorAll('#modal [data-act="axmus"]')).find(x=>x.dataset.v==='quads'));
+      const m2=document.getElementById('modal'); A('…y de ahí a los ejercicios de ese músculo', Array.from(m2.querySelectorAll('.pickitem[data-q]')).filter(x=>!x.hidden).map(x=>(window._axList[+x.dataset.i]||{}).name).join()==='leg ext');
+      // entrar un ejercicio de otro músculo no mueve la pantalla: queda anclada a ese ejercicio
+      v.scrollTop=40; const blk=()=>v.querySelector('.ex[data-exi="1"]'), y1=blk().getBoundingClientRect().top;
+      tap(Array.from(m2.querySelectorAll('.pickitem[data-q]')).find(x=>!x.hidden)); if(ask('ok'))tap(ask('ok'));
+      A('el ejercicio cambió y su bloque sigue a la misma altura', w.exercises[1].name==='leg ext'&&near(blk().getBoundingClientRect().top,y1)); }
+    // 7 · el Atajo: desde el ícono sale a Safari; en Safari baja el archivo; ?atajo=1 tiene su pantalla
+    { closeModal(); db.activeWork=null; state.work=null; state.screen='home'; render(); H().shortcut.bio=0;
+      isIOS=()=>true; isStandalone=()=>true; openBioInstall(); let a=document.querySelector('#modal a.ok');
+      A('desde la app del ícono: ▶ instalar atajo abre Safari en ?atajo=1 (sin download)', !!SHORTCUT_URL||!!a&&a.textContent==='▶ instalar atajo'&&/^x-safari-https?:\/\/.+\?atajo=1$/.test(a.getAttribute('href'))&&!a.hasAttribute('download')&&!a.hasAttribute('target'));
+      A('…con [copiar enlace] y [ya lo tengo], un solo primario', (!!SHORTCUT_URL||!!document.querySelector('#modal [data-act="biocopy"]'))&&!!document.querySelector('#modal [data-act="biorun"]')&&document.querySelectorAll('#modal .ok').length===1);
+      closeModal(); isStandalone=()=>false; openBioInstall(); a=document.querySelector('#modal a.ok');
+      A('en Safari: baja el archivo firmado y dice qué tocar después', !!SHORTCUT_URL||!!a&&a.getAttribute('href')===BIO_FILE&&a.getAttribute('download')===BIO_NAME+'.shortcut'&&!document.querySelector('#modal [data-act="biocopy"]')&&document.getElementById('modal').textContent.indexOf('agregar atajo')>0);
+      closeModal(); isIOS=ios0; isStandalone=sta0;
+      state.screen='atajo'; render(); const d=v.querySelector('a.start');
+      A('?atajo=1: un primario que baja el archivo, sin barra de abajo', !!d&&(!!SHORTCUT_URL||d.textContent==='▶ descargar atajo'&&d.getAttribute('href')===BIO_FILE&&d.getAttribute('download')===BIO_NAME+'.shortcut')&&v.querySelectorAll('.start').length===1&&document.getElementById('nav').style.display==='none');
+      A('…y el enlace mide 44 de alto', d.getBoundingClientRect().height>=44);
+      A('[abrir gym//TRK] es un [verbo] de 44', v.querySelector('button.b[data-act="atajoback"]').getBoundingClientRect().height>=44);
+      tap(v.querySelector('[data-act="atajoback"]')); A('[abrir gym//TRK] lleva a la app', state.screen==='home'); }
+    console.log('v288 self-check OK');
+  } finally { isIOS=ios0; isStandalone=sta0; try{ if(location.href!==url0)history.replaceState(hs0,'',url0); }catch(_){} try{ popClose(); }catch(_){} try{ closeAsk(true); }catch(_){} try{ if(document.getElementById('modal'))closeModal(); }catch(_){}
+    try{ document.querySelectorAll('#toasts .toast').forEach(t=>t.remove()); _undoToast=null; }catch(_){}
+    window._axList=ax0; window._axCtx=ac0; window._exEdit=ee0; _lastTap=null; _sheetMem=null;
+    db=real; _lastClosed=lc0; K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; bumpIdx();
+    try{ if(live0==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,live0); }catch(_){}
+    _sbx=sb0; try{ render(); }catch(_){} }
+}
 // v286 · self-check de [alt]. NO está en la lista del arranque: se corre a mano (_sbx=true; _altSelfCheck()). Con los datos
 // reales cargados afirma primero que ninguna fila guardada cambia de llave (variantKey y exHistKey contra la fórmula de v285);
 // después monta un db de juguete para identidad, sugerencias, el corchete, los formularios y las listas de copia. Restaura todo.
@@ -7296,10 +7417,24 @@ function bioFetch(){ H().shortcut.wait=0; closeModal(); healthPasteNow(); }
 function bioDone(r,k0){ H().shortcut.wait=0; savedToast('✓ Salud · '+r.days+(r.days===1?' día':' días')); reRender(); if(r.kinds.join()!==k0)openBioResult(); }
 // ▶ instalar atajo es un enlace de verdad (el navegador baja el archivo o abre iCloud): la app no hace nada con ese toque y la hoja
 // se queda, así al volver de instalarlo [ya lo tengo] lo anota y lo corre. En el alta solo se instala; se corre después, desde la app.
-function openBioInstall(){ const ob=state.screen==='onboard';
-  openModal('<h3>sync biometrics</h3><div class="submeta u-mb10">un Atajo copia tus datos de Salud y aquí se pegan.</div><div class="sheetbtns"><a class="ok" href="'+(SHORTCUT_URL||BIO_FILE)+'"'+(SHORTCUT_URL?'':' download="'+BIO_NAME+'.shortcut"')+' target="_blank" rel="noopener">▶ instalar atajo</a>'
+// v288 · el dueño: "le doy a instalar atajo y sí me abre como que el archivo, el HTML… no me sale la opción de shortcut". Dentro de la app del
+// ícono iOS no tiene gestor de descargas: el archivo se abre en un visor y se guarda mal. Ahí el primario abre SAFARI en ?atajo=1
+// (x-safari-https://), y [copiar enlace] queda por si ese iPhone no acepta el esquema. En Safari el mismo botón baja el archivo. Con
+// SHORTCUT_URL (enlace de iCloud) es un toque desde cualquier lado.
+function bioPageURL(){ return location.origin+location.pathname+'?atajo=1'; }
+function bioOut(){ return !SHORTCUT_URL&&isIOS()&&isStandalone(); }   // hay que salir a Safari para bajarlo
+const BIO_STEPS='toca ↓ en la barra de Safari<br/>toca '+BIO_NAME+' · agregar atajo';
+function openBioInstall(){ const ob=state.screen==='onboard', out=bioOut();
+  openModal('<h3>sync biometrics</h3><div class="submeta u-mb10">un Atajo copia tus datos de Salud y aquí se pegan.'+(out?' se instala desde Safari.':'')+(!out&&!SHORTCUT_URL&&isIOS()?'<br/>'+BIO_STEPS:'')+'</div><div class="sheetbtns"><a class="ok" href="'+(SHORTCUT_URL||(out?'x-safari-'+bioPageURL():BIO_FILE))+'"'+((SHORTCUT_URL||out)?'':' download="'+BIO_NAME+'.shortcut"')+(out?'':' target="_blank" rel="noopener"')+'>▶ instalar atajo</a>'
+    +(out?'</div><div class="sheetbtns"><button class="cancel" data-act="biocopy">copiar enlace</button>':'')
     +(ob?'<button class="cancel" data-act="closemodal">cerrar</button>':'<button class="cancel" data-act="biorun">ya lo tengo</button>')+'</div>'); }
 // traer se ofrece UNA vez por corrida: al abrir la hoja se apaga la espera. Si la cierras sin traer (tocar fuera, [pegar a mano]) no vuelve a salir sola y la fila corre el atajo otra vez.
+// v288 · gymtrk.app/?atajo=1 en Safari: bajar el atajo. Corta a propósito: un primario y qué tocar después (Safari no abre la descarga solo).
+function renderAtajo(){ return `<div class="u-pt96 u-tc"><div class="u-hero u-w8">gym<span class="u-o40">//</span>TRK</div>
+    <div class="u-data u-o50 u-mt10 u-mb16 u-mx0 u-lsui">atajo · ${BIO_NAME}</div>
+    <a class="start u-mt32" href="${SHORTCUT_URL||BIO_FILE}"${SHORTCUT_URL?'':` download="${BIO_NAME}.shortcut"`}>▶ ${SHORTCUT_URL?'agregar atajo':'descargar atajo'}</a>
+    ${SHORTCUT_URL?'':`<div class="submeta u-mt16">${BIO_STEPS}</div>`}
+    ${db.profile.username?'<div class="u-mt32"><button type="button" class="b" data-act="atajoback">abrir gym//TRK</button></div>':''}</div>`; }
 function openBioFetch(){ H().shortcut.wait=0; saveSoon(); openModal('<h3>sync biometrics</h3><div class="sheetbtns"><button class="ok" data-act="biofetch">▶ traer datos</button><button class="cancel" data-act="healthimport">pegar a mano</button></div>'); }
 function openBioResult(){ openModal('<h3>sync biometrics</h3><div class="submeta u-o60 u-mb10">'+bioKindsTxt(H().shortcut.lastKinds)+'</div><div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div>'); }
 // al volver de Atajos: si se mandó a correr, ofrece traer los datos. No se abre con algo encima (otra hoja, una confirmación, el tour, la tarjeta de
@@ -8624,14 +8759,14 @@ function render(){
   const v=document.getElementById('view');
   const _want=state._scroll; state._scroll=null;   // v285 · se consume al entrar: si un renderer truena, la posición no se le queda a la pantalla siguiente
   let sc=state.screen;
-  if(!db.profile.username){ sc = state.screen==='login' ? 'login' : (state.screen==='onboard'||(db.onb&&!db.onb.done&&(db.onb.step||0)>0)) ? 'onboard' : 'landing'; if(sc==='onboard')state.screen='onboard'; }   // v277: el alta a medias vuelve a su paso, y su pantalla queda "onboard" (si no, lo tecleado tras reabrir no se guardaba)
+  if(sc!=='atajo'&&!db.profile.username){ sc = state.screen==='login' ? 'login' : (state.screen==='onboard'||(db.onb&&!db.onb.done&&(db.onb.step||0)>0)) ? 'onboard' : 'landing'; if(sc==='onboard')state.screen='onboard'; }   // v277: el alta a medias vuelve a su paso, y su pantalla queda "onboard" (si no, lo tecleado tras reabrir no se guardaba)
   if(sc==='workout'){ state.work=db.activeWork; if(!state.work){ state.screen=sc='home'; } }
   // v285 · T1 · "con cada interacción, nunca debe de scrollearse para arriba. Nunca" (el dueño, 1-oct). Misma vista = se queda
   // donde estaba, aunque el código llame render() pelado o go() a la misma pantalla; solo una vista NUEVA empieza arriba. Al
   // dejar una vista se recuerda su posición (goBack la repone). Un valor explícito en state._scroll sigue mandando.
   const _key=viewKey(sc), _prevTop=v.scrollTop, _same=state._paintedKey===_key, _anc=(_same&&_want==null)?viewAnchor(v):null;
   if(state._paintedKey&&!_same)(state._viewScroll=state._viewScroll||{})[state._paintedKey]=_prevTop;
-  v.innerHTML = sc==='landing'?renderLanding() : sc==='login'?renderLogin() : sc==='onboard'?renderOnboard() : sc==='home'?renderHome() : sc==='workout'?renderWorkout() : sc==='macros'?renderMacros() : sc==='share'?renderShare() : sc==='progress'?renderProgress() : sc==='stack'?renderStack() : sc==='settings'?renderSettings() : sc==='splitedit'?renderSplitEdit() : sc==='history'?renderHistory() : sc==='exhist'?renderExHist() : sc==='catalog'?renderCatalog() : sc==='agenda'?renderAgenda() : sc==='histedit'?renderHistoryEditor() : renderHome();
+  v.innerHTML = sc==='atajo'?renderAtajo() : sc==='landing'?renderLanding() : sc==='login'?renderLogin() : sc==='onboard'?renderOnboard() : sc==='home'?renderHome() : sc==='workout'?renderWorkout() : sc==='macros'?renderMacros() : sc==='share'?renderShare() : sc==='progress'?renderProgress() : sc==='stack'?renderStack() : sc==='settings'?renderSettings() : sc==='splitedit'?renderSplitEdit() : sc==='history'?renderHistory() : sc==='exhist'?renderExHist() : sc==='catalog'?renderCatalog() : sc==='agenda'?renderAgenda() : sc==='histedit'?renderHistoryEditor() : renderHome();
   document.getElementById('wfooter').style.display = sc==='workout'?'flex':'none'; if(sc!=='workout'&&state._wbar)wbarSet(false);
   try{updateRestBar();}catch(_){}
   try{updateNowBar();}catch(_){}
@@ -9425,10 +9560,9 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='axpick'){ const c=window._axCtx||{}; const x=(window._axList||[])[+el.dataset.i]; if(x){ if(c.replaceExi!=null)replaceExFromKnown(c.replaceExi,x); else addExFromKnown(c.afterExi,x); } }
   else if(a==='axnewex'){ const c=window._axCtx||{}; openAddExForm(c.afterExi,c.muscle,c.replaceExi); }
   else if(a==='axback'){ const c=window._axCtx||{}; sheetBack(()=>openAddExercise(c.afterExi,c.replaceExi)); }
-  else if(a==='axdetails'){ const c=window._axCtx||{}; if(c.replaceExi!=null)openExEdit(null,-1,c.replaceExi); }
   else if(a==='editmach'){ openMachineEdit(exi); }
   else if(a==='editexname'){ const w=db.activeWork; const ex=w&&w.exercises[exi]; const swap=()=>{ if(ex&&ex.muscle){ openAddExStep2(exi, ex.muscle, exi); } else { openAddExercise(exi, exi); } };
-    const _k=ex?exHistKey(ex):''; if(_k&&exHistRows(_k).length)trkMenu(ex.name,[['historial',()=>openExHist(_k)],['cambiar ejercicio',swap]]); else swap(); }   // v274 · tocar el nombre: su historial o cambiarlo
+    const _k=ex?exHistKey(ex):''; if(ex){ const it=[['editar ejercicio',()=>openExEdit(null,-1,exi)]]; if(_k&&exHistRows(_k).length)it.push(['historial',()=>openExHist(_k)]); it.push(['cambiar ejercicio',swap]); trkMenu(ex.name,it); } }   // v288 · editar va primero (antes estaba al fondo de la lista de cambiar)
   else if(a==='editexnote'){ const w=db.activeWork; if(w&&w.exercises[exi]){ const cur=w.exercises[exi].note||''; trkPrompt({title:'nota · '+((w.exercises[exi].name)||'ejercicio'),label:'NOTA',value:cur,placeholder:'agarre, asiento, sensación…'},v=>{ w.exercises[exi].note=String(v).trim(); setExNote(w.exercises[exi]); save(); state._scroll=(document.getElementById('view')||{}).scrollTop||0; render(); toast('✓ nota guardada'); }); } }
   else if(a==='save'){ saveSession(); }
   else if(a==='togglemacros'){ state.macroOpen=!state.macroOpen; reRender(); }   // v271 · reRender conserva el scroll (ver gramos/% subía hasta arriba)
@@ -9510,6 +9644,9 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='biorun'){ bioRun(); }
   else if(a==='biofetch'){ bioFetch(); }
   else if(a==='biosetup'){ openBioInstall(); }
+  else if(a==='biocopy'){ const u=bioPageURL(), no=()=>{ const m=askLayer('<h3>copiar enlace</h3><div class="field"><input readonly value="'+escTxt(u)+'"/></div><div class="sheetbtns"><button class="cancel" data-ask="no">cerrar</button></div>'); m.addEventListener('click',ev=>{ if(ev.target.closest&&ev.target.closest('[data-ask]')){ ev.stopPropagation(); closeAsk(); } }); };   // encima de la hoja: instalar y [ya lo tengo] siguen ahí
+    try{ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(()=>toast('✓ enlace copiado · pégalo en Safari'),no); else no(); }catch(_){ no(); } }
+  else if(a==='atajoback'){ state.screen='home'; try{ if(/[?&]atajo=1\b/.test(location.search))history.replaceState(null,'',location.pathname); }catch(_){} render(); }
   else if(a==='deloadinfo'){ openDeloadInfo(); }
   else if(a==='perfinfo'){ openPerfInfo(); }
   else if(a==='progdel'){ const e=state.progEdit, k=el.dataset.k; if(e&&e.hidden.indexOf(k)<0){ e.hidden.push(k); reRender(); } }
@@ -9712,7 +9849,7 @@ function openExEdit(di,ei,liveExi){
    <div id="ee_mus2_addwrap" style="margin:2px 0 12px;display:${show2?'none':'block'}"><button class="b u-w100" data-act="ee_mus2_on">+ agregar músculo secundario</button></div>`;
    })()}
    <div class="field"><label>TYPE</label><div class="toggles u-wrap u-gap4" id="ee_type">${types.map(([v,lbl])=>`<button class="t ${canonType(e.type)===v||(v==='free'&&!e.type)?'on':''} u-fhalf u-min0" data-act="optpick" data-v="${v}">${lbl}</button>`).join('')}</div></div>
-   <div class="field row2"><div><label>SETS</label><input id="ee_sets" type="number" value="${Array.isArray(e.sets)?e.sets.length:(e.sets||2)}"/></div><div><label>MACHINE/NOTE</label><input id="ee_machine" value="${(e.machine||'').replace(/"/g,'&quot;')}" placeholder="opcional"/></div></div>
+   <div class="field${live?'':' row2'}">${live?'':`<div><label>SETS</label><input id="ee_sets" type="number" value="${Array.isArray(e.sets)?e.sets.length:(e.sets||2)}"/></div>`}<div><label>MACHINE/NOTE</label><input id="ee_machine" value="${(e.machine||'').replace(/"/g,'&quot;')}" placeholder="opcional"/></div></div>
    <div class="field" id="ee_uniwrap" style="display:${isCardioEdit?'none':'block'}"><label>VARIANTE</label><div class="toggles" id="ee_uni"><button class="t ${!e.unilateral&&e.lat!=='alt'?'on':''}" data-act="optpick" data-v="0">bilateral</button><button class="t ${e.unilateral?'on':''}" data-act="optpick" data-v="1">unilateral (R/L)</button><button class="t ${!e.unilateral&&e.lat==='alt'?'on':''}" data-act="optpick" data-v="2">alternado</button></div></div>
    <div class="field" id="ee_startwrap" style="display:${!isCardioEdit&&e.unilateral?'block':'none'}"><label>UNILATERAL · EMPEZAR POR</label><div class="toggles" id="ee_start"><button class="t ${e.startSide!=='L'?'on':''}" data-act="optpick" data-v="R">R primero</button><button class="t ${e.startSide==='L'?'on':''}" data-act="optpick" data-v="L">L primero</button></div></div>
    <div class="field" id="ee_bwflags" style="display:${canonType(e.type)==='bodyweight'?'block':'none'}"><label>BODYWEIGHT · variante</label>
@@ -9796,12 +9933,18 @@ function saveExEdit(){
     const w=db.activeWork; const lx=w.exercises[liveExi];
     // update metadata IN PLACE — keep logged sets + the unilateral structure of the live session intact.
     // by default this change lives ONLY in today's session; the split stays untouched unless opted in below.
-    const typeChanged=lx.type!==ex.type || (isCardioT&&lx.cardioSub!==ex.cardioSub);
+    const wasCardio=isCardio(lx), typeChanged=canonType(lx.type)!==canonType(ex.type) || (isCardioT&&lx.cardioSub!==ex.cardioSub);   // v288 · tipo canónico: un `pulley` viejo no es "otro tipo"
+    const wasBw=canonType(lx.type)==='bodyweight';
+    const u0=exLiveUnit(lx), lat0=latOf(lx), keepSets=typeChanged&&!wasCardio&&!isCardioT&&wasBw===isBwT&&(lx.sets||[]).some(setHasData);   // fuerza → fuerza con la misma forma de fila y algo registrado: las series se quedan
+    // cruzar a/desde cardio o bodyweight cambia la forma de las filas: se re-siembra, y si hay algo tuyo se pregunta antes (la hoja sigue abierta debajo)
+    if(typeChanged&&!keepSets&&!window._exEditOk&&(lx.sets||[]).some(s=>setHasData(s)||setPersistable(s))) return trkAsk({title:'cambiar "'+(lx.name||'este ejercicio')+'"',detail:'ya registraste series · cambiar el tipo las descarta',ok:'cambiar',danger:true},()=>{ window._exEditOk=1; try{ saveExEdit(); } finally{ window._exEditOk=0; } });
     const latChanged=!isCardioT&&!typeChanged&&latOf(lx)!==exLat;   // v286 · compara la lateralidad (bi · uni · alt), no el booleano
     const sideChanged=!isCardioT&&!!lx.unilateral&&!!ex.unilateral&&(lx.startSide==='L'?'L':'R')!==ex.startSide;   // v279
     lx.name=ex.name; lx.muscle=ex.muscle; lx.muscles=ex.muscles; lx.type=ex.type; lx.machine=ex.machine; lx.assisted=ex.assisted; lx.weighted=ex.weighted; lx.cardioSub=ex.cardioSub; if(!latChanged)setLat(lx,exLat); lx.startSide=ex.startSide;
     // switching into/out of cardio reseeds the set bag (field shapes differ)
-    if(typeChanged){ lx.sets=seedSets(lx,Array.isArray(lx.sets)?Math.max(1,lx.sets.length):ex.sets,{dayId:w.dayId,orderIdx:liveExi}); }
+    if(typeChanged){ if(keepSets){ if(lat0!==exLat){ setLat(lx,lat0); restructureLat(lx,exLat,{dayId:w.dayId,orderIdx:liveExi}); } else if(sideChanged)swapSides(lx);
+        if(!isMachType(lx.type))(lx.sets||[]).forEach(s=>{ if(!s||s.bw||!(s.fsOn||s.extraW))return; const x=parseFloat(s.extraW); if(isFinite(x)&&x)s.w=String((parseFloat(s.w)||0)+x); s.extraW=''; s.fsOn=false; });   // sin columna FS el extra se suma al peso: lo que ves es lo que cuenta
+      } else { setLat(lx,exLat); lx.sets=seedSets(lx,Array.isArray(lx.sets)?Math.max(1,lx.sets.length):ex.sets,{dayId:w.dayId,orderIdx:liveExi}); if(!wasCardio)pinUnit(lx,u0); } }
     else if(latChanged){ restructureLat(lx,exLat,{dayId:w.dayId,orderIdx:liveExi}); }
     else if(sideChanged){ swapSides(lx); }   // v279 · "le ponía que empezaba con el lado izquierdo, no se actualizaba"
     const toSplit=document.getElementById('ee_tosplit');
@@ -9888,8 +10031,10 @@ function openExName(exi){ const w=db.activeWork; if(!w)return; const ex=w.exerci
 // v266 · cambiar bi ↔ uni en vivo: hacia uni, cada serie con dato queda del primer lado y su pareja sale sugerida (gris);
 // hacia bi, las series pierden el lado (ninguna se borra); sin nada registrado, se vuelve a sembrar.
 // v286 · `to` = 'bi'|'uni'|'alt' (o true/false); uni → alt quita lados como uni → bi; bi ↔ alt no toca lo registrado (misma forma).
-function restructureLat(ex,to,ctx){ to=latNorm(to); const wasUni=uniOf(ex), toUni=to==='uni'; setLat(ex,to); const has=s=>!!s&&!s._pf&&(s.done||(+s.w>0)||(+s.r>0));
-  if(!(ex.sets||[]).some(has)){ ex.sets=seedSets(ex,Math.max(1,(ex.sets||[]).length),ctx); return; }
+// v288 · el dueño: "cambio de bilateral a unilateral… y me cambiaba las unidades". Sin series confirmadas se re-siembra con la historia de la
+// OTRA variante, que puede estar en otra unidad: la unidad en curso se queda (pinUnit). Y lo tecleado sin ✓ ya cuenta como dato (setHasData).
+function restructureLat(ex,to,ctx){ to=latNorm(to); const wasUni=uniOf(ex), toUni=to==='uni', u0=exLiveUnit(ex); setLat(ex,to); const has=setHasData;
+  if(!(ex.sets||[]).some(has)){ ex.sets=seedSets(ex,Math.max(1,(ex.sets||[]).length),ctx); pinUnit(ex,u0); return; }
   if(wasUni===toUni)return;
   if(!toUni){ ex.sets=ex.sets.filter(s=>has(s)||!s._pf); ex.sets.forEach(s=>{ s.side=null; }); return; }
   const a=ex.startSide==='L'?'L':'R', b=a==='L'?'R':'L', out=[];
@@ -10702,20 +10847,22 @@ function openAddExStep2(afterExi,muscle,replaceExi){
     if(canonType(x.type)!==top.type){ const r=exHistRows(top.key)[0]; x.type=top.type; x.machine=(r&&r.ex&&r.ex.machine)||''; }   // otro tipo: su marca es la de ESA hoja
     setLat(x,top.lat); x.assisted=top.assisted; x.weighted=top.weighted; });
   window._axList=all; window._axCtx={afterExi,muscle:key,replaceExi};
-  const row=(x,i)=>`<div class="pickitem" data-act="axpick" data-i="${i}" data-q="${escTxt([x.name,x.machine||'',x.type||'',x._m||key].join(' ').toLowerCase())}">${!isCardio(x)?`<span>[${(x._lats&&x._lats.length?x._lats:[latOf(x)]).join('·')}]</span> `:''}${escTxt(x.name)}${x.machine?` <span class="u-o40 u-label">${escTxt(x.machine)}</span>`:''}${x.type&&x.type!=='free'?` <span class="u-o35 u-label">${escTxt(x.type)}</span>`:''}${x._m?` <span class="u-o35 u-label">#${escTxt(x._m)}</span>`:''}<span class="u-fr u-o40 u-label">${x._here?'':'· otro gym '}${x._sess||0}×</span></div>`;
+  const row=(x,i,other)=>`<div class="pickitem" data-act="axpick" data-i="${i}"${other===true?' hidden data-rest="1"':''} data-q="${escTxt([x.name,x.machine||'',x.type||'',x._m||key].concat(exMuscles(x).map(mm=>(mm&&mm.name)||'')).join(' ').toLowerCase())}">${!isCardio(x)?`<span>[${(x._lats&&x._lats.length?x._lats:[latOf(x)]).join('·')}]</span> `:''}${escTxt(x.name)}${x.machine?` <span class="u-o40 u-label">${escTxt(x.machine)}</span>`:''}${x.type&&x.type!=='free'?` <span class="u-o35 u-label">${escTxt(x.type)}</span>`:''}${x._m?` <span class="u-o35 u-label">#${escTxt(x._m)}</span>`:''}<span class="u-fr u-o40 u-label">${x._here?'':'· otro gym '}${x._sess||0}×</span></div>`;
+  // v288 · el dueño: "en cambiar ejercicio solamente deben de salir los ejercicios del músculo… agregar cambiar músculo". Los de otros músculos
+  // siguen en la hoja pero ocultos: solo aparecen al escribir en el buscador ("buscar en todo tu catálogo").
   openModal(`<h3>${escTxt(muscle)} · ${replaceExi!=null?'cambiar ejercicio':'elige ejercicio'}</h3>
+   <div class="u-mb6"><button class="b" data-act="axback">cambiar músculo</button></div>
    ${all.length?`<div class="field u-mb6"><input id="ax_q" type="text" inputmode="search" enterkeyhint="search" placeholder="buscar en todo tu catálogo · ${all.length}" autocomplete="off" autocapitalize="off"/></div>`:''}
-   ${list.length?`<div class="submeta u-mb6" id="ax_h1">ya los usas · toca para agregar</div><div>${list.map(row).join('')}</div>`:`<div class="submeta u-mb10">sin ejercicios registrados para "${escTxt(muscle)}" todavía</div>`}
-   ${rest.length?`<div class="submeta u-mt10 u-mb6" id="ax_h2">otros músculos · ${rest.length}</div><div>${rest.map((x,i)=>row(x,list.length+i)).join('')}</div>`:''}
+   ${list.length?`<div>${list.map((x,i)=>row(x,i)).join('')}</div>`:`<div class="submeta u-mb10">sin ejercicios registrados para "${escTxt(muscle)}" todavía</div>`}
+   ${rest.length?`<div>${rest.map((x,i)=>row(x,list.length+i,!x._sec)).join('')}</div>`:''}
    <div class="submeta u-mb6" id="ax_none" hidden>nada con ese texto</div>
    ${all.length?'<hr class="rule u-my10 u-mx0"/>':''}
-   <button class="b u-w100" data-act="axnewex">+ ejercicio nuevo</button>${replaceExi!=null?'<button class="b u-w100 u-mt8" data-act="axdetails">✎ editar detalles de este ejercicio</button>':''}
-   <div class="sheetbtns u-mt10"><button class="cancel" data-act="axback">← músculo</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
+   <button class="b u-w100" data-act="axnewex">+ ejercicio nuevo</button>
+   <div class="sheetbtns u-mt10"><button class="cancel" data-act="closemodal">cancel</button></div>`);
   const q=document.getElementById('ax_q');
   if(q)q.addEventListener('input',()=>{ const t=q.value.toLowerCase().trim(); let n=0;
-    document.querySelectorAll('#modal .pickitem[data-q]').forEach(el=>{ const ok=!t||el.dataset.q.indexOf(t)>=0; el.hidden=!ok; if(ok)n++; });
-    ['ax_h1','ax_h2'].forEach(id=>{ const h=document.getElementById(id); if(h)h.hidden=!!t; });
-    const nn=document.getElementById('ax_none'); if(nn)nn.hidden=n>0; });
+    document.querySelectorAll('#modal .pickitem[data-q]').forEach(el=>{ const ok=t?el.dataset.q.indexOf(t)>=0:!el.dataset.rest; el.hidden=!ok; if(ok)n++; });
+    const nn=document.getElementById('ax_none'); if(nn)nn.hidden=n>0||!t; });
 }
 // add a known exercise straight into the live session (with its remembered props + prefilled sets)
 // exId:'e'+uid() — NOT null (Bloque 3.2, 2026-08-03): an ad-hoc addition still gets its OWN stable
@@ -10730,6 +10877,8 @@ function addExFromKnown(afterExi,x){
   const ex=w.exercises[insertAt]; ex.sets=seedSets(ex,(typeof x.sets==='number'?x.sets:2),{dayId:w.dayId,orderIdx:insertAt});
   save(); closeModal(); state._enter={ex:insertAt,scroll:true}; reRender();
 }
+// v288 · ancla la pantalla a un ejercicio de la sesión antes de repintar (regla del scroll): el toque fue en una hoja, así que no hay control tocado.
+function exAnchor(exi){ try{ const v=document.getElementById('view'), b=v&&v.querySelector('.ex[data-exi="'+exi+'"]'); if(b&&b.dataset.rk)_lastTap={sig:'',sel:'',el:null,sheet:null,view:true,off:0,rk:b.dataset.rk,rkOff:b.getBoundingClientRect().top-v.getBoundingClientRect().top}; }catch(_){} }
 // REPLACE the live exercise at exi with a REGISTERED one: registry metadata + re-seeded sets, position kept (#4/#6/#7)
 function replaceExFromKnown(exi,x){
   const w=db.activeWork; if(!w||!w.exercises[exi]||!x)return; const ex=w.exercises[exi];
@@ -10740,8 +10889,8 @@ function replaceExFromKnown(exi,x){
   // v266 · unidad, full stack y subtipo de cardio salen del ejercicio elegido, no del que se reemplaza
   ex.unit=x.unit||db.settings.unit||'lbs'; ex.useFS=!!x.useFS; if(x.cardioSub)ex.cardioSub=x.cardioSub; else delete ex.cardioSub;
   ex.sets=seedSets(ex,(typeof x.sets==='number'?x.sets:2),{dayId:w.dayId,orderIdx:exi});
-  save(); closeModal(); reRender();
-}; if((ex.sets||[]).some(s=>s&&!s._pf&&(s.done||(+s.w>0)||(+s.r>0)))) return trkAsk({title:'cambiar "'+(ex.name||'este ejercicio')+'"',detail:'ya registraste series · cambiar de ejercicio las descarta',ok:'cambiar',danger:true},_go10); return _go10();}
+  save(); closeModal(); exAnchor(exi); reRender(); _lastTap=null;
+}; if((ex.sets||[]).some(setHasData)) return trkAsk({title:'cambiar "'+(ex.name||'este ejercicio')+'"',detail:'ya registraste series · cambiar de ejercicio las descarta',ok:'cambiar',danger:true},_go10); return _go10();}
 // FORM: new exercise (muscle pre-filled from step 1)
 function openAddExForm(afterExi,muscle,replaceExi){
   const exs=knownExercises(); const muscles=muscleSuggest();
@@ -10799,7 +10948,7 @@ function openAddExForm(afterExi,muscle,replaceExi){
     if(replaceExi!=null && w && w.exercises[replaceExi]){ const ex=w.exercises[replaceExi];
       const _go11=()=>{
       Object.keys(ex).forEach(k=>{ delete ex[k]; }); Object.assign(ex,meta);   // v266 · nada del ejercicio anterior (unidad, full stack, asistido, lastre)
-      ex.sets=seedSets(ex,+val('fx_sets')||1,{dayId:w.dayId,orderIdx:replaceExi}); save(); closeModal(); reRender(); return; }; if((ex.sets||[]).some(s=>s&&!s._pf&&(s.done||(+s.w>0)||(+s.r>0)))) return trkAsk({title:'cambiar "'+(ex.name||'este ejercicio')+'"',detail:'ya registraste series · cambiar las descarta',ok:'cambiar',danger:true},_go11); return _go11();}
+      ex.sets=seedSets(ex,+val('fx_sets')||1,{dayId:w.dayId,orderIdx:replaceExi}); save(); closeModal(); exAnchor(replaceExi); reRender(); _lastTap=null; return; }; if((ex.sets||[]).some(setHasData)) return trkAsk({title:'cambiar "'+(ex.name||'este ejercicio')+'"',detail:'ya registraste series · cambiar las descarta',ok:'cambiar',danger:true},_go11); return _go11();}
     // INSERT mode: agrega DESPUÉS del ejercicio ancla (o al final)
     const newEx=Object.assign({},meta,{sets:[]}); let insertAt;
     if(afterExi!=null && afterExi>=0 && afterExi<w.exercises.length){ insertAt=afterExi+1; w.exercises.splice(insertAt,0,newEx); }
@@ -12684,13 +12833,15 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
 try{ const r=JSON.parse(sessionStorage.getItem('gymtrk_resume')||'null'); if(r){ sessionStorage.removeItem('gymtrk_resume');
     if(db.profile.username&&Date.now()-r.t<12*3600000&&['home','workout','macros','progress','stack','settings','history','splitedit'].indexOf(r.s)>=0&&(r.s!=='workout'||db.activeWork)){ state.screen=r.s; state._scroll=r.y>0?r.y:null; render(); } } }catch(_){}
+try{ if(/[?&]atajo=1\b/.test(location.search)){ state.screen='atajo'; render(); } }catch(_){}   // v288 · la página de bajar el Atajo (se abre en Safari)
 try{ bootScreen(()=>{ try{
+  if(state.screen==='atajo')return;
   if(/[?&]wrap=1\b/.test(location.search)){ monthlyWrap(prevMonthYm(), true); return; }
   const _due=monthlyWrapDue(); if(_due){ monthlyWrap(_due, false); return; }
   snapRecap();

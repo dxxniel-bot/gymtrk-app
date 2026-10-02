@@ -1,4 +1,4 @@
-﻿const C = 'gymtrk-v287';
+﻿const C = 'gymtrk-v288';
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(C).then(c => c.addAll(['./', './index.html', './manifest.json'].map(x => new Request(x, { cache: 'reload' }))))
@@ -29,7 +29,9 @@ self.addEventListener('fetch', e => {
         return resp;
       // v261: index.html solo responde a una NAVEGACIÓN sin red; un script o un JSON que falta devuelve error (antes
       // recibía el HTML de la app y fallaba como JavaScript).
-      }).catch(() => caches.match(u.origin + u.pathname).then(r => r || (e.request.mode === 'navigate' ? caches.match('./index.html') : Response.error())))
+      // v288: y solo a la página de la app ('/' o index.html). Un archivo que falla (el .shortcut del Atajo) da error, no el HTML de la app:
+      // el dueño lo bajó como "el HTML" y Archivos ya no lo reconocía como atajo.
+      }).catch(() => caches.match(u.origin + u.pathname).then(r => r || (e.request.mode === 'navigate' && /(\/|\/index\.html)$/.test(u.pathname) ? caches.match('./index.html') : Response.error())))
     );
   }
 });
