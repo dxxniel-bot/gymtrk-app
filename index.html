@@ -111,7 +111,7 @@
   .rot .lbl{font-size:var(--t-label); color:var(--o60); letter-spacing:var(--ls-caps);} .rot .n{font-size:var(--t-label); color:var(--o40);}
   .segs{display:flex; gap:var(--s2); margin-bottom:var(--s4);} .segs i{flex:1; height:4px; background:var(--track); cursor:pointer;} .segs i.on{background:var(--fill);}
   .rot .arrow{cursor:pointer; color:var(--o60); padding:0 6px;}
-  .ctrls{display:flex; gap:var(--s4); font-size:var(--t-label); margin-bottom:var(--s6);} .ctrls a{color:var(--o50); cursor:pointer; padding:var(--s4) 6px; margin:calc(-1 * var(--s4)) -6px;}
+  .ctrls{display:flex; gap:var(--s4); font-size:var(--t-label); margin-bottom:var(--s6);} .ctrls a{color:var(--o60); cursor:pointer; padding:var(--s5) 6px; margin:calc(-1 * var(--s5)) -6px;}
 
   /* section header (stacked label + name) */
   /* v256 · cabecera del día con UN solo borde (x=0) y dos tamaños: rótulo 10 MAYÚSCULAS · nombre 22/800 · una línea de meta 10.
@@ -138,18 +138,25 @@
   .line.sch{align-items:center; min-height:44px;} .line.sch .toggles{flex:0 0 auto; gap:0;} .toggles.dow{justify-content:space-between; gap:0;}
   .line.exl,.line.exr{min-height:44px; align-items:center;} .line.exl .k{flex:0 1 auto; min-width:0;} .mdtabs.tall span{min-height:44px; display:flex; align-items:center; justify-content:center; padding:0;} .line.exl .dots{min-width:var(--s3);} .line.exl .v{flex:0 0 auto; white-space:nowrap;}   /* v274 · //EXERCISES y la bitácora de un ejercicio */
   .elog{padding:var(--s3) 0; border-bottom:var(--bw-sep) solid var(--o10);} .eloh{display:flex; align-items:baseline; gap:var(--s3);} .elon{font-size:var(--t-section); font-weight:800; color:var(--fg); min-width:4ch;} .elod{flex:1; min-width:0; color:var(--o60); font-size:var(--t-data);} .elos{margin-top:var(--s1); padding-left:calc(var(--t-section) * 2.4 + var(--s3)); color:var(--o70); font-size:var(--t-data); line-height:var(--lh-read);}
-  .restplan{font-size:var(--t-data); color:var(--o70); line-height:var(--lh-read); margin-bottom:var(--s2);}
-  .secondary .restok{display:inline-flex; align-items:center; height:44px; font-size:var(--t-data); color:var(--fg); margin-right:var(--s2);}
+  .restplan{font-size:var(--t-label); color:var(--o70); line-height:var(--lh-read); margin-bottom:var(--s2);}
+  .secondary .restok{display:inline-flex; align-items:center; height:44px; font-size:var(--t-label); color:var(--fg); margin-right:var(--s2);}
   /* G2 · T-01: los roles de botón tienen estilo propio. `.b` y `.t` solo existían dentro de un padre (`.secondary .b`,
      `.toggles button`) y sueltos caían al botón gris del navegador (13.333 px, rgb(240,240,240)): stack, + siesta,
      login, escáner, editor de ejercicio. Especificidad menor que la de los padres: donde había estilo, sigue igual. */
   button{font-family:inherit;}
   /* v267 · secundarios = [verbo] (B-06): sin caja ni fondo, corchetes por CSS en --o40, texto --o60, toque de 44.
      La etiqueta nunca trae sus propios corchetes (los pone el CSS). */
-  button.b,button.cancel,.secondary .b,.sheetbtns .cancel,.mdcust .b,.footer .abort,.footer .undo{display:inline-flex; align-items:center; justify-content:flex-start; height:44px; padding:0 var(--s1); font-size:var(--t-data); font-weight:400; color:var(--o60); background:none; border:0; border-radius:0; letter-spacing:var(--ls-ui); text-align:left; white-space:nowrap; cursor:pointer;}
+  button.b,button.cancel,.secondary .b,.sheetbtns .cancel,.mdcust .b,.footer .abort,.footer .undo{display:inline-flex; align-items:center; justify-content:flex-start; height:44px; min-width:44px; padding:0 var(--s1); font-size:var(--t-label); font-weight:400; color:var(--o60); background:none; border:0; border-radius:0; letter-spacing:var(--ls-ui); text-align:left; white-space:nowrap; cursor:pointer;}   /* v290 · un solo [verbo]: 10 px, como [change split] ("hay que estandarizar esos botones entre corchetes") */
   button.b::before,button.cancel::before,.secondary .b::before,.sheetbtns .cancel::before,.mdcust .b::before,.footer .abort::before,.footer .undo::before{content:'['; color:var(--o40);}
   button.b::after,button.cancel::after,.secondary .b::after,.sheetbtns .cancel::after,.mdcust .b::after,.footer .abort::after,.footer .undo::after{content:']'; color:var(--o40);}
   button.b:active,button.cancel:active,.secondary .b:active,.sheetbtns .cancel:active,.mdcust .b:active{color:var(--fg);}
+  /* v290 · .vb = el mismo [verbo] en línea con el texto: mide un renglón (su toque de 44 crece hacia afuera) y los corchetes los pone el CSS.
+     Ninguna acción lleva ya los corchetes escritos a mano. Las opciones ([RIR] RPE, [hombre] mujer) son valores, no acciones: siguen en 12. */
+  .vb{display:inline-flex; align-items:center; min-height:44px; min-width:44px; margin:calc(-1 * var(--s5)) calc(-1 * var(--s2)); padding:0 var(--s2); border:0; background:none; font-family:inherit; font-size:var(--t-label); font-weight:400; color:var(--o60); letter-spacing:var(--ls-ui); white-space:nowrap; text-decoration:none; cursor:pointer;}
+  .vb::before,.addbtn::before,.ctrls a::before,.savebar a::before,.mdacts a::before,.fa-acts a::before,.fa-meal a::before,.hbody .hacts a::before{content:'['; color:var(--o40);}
+  .vb::after,.addbtn::after,.ctrls a::after,.savebar a::after,.mdacts a::after,.fa-acts a::after,.fa-meal a::after,.hbody .hacts a::after{content:']'; color:var(--o40);}
+  .vb:active,.addbtn:active,.ctrls a:active{color:var(--fg);}
+  .section .meta.vb{color:var(--o60); padding:0 var(--s2);} .section .meta.vb[data-act]::after{content:']'; position:static; inset:auto; color:var(--o40);}   /* la regla de arriba (.meta[data-act]::after) era su zona de toque: .vb ya mide 44 */
   /* opción (toggle): sin caja; la elegida va [entre corchetes] en --fg/700 y las demás en --o50. Los corchetes apagados
      guardan su lugar para que nada se mueva al elegir. */
   button.t{min-height:44px; min-width:44px; padding:0 var(--s1); font-size:var(--t-data); font-weight:400; color:var(--o50); background:none; border:0; border-radius:0; text-align:left; cursor:pointer;}
@@ -199,6 +206,11 @@
   .ring.lg{width:132px; height:132px;} .ring.lg .ring-track,.ring.lg .ring-fill{stroke-width:var(--sw-ring-lg);} .ring.lg .num{font-size:var(--t-display); font-weight:800; letter-spacing:-1px/*ds:exempt*/;} .ring.lg .of{font-size:var(--t-label); color:var(--o40); margin-top:6px;}
   .sw-grid{stroke-width:var(--sw-grid);} .sw-ref{stroke-width:var(--sw-ref);} .sw-data{stroke-width:var(--sw-data);} .sw-data-lg{stroke-width:var(--sw-data-lg);}   /* v260 · trazos de gráficas por token */
   .ring.md{width:72px; height:72px;} .ring.md .ring-track,.ring.md .ring-fill{stroke-width:var(--sw-ring-md);} .ring.md .num{font-size:var(--t-section); font-weight:800;}
+  /* v290 · aros chicos (56) de "te queda" arriba de add food / porción / aproximada: lo que estás por agregar entra en gris */
+  .ring.sm{width:56px; height:56px;} .ring.sm .ring-track,.ring.sm .ring-fill,.ring.sm .ring-add{stroke-width:var(--sw-ring-md);} .ring.sm .num{font-size:var(--t-data); font-weight:800; letter-spacing:var(--ls-num);}
+  .ring-add{fill:none; stroke:var(--o40);}
+  .frwrap{margin:0 0 var(--s4);} .frings{display:flex; justify-content:space-between; gap:var(--s3);} .frc{display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;}
+  .frc .cap{font-size:var(--t-label); color:var(--o50); margin-top:var(--s2);} .ring.sm .num.xs{font-size:var(--t-label);}
   .hero-meta{margin-top:var(--s4); font-size:var(--t-label); color:var(--o40); display:flex; gap:var(--s3); align-items:center;} .hero-meta .left{color:var(--o60);} .chev{font-size:var(--t-label); color:var(--faint); transition:transform var(--dur-2) var(--ease-out);} .hero.open .chev{transform:rotate(180deg);}
   .rings{display:flex; justify-content:space-between; padding:0 var(--s2);} .cell{display:flex; flex-direction:column; align-items:center; text-align:center; flex:1; cursor:pointer;}
   .cap{font-size:var(--t-label); color:var(--fg); margin-top:10px;} .sub{font-size:var(--t-label); color:var(--o40); margin-top:var(--s1);}
@@ -379,7 +391,7 @@
   .hist-rail .hitem:first-child::before{top:var(--hdot);} .hist-rail .hitem:last-child::before{bottom:auto; height:var(--hdot);} .hist-rail .hitem:only-child::before{display:none;}
   .hist-rail .hitem::after{content:''; position:absolute; left:0; top:calc(var(--hdot) - 3.5px); width:7px; height:7px; border-radius:50%; background:var(--o40);}
   .hist-rail .hitem.hit::after{background:var(--fg);}
-  .hbody{padding-bottom:var(--s4);} .hbody .hacts{display:flex; justify-content:flex-end;} .hbody .hacts a{padding:var(--s2) 0 var(--s2) var(--s5);}
+  .hbody{padding-bottom:var(--s4);} .hbody .hacts{display:flex; justify-content:flex-end;} .hbody .hacts a{padding:var(--s2) 0 var(--s2) var(--s5); font-size:var(--t-label); color:var(--o60); cursor:pointer;}
   .hcal{background:var(--card); border:var(--bw-card) solid var(--border); border-radius:var(--radius); padding:var(--s2) var(--s4) var(--s4); margin-bottom:var(--sp-gap);}
   .hcalh{display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--s2);}
   .hcalh .hct{font-size:var(--t-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--o50);} .hcalh .hct b{color:var(--fg); font-weight:700;}
@@ -417,22 +429,25 @@
   .lseg{margin-bottom:var(--s2);} .lseg span i{margin-left:var(--s2); font-style:normal; font-size:var(--t-label); font-weight:400; color:var(--o50);}
   /* comidas plegables: el total (16/800) manda sobre sus alimentos (12/400) — queja 9 */
   .mrec{--mcol:32px;} .mrec+.mrec{border-top:var(--bw-sep) solid var(--o10);}
-  .mhd{display:grid; grid-template-columns:minmax(0,1fr) auto auto var(--mcol); align-items:center; min-height:44px;}
-  .mhd .madd{margin:0 var(--s2) 0 var(--s3); color:var(--o60);}   /* v271 · [+ food] a la derecha de la comida: "el add food se pierde" */
-  .mtg{display:grid; grid-template-columns:var(--s5) minmax(0,1fr); align-content:center; align-self:stretch; row-gap:var(--s1); min-width:0; min-height:44px; padding:var(--s2) 0; border:0; background:none; color:inherit; font-family:inherit; text-align:left; line-height:var(--lh-ui); cursor:pointer;}   /* v280 · dos renglones: nombre arriba, hora y P C F abajo; nada lleva "…" ("el desglose sale con puntos suspensivos porque no cabe") */
+  /* v290 · cabecera de comida (el dueño, 1-oct: "si no le pones la hora, se ve un huecote… la hora al renglón del nombre… los macros alineados a
+     la izquierda… el protagonista es el que tiene más gramos"; eligió: total a la derecha, ··· debajo y [+ food] debajo de los dos).
+     Renglón 1: › nombre · hora ……… total · renglón 2: P · C · F ……… ··· · renglón 3: [+ food]. Tocar nombre, macros o total pliega la comida. */
+  .mhd{display:grid; grid-template-columns:minmax(0,1fr) var(--mcol); align-items:end;}
+  .mtg{grid-column:1 / -1; grid-row:1; display:grid; grid-template-columns:var(--s5) minmax(0,1fr) auto; align-content:center; row-gap:var(--s1); min-width:0; min-height:44px; padding:var(--s2) 0; border:0; background:none; color:inherit; font-family:inherit; text-align:left; line-height:var(--lh-ui); cursor:pointer;}
   .mchev{display:inline-block; grid-column:1; grid-row:1; align-self:start; width:var(--s5); font-size:var(--t-section); color:var(--o30); transform-origin:.3em 50%; transition:transform var(--dur-2) var(--ease-out);} .mrec.open .mchev{transform:rotate(90deg);}   /* gira sobre el centro del glifo (medio avance de la mono), no de su caja: abierto queda en su sitio */
-  .mnm{grid-column:2; font-size:var(--t-section); font-weight:800; color:var(--fg); overflow-wrap:anywhere;}   /* un nombre largo baja de renglón, no se corta (B-12) */
-  .mmeta{grid-column:2; display:flex; gap:var(--s3); font-size:var(--t-label); color:var(--o50);}
-  /* v283 · hora y P C F en COLUMNAS alineadas entre comidas (el dueño, 1-oct: "como terminal, con el tab para espaciar o separar, organizar, que tenga jerarquía") */
-  .mmeta .mt{flex:0 0 5ch;} .mmeta .mc{flex:0 0 5ch; text-align:right;}
-  .mkc{height:44px; min-width:calc(5ch + var(--s3)); padding:0 0 0 var(--s3); border:0; background:none; color:var(--o70); font-family:inherit; font-size:var(--t-section); font-weight:700; letter-spacing:var(--ls-num); text-align:right; cursor:pointer;}   /* ancho fijo de 5 cifras ("9,999"): [+ food] cae en la misma columna en todas las comidas */
-  .mhd .gmore{grid-column:4; width:44px; height:44px; margin:0 -12px 0 0; padding:0 12px 0 0; display:flex; align-items:center; justify-content:flex-end; color:var(--o50);}   /* la regla base de .gmore lo manda a la columna 4 (rejilla vieja de .ghead) */
+  .mnm{grid-column:2; grid-row:1; font-size:var(--t-section); font-weight:800; color:var(--fg); overflow-wrap:anywhere;}   /* un nombre largo baja de renglón, no se corta (B-12) */
+  .mtm{font-size:var(--t-label); font-weight:400; color:var(--o50); letter-spacing:0; white-space:nowrap;}
+  .mkc{grid-column:3; grid-row:1; align-self:start; padding-left:var(--s3); color:var(--o70); font-size:var(--t-section); font-weight:700; letter-spacing:var(--ls-num); text-align:right; white-space:nowrap;}
+  .mtg .mmac{grid-column:2; grid-row:2; font-size:var(--t-label); color:var(--o50);} .mtg .mmac b{color:var(--fg); font-weight:700;}
+  .mhd .gmore{grid-column:2; grid-row:1; position:relative; z-index:1; width:44px; height:22px; margin:0 -12px 0 0; padding:0 12px 0 0; display:flex; align-items:center; justify-content:flex-end; color:var(--o50);}   /* en el renglón de los macros; su toque de 44 baja al renglón de [+ food] */
+  .mhd .gmore::after{content:''; position:absolute; left:0; top:0; width:44px; height:44px;}
+  .mhd .madd{grid-column:1 / -1; grid-row:2; justify-self:start; margin:-10px 0 -8px calc(var(--s5) - var(--s2));}   /* un renglón de 26 con toque de 44 */
   /* v257 · "más acciones": tres puntos dibujados — el texto ··· a 16 salía diminuto y pegado al total. Toque de 44×44
      que se mete 12 px en el margen de la página. v280 · de 3 a 2 px (3 de aire), el grueso del punto de la tipografía:
      "los tres puntitos siguen estando muy grandes para el estilo gráfico que llevamos"; 20 px entre el total y el primero. */
   .dots3{display:block; width:2px; height:2px; margin-right:10px; border-radius:50%; background:currentColor; box-shadow:5px 0 0 currentColor, 10px 0 0 currentColor/*ds:exempt*/;}   /* la "sombra" dibuja los puntos 2 y 3 */
   .mlbody{padding-bottom:var(--s2);}
-  .mit{display:flex; align-items:center; gap:var(--s3); width:100%; min-height:36px; padding:0 var(--mcol) 0 var(--s5); border:0; background:none; color:inherit; font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
+  .mit{display:flex; align-items:center; gap:var(--s3); width:100%; min-height:36px; padding:0 0 0 var(--s5); border:0; background:none; color:inherit; font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
   .mit .nm{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--o70);} .mit .q{font-weight:700; color:var(--o70);} .mit .kc{flex:0 0 auto; color:var(--o50);}
   .mit:active,.mit.exp{background:var(--o10);}
   .mit .nm1{display:block; overflow:hidden; text-overflow:ellipsis;} .mit .mmac{display:block; font-size:var(--t-label); color:var(--o50); line-height:var(--lh-tight); margin-top:1px;} .mit .mmac b{color:var(--fg); font-weight:700;}   /* v271 · macros por alimento, el principal en blanco */
@@ -483,7 +498,7 @@
   /* v256 · modo enfoque: solo el ejercicio en curso se lee; lo demás queda tenue (tocarlo lo vuelve el actual) */
   .wline{position:relative; display:flex; align-items:center; gap:var(--s3); width:100%; height:32px; margin:var(--s3) 0 var(--s4); padding:0; border:0; background:none; color:var(--fg); font-family:inherit; text-align:left; cursor:pointer;}
   .wline .wtn{font-size:var(--t-section); font-weight:800; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .wline .wtm{margin-left:auto; font-size:var(--t-label); color:var(--o50); white-space:nowrap;} .wline .wtx{font-size:var(--t-label); color:var(--o30);}
+  .wline .wtm{margin-left:auto; font-size:var(--t-label); color:var(--o50); white-space:nowrap;} .wline .wtx{font-size:var(--t-label); color:var(--o30);} .wline .wtx.up{display:inline-block; transform:rotate(180deg);}
   .wline .wtb{position:absolute; left:0; right:0; bottom:0; margin:0;}
   .wfocus .mbody{border-left:0; padding-left:0; margin-left:0;}
   .wfocus .ex:not(.current){opacity:var(--op-dim); cursor:pointer;} .wfocus .ex:not(.current) *{pointer-events:none;}
@@ -613,13 +628,13 @@
   .sethr{float:left; font-size:var(--t-label); font-weight:400; color:var(--o40); margin-left:var(--s3);}
   .hrblk{margin:var(--s2) 0 10px;}
   .ready{text-align:left; font-size:var(--t-label); color:var(--o50); margin:6px 0 0; cursor:pointer; letter-spacing:var(--ls-ui);} .ready b{color:var(--fg); font-weight:700;} .ready .rk{letter-spacing:var(--ls-caps);} .ready .rl{color:var(--o35);}
-  .ready.rec{display:flex; align-items:center; min-height:44px; margin-top:0; font-size:var(--t-data);} .ready.rec .rk{font-weight:800; letter-spacing:var(--ls-ui); color:var(--o50);} .ready.rec b{font-weight:800; margin-left:1ch;} .ready.rec .rl{color:var(--o40); margin-left:1ch;} .hrsvg{display:block; width:100%; height:56px; color:var(--o60); margin-bottom:var(--s2);}
+  .ready.rec{display:flex; align-items:center; min-height:44px; margin-top:0; font-size:var(--t-label);} .ready.rec .rk{font-weight:800; letter-spacing:var(--ls-ui); color:var(--o50);} .ready.rec b{font-weight:800; margin-left:1ch;} .ready.rec .rl{color:var(--o40); margin-left:1ch;} .hrsvg{display:block; width:100%; height:56px; color:var(--o60); margin-bottom:var(--s2);}
   /* E5 · recovery (los músculos de la sesión) y readiness (tú) en una fila; debajo, los músculos de hoy: una fila por músculo
      en columnas alineadas (músculo · medidor · estado · falta). Monocromo y con jerarquía por FILA entera: lo que falta (.no) va
      en blanco, lo que casi (.ca) en medio y lo fresco / sin dato (.fr .sd) tenue con su medidor apagado (B-07: lo que está en
      orden no se enfatiza). Si todo está fresco el bloque no se pinta: "recovery ~100" ya lo dice. */
   .scores{display:flex; flex-wrap:wrap; column-gap:var(--s6);} .ready.rec .rw{font-weight:400; color:var(--o40); margin-left:1ch;}
-  .dmus{margin-bottom:var(--s2); cursor:pointer;} .dmus:active{opacity:var(--op-press);} .dmus .line .k{color:var(--o70);} .dmus .line .v{font-weight:700; font-variant-numeric:tabular-nums;} .dmus .line.fr .k,.dmus .line.fr .v{color:var(--o50); font-weight:400;}   /* v285 · lista: músculo ···· % */
+  .dmus{margin-bottom:var(--s2); cursor:pointer;} .dmus .line{font-size:var(--t-label);} .dmus:active{opacity:var(--op-press);} .dmus .line .k{color:var(--o70);} .dmus .line .v{font-weight:700; font-variant-numeric:tabular-nums;} .dmus .line.fr .k,.dmus .line.fr .v{color:var(--o50); font-weight:400;}   /* v285 · lista: músculo ···· % */
   /* tablas de las hojas de recovery / readiness y de la lista de sesiones de su gráfica: columnas de ancho fijo en ch (la
      fuente es mono), un dato por columna; .hd = encabezado, .n = a la derecha, .q = tenue. La fila que se toca mide 44. */
   .rvr{display:grid; column-gap:2ch; align-items:center; min-height:44px; font-size:var(--t-data); letter-spacing:0; font-variant-numeric:tabular-nums;}
@@ -632,7 +647,7 @@
   .del{font-size:var(--t-section); color:var(--o40); text-align:center; cursor:pointer; background:none; border:0; height:36px; line-height:36px; padding:0;}
   .pair{display:flex; align-items:center; gap:var(--s2); margin-bottom:6px;} .pair .setn{width:22px; flex:0 0 22px;} .pair .prows{flex:1;}
   .addrow{display:grid; gap:var(--s2); margin-top:10px;} .addrow.afree{grid-template-columns:22px 1fr 38px 44px 40px 18px;} .addrow.amach{grid-template-columns:22px 28px 1fr 38px 44px 40px 18px;} .addrow.auni{grid-template-columns:22px 20px 1fr 38px 44px 40px 18px;}
-  .addbtn{font-size:var(--t-label); color:var(--o60); background:none; border:0; cursor:pointer; white-space:nowrap; text-align:left; padding:var(--s4) 6px; margin:calc(-1 * var(--s4)) -6px;}
+  .addbtn{font-size:var(--t-label); color:var(--o60); background:none; border:0; cursor:pointer; white-space:nowrap; text-align:left; padding:var(--s5) 6px; margin:calc(-1 * var(--s5)) -6px; font-family:inherit; letter-spacing:var(--ls-ui);}
   .aleft{display:flex; gap:var(--s5);} .addrow.afree .aleft{grid-column:2/6;} .addrow.amach .aleft{grid-column:2/6;} .addrow.auni .aleft{grid-column:3/6;}
   .addrow.afree .aex{grid-column:5/7; justify-self:end;} .addrow.amach .aex{grid-column:6/7; justify-self:end;} .addrow.auni .aex{grid-column:6/7; justify-self:end;}
 
@@ -698,18 +713,8 @@
   .lk{font-size:var(--t-label); line-height:var(--lh-tight); background:transparent; border:none; cursor:pointer; color:var(--o40); padding:var(--s2) var(--s1); vertical-align:middle;} .lk.on{color:var(--fg); font-weight:700;}
   .hbal{text-align:center; font-size:var(--t-label); color:var(--o50); margin-top:var(--s3);}
   .kpanel .rule{margin:var(--s5) calc(-1 * var(--s5));}   /* v269 · reglas a sangre dentro del panel del anillo, mismo aire arriba y abajo */
-  .kp-unit{display:flex; justify-content:flex-end; margin-top:var(--s3);}
-  /* v276 · carrusel del panel de macros: láminas con scroll-snap, pestañas de texto abajo */
-  .mvtrack{display:flex; align-items:flex-start; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; scroll-snap-type:x mandatory; scrollbar-width:none; -webkit-overflow-scrolling:touch;} .mvtrack::-webkit-scrollbar{display:none;}
-  .mvslide{flex:0 0 100%; min-width:0; scroll-snap-align:start; scroll-snap-stop:always;}
-  .mvtabs{margin:var(--s3) 0 0;} .mvtabs span{flex:1 1 auto; min-width:44px; letter-spacing:0;}
-  .mvml{display:grid; grid-template-columns:64px auto 1fr; align-items:center; column-gap:var(--s3); margin-top:var(--s4); font-size:var(--t-data);} .mvml:first-child{margin-top:0;} .mvml .ml{color:var(--o50);} .mvml .mv{text-align:right; color:var(--o60); white-space:nowrap;} .mvml .g,.mvleg .g,.mvtab .g{color:var(--o40);}
-  .mvsl{display:grid; grid-template-columns:48px 1fr; align-items:center; column-gap:var(--s3); margin-top:var(--s3); font-size:var(--t-data);} .mvsl:first-child{margin-top:0;} .mvsl .ml{color:var(--o50);}
-  .mvstack{display:flex; height:10px; background:var(--track);} .mvstack.thin{height:4px;} .mvstack>i{display:block; height:100%;}
-  .mvp{background:var(--fill); stroke:var(--fill);} .mvc{background:var(--o60); stroke:var(--o60);} .mvf{background:var(--o30); stroke:var(--o30);}
-  .mvleg{display:flex; flex-wrap:wrap; gap:var(--s2) var(--s4); margin-top:var(--s4); font-size:var(--t-data); color:var(--o70);} .mvleg i{display:inline-block; width:8px; height:8px; margin-right:var(--s1);}
-  .mvtab{font-size:var(--t-data);} .mvtr{display:grid; grid-template-columns:72px 1fr 1fr 48px; column-gap:var(--s3); padding:var(--s2) 0; border-bottom:var(--bw-sep) solid var(--o10); text-align:right;} .mvtr .ml{text-align:left; color:var(--o50);} .mvth{color:var(--o40); font-size:var(--t-label);}
-  .mvdonut{display:flex; align-items:center; gap:var(--s5);} .mvdonut svg{width:112px; height:112px; flex:0 0 auto;} .mvdonut .mvleg{flex-direction:column; margin-top:0;}
+  .kp-unit{display:flex; justify-content:flex-end; margin-top:var(--s2);}
+  .kp-rad{min-height:44px; align-items:center; margin-top:var(--s2);} .kpanel .macro-rad{margin:var(--s3) auto 0;}   /* v290 · fila `radar ›`: plegada de entrada */
   .shmhero{display:flex; justify-content:center; margin:var(--s2) 0 var(--s5);} .shmhero.good .ring-fill{stroke:var(--good);} .shmhero.over .ring-fill{stroke:var(--bad);} .shviz{margin-bottom:var(--s3);} .shviz .rings{margin-top:var(--s3);}
   .lkc{text-align:center; margin:10px 0 6px;} .lkc b{font-size:var(--t-display); font-weight:800; color:var(--fg);} .lkc .u{font-size:var(--t-data); color:var(--o50);}
   .lnut{max-height:38vh; overflow-y:auto; -webkit-overflow-scrolling:touch; margin:var(--s1) 0 10px;} .lnut .line{padding:var(--s2) 0;}
@@ -1066,7 +1071,7 @@
   .stk-blk{border-top:var(--bw-rule) solid var(--line);}
   .stk-blk summary{list-style:none;cursor:pointer;padding:var(--s3) 0;font-size:var(--t-label);letter-spacing:var(--ls-caps);color:var(--o50);}
   .stk-blk summary::-webkit-details-marker{display:none;}
-  .stk-blk summary::before{content:'▸ ';color:var(--o30);}
+  .stk-blk summary::before{content:'› ';color:var(--o30);}
   .stk-blk[open] summary::before{content:'▾ ';}
   .toggles.agf{margin-bottom:var(--s4);}
   .agm{font-weight:700;} .agm.g{color:var(--good);} .agm.w{color:var(--warn);} .agm.b{color:var(--bad);} .agm.o{color:var(--o40); font-weight:400;}
@@ -1175,7 +1180,7 @@
 
 <script>
 "use strict";
-const APP_V='v289';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v290';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -1459,7 +1464,7 @@ async function nativeBoot(){ const fs=capP('Filesystem'); if(!fs)return;
   const best=[a,b].filter(x=>x&&x.db&&x.db.profile).sort((x,y)=>(y._savedMs||0)-(x._savedMs||0))[0];
   _mirrorSeq=Math.max((a&&a._seq)||0,(b&&b._seq)||0);
   // v265 · el archivo manda solo si es más reciente (sello) o si la base local está vacía; nunca por tener más registros
-  if(best&&(seqOf(best.db)>seqOf(db)||!(db&&db.profile&&db.profile.username))){ db=migrate(best.db); save(); render(); try{ toast('↺ datos recuperados del respaldo de la app'); }catch(_){} }
+  if(best&&(seqOf(best.db)>seqOf(db)||!(db&&db.profile&&db.profile.username))){ db=migrate(best.db); save(); render(); try{ toast('✓ datos recuperados del respaldo de la app'); }catch(_){} }
   else if(dbMass(db)>0){ nativeMirrorSoon(JSON.stringify(db)); } }
 // files in the native app: write to Documents (visible in Archivos) and open the share sheet — <a download> doesn't work in a WebView
 async function nativeShareFile(name,text,enc){   // v256: enc='base64' para la imagen const fs=capP('Filesystem'), sh=capP('Share'); if(!fs){ toast('⚠ no pude acceder a Archivos','err'); return; }
@@ -1561,7 +1566,7 @@ function save(){ if(_saveT){ clearTimeout(_saveT); _saveT=null; }
 // aviso PERMANENTE mientras no se pueda guardar (el toast se iba y dejaba a la app fallando en silencio)
 function saveFailed(){ try{ let b=document.getElementById('savebar');
     if(!b){ b=document.createElement('div'); b.id='savebar'; b.className='savebar'; document.getElementById('app').appendChild(b); }
-    b.innerHTML='<span class="sbt">no se está guardando</span><a data-act="storage">[ver por qué]</a><a data-act="export">[exportar]</a>';
+    b.innerHTML='<span class="sbt">no se está guardando</span><a data-act="storage">ver por qué</a><a data-act="export">exportar</a>';
   }catch(_){} }
 function saveOK(){ try{ const b=document.getElementById('savebar'); if(b)b.remove(); }catch(_){} }
 function saveErrTxt(){ if(!_saveErr)return ''; const n=(_saveErr.name||''), m=(_saveErr.message||'');
@@ -1749,7 +1754,7 @@ function openStorage(){
     +rows.map(r=>`<div class="stline"><span class="stk">${escTxt(nm(r.k))}</span><span class="stv">${kb(r.b)}</span></div>`).join('')
     +`<div class="grp-label sub">COPIES</div><div id="st_copies"><div class="submeta">${trkSpinHTML('cargando')}</div></div>`
     +`<div class="grp-label sub">BOOT LOG</div><div id="st_boot"><div class="submeta">${trkSpinHTML('cargando')}</div></div>`
-    +`<div class="u-tr u-mt8"><a data-act="stdiag" class="u-tap u-o60 u-data">[copiar diagnóstico]</a></div>`
+    +`<div class="u-tr u-mt8"><a data-act="stdiag" class="vb">copiar diagnóstico</a></div>`
     +`<div class="sheetbtns u-mt12">${orph?`<button class="ok" data-act="stfree">liberar ${kb(orph)}</button>`:''}<button class="ok" data-act="bakshare">guardar respaldo</button><button class="cancel" data-act="closemodal">cerrar</button></div>`
     +`<div class="submeta u-mt8">"guardar respaldo" abre la hoja de iOS: elige Archivos y la carpeta que quieras. Último: ${daysSinceBackup()>=999?'nunca':'hace '+daysSinceBackup()+' d'}.</div>`
     +(orph?`<div class="submeta u-mt8">las "fotos viejas" son copias que dejaron dos reparaciones ya aplicadas (2026-08 y 2026-09); nada las lee.</div>`:''));
@@ -1763,7 +1768,7 @@ function copyRowsHTML(ix){ const kb=b=>b>=1048576?(b/1048576).toFixed(2)+' MB':M
   const ks=Object.keys(ix).filter(k=>k==='latest'||COPY_RE.test(k)).sort((a,b)=>((ix[b]&&ix[b].t)||0)-((ix[a]&&ix[a].t)||0)).slice(0,20);
   if(!ks.length)return '<div class="submeta">sin copias todavía</div>';
   return ks.map(k=>{ const m=ix[k]||{}; return '<div class="stline"><span class="stk">'+escTxt(copyLabel(k))+' · '+(m.day?fmtShort(m.day):'—')+' '+hhmm(m.t)+'</span><span class="stv">'+(m.mass||0)+' reg · '+kb((m.len||0)*2)+'</span></div>'
-    +'<div class="u-tr u-mb6"><a data-act="stmissing" data-k="'+escTxt(k)+'" class="u-tap u-o60 u-data">[lo que falta]</a><a data-act="strestore" data-k="'+escTxt(k)+'" class="u-tap u-o60 u-data u-ml8">[restaurar]</a></div>'; }).join(''); }
+    +'<div class="u-tr u-mb6"><a data-act="stmissing" data-k="'+escTxt(k)+'" class="vb">lo que falta</a><a data-act="strestore" data-k="'+escTxt(k)+'" class="vb u-ml8">restaurar</a></div>'; }).join(''); }
 function bootLogHTML(a){ a=Array.isArray(a)?a.slice(-10).reverse():[]; if(!a.length)return '<div class="submeta">sin arranques registrados todavía</div>';
   return a.map(J=>{ const fl=(J.flags||[]).filter(f=>f!=='bakMoved');
     return '<div class="stline"><span class="stk">'+fmtShort(todayISO(new Date(J.t||0)))+' '+hhmm(J.t)+' · '+escTxt((J.ctx&&J.ctx.app)||'?')+(J.v?' · '+escTxt(J.v):'')+'</span><span class="stv">'+escTxt(J.chosen||'?')+(J.decision&&J.decision!=='none'?' · '+escTxt(J.decision):'')+(fl.length?' · '+escTxt(fl.join(' ')):'')+'</span></div>'; }).join(''); }
@@ -2511,7 +2516,7 @@ function openExProfile(name,back,gymSel){
    <div class="grp-label first">PRIME MOVERS <span class="u-o35 u-w4">· ${tSrc}</span></div>
    <div class="submeta u-mb6">tus etiquetas no cambian · esto es a qué músculo real cuenta el volumen, la recuperación y las sugerencias</div>
    <div class="field"><label>PRIMARIO</label><select id="pf_prim" class="pfsel"><option value="">— sin resolver —</option>${mOpt(tg[0]&&tg[0].id)}</select></div>
-   <div class="field"><label>SECUNDARIOS · cuánto cuenta la serie (0–1)</label><div id="pf_secs">${sec}</div><button class="addbtn u-mt4" data-act="pf_addsec">[+ secundario]</button></div>
+   <div class="field"><label>SECUNDARIOS · cuánto cuenta la serie (0–1)</label><div id="pf_secs">${sec}</div><button class="addbtn u-mt4" data-act="pf_addsec">+ secundario</button></div>
    <div class="grp-label sub">RESISTANCE PROFILE <span class="u-o35 u-w4">· ${p.mach?'de la máquina de '+escTxt(gym||'este gym'):'todos los gyms'} · ${srcTxt(p.rpSrc)}</span></div>
    ${tog('pf_rp',RP_OPTS,p.rp,p.rpSrc)}
    <div class="submeta u-mt4 u-mb0 u-mx0">⬆ más duro al final (acortado) · ⬇ más duro al inicio (estirado) · ↔ a mitad</div>
@@ -3224,7 +3229,7 @@ function renderHome(){
     cta = `<div class="cta"><button class="start" data-act="start">▶ start workout</button>`
       +(restToday()?`<div class="secondary"><span class="restok">rest today ✓</span><button class="b" data-act="unrest">undo rest</button><button class="b" data-act="skip">skip day</button></div>`
         :`<div class="secondary"><button class="b" data-act="rest" title="descanso programado: no mueve tu split">rest day</button>${_plan.mode==='weekly'?'':'<button class="b" data-act="skip" title="salta este día del split">skip day</button>'}</div>`)
-      +`<div class="u-tc u-mt12"><a data-act="loglater" class="u-label u-o60 u-tap u-py2 u-px6">[+ log past session]</a></div></div>`;
+      +`<div class="u-tc u-mt12"><a data-act="loglater" class="vb">+ log past session</a></div></div>`;
   } else if(isPast){
     cta = dayPast
       ? `<div class="cta"><button class="start" data-act="vieweditsession" data-id="${dayPast.id}">ver sesión pasada · ${fmtShort(dayPast.date)}</button></div>`
@@ -3237,14 +3242,14 @@ function renderHome(){
     +`<hr class="rule"/>`
     +`<div class="rot"><span class="lbl">ROTATION</span><span class="n"><span class="arrow" data-act="prevday">‹</span> day ${di+1}/${dayCount()}${_plan.mode==='cycle'?' · '+cycleLen()+' d':_plan.mode==='weekly'?' · '+DOW_ES[dowOf(_nx||todayISO())]:''}${offLabel} <span class="arrow" data-act="nextday">›</span></span></div>`
     +`<div class="segs">${segs}</div>`
-    +`<div class="ctrls"><a data-act="changesplit">[change split]</a><a data-act="changegym">[change gym]</a><a data-act="history">[history]</a></div>`
+    +`<div class="ctrls"><a data-act="changesplit">change split</a><a data-act="changegym">change gym</a><a data-act="history">history</a></div>`
     +dayHeadHTML(l1,escTxt(day.name),[escTxt(db.split.name),escTxt(intensityTag()),escTxt(db.activeGym||''),day.exercises.length+' ejercicios'].filter(Boolean).join(' · '))
     +(isCurrent?dayScoresHTML(day):'')
-    +`<div class="u-mt10 u-mb2 u-mx0"><a data-act="togglepreview" class="u-label u-o60 u-tap u-py2 u-px6 u-lsui">${state.previewDay?'[ ocultar rutina ▴ ]':'[ ver rutina ▾ ]'}</a></div>`
+    +`<div class="u-mt10 u-mb2 u-mx0"><a data-act="togglepreview" class="vb" role="button" aria-expanded="${!!state.previewDay}">${state.previewDay?'ocultar rutina':'ver rutina'}</a></div>`
     +(state.previewDay?dayPreviewHTML(day):'')
     +cta
     +stimulusSection()
-    +`<hr class="rule"/><div class="section u-mb10"><div class="h"><span class="s">//</span>STATS</div><div class="meta" data-act="settings">[settings]</div></div><div class="u-label u-o40 u-mt-n4 u-mb6 u-mx0">mi día · hoy</div>`
+    +`<hr class="rule"/><div class="section u-mb10"><div class="h"><span class="s">//</span>STATS</div><div class="meta vb" role="button" data-act="settings">settings</div></div><div class="u-label u-o40 u-mt-n4 u-mb6 u-mx0">mi día · hoy</div>`
     +`<div class="line stat"><span class="k">sessions · 7d</span><span class="dots"></span><span class="v">${s7.count}</span></div>`
     +`<div class="line stat"><span class="k">uptime</span><span class="dots"></span><span class="v">${uptimeDays()}d</span></div>`
     +`<div class="line stat tap" role="button" tabindex="0" data-act="editsteps"><span class="k">steps · today</span><span class="dots"></span><span class="v">${(db.steps&&db.steps[todayISO()])?db.steps[todayISO()].toLocaleString():'— tap'}</span></div>`
@@ -4741,9 +4746,10 @@ function _v271SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
   A('5.2 h → 5 h 12 min', fmtH(5.2)==='5 h 12 min'); A('0.5 h → 30 min', fmtH(0.5)==='30 min'); A('7 h exactas', fmtH(7)==='7 h');
   A('60 h → 2 d 12 h', fmtDur(3600)==='2 d 12 h'); A('sueño al minuto con hora de inicio y fin', sleepMinOf({start:'23:10',end:'07:02',hours:7.9})===472);
   A('fases: dormido = REM+core+profundo', sleepMinOf({start:'23:00',end:'07:00',ph:{awake:20,rem:90,core:250,deep:60}})===400);
-  // macros por alimento: fuente principal por kcal
+  // macros por alimento: fuente principal por gramos (v290)
   A('pollo: proteína principal', /<b>P 31<\/b>/.test(macroLineHTML({protein:31,carbs:0,fat:3})));
-  A('aguacate: grasa principal por kcal', /<b>F 15<\/b>/.test(macroLineHTML({protein:2,carbs:9,fat:15})));
+  A('aguacate: grasa principal', /<b>F 15<\/b>/.test(macroLineHTML({protein:2,carbs:9,fat:15})));
+  A('v290 · gana el de más gramos, no el de más kcal (20 P / 19 F → P)', /<b>P 20<\/b>/.test(macroLineHTML({protein:20,carbs:5,fat:19}))&&!/<b>F/.test(macroLineHTML({protein:20,carbs:5,fat:19})));
   A('agua: sin línea', macroLineHTML({protein:0,carbs:0,fat:0})==='');
   // cancel NO agrega (sandbox)
   const real=db, _t=toast, _rr=reRender; const app=document.getElementById('app');
@@ -4884,20 +4890,85 @@ function _onbSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK al
     A('fuera de rango no cuenta en el cálculo', onbProfile({w:'15',bwu:'lbs',age:'24',h:'175'}).typed===false&&onbCheck('body',{w:'66',bwu:'lbs',age:'',h:''})==='');
   } finally { db=real; state.screen=rs; }
   console.log('onboarding self-check OK'); }
-function _macroVizSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK macros · versiones: '+nm); };
-  const t={kcal:1850,protein:142,carbs:200,fat:60}, g={kcal:2400,protein:180,carbs:250,fat:70}, s=macroSplit(t);
+// v290 · self-check: un solo [verbo] a 10 px (TX1), gym con tamaños parejos, sin glifos fuera de la fuente, y los aros de
+// "te queda" arriba de add food / porción / aproximada con vista previa en vivo (M6). Sandbox; restaura todo.
+function _v290SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v290: '+nm); };
+  const real=db, sb0=_sbx, K=['screen','_scroll','_paintedKey','_viewScroll','macroDate','macroOpen','macroPct','previewDay','selDay','work','_lfold','_lfoldD','_mealOpen'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
+  const v=document.getElementById('view'), md=()=>document.getElementById('modal'), el=id=>document.getElementById(id), fa0=window._faCtx, fl0=window._faLock, lg0=window._log;
+  const tap=e=>e.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})), fs=e=>getComputedStyle(e).fontSize, R=e=>e.getBoundingClientRect();
+  const T=todayISO(), Y=shiftDate(T,-1), S=(w,r)=>({w:String(w),r:String(r),rir:'1',unit:'lbs',side:null,done:true});
+  _sbx=true;
+  try{
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',sex:'m',age:25,heightCm:175,weightKg:70},gyms:['AGON'],activeGym:'AGON',settings:{unit:'lbs'},
+      split:{name:'s',days:[{id:'d1',name:'A',exercises:[{id:'e1',name:'press',muscle:'chest',type:'machine',sets:2},{id:'e2',name:'curl',muscle:'biceps',type:'free',sets:2}]}]},
+      sessions:[{id:'s1',date:Y,dayId:'d1',gym:'AGON',exercises:[{exId:'e1',name:'press',muscle:'chest',type:'machine',sets:[S(100,8),S(100,7)]},{exId:'e2',name:'curl',muscle:'biceps',type:'free',sets:[S(30,10)]}]}],
+      foods:[{id:'f1',name:'pollo',brand:'',base:'g',per100:{kcal:100,protein:10,carbs:10,fat:2},sizes:{},lastUsed:1}],
+      meals:{[T]:[{id:'a',tag:'lunch',name:'pollo',qty:1,kcal:600,protein:50,carbs:60,fat:20}]}});
+    db.goalHist=db.goalHist||{}; db.goalHist[T]=Object.assign({},goalsFor(T),{kcal:2400,protein:180,carbs:250,fat:70}); db.rotIdx=0; db.activeWork=null; bumpIdx();
+    // 1 · TX1 · gym: todo [verbo] mide 10 px, los corchetes los pone el CSS y nada se desacomoda
+    state.screen='home'; state.selDay=null; state.previewDay=false; state.work=null; render();
+    { const verbs=Array.from(v.querySelectorAll('button.b,.vb,.ctrls a,.addbtn')).filter(e=>R(e).width>0);
+      A('gym trae sus verbos: change split · change gym · history · ver rutina · rest day · + log past session', ['change split','change gym','history','ver rutina','rest day','+ log past session','settings'].every(t=>verbs.some(e=>e.textContent===t)));
+      A('todos miden 10 px', verbs.every(e=>fs(e)==='10px'));
+      A('los corchetes los pone el CSS, en --o40', verbs.every(e=>getComputedStyle(e,'::before').content==='"["'&&getComputedStyle(e,'::after').content==='"]"'));
+      A('ninguna acción trae corchetes escritos a mano', !Array.from(v.querySelectorAll('[data-act],button,a')).some(e=>/^\s*\[.*\]\s*$/.test(Array.from(e.childNodes).filter(n=>n.nodeType===3).map(n=>n.nodeValue).join(''))));
+      const vr=v.querySelector('[data-act="togglepreview"]'); A('[ver rutina] se toca a 44', R(vr).height>=44&&R(vr).width>=44);
+      const y0=R(vr).top; tap(vr); const vr2=v.querySelector('[data-act="togglepreview"]');
+      A('…abre la rutina sin moverse y pasa a [ocultar rutina]', vr2.textContent==='ocultar rutina'&&Math.abs(R(vr2).top-y0)<=1&&vr2.getAttribute('aria-expanded')==='true'); tap(vr2);
+      const ln=Array.from(v.querySelectorAll('.dmus .line'));
+      A('la lista de músculos baja a 10 px y sigue en una fila: músculo ···· %', ln.length>=1&&ln.every(l=>fs(l)==='10px'&&R(l.querySelector('.k')).right<=R(l.querySelector('.v')).left&&Math.abs(R(l.querySelector('.k')).top-R(l.querySelector('.v')).top)<=4));
+      A('recovery / readiness a 10 px, con el número en negrita', Array.from(v.querySelectorAll('.ready.rec')).every(e=>fs(e)==='10px'&&+getComputedStyle(e.querySelector('b')).fontWeight>=700));
+      A('el nombre del día sigue en 20 px y ▶ start workout es el único primario', fs(v.querySelector('.wname'))==='20px'&&v.querySelectorAll('button.start').length===1); }
+    // 2 · glifos que la fuente no trae: ya no salen en gym, macros ni en las hojas de comida
+    { const BAD=/[▴▸←↻⎘✎↺]/; state.screen='macros'; state.macroDate=null; state.macroOpen=true; state._lfold=null; render();
+      A('gym y macros sin ▴ ▸ ← ↻ ⎘ ✎ ↺', !BAD.test(renderHome())&&!BAD.test(v.innerHTML));
+      // 3 · M6 · aros de "te queda"
+      const num=()=>Array.from(document.querySelectorAll('#frings .frc .num')).map(e=>e.textContent).join(' | ');
+      const tmp=document.createElement('div'); tmp.innerHTML=foodRingsHTML();
+      A('te queda = meta − lo comido (kcal · P · C · F)', Array.from(tmp.querySelectorAll('.num')).map(e=>e.textContent).join(' | ')==='1,800 | 130 | 190 | 50'&&Array.from(tmp.querySelectorAll('.cap')).map(e=>e.textContent).join()==='kcal,P,C,F'&&!tmp.querySelector('.ring-add'));
+      tmp.innerHTML=foodRingsHTML({kcal:300,protein:20,carbs:30,fat:60});
+      A('lo que estás por agregar entra en gris y el número es lo que quedaría; en rojo solo el que se pasa', Array.from(tmp.querySelectorAll('.num')).map(e=>e.textContent).join(' | ')==='1,500 | 110 | 160 | -10'&&tmp.querySelectorAll('.ring-add').length===4&&tmp.querySelectorAll('.num.u-bad').length===1&&tmp.querySelector('[data-k="fat"] .num').classList.contains('u-bad'));
+      tmp.innerHTML=foodRingsHTML(null,'a'); A('al editar un alimento, primero se resta el suyo', Array.from(tmp.querySelectorAll('.num')).map(e=>e.textContent).join(' | ')==='2,400 | 180 | 250 | 70');
+      openFoodAdd('lunch');
+      A('add food: los aros van arriba, antes del buscador', !!el('frings')&&num()==='1,800 | 130 | 190 | 50'&&R(el('frings')).bottom<=R(el('fa_q')).top&&Array.from(document.querySelectorAll('#frings .ring')).every(r=>Math.round(R(r).width)===56));
+      A('…con [cambiar] de comida', !!md().querySelector('[data-act="famealwheel"]')); snapshotFaCtx();
+      A('…y volver de la porción lo conserva (antes la comida quedaba fija)', window._faCtx&&window._faCtx.lock===false);
+      openFoodAdd('lunch',true); snapshotFaCtx(); A('una comida que sí viene fija sigue fija', !md().querySelector('[data-act="famealwheel"]')&&window._faCtx.lock===true); window._faCtx=null;
+      openLog(db.foods[0],{tag:'lunch',unit:'g',qty:100});
+      const y1=R(el('l_qty')).top, h1=R(el('frings')).height;
+      A('la porción: 100 g de pollo ya descuentan de los aros', num()==='1,700 | 120 | 180 | 48'&&document.querySelectorAll('#frings .ring-add').length===4);
+      el('l_qty').value='300'; el('l_qty').dispatchEvent(new Event('input',{bubbles:true}));
+      A('cambiar la cantidad los actualiza en vivo, sin mover nada', num()==='1,500 | 100 | 160 | 44'&&Math.abs(R(el('l_qty')).top-y1)<=1&&Math.abs(R(el('frings')).height-h1)<=1);
+      A('[‹ back] y [cancel] son verbos de 10 px', Array.from(md().querySelectorAll('.vb,button.cancel')).every(e=>fs(e)==='10px')&&!BAD.test(md().innerHTML));
+      closeModal(); openLog(db.foods[0],{tag:'lunch',editId:'a',unit:'g',qty:100});
+      A('editar un registro: su aporte anterior no cuenta dos veces', num()==='2,300 | 170 | 240 | 68'); closeModal();
+      openApproxMeal('lunch'); el('am_p').value='40'; el('am_p').dispatchEvent(new Event('input',{bubbles:true}));
+      A('aproximada: teclear macros mueve los aros', num()==='1,640 | 90 | 190 | 50'&&!BAD.test(md().innerHTML)); closeModal(); }
+    console.log('v290 self-check OK');
+  } finally { try{ if(md())closeModal(); }catch(_){} window._faCtx=fa0; window._faLock=fl0; window._log=lg0;
+    db=real; K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; _sheetMem=null; bumpIdx(); _sbx=sb0; try{ render(); }catch(_){} }
+}
+function _macroVizSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK macros · panel: '+nm); };
+  const t={kcal:1850,protein:142,carbs:200,fat:60}, s=macroSplit(t);
   A('el reparto por kcal suma 100', s.p+s.c+s.f===100&&s.p===30&&s.c===42&&!macroSplit({}));
-  const mp=state.macroPct; state.macroPct=false;
-  try{ MACRO_VIZ.forEach(([k])=>A(k+' se dibuja', macroVizHTML(k,t,g,{rings:'<i>r</i>'}).length>40));
-    A('barras: gramos contra la meta', /142 <span class="g">\/ 180 g/.test(macroVizHTML('bars',t,g)));
-    A('medidor de terminal', /\[<b>[█▏▎▍▌▋▊▉░]+<\/b>\]/.test(macroVizHTML('meter',t,g)));
-    A('tabla con % de la meta', /79%/.test(macroVizHTML('table',t,g))&&/77%/.test(macroVizHTML('table',t,g)));
-  } finally { state.macroPct=mp; }
-  db.settings=db.settings||{}; const rs=db.settings.macroViz;
-  try{ db.settings.macroViz='nope'; A('clave inválida → aros', macroVizKey()==='rings'&&macroVizList().length===5);
-    db.settings.macroViz='donut'; A('la dona entra solo si la eliges', macroVizList().some(v=>v[0]==='donut'));
-    db.settings.macroViz='bars'; A('por defecto el carrusel son 5', !macroVizList().some(v=>v[0]==='donut')&&/data-v="table"/.test(mvzHTML(t,g,'')));
-  } finally { if(rs===undefined)delete db.settings.macroViz; else db.settings.macroViz=rs; }
+  // v290 · solo aros + radar plegable (en sandbox: nada de esto llega al almacenamiento)
+  const sb0=_sbx, K=['screen','macroOpen','macroPct','macroDate','_scroll','_paintedKey'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
+  db.settings=db.settings||{}; const had=Object.prototype.hasOwnProperty.call(db.settings,'radarOpen'), r0=db.settings.radarOpen, v=document.getElementById('view');
+  const tap=el=>el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})), q=s=>v.querySelector(s);
+  _sbx=true;
+  try{ delete db.settings.radarOpen; state.screen='macros'; state.macroOpen=true; state.macroPct=false; state.macroDate=null; render();
+    A('el panel abierto trae los tres aros y ninguna pestaña ni carrusel', v.querySelectorAll('.kpanel .rings .cell').length===3&&!q('.mvtabs')&&!q('#mvtrack')&&!/barras|medidor|reparto|tabla/.test(q('.kpanel').textContent));
+    const row=q('[data-act="radarfold"]');
+    A('el radar viene plegado, en una fila de 44 que dice `radar`', !!row&&row.getAttribute('aria-expanded')==='false'&&!q('.kpanel .macro-rad')&&/^radar/.test(row.textContent)&&row.getBoundingClientRect().height>=44);
+    A('[ver %] es un [verbo] de 10 px con toque de 44', (b=>!!b&&getComputedStyle(b).fontSize==='10px'&&b.getBoundingClientRect().height>=44)(q('[data-act="toggleMacroUnit"]')));
+    const y0=row.getBoundingClientRect().top; tap(row); const row2=q('[data-act="radarfold"]');
+    A('tocarla despliega la gráfica de 7 ejes sin mover la fila, y lo recuerda', !!q('.kpanel .macro-rad svg')&&row2.getAttribute('aria-expanded')==='true'&&db.settings.radarOpen===true&&Math.abs(row2.getBoundingClientRect().top-y0)<=1);
+    const y1=row2.getBoundingClientRect().top; tap(row2);
+    A('…y otra vez la pliega, también sin moverse', !q('.kpanel .macro-rad')&&db.settings.radarOpen===false&&Math.abs(q('[data-act="radarfold"]').getBoundingClientRect().top-y1)<=1);
+    const order=Array.from(q('.kpanel').children).map(e=>e.className.split(' ')[0]).join(',');
+    A('orden: anillo de kcal → balance → aros → [ver %] → radar → INTAKE', /^hero(,hbal)?,rule,rings,kp-unit,line,rule,grp-label/.test(order));
+    A('la tarjeta para compartir sigue trayendo radar y aros', /macro-rad/.test(renderShareMacros())&&/class="rings"/.test(renderShareMacros()));
+  } finally { if(had)db.settings.radarOpen=r0; else delete db.settings.radarOpen; K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; _sbx=sb0; try{ render(); }catch(_){} }
   console.log('macro viz self-check OK'); }
 function _suppSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK suplementos: '+nm); };
   const D=k=>shiftDate(todayISO(),-k), real=db, rs=state.screen, rd=state.macroDate;
@@ -5615,7 +5686,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
       if(prevS){ const bits=fields.filter(f=>f!=='intensity'&&prevS[f]).map(f=>(CARDIO_FL[f]||f)+' '+prevS[f]); if(bits.length) hint=`<div class="setprogline u-label u-o35">${escTxt(bits.join(' · '))}</div>`; }
       body+=`<div class="srow gc-cardio" style="grid-template-columns:${colTpl}" data-swipe="delset" data-exi="${exi}" data-si="${si}" data-rk="${rk(s)}">${setnHTML(labels[si],s.done,'done',exi,si,'')}${cells}<div class="setend">${doneCellHTML(s.done,'done',exi,si)}</div></div>${hint}`;
     });
-    const add=`<div class="addrow afree"><span class="aleft"><button class="addbtn" data-act="addset" data-exi="${exi}">[+ set]</button></span><button class="addbtn aex" data-act="addex" data-exi="${exi}">[+ exercise]</button></div>`;
+    const add=`<div class="addrow afree"><span class="aleft"><button class="addbtn" data-act="addset" data-exi="${exi}">+ set</button></span><button class="addbtn aex" data-act="addex" data-exi="${exi}">+ exercise</button></div>`;
     rows=thead+body+add;
     return `<div class="ex${_curCls}"${_curCls?'':' data-act="excur"'} data-exi="${exi}" data-rk="${rk(ex)}">${head}${rows}</div>`;
   }
@@ -5644,7 +5715,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
     }
     // [↓ drop set] in the bottom bar only — cuelga de la ÚLTIMA serie de trabajo
     const lastPairSi=Math.max(0,sets.length-2);
-    const add=`<div class="addrow auni"><span class="aleft"><button class="addbtn" data-act="addset" data-exi="${exi}">[+ set]</button><button class="addbtn" data-act="dropset" data-exi="${exi}" data-si="${lastPairSi}">[↓ drop set]</button></span><button class="addbtn aex" data-act="addex" data-exi="${exi}">[+ exercise]</button></div>`;
+    const add=`<div class="addrow auni"><span class="aleft"><button class="addbtn" data-act="addset" data-exi="${exi}">+ set</button><button class="addbtn" data-act="dropset" data-exi="${exi}" data-si="${lastPairSi}">↓ drop set</button></span><button class="addbtn aex" data-act="addex" data-exi="${exi}">+ exercise</button></div>`;
     rows=thead+body+add;
   } else {
     const gc=isBwEx?'gc-free-bw':(isM?'gc-mach':'gc-free');
@@ -5666,7 +5737,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
     const lastSi=Math.max(0,sets.length-1);
     // §9.1: la pista de un gesto se enseña UNA vez por dispositivo, no en cada render
     const hint=(exi===0&&!hintSeen('swipe'))?`<div class="swipehint" data-hint="swipe">desliza una serie → para borrarla</div>`:'';
-    const add=hint+`<div class="addrow ${isM?'amach':'afree'}"><span class="aleft"><button class="addbtn" data-act="addset" data-exi="${exi}">[+ set]</button><button class="addbtn" data-act="dropset" data-exi="${exi}" data-si="${lastSi}">[↓ drop set]</button></span><button class="addbtn aex" data-act="addex" data-exi="${exi}">[+ exercise]</button></div>`;
+    const add=hint+`<div class="addrow ${isM?'amach':'afree'}"><span class="aleft"><button class="addbtn" data-act="addset" data-exi="${exi}">+ set</button><button class="addbtn" data-act="dropset" data-exi="${exi}" data-si="${lastSi}">↓ drop set</button></span><button class="addbtn aex" data-act="addex" data-exi="${exi}">+ exercise</button></div>`;
     rows=thead+body+add;
   }
   return `<div class="ex${_curCls}"${_curCls?'':' data-act="excur"'} data-exi="${exi}" data-rk="${rk(ex)}">${head}${rows}${exHoldCue(ex)}</div>`;
@@ -5704,7 +5775,7 @@ function renderHistExercise(exi,ex,sess){ _icM=(sess&&sess.metric)==='rpe'?'rpe'
       }).join('');
       body+=`<div class="srow gc-cardio" style="grid-template-columns:${colTpl}" data-swipe="h_delset" data-exi="${exi}" data-si="${si}" data-rk="${rk(s)}">${setnHTML(labels[si],s.done,'h_done',exi,si,'')}${cells}<div class="setend">${doneCellHTML(s.done,'h_done',exi,si)}</div></div>`;
     });
-    const add=`<div class="addrow afree"><span class="aleft"><button class="addbtn" data-act="h_addset" data-exi="${exi}">[+ set]</button></span></div>`;
+    const add=`<div class="addrow afree"><span class="aleft"><button class="addbtn" data-act="h_addset" data-exi="${exi}">+ set</button></span></div>`;
     rows=thead+body+add;
   } else if(isU){
     let thead=uniHeadHTML(isBwEx,false);
@@ -5719,7 +5790,7 @@ function renderHistExercise(exi,ex,sess){ _icM=(sess&&sess.metric)==='rpe'?'rpe'
         +(cb?`<div class="srow ${gcU}"><div class="side">${escTxt(b.side||'L')}</div>${cb.w}${midB}${cb.r}${cb.rr}<span class="del u-invis">×</span></div>`:'')
         +`</div></div>`+histSetLine(sets,p,tensTag(pairTension(_htn,p)),hrTag(_hhr[exi+':'+p]));
     }
-    const add=`<div class="addrow auni"><span class="aleft"><button class="addbtn" data-act="h_addset" data-exi="${exi}">[+ set]</button><button class="addbtn" data-act="h_dropset" data-exi="${exi}" data-si="${Math.max(0,sets.length-2)}">[↓ drop set]</button></span></div>`;
+    const add=`<div class="addrow auni"><span class="aleft"><button class="addbtn" data-act="h_addset" data-exi="${exi}">+ set</button><button class="addbtn" data-act="h_dropset" data-exi="${exi}" data-si="${Math.max(0,sets.length-2)}">↓ drop set</button></span></div>`;
     rows=thead+body+add;
   } else {
     const gc=isBwEx?'gc-free-bw':(isM?'gc-mach':'gc-free');
@@ -5732,7 +5803,7 @@ function renderHistExercise(exi,ex,sess){ _icM=(sess&&sess.metric)==='rpe'?'rpe'
       const mid=isBwEx?c.we:(fsOn?c.we+c.u:c.u);   // v256 B1b: antes el lastre SUSTITUÍA a la unidad → 7 hijos en 8 columnas
       body+=`<div class="srow ${gcRow} ${s.isDrop?'isdrop':''}" data-swipe="h_delset" data-exi="${exi}" data-si="${si}" data-rk="${rk(s)}">${setnHTML(labels[si],s.done,'h_done',exi,si,zSty)}${fs}${c.w}${mid}${c.r}${c.rr}<div class="setend">${doneCellHTML(s.done,'h_done',exi,si)}</div></div>`+histSetLine(sets,si,tensTag(_htn&&_htn.per[si]),hrTag(_hhr[exi+':'+si]));
     });
-    const add=`<div class="addrow ${isM?'amach':'afree'}"><span class="aleft"><button class="addbtn" data-act="h_addset" data-exi="${exi}">[+ set]</button><button class="addbtn" data-act="h_dropset" data-exi="${exi}" data-si="${Math.max(0,sets.length-1)}">[↓ drop set]</button></span></div>`;
+    const add=`<div class="addrow ${isM?'amach':'afree'}"><span class="aleft"><button class="addbtn" data-act="h_addset" data-exi="${exi}">+ set</button><button class="addbtn" data-act="h_dropset" data-exi="${exi}" data-si="${Math.max(0,sets.length-1)}">↓ drop set</button></span></div>`;
     rows=thead+body+add;
   }
   return `<div class="ex" data-exi="${exi}" data-rk="${rk(ex)}">${head}${rows}</div>`;
@@ -5819,11 +5890,11 @@ function renderWorkout(){
   // primer campo); split, gym, recuperación y contexto quedan detrás de un toque en esa línea.
   const pct=total?Math.round(done/total*100):0, full=!!(w.loggedAfter||state._wfull);
   const top=w.loggedAfter?`<div class="wprog">${trkBarI('wp:live',pct)}</div>`
-    :`<button type="button" class="wline" data-act="wfull" aria-expanded="${!!state._wfull}"><span class="wtn">${escTxt(w.dayName)}</span><span class="wtm">${done}/${total} sets${w.startMs?' · '+elapsedStr(w.startMs):''}</span><span class="wtx" aria-hidden="true">${state._wfull?'▴':'▾'}</span><span class="wprog wtb">${trkBarI('wp:live',pct)}</span></button>`;
+    :`<button type="button" class="wline" data-act="wfull" aria-expanded="${!!state._wfull}"><span class="wtn">${escTxt(w.dayName)}</span><span class="wtm">${done}/${total} sets${w.startMs?' · '+elapsedStr(w.startMs):''}</span><span class="wtx${state._wfull?' up':''}" aria-hidden="true">▾</span><span class="wprog wtb">${trkBarI('wp:live',pct)}</span></button>`;
   return statusBar(true)
     +(w.loggedAfter?`<div class="rot u-mt12"><span class="lbl">LOGGED AFTER</span><span class="n"><input type="date" value="${w.date}" max="${todayISO()}" data-act="setdate" class="inp-mini"/></span></div><div class="rot u-mt6"><span class="lbl">duración (min) · opcional</span><span class="n"><input type="number" value="${w.manualDur||''}" data-act="setdur" inputmode="numeric" placeholder="—" class="inp-mini u-tr" style="width:70px"/></span></div><div class="rot u-mt6"><span class="lbl">inicio · opcional</span><span class="n"><input type="time" value="${w.startTime||''}" data-act="setstarttime" class="inp-mini"/></span></div><div class="rot u-mt6"><span class="lbl">fin · opcional</span><span class="n"><input type="time" value="${w.endTime||''}" data-act="setendtime" class="inp-mini"/></span></div><div class="rot u-mt6"><span class="lbl">avanzar rotación</span><span class="n"><a data-act="togglenoadv" class="u-tap u-py2 u-px10 u-label" style="border:.5px solid var(--o20)">${w.noAdvance?'no':'sí'}</a></span></div>`:'')
     +top
-    +(full?(w.loggedAfter?'':`<div class="rot u-mt12"><span class="lbl">ROTATION - DAY ${curDayIdx()+1}/${dayCount()}${w.startMs?' · '+elapsedStr(w.startMs):''}</span><span class="n u-tap" data-act="changegym">[change gym]</span></div>`)+dayHeadHTML('NOW',escTxt(w.dayName),[escTxt(db.split.name),escTxt(intensityTag()),escTxt(w.gym||'')].filter(Boolean).join(' · '),'top')+sessionContextNote(w):'')
+    +(full?(w.loggedAfter?'':`<div class="rot u-mt12"><span class="lbl">ROTATION - DAY ${curDayIdx()+1}/${dayCount()}${w.startMs?' · '+elapsedStr(w.startMs):''}</span><span class="n vb" role="button" data-act="changegym">change gym</span></div>`)+dayHeadHTML('NOW',escTxt(w.dayName),[escTxt(db.split.name),escTxt(intensityTag()),escTxt(w.gym||'')].filter(Boolean).join(' · '),'top')+sessionContextNote(w):'')
     +`<div class="wfocus">${body}</div>`;
 }
 
@@ -5947,10 +6018,11 @@ function kcalParts(list,target){ const v=list.map(m=>+m.kcal||0), tot=target!=nu
   for(let j=0;j<ord.length&&rest>0;j++,rest--)fl[ord[j][1]]++;
   for(let j=ord.length-1;j>=0&&rest<0;j--,rest++)fl[ord[j][1]]--;
   return fl; }
-// v271 · P · C · F de cada alimento, con su fuente principal (por kcal: P·4, C·4, F·9) en blanco negrita, sin color
+// v271 · P · C · F de cada alimento, con su fuente principal en blanco negrita, sin color · v290 · la principal es la de más
+// GRAMOS ("el protagonista es el que tiene más gramos": 20 P / 19 F → P; antes se elegía por kcal), y la cabecera de la comida usa esta misma línea
 // (el dueño: "le hace falta… por alimento poner sus macros y en highlight… su fuente principal" · eligió "blanco en negrita")
 function macroLineHTML(m){ const p=+m.protein||0, c=+m.carbs||0, f=+m.fat||0; if(!(p||c||f))return '';
-  const dom=(p*4>=c*4&&p*4>=f*9)?'p':(c*4>=f*9?'c':'f'); const x=(v,l,k)=>{ const t=l+' '+Math.round(v); return dom===k?'<b>'+t+'</b>':t; };
+  const dom=(p>=c&&p>=f)?'p':(c>=f?'c':'f'); const x=(v,l,k)=>{ const t=l+' '+Math.round(v); return dom===k?'<b>'+t+'</b>':t; };
   return `<span class="mmac">${m.approx?'~':''}${x(p,'P','p')} · ${x(c,'C','c')} · ${x(f,'F','f')}</span>`; }
 function mealItemRow(m,kc){ const nm=(m.name||'').replace(/ ×[\d.]+$/,''); const exp=state.expandedMeal===m.id;
   return `<div class="mit${exp?' exp':''}" data-act="viewmeal" data-id="${m.id}" data-rk="mi:${m.id}"><span class="nm"><span class="nm1"><b class="q">${itemQtyLabel(m)}</b> ${escTxt(nm)}</span>${macroLineHTML(m)}</span><span class="kc">${m.approx?'~':''}${kc==null?(Math.round(m.kcal)||0):kc}</span></div>`+(exp?mealDetailInline(m):''); }
@@ -5961,13 +6033,13 @@ function foodSecHTML(iso,items,dayKcal){
   const om=state._mealOpen[iso];
   const meals=tags.map(tag=>{ const list=byTag[tag], mt={kcal:0,protein:0,carbs:0,fat:0}; list.forEach(m=>{ for(const k in mt)mt[k]+=+m[k]||0; });
     const op=!!om[tag], tm=mealTime(iso,tag), et=escTxt(tag), kc=DP.meal[tags.indexOf(tag)];
-    const meta=`<span class="mt">${escTxt(tm||'')}</span><span class="mc">${Math.round(mt.protein)}P</span><span class="mc">${Math.round(mt.carbs)}C</span><span class="mc">${Math.round(mt.fat)}F</span>`;   // v283 · columnas
+    // v290 · la hora va en el renglón del nombre (sin hora no queda hueco) y los macros a la izquierda, con puntos y el de más gramos en blanco
+    const meta=macroLineHTML(mt)||'<span class="mmac">—</span>';
     const kp=kcalParts(list,kc);
     const rows=op?`<div class="mlbody">${list.map((m,i)=>mealItemRow(m,kp[i])).join('')}</div>`:'';
-    return `<div class="mrec${op?' open':''}" data-tag="${et}" data-rk="ml:${et}"><div class="mhd"><button type="button" class="mtg" data-act="mealfold" data-tag="${et}" aria-expanded="${op}"><span class="mchev" aria-hidden="true">›</span><span class="mnm">${et}</span><span class="mmeta">${meta}</span></button>`
-      +`<button type="button" class="b madd" data-act="addtomeal" data-tag="${et}" aria-label="agregar alimento a ${et}">+ food</button>`
-      +`<button type="button" class="mkc" data-act="mealsummary" data-tag="${et}" aria-label="desglose de ${et} · ${kc} kcal"><span data-nk="mk:${et}" data-nv="${kc}">${kc.toLocaleString()}</span></button>`
-      +`<button type="button" class="gmore" data-act="mealmenu" data-tag="${et}" aria-label="acciones de ${et}"><span class="dots3" aria-hidden="true"></span></button></div>${rows}</div>`; }).join('');
+    return `<div class="mrec${op?' open':''}" data-tag="${et}" data-rk="ml:${et}"><div class="mhd"><button type="button" class="mtg" data-act="mealfold" data-tag="${et}" aria-expanded="${op}"><span class="mchev" aria-hidden="true">›</span><span class="mnm">${et}${tm?`<span class="mtm"> · ${escTxt(tm)}</span>`:''}</span><span class="mkc" aria-label="${kc} kcal"><span data-nk="mk:${et}" data-nv="${kc}">${kc.toLocaleString()}</span></span>${meta}</button>`
+      +`<button type="button" class="gmore" data-act="mealmenu" data-tag="${et}" aria-label="acciones de ${et}"><span class="dots3" aria-hidden="true"></span></button>`
+      +`<button type="button" class="vb madd" data-act="addtomeal" data-tag="${et}" aria-label="agregar alimento a ${et}">+ food</button></div>${rows}</div>`; }).join('');   // el total ya no es un botón aparte: `ver desglose` vive en ···
   const n=tags.length;
   return logSecHTML({k:'food',title:'MEALS',v:`<b>${n}</b> meal${n===1?'':'s'}`,act:`<button type="button" class="lact" data-act="newmeal">+ meal</button>`,body:meals||`<div class="empty">no meals logged</div>`,open:state._lfold.food}); }
 // un toque: pendiente → tomado (con su hora real, que nunca se pisa) · tomado/tarde → sin marcar
@@ -5995,10 +6067,14 @@ function renderMacros(){
   };
   const intakeRow=(lbl,val,goal,unit,extra,dec)=>{const p=goal?val/goal*100:0;const ov=goal&&val>goal*1.05;const disp=dec?(+val).toFixed(dec):Math.round(val);return `<div class="mrow"><span class="ml">${lbl}</span><div class="bar">${trkBarI('in:'+lbl,Math.min(100,p),ov?'over':'')}</div><span class="mv ${ov?'ovr':''}">${disp} <span class="g">/ ${goal} ${unit}</span>${extra||''}</span></div>`;};
   const bl=bloating(t,g);
-  // v269 · el panel abierto: regla a sangre con el mismo aire arriba y abajo → radar → anillos → [ver gramos | ver %] → INTAKE
+  // v290 · el panel abierto ("lo único que me sigue gustando son los aros… que se pudiera colapsar esta gráfica heptagonal"):
+  // regla a sangre → aros P · C · F → [ver gramos | ver %] → fila `radar` que despliega la gráfica de 7 ejes → INTAKE
+  const _ro=radarOpen();
   let details = !open?'' : `<hr class="rule"/>`
-    +mvzHTML(t,g,macroRing('protein','protein',t.protein,g.protein,'g',4)+macroRing('carbs','carbs',t.carbs,g.carbs,'g',4)+macroRing('fat','fat',t.fat,g.fat,'g',9))   // v276 · carrusel
+    +`<div class="rings">${macroRing('protein','protein',t.protein,g.protein,'g',4)+macroRing('carbs','carbs',t.carbs,g.carbs,'g',4)+macroRing('fat','fat',t.fat,g.fat,'g',9)}</div>`
     +`<div class="kp-unit"><button type="button" class="b" data-act="toggleMacroUnit">${state.macroPct?'ver gramos':'ver %'}</button></div>`
+    +`<div class="line stat tap kp-rad" role="button" tabindex="0" data-act="radarfold" aria-expanded="${_ro}"><span class="k">radar</span><span class="dots"></span><span class="v">${_ro?'▾':'›'}</span></div>`
+    +(_ro?`<div class="macro-rad">${dayRadar(t,g)}</div>`:'')
     +`<hr class="rule"/><div class="grp-label">INTAKE</div>`
     +(goalSecHidden('electro')?'':intakeRow('sodium',t.sodium,g.sodium,'mg')+intakeRow('potassium',t.potassium,g.potassium,'mg'))
     +(goalSecHidden('sugarfiber')?'':intakeRow('sugar',t.sugar,g.sugar,'g')+intakeRow('fiber',t.fiber,g.fiber,'g'))
@@ -6013,7 +6089,7 @@ function renderMacros(){
   lfoldInit(curDate());
   return statusBar(false)
     +`<hr class="rule"/>`
-    +`<div class="section"><div class="h dnavh"><a data-act="dayprev" class="dnav">‹</a><span class="dnlbl-wrap"><span class="dnlbl">${dayLabel(curDate(),1)}</span><input type="date" class="dcal" data-act="daycal" value="${curDate()}"/></span><a data-act="daynext" class="dnav">›</a></div><div class="meta"><a data-act="share" class="u-tap">[share]</a> <a data-act="editgoals" class="u-tap u-ml8">[goals]</a></div></div>`
+    +`<div class="section"><div class="h dnavh"><a data-act="dayprev" class="dnav">‹</a><span class="dnlbl-wrap"><span class="dnlbl">${dayLabel(curDate(),1)}</span><input type="date" class="dcal" data-act="daycal" value="${curDate()}"/></span><a data-act="daynext" class="dnav">›</a></div><div class="meta"><a data-act="share" class="vb">share</a> <a data-act="editgoals" class="vb u-ml8">goals</a></div></div>`
     +`<div class="card kpanel u-pt16 u-pb16 u-px16"><button class="hero ${open?'open':''} ${kStat}" data-act="togglemacros">${ringHTML(pct,`<div class="num" data-nk="kcal" data-nv="${Math.round(t.kcal)}">${Math.round(t.kcal).toLocaleString()}</div><div class="of">/ ${g.kcal.toLocaleString()} kcal</div>`,'lg')}<div class="hero-meta"><span class="left ${left<0?'over':'under'}">${left>=0?left+' left':Math.abs(left)+' over'}</span> · ${Math.round(pct)}% <span class="chev">▾</span></div></button>${goalSecHidden('balance')?'':(function(){var b=balanceOf(g.kcal);return b?'<div class="hbal">'+(b.label==='mantenimiento'?'en mantenimiento':'<span class="u-w7">'+b.label+'</span> '+Math.abs(b.delta)+' kcal')+' · mant. ≈ '+b.maint+'</div>':'';})()}${details}</div>`
     +suppSecHTML(curDate())
     +foodSecHTML(curDate(),items.filter(m=>!isWaterItem(m)),t.kcal)
@@ -6038,7 +6114,7 @@ function itemQtyLabel(m){ const f=m._food, u=m._unit, q=m.qty||1; const base=(f&
 // tap a food item -> just edit / delete (no per-item nutrition; that's at meal level)
 function mealDetailInline(m){ const br=(m._food&&m._food.brand)||'';
   // v271: P · C · F ya viven en la fila (macroLineHTML); aquí queda la marca y las acciones
-  return `<div class="mdmeal">${br?`<div class="mdm">${escTxt(br)}</div>`:''}<div class="mdacts"><a data-act="editmealx" data-id="${m.id}">[editar]</a><a data-act="movemeal" data-id="${m.id}">[mover]</a><a data-act="delmealx" data-id="${m.id}">[borrar]</a></div></div>`;
+  return `<div class="mdmeal">${br?`<div class="mdm">${escTxt(br)}</div>`:''}<div class="mdacts"><a data-act="editmealx" data-id="${m.id}">editar</a><a data-act="movemeal" data-id="${m.id}">mover</a><a data-act="delmealx" data-id="${m.id}">borrar</a></div></div>`;
 }
 // tap a meal header -> full nutrition breakdown of the whole meal (the set)
 function mealGroupDetail(list){
@@ -6420,7 +6496,7 @@ function openMealSummary(tag){
    <div class="msum-tot"><b>${Math.round(t.kcal).toLocaleString()}</b><span class="u">kcal</span></div>
    <div class="msum-top"><div class="msum-rad">${mealRadar(t,_mg)}</div><div class="msum-list">${nutList}</div></div>
    <div class="msum-items">${mealFoodRows(items)}</div>
-   <div class="sheetbtns u-mt12"><button class="ok" data-act="addtomeal" data-tag="${escTxt(tag)}">+ alimento</button><button class="cancel" data-act="dupmeal" data-tag="${escTxt(tag)}" title="duplicar esta comida">⎘ duplicar</button><button class="cancel danger" data-act="delmealgroup" data-tag="${escTxt(tag)}" title="borrar toda la comida">✕ borrar</button></div>`);
+   <div class="sheetbtns u-mt12"><button class="ok" data-act="addtomeal" data-tag="${escTxt(tag)}">+ alimento</button><button class="cancel" data-act="dupmeal" data-tag="${escTxt(tag)}" title="duplicar esta comida">duplicar</button><button class="cancel danger" data-act="delmealgroup" data-tag="${escTxt(tag)}" title="borrar toda la comida">✕ borrar</button></div>`);
   const _mt=document.getElementById('ms_time'); if(_mt)_mt.onchange=()=>{ setMealTime(curDate(),tag,_mt.value||null); save(); };
 }
 // ---------- render: landing (log in / create account) ----------
@@ -6443,7 +6519,7 @@ function renderLogin(){
     <div class="submeta u-mb6">o pega el texto del respaldo:</div>
     <textarea id="li_txt" class="ta lg" placeholder="{ ... }"></textarea>
     <button class="start u-mt10" data-act="dologin">restaurar</button>
-    <div class="u-tc u-mt12"><a data-act="backlanding" class="u-data u-o50 u-tap">← regresar</a></div>
+    <div class="u-tc u-mt12"><a data-act="backlanding" class="vb">‹ regresar</a></div>
     <div id="li_msg" class="submeta u-mt10"></div>
   </div>`;
 }
@@ -6867,51 +6943,19 @@ function mealRadar(t,g){ g=g||{};
     +ddots+labels+`</svg>`;
 }
 // day-totals radar — 7 axes vs daily goal (P/C/F as grams-vs-goal, not %kcal). No alcohol/sugar/caffeine.
-// ---- v276 · macros: varias versiones del panel, en carrusel (deslizas izquierda-derecha), y el panel para compartir ----
-// El dueño pidió propuestas de barras de progreso y de distribución de los macros, verlas "en un carrusel" dentro del panel
-// mientras elige, y una versión para compartir. Todas salen de aquí: el carrusel, el laboratorio del estudio y la tarjeta.
-// [clave, pestaña, solo laboratorio] · la dona es la única gráfica circular además del anillo de kcal (BRAND §4): solo entra
-// al carrusel si la eliges en el laboratorio.
-const MACRO_VIZ=[['rings','aros'],['bars','barras'],['meter','medidor'],['split','reparto'],['table','tabla'],['donut','dona',1]];
-function macroVizKey(){ const k=db.settings&&db.settings.macroViz; return MACRO_VIZ.some(v=>v[0]===k)?k:'rings'; }
-function macroVizList(){ const k=macroVizKey(); return MACRO_VIZ.filter(v=>!v[2]||v[0]===k); }
-// reparto por kcal (P·4, C·4, F·9); los tres enteros suman 100
+// ---- macros: el panel y su tarjeta para compartir ----
+// v290 · el dueño (1-oct): "lo único que me sigue gustando son los aros… que se pudiera colapsar esta gráfica heptagonal". Se fue el
+// carrusel de v276 (barras · medidor · reparto · tabla · dona) con sus pestañas: el panel son los aros y, plegado, el radar.
+// db.settings.macroViz (la versión que se había elegido) ya no se lee; no se borra.
+// reparto por kcal (P·4, C·4, F·9); los tres enteros suman 100 (texto de compartir)
 function macroSplit(t){ const p=(+t.protein||0)*4, c=(+t.carbs||0)*4, f=(+t.fat||0)*9, s=p+c+f; if(!s)return null; const pp=Math.round(p/s*100), pc=Math.round(c/s*100); return {p:pp,c:pc,f:100-pp-pc}; }
-function macroVizHTML(k,t,g,o){ o=o||{}; g=g||{}; const M=[['protein','protein','P'],['carbs','carbs','C'],['fat','fat','F']];
-  const gv=m=>+g[m]||0, tv=m=>+t[m]||0;
-  if(k==='bars') return M.map(([m,l])=>{ const v=tv(m), gl=gv(m), p=gl?v/gl*100:0, ov=gl&&v>gl*1.05;
-      return `<div class="mrow"><span class="ml">${l}</span><div class="bar">${trkBarI(o.share?'':'mv:'+m,Math.min(100,p),ov?'over':'')}</div><span class="mv${ov?' ovr':''}">${state.macroPct&&gl?Math.round(p)+'%':Math.round(v)+' <span class="g">/ '+gl+' g</span>'}</span></div>`; }).join('');
-  if(k==='meter') return '<div class="mvmeter">'+M.map(([m,l])=>{ const v=tv(m), gl=gv(m), p=gl?v/gl*100:0;
-      return `<div class="mvml"><span class="ml">${l}</span>${trkProgressHTML(Math.min(100,p),{cells:12})}<span class="mv">${Math.round(v)}<span class="g">/${gl} g</span></span></div>`; }).join('')+'</div>';
-  const leg=(s,gs)=>`<div class="mvleg">${[['p','P','protein'],['c','C','carbs'],['f','F','fat']].map(([x,L])=>`<span><i class="mv${x}"></i>${L} ${s?s[x]+'%':'—'}${gs?' <span class="g">· meta '+gs[x]+'</span>':''}</span>`).join('')}</div>`;
-  if(k==='split'){ const s=macroSplit(t), gs=macroSplit(g); const bar=(x,cl)=>`<div class="mvstack${cl||''}">${x?`<i class="mvp" style="width:${x.p}%"></i><i class="mvc" style="width:${x.c}%"></i><i class="mvf" style="width:${x.f}%"></i>`:''}</div>`;
-    return `<div class="mvsplit"><div class="mvsl"><span class="ml">hoy</span>${bar(s)}</div>${gs?`<div class="mvsl"><span class="ml">meta</span>${bar(gs,' thin')}</div>`:''}${leg(s,gs)}<div class="u-label u-o40 u-mt4">% de las kcal · P·4 C·4 F·9</div></div>`; }
-  if(k==='table'){ const row=(l,v,gl,u)=>{ const p=gl?Math.round(v/gl*100):null; return `<div class="mvtr"><span class="ml">${l}</span><span>${Math.round(v).toLocaleString()}</span><span class="g">${gl?gl.toLocaleString()+(u||''):'—'}</span><span class="${p!=null&&p>105?'u-bad':''}">${p!=null?p+'%':'—'}</span></div>`; };
-    return `<div class="mvtab"><div class="mvtr mvth"><span></span><span>hoy</span><span>meta</span><span>%</span></div>${row('kcal',tv('kcal'),gv('kcal'))}${M.map(([m,l])=>row(l,tv(m),gv(m),' g')).join('')}</div>`; }
-  if(k==='donut'){ const s=macroSplit(t); if(!s)return '<div class="empty">sin comida este día</div>';
-    const R=15.7, P=(a)=>[(18+R*Math.cos(a)).toFixed(2),(18+R*Math.sin(a)).toFixed(2)]; let a0=-Math.PI/2;
-    const arc=(x,cl)=>{ if(!x)return ''; const a1=a0+x/100*Math.PI*2-(x<100?0.06:0.0001), p0=P(a0), p1=P(a1), big=(a1-a0)>Math.PI?1:0; a0+=x/100*Math.PI*2; return `<path class="${cl}" d="M${p0[0]},${p0[1]} A${R},${R} 0 ${big} 1 ${p1[0]},${p1[1]}" fill="none" stroke-width="1.8"/>`; };
-    return `<div class="mvdonut"><svg viewBox="0 0 36 36" aria-hidden="true">${arc(s.p,'mvp')+arc(s.c,'mvc')+arc(s.f,'mvf')}</svg>${leg(s,macroSplit(g))}</div>`; }
-  return `<div class="macro-rad">${dayRadar(t,g)}</div><div class="rings">${o.rings||''}</div>`; }
-// el carrusel del panel abierto: una lámina por versión; pestañas de texto abajo; recuerda la última (db.settings.macroViz)
-function mvzHTML(t,g,rings){ const vk=macroVizKey(), VL=macroVizList();
-  return `<div class="mdtabs tall mvtabs" data-tk="mvz" role="tablist">${VL.map(([k,l])=>`<span role="tab" aria-selected="${k===vk}" class="${k===vk?'on':''}" data-act="mvtab" data-v="${k}">${l}</span>`).join('')}</div>`   // v285 · antes del carril: lo que tocas no se mueve cuando la lámina cambia de alto
-    +`<div class="mvz"><div class="mvtrack" id="mvtrack">${VL.map(([k])=>`<div class="mvslide" data-v="${k}">${macroVizHTML(k,t,g,{rings})}</div>`).join('')}</div></div>`; }
-// tras pintar: la lámina elegida a la vista sin animación (render() rehace el DOM y el carril nuevo nace en 0)
-function mvzSync(){ const tr=document.getElementById('mvtrack'); if(!tr)return; const VL=macroVizList(), i=Math.max(0,VL.findIndex(v=>v[0]===macroVizKey()));
-  // el carril toma la altura de la lámina a la vista (si no, la más alta deja huecos enormes en las demás)
-  const fit=j=>{ const sl=tr.children[j]; if(sl)tr.style.height=sl.offsetHeight+'px'; };
-  tr.scrollLeft=i*tr.clientWidth; fit(i); if(tr._mvz)return; tr._mvz=1; let tm=0;
-  // un carril que ya salió de la página (re-render o cambio de pantalla dentro de los 120 ms) lee scrollLeft 0: no guarda nada
-  tr.addEventListener('scroll',()=>{ clearTimeout(tm); tm=setTimeout(()=>{ if(!tr.isConnected||!tr.clientWidth)return; const j=Math.round(tr.scrollLeft/tr.clientWidth), v=(macroVizList()[j]||[])[0]; fit(j); if(!v||v===macroVizKey())return;
-    db.settings=db.settings||{}; db.settings.macroViz=v; save();
-    const tb=document.querySelector('.mvtabs'); if(tb){ tb.querySelectorAll('[data-v]').forEach(s=>{ const on=s.dataset.v===v; s.classList.toggle('on',on); s.setAttribute('aria-selected',on); }); slideTabs(tb.parentElement,true); } },120); },{passive:true}); }   // la rayita viaja a la pestaña nueva
+function radarOpen(){ return !!(db.settings&&db.settings.radarOpen); }   // aditivo: sin el campo, plegado
 // compartir el panel: anillo de kcal + la versión elegida (vertical, a su altura natural, marca gym//TRK)
-function renderShareMacros(){ const iso=curDate(), g=goalsFor(iso), t=macroTotals().t, vk=macroVizKey();
+function renderShareMacros(){ const iso=curDate(), g=goalsFor(iso), t=macroTotals().t;
   const kpct=g.kcal?Math.min(100,Math.round(t.kcal/g.kcal*100)):0, kStat=macroStatus(t.kcal,g.kcal);
   const ring=(m,l)=>{ const v=+t[m]||0, gl=+g[m]||0; return `<div class="cell ${macroStatus(v,gl)}">${ringHTML(gl?v/gl*100:0,'<div class="num">'+Math.round(v)+'</div>')}<div class="cap">${l}</div><div class="sub">/ ${gl} g</div></div>`; };
   const hero=`<div class="shmhero ${kStat}">${ringHTML(kpct,'<div class="num">'+Math.round(t.kcal).toLocaleString()+'</div><div class="of">/ '+(g.kcal||0).toLocaleString()+' kcal</div>','lg')}</div>`;
-  return summaryShell(`<div class="shcap">// macros · ${escTxt(fmtShort(iso))}</div>`, hero+`<div class="shviz">${macroVizHTML(vk,t,g,{rings:ring('protein','protein')+ring('carbs','carbs')+ring('fat','fat'),share:true})}</div>`); }
+  return summaryShell(`<div class="shcap">// macros · ${escTxt(fmtShort(iso))}</div>`, hero+`<div class="shviz"><div class="macro-rad">${dayRadar(t,g)}</div><div class="rings">${ring('protein','protein')+ring('carbs','carbs')+ring('fat','fat')}</div></div>`); }
 function macroShareText(){ const iso=curDate(), g=goalsFor(iso), t=macroTotals().t, s=macroSplit(t), r=v=>Math.round(+v||0);
   return ['macros · '+fmtShort(iso), r(t.kcal).toLocaleString()+' / '+r(g.kcal).toLocaleString()+' kcal', 'P '+r(t.protein)+'/'+r(g.protein)+' g · C '+r(t.carbs)+'/'+r(g.carbs)+' g · F '+r(t.fat)+'/'+r(g.fat)+' g',
     s?'reparto P '+s.p+'% · C '+s.c+'% · F '+s.f+'%':'', '', 'gym//TRK'].filter((x,i,a)=>x!==''||a[i-1]!=='').join('\n'); }
@@ -7882,7 +7926,7 @@ function renderProgress(){
   const _hd=lastDays(14); const _waterArr=_hd.map(d=>Math.round(dayWater(d)*10)/10); const _waterLog=_waterArr.filter(x=>x>0);
   const _sr=window._stepRange||14; const _shd=lastDays(_sr); const _stepsArr=_shd.map(d=>(db.steps&&db.steps[d])||0); const _stepsLog=_stepsArr.filter(x=>x>0);
   const _br=window._bwRange||14; const _bcut=lastDays(_br)[0]; const _bk=bwKeys.filter(k=>k>=_bcut); const _bv=_bk.map(k=>db.bodyweight[k]);
-  let out=statusBar(false)+`<hr class="rule"/><div class="section"><div class="h"><span class="s">//</span>PROGRESS</div><div class="meta">${_ed?'<span class="u-o60">editing</span>':totalSessions+' sesiones <span data-act="progedit" class="u-tap u-o40 u-ml6">[edit]</span>'}</div></div>`;
+  let out=statusBar(false)+`<hr class="rule"/><div class="section"><div class="h"><span class="s">//</span>PROGRESS</div><div class="meta">${_ed?'<span class="u-o60">editing</span>':totalSessions+' sesiones <span data-act="progedit" class="vb u-ml6" role="button">edit</span>'}</div></div>`;
   // v263 · "activada = recuadro, siempre": sin datos ya no se corta la pantalla; la rejilla sale igual y el
   // primario de arranque baja debajo de ella (sigue habiendo un solo primario por vista).
   const _fresh=!totalSessions && !bwVals.length && !_stepsLog.length && !_waterLog.length && !Object.keys(db.sleep||{}).length;
@@ -7976,7 +8020,7 @@ function renderProgress(){
   out+=progGridHTML(T,_ed);
   if(_fresh&&!_ed)out+=`<div class="u-tc u-mt12"><span class="ehint">toca cualquier recuadro para registrar tu primer dato</span></div>`
     +`<button class="start u-mt12" data-act="logweight">+ registrar peso corporal</button>`;
-  try{ const _wp=prevMonthYm().split('-'); if(wrapMonthData(+_wp[0],+_wp[1]-1).hasData) out+='<div class="u-tc u-mt16 u-mb2 u-mx0"><a data-act="wrapview" class="u-data u-o60 u-tap">▸ ver tu wrap · '+escTxt(MONFULL[+_wp[1]-1])+'</a></div>'; }catch(_){}
+  try{ const _wp=prevMonthYm().split('-'); if(wrapMonthData(+_wp[0],+_wp[1]-1).hasData) out+='<div class="u-tc u-mt16 u-mb2 u-mx0"><a data-act="wrapview" class="vb">ver tu wrap · '+escTxt(MONFULL[+_wp[1]-1])+'</a></div>'; }catch(_){}
   // v285 · P2 · "en progreso hay un cagadero… quedó bien largo": fuera //STRENGTH, //RECORDS y //EXERCISES; //MUSCLES pasó a
   // //STIMULUS; las correlaciones quedan en UNA fila que abre su hoja
   { const _pins=_ed?[]:performanceInsights(); if(_pins.length)out+=`<hr class="rule"/><div class="line lnav" role="button" tabindex="0" data-act="perfinfo"><span class="k">performance</span><span class="dots"></span><span class="v"><span class="rchev">›</span></span></div>`; }
@@ -8276,7 +8320,7 @@ function renderAgenda(){
       const g=e.group;
       if(e.count===1){ const s=g[0]; ax+=`<div class="ag-mk supp" style="top:${top(e.a)}px;${pos}" data-act="agsupptick" data-id="${escTxt(s.id||'')}"><span class="mg">●</span><span class="mt">${escTxt(e.time)}</span> <span class="ml">${escTxt(s.name)}</span>${s.mk||''}</div>`; return; }
       const open=!!(state.agSuppOpen&&state.agSuppOpen[e.time]);
-      ax+=`<div class="ag-mk supp grp" style="top:${top(e.a)}px;${pos}" data-act="agsuppgrp" data-t="${escTxt(e.time)}"><span class="mg">●</span><span class="mt">${escTxt(e.time)}</span> <span class="ml">supps (${e.count})</span><span class="mkk">${open?'▾':'▸'}</span></div>`;
+      ax+=`<div class="ag-mk supp grp" style="top:${top(e.a)}px;${pos}" data-act="agsuppgrp" data-t="${escTxt(e.time)}"><span class="mg">●</span><span class="mt">${escTxt(e.time)}</span> <span class="ml">supps (${e.count})</span><span class="mkk">${open?'▾':'›'}</span></div>`;
       if(open){ const rows=g.map(s=>`<div class="row" data-act="agsupptick" data-id="${escTxt(s.id||'')}"><span class="mg">●</span><span class="ml">${escTxt(s.name)}</span>${s.mk||''}</div>`).join(''); ax+=`<div class="ag-supp-pop" style="top:${top(e.a)+20}px">${rows}</div>`; }
     });
     ax+=`</div>`; body+=ax; }
@@ -8637,7 +8681,7 @@ try{ document.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.dataset&&
 function renderSplitEdit(){
   const sp=db.split||{name:'',days:[]};
   let body=statusBar(true)
-   +`<hr class="rule"/><div class="section"><div class="h"><span class="s">//</span>SPLIT</div><div class="meta" data-act="exdirectory">[catalog]</div></div>`
+   +`<hr class="rule"/><div class="section"><div class="h"><span class="s">//</span>SPLIT</div><div class="meta vb" role="button" data-act="exdirectory">catalog</div></div>`
    +`<div class="field u-mb16"><label>NOMBRE DEL SPLIT</label><input data-act="sd_splitname" value="${escTxt(sp.name||'')}" placeholder="ej. Push/Pull/Legs"/></div>`
    +scheduleBlockHTML()
    +`<hr class="rule"/><div class="section u-mb6"><div class="h"><span class="s">//</span>DAYS</div><div class="meta">${(sp.days||[]).length} ${(sp.days||[]).length===1?'día':'días'}</div></div>`;
@@ -8679,7 +8723,7 @@ function histBodyHTML(s){ _shM=(s&&s.metric)==='rpe'?'rpe':'rir';
     const t=tn&&tn[ei]&&tn[ei].total>0?' · σ '+fmtSig(tn[ei].total):'';
     let pb=''; try{ pb=progBadgeFromProg(histProgress(s,ei),'capacidad vs sesión equivalente'); }catch(_){}
     const _k=exHistKey(e); b+=sessExBlockHTML(e,r,t,pb?' '+pb:'').replace('<span class="sxn">','<span class="sxn u-tap u-ul" role="button" tabindex="0" data-act="exhist" data-k="'+escTxt(_k)+'">'); });
-  return `<div class="hbody">${b||'<div class="ehint">sin series registradas</div>'}<div class="hacts"><a class="u-label u-o50 u-tap" data-act="vieweditsession" data-id="${s.id}">[ver / editar]</a></div></div>`;
+  return `<div class="hbody">${b||'<div class="ehint">sin series registradas</div>'}<div class="hacts"><a data-act="vieweditsession" data-id="${s.id}">ver / editar</a></div></div>`;
 }
 function renderHistory(){
   const sess=(db.sessions||[]).filter(s=>s.type!=='rest').slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
@@ -8740,7 +8784,7 @@ function openSessionEdit(id){
    })()}
    ${sessHRBlock(s)}<div class="submeta gap">${nEx} ejercicios${(()=>{ const t=sessionTensionTotal(s); return t>0?' · σ '+fmtSig(t):''; })()} · ▲▼ reordena</div>
    ${exHtml||'<div class="submeta">sin ejercicios</div>'}
-   <div class="sheetbtns">${db.activeWork?'':`<button class="ok" data-act="resumesession">▶ continuar</button>`}<button class="ok" data-act="openhistedit" data-id="${s.id}">✎ editar sets</button></div>
+   <div class="sheetbtns">${db.activeWork?'':`<button class="ok" data-act="resumesession">▶ continuar</button>`}<button class="ok" data-act="openhistedit" data-id="${s.id}">editar sets</button></div>
    <div class="sheetbtns u-mt6"><button class="ok" data-act="ss_save">guardar</button><button class="cancel" data-act="sharesession" data-id="${s.id}">compartir</button><button class="cancel danger" data-act="ss_del">borrar</button><button class="cancel" data-act="closemodal">close</button></div>`);
 }
 
@@ -8782,7 +8826,7 @@ function render(){
   try{updateNowBar();}catch(_){}
   renderNav();
   if(sc==='macros')try{ suppWarnMaybe(); }catch(_){}   // v275 · una vez al día: lo que está por acabarse
-  if(sc==='macros')try{ mvzSync(); }catch(_){}         // v276 · el carrusel en la versión elegida
+  // (v290 · ya no hay carrusel que sincronizar tras pintar)
   // después de mvzSync() y renderNav() (los dos cambian el alto). Misma vista: lo que tocaste (o lo primero a la vista) queda a
   // la misma altura, con colchón si el contenido se acortó. Vista nueva: arriba, o donde diga state._scroll.
   { let keep=_want!=null?_want:(_same?_prevTop:0); const ae=_anc?sigFind(v,_anc):null, ar=(!ae&&_anc)?rkFind(v,_anc.rk):null;
@@ -9622,7 +9666,7 @@ document.getElementById('app').addEventListener('click',e=>{
     const m=arr[i]; arr.splice(i,1); save(); reRender();
     toast('✓ agua quitada · '+Math.round((+m.water||0)*1000)+' ml','ok',{undo:()=>{ (db.meals[d]=db.meals[d]||[]).splice(i,0,m); }}); }
   else if(a==='share'){ trkMenu('compartir',[['el día · tus comidas',()=>{ state.shareType='food'; go('share'); }],['el panel de macros',()=>{ state.shareType='macros'; go('share'); }]]); }   // v276
-  else if(a==='mvtab'){ const tr=document.getElementById('mvtrack'), j=macroVizList().findIndex(v=>v[0]===el.dataset.v); if(tr&&j>=0)tr.scrollTo({left:j*tr.clientWidth,behavior:reducedMotion()?'auto':'smooth'}); }
+  else if(a==='radarfold'){ db.settings=db.settings||{}; db.settings.radarOpen=!db.settings.radarOpen; save(); reRender(); }   // v290 · el radar del panel de macros, plegable y recordado
   else if(a==='sharesession'){ state.shareType='session'; state.shareId=el.dataset.id; closeModal(); go('share'); }
   else if(a==='shcopy'){ const txt=shareTextFor(); if(!txt){ toast('⚠ nada que copiar','err'); return; }
     const done=()=>toast('✓ copiado como texto');
@@ -10757,7 +10801,7 @@ function profMotorHTML(e,gym){ const p=profileFor(e,gym), tg=targetsFor(e);
   const lenSrc=p.lenSrc==='user'?'tuyo':p.lenSrc==='suggested'?'~ sugerido':'sin definir';
   const len=LEN_OPTS.map(o=>'<button type="button" class="t '+(o[0]===p.len?'on':'')+' u-fhalf u-min0" data-act="optpick" data-v="'+o[0]+'">'+o[1]+(o[0]===p.len&&p.lenSrc==='suggested'?' ~':'')+'</button>').join('');
   return `<div class="field"><label>PRIME MOVER · ${tSrc}</label><select id="pf_prim" class="pfsel"><option value="">— sin resolver —</option>${mOpt(tg[0]&&tg[0].id)}</select></div>
-   <div class="field"><label>SECONDARY · cuánto cuenta la serie (0–1)</label><div id="pf_secs">${sec}</div><button type="button" class="addbtn u-mt4" data-act="pf_addsec">[+ secundario]</button></div>
+   <div class="field"><label>SECONDARY · cuánto cuenta la serie (0–1)</label><div id="pf_secs">${sec}</div><button type="button" class="addbtn u-mt4" data-act="pf_addsec">+ secundario</button></div>
    <div class="field"><label>MUSCLE LENGTH · ${lenSrc}</label><div class="toggles pftog${p.lenSrc==='suggested'?' sug':''} u-wrap u-gap4" id="pf_len">${len}</div></div>`; }
 // los bloques que siguen al formulario de siempre: máquina por gym · nota · motor · gyms · dónde está en el split
 function exSheetExtraHTML(e,o){ const X=window._exEdit, gyms=exSheetGyms(e.name), gym=o.gym||gyms[0]||'', hist=new Set(); (db.sessions||[]).forEach(s=>{ if(s&&s.gym&&(s.exercises||[]).some(x=>x&&nameKey(x.name)===nameKey(e.name)))hist.add(s.gym); });
@@ -11742,15 +11786,17 @@ function _comidaSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
     host.innerHTML=foodSecHTML(F,db.meals[F],14910);
     const recs=[...host.querySelectorAll('.mrec')]; A('una cabecera por comida', recs.length===3);
     recs.forEach(r=>{ const q=s=>r.querySelector(s), R=s=>q(s).getBoundingClientRect(), tg=r.dataset.tag;
-      ['.mtg','.mnm','.mmeta'].forEach(s=>{ const e=q(s); A(tg+' '+s+' no corta con "…"', getComputedStyle(e).textOverflow!=='ellipsis'&&e.scrollWidth<=e.clientWidth+1); });
-      A(tg+': [+ food], total y ··· se tocan a 44', ['.madd','.mkc','.gmore'].every(s=>R(s).width>=43.5&&R(s).height>=43.5));
-      A(tg+': nombre | [+ food] | total | ···', R('.mtg').right<=R('.madd').left+1&&R('.madd').right<=R('.mkc').left+1&&R('.mkc').left<R('.gmore').left);
-      A(tg+': la hora y los macros van bajo el nombre', R('.mmeta').top>=R('.mnm').bottom-1); });
+      ['.mtg','.mnm','.mmac'].forEach(s=>{ const e=q(s); A(tg+' '+s+' no corta con "…"', getComputedStyle(e).textOverflow!=='ellipsis'&&e.scrollWidth<=e.clientWidth+1); });
+      A(tg+': [+ food] y ··· se tocan a 44', R('.madd').width>=43.5&&R('.madd').height>=43.5&&R('.gmore').width>=43.5&&parseFloat(getComputedStyle(q('.gmore'),'::after').height)>=44);
+      A(tg+': arriba nombre y total · abajo macros y ··· · [+ food] debajo de los dos', Math.abs(R('.mkc').top-R('.mnm').top)<=3&&R('.mkc').right>=R('.mtg').right-1&&R('.mmac').top>=R('.mnm').bottom-1&&R('.gmore').bottom<=R('.mtg').bottom+1&&R('.gmore').top>=R('.mmac').top-8&&R('.madd').top>=R('.mmac').bottom-8&&R('.madd').bottom>R('.mtg').bottom);
+      A(tg+': los macros empiezan donde el nombre (a la izquierda)', Math.abs(R('.mmac').left-R('.mnm').left)<=1);
+      A(tg+': el total ya no es un botón aparte (pliega con el resto de la cabecera)', !r.querySelector('[data-act="mealsummary"]')&&!!q('.mtg .mkc')); });
     { const ml=t=>recs.find(r=>r.dataset.tag===t).querySelector('.madd').getBoundingClientRect().left; A('[+ food] cae en la misma columna con totales de 2 a 4 cifras', Math.abs(ml('post workout')-ml('snack'))<=.5); }
-    const mmTxt=r=>[...r.querySelectorAll('.mmeta span')].map(e=>e.textContent).join(' ');
-    A('el desglose sale completo', recs.some(r=>mmTxt(r)==='17:05 156P 244C 103F')&&recs.some(r=>mmTxt(r)==='10:30 311P 1420C 665F'));
-    A('v283 · hora y P C F caen en la misma columna en todas las comidas', (()=>{ const xs=recs.map(r=>[...r.querySelectorAll('.mmeta .mc')].map(e=>Math.round(e.getBoundingClientRect().right))); return xs.length>1&&xs.every(a=>a.length===3&&a.join()===xs[0].join()); })());
-    A('el nombre largo sale entero', recs.some(r=>r.querySelector('.mnm').textContent===LONG));
+    const mmTxt=r=>((r.querySelector('.mtm')||{}).textContent||'')+' | '+r.querySelector('.mtg .mmac').textContent;
+    A('el desglose sale completo: la hora junto al nombre y P · C · F con puntos', recs.some(r=>mmTxt(r)===' · 17:05 | P 156 · C 244 · F 103')&&recs.some(r=>mmTxt(r)===' · 10:30 | P 311 · C 1420 · F 665'));
+    A('el macro de más gramos va en blanco', recs.every(r=>r.querySelectorAll('.mtg .mmac b').length===1)&&recs.some(r=>r.querySelector('.mtg .mmac b').textContent==='C 244'));
+    A('v290 · sin hora no queda hueco: el nombre va solo', (r=>!!r&&!r.querySelector('.mtm')&&r.querySelector('.mnm').textContent==='snack')(recs.find(r=>r.dataset.tag==='snack')));
+    A('el nombre largo sale entero', recs.some(r=>r.querySelector('.mnm').firstChild.textContent===LONG));
     A('los tres puntos son finos', getComputedStyle(host.querySelector('.dots3')).width==='2px');
     // 2 · borrar una comida: solo sus alimentos de ese día, con su hora, y todo vuelve con el deshacer
     A('borra los dos alimentos de #lunch', mealDelete(D,'lunch')===2&&ids(D)==='w1,b,k');
@@ -11811,12 +11857,13 @@ function openApproxMeal(preset){
   const chips=sugg.map(v=>`<span class="chip" data-v="${escTxt(v)}">${escTxt(v)}</span>`).join('');
   openModal(`<h3>meal aproximada</h3>
    <div class="submeta u-mb10">solo macros · sin buscar alimentos · kcal 4-4-9</div>
+   ${foodRingsHTML()}
    <div class="field"><label>COMIDA</label><input id="am_tag" type="text" value="${escTxt(preset||'comida')}" autocomplete="off"/></div>
    ${chips?`<div class="chips u-mt-n4 u-mb10 u-mx0" id="am_chips">${chips}</div>`:''}
    <div class="field row3"><div><label>PROT g</label><input id="am_p" type="number" inputmode="decimal" placeholder="0"/></div><div><label>CARB g</label><input id="am_c" type="number" inputmode="decimal" placeholder="0"/></div><div><label>GRASA g</label><input id="am_f" type="number" inputmode="decimal" placeholder="0"/></div></div>
    <div id="am_kcal" class="submeta u-mt2 u-mb10 u-mx0 u-data">= 0 kcal</div>
    <div class="sheetbtns"><button class="ok" id="am_go">agregar</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
-  const upd=()=>{ const P=parseFloat(val('am_p'))||0,C=parseFloat(val('am_c'))||0,F=parseFloat(val('am_f'))||0; const e=document.getElementById('am_kcal'); if(e)e.innerHTML='= <b class="u-fg">'+Math.round(P*4+C*4+F*9)+'</b> kcal'; };
+  const upd=()=>{ const P=parseFloat(val('am_p'))||0,C=parseFloat(val('am_c'))||0,F=parseFloat(val('am_f'))||0; const e=document.getElementById('am_kcal'); if(e)e.innerHTML='= <b class="u-fg">'+Math.round(P*4+C*4+F*9)+'</b> kcal'; foodRingsSet({kcal:P*4+C*4+F*9,protein:P,carbs:C,fat:F}); };
   ['am_p','am_c','am_f'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('input',upd); });
   document.querySelectorAll('#am_chips .chip').forEach(ch=>ch.onclick=()=>{ const e=document.getElementById('am_tag'); if(e)e.value=ch.dataset.v; });
   const go=document.getElementById('am_go'); if(go)go.onclick=()=>{
@@ -12269,7 +12316,7 @@ const BASE_FOODS=(function(){ const L=[];
   return L;
 })();
 // snapshot the current food-search context (query + tag + lockTag + online term) so openLog can offer a back button
-function snapshotFaCtx(){ try{ const qel=document.getElementById('fa_q')||document.getElementById('ns_q'); const tg=document.getElementById('fa_tagtxt'); const qv=qel?qel.value:''; window._faCtx={ q:qv, tag:tg?tg.value:(window._faTag||curTag()), lock:!!(tg&&tg.type==='hidden'), off:(window._faLast===(qv||'').trim()?window._faLast:null) }; }catch(_){ window._faCtx=null; } }
+function snapshotFaCtx(){ try{ const qel=document.getElementById('fa_q')||document.getElementById('ns_q'); const tg=document.getElementById('fa_tagtxt'); const qv=qel?qel.value:''; window._faCtx={ q:qv, tag:tg?tg.value:(window._faTag||curTag()), lock:!!window._faLock, off:(window._faLast===(qv||'').trim()?window._faLast:null) }; }catch(_){ window._faCtx=null; } }
 // re-render the cached OpenFoodFacts ("EN LÍNEA") rows for a restored search (no re-fetch). No-op if rows already present.
 function renderOFFRows(term){ const list=document.getElementById('fa_list'); const res=window._ofRes; if(!list||!res||!res.length)return false;
   if(list.querySelector('[data-act="ofpick"]'))return true;
@@ -12284,15 +12331,33 @@ function saveLastUsed(f,unit,qty){ try{ db.lastUsed=db.lastUsed||{}; const k=las
 // U2 (E6/E7): la jerarquía del sheet es buscar → atajos → resultados (MyFitnessPal). La comida deja de ser un campo
 // libre con una tira de chips arriba del todo: es una línea `a #desayuno [cambiar]` que abre TRKWheel. `#fa_tagtxt`
 // sigue existiendo (oculto) porque `curTag()` lo lee desde media docena de sitios.
+// ---------- v290 · M6 · los aros del día arriba de `add food`, de la porción y de `aproximada` ----------
+// El dueño (1-oct): "arriba de Add Food siempre aparezcan los rings… que se actualice en tiempo real… un scoop, dos, scoop y medio".
+// kcal · P · C · F con lo que te QUEDA del día que estás viendo. Lo que estás por agregar entra al aro en gris y el número pasa a lo
+// que quedaría (en rojo si te pasas). Al editar un alimento ya registrado, primero se resta el suyo (`skipId`).
+const FR_KEYS=['kcal','protein','carbs','fat'], FR_LBL={kcal:'kcal',protein:'P',carbs:'C',fat:'F'};
+function dayLeftBase(skipId){ const iso=curDate(), g=goalsFor(iso)||{}, T=macroTotals().t, t={}; FR_KEYS.forEach(k=>{ t[k]=+T[k]||0; });
+  if(skipId){ const it=(db.meals[iso]||[]).find(x=>x&&x.id===skipId); if(it)FR_KEYS.forEach(k=>{ t[k]=Math.max(0,t[k]-(+it[k]||0)); }); }
+  return {g,t}; }
+function ring2HTML(pct,add,center){ pct=Math.max(0,Math.min(100,pct||0)); add=Math.max(0,Math.min(100-pct,add||0));
+  return `<div class="ring sm"><svg viewBox="0 0 36 36"><circle class="ring-track" cx="18" cy="18" r="15.7"/>${add>0?`<circle class="ring-add" cx="18" cy="18" r="15.7" pathLength="100" transform="rotate(-90 18 18)" style="stroke-dasharray:${add} 100; stroke-dashoffset:${-pct};"/>`:''}<circle class="ring-fill${pct<=0?' z':''}" cx="18" cy="18" r="15.7" pathLength="100" transform="rotate(-90 18 18)" style="stroke-dasharray:${pct} 100;"/></svg><div class="ring-center">${center}</div></div>`; }
+function foodRingsInner(add,skipId){ const B=dayLeftBase(skipId); add=add||{};
+  return FR_KEYS.map(k=>{ const goal=+B.g[k]||0, have=B.t[k], a=Math.max(0,+add[k]||0), left=goal-have-a;
+    return '<div class="frc" data-k="'+k+'">'+ring2HTML(goal?have/goal*100:0,goal?a/goal*100:0,'<div class="num'+(goal&&left<0?' u-bad':'')+(goal&&String(Math.round(left).toLocaleString()).length>5?' xs':'')+'">'+(goal?Math.round(left).toLocaleString():'—')+'</div>')+'<div class="cap">'+FR_LBL[k]+'</div></div>'; }).join(''); }
+function foodRingsHTML(add,skipId){ const iso=curDate();
+  return '<div class="frwrap"><div class="grp-label first">TE QUEDA'+(iso===todayISO()?'':' · '+escTxt(fmtShort(iso)))+'</div><div class="frings" id="frings" data-skip="'+escTxt(skipId||'')+'">'+foodRingsInner(add,skipId)+'</div></div>'; }
+// repinta los aros en su lugar (mismo alto: nada se mueve) con lo que estás por agregar
+function foodRingsSet(add){ const el=document.getElementById('frings'); if(el)el.innerHTML=foodRingsInner(add,el.dataset.skip||''); }
 function openFoodAdd(preset, lockTag){
-  const tag=preset||nextMealTag();
+  const tag=preset||nextMealTag(); window._faLock=!!lockTag;
   openModal(`<div class="fa-wrap">
      <h3 class="u-mb10">add food</h3>
-     <div class="fa-meal">a <b id="fa_tagname">#${escTxt(tag)}</b>${lockTag?'':'<a data-act="famealwheel">[cambiar]</a>'}</div>
+     ${foodRingsHTML()}
+     <div class="fa-meal">a <b id="fa_tagname">#${escTxt(tag)}</b>${lockTag?'':'<a data-act="famealwheel">cambiar</a>'}</div>
      <input type="hidden" id="fa_tagtxt" value="${escTxt(tag+'')}"/>
      <div class="fa-top">
        <input id="fa_q" placeholder="buscar — huevo / egg, pollo / chicken…" autocomplete="off"/>
-       <div class="fa-acts"><a data-act="fbarcode">[escanear]</a><a data-act="faapprox">[aproximada]</a><a data-act="fregister">[registrar]</a></div>
+       <div class="fa-acts"><a data-act="fbarcode">escanear</a><a data-act="faapprox">aproximada</a><a data-act="fregister">registrar</a></div>
      </div>
      <div class="fa-listwrap"><div class="fa-lblrow" id="fa_lblrow"><div class="grp-label first" id="fa_lbl">RECIENTES</div><button type="button" class="b" id="fa_clean">limpiar</button></div><div id="fa_list"></div></div>
    </div>`,'tall');
@@ -12352,7 +12417,7 @@ function openRegisterMenu(barcode){
    <div class="submeta u-mb10">${barcode?'código no encontrado en la base':'no se leyó el código'} · elige cómo seguir:</div>
    <button class="start u-mb8" data-act="fphoto">foto de tabla nutricional</button>
    <button class="start ghost u-mb8" data-act="fmanual">registrar manualmente</button>
-   <div class="secondary"><button class="b" data-act="fbarcode">↻ intentar de nuevo</button><button class="b" data-act="ftext">pegar texto</button></div>`);
+   <div class="secondary"><button class="b" data-act="fbarcode">intentar de nuevo</button><button class="b" data-act="ftext">pegar texto</button></div>`);
 }
 async function decodeImgSrc(url){
   try{ await loadScript('https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.4/dist/quagga.min.js','sha384-IkRTkdAeAAAqE2ct5zNAfMiX8+H35pGJp8j7+ZFwh7PKaJh5eunsOFAb9l6Z9R7r'); }catch(_){ return null; }
@@ -12564,7 +12629,7 @@ function openVerify(food, opts){
   const packServings=(fd.sizes.container&&sg)?Math.round(fd.sizes.container/sg*100)/100:'';
   const nf=(id,lbl,v)=>`<div><label>${lbl}</label><input id="${id}" type="number" inputmode="decimal" value="${v?numTxt(v):''}" placeholder="0"/></div>`;
   const sz=(id,lbl,v)=>`<div><label>${lbl}</label><input id="${id}" type="number" inputmode="decimal" value="${v?numTxt(v):''}" placeholder="—"/></div>`;
-  openModal(`<h3>${window._faCtx?'<a data-act="faback" class="u-o50 u-data u-w7 u-tap u-mr8 u-lsui" title="volver a la búsqueda">← back</a>':''}registrar alimento</h3>
+  openModal(`<h3>${window._faCtx?'<a data-act="faback" class="vb u-mr8" title="volver a la búsqueda">‹ back</a>':''}registrar alimento</h3>
    <div class="field"><label>NOMBRE DEL PRODUCTO</label><input id="v_name" value="${escTxt(fd.name||'')}" placeholder="ej. galletas marías"/></div>
    <div class="field"><label>MARCA (opcional)</label><input id="v_brand" value="${escTxt(fd.brand||'')}" placeholder="ej. Gamesa"/></div>
    <div class="field"><label>CÓDIGO DE BARRAS (obligatorio)</label><input id="v_barcode" inputmode="numeric" value="${escTxt(window._verify.barcode||'')}" placeholder="escanea o escribe los dígitos"/></div>
@@ -12602,9 +12667,10 @@ function openLog(food, opts){ opts=opts||{}; const fd=asCanonical(food);
   const editing=!!opts.editId; const primary=editing?'guardar cambios':'loguear';   // v271 · guardar en mis alimentos es una fila aparte
   const defTime=editing?(opts.time||''):nowHM();   // HORA opcional: alta asume hora actual; edición usa la del item (vacío si null)
   const hasBack=!editing && window._faCtx;
-  openModal(`<h3>${hasBack?'<a data-act="faback" class="u-o50 u-data u-w7 u-tap u-mr8 u-lsui" title="volver a la búsqueda">← back</a>':''}${editing?'editar registro':'loguear'} · ${escTxt(fd.name||'alimento')}</h3>
+  openModal(`<h3>${hasBack?'<a data-act="faback" class="vb u-mr8" title="volver a la búsqueda">‹ back</a>':''}${editing?'editar registro':'loguear'} · ${escTxt(fd.name||'alimento')}</h3>
    <div class="submeta u-mt-n2 u-mb10 u-mx0 u-label">${srcPrefix(fd)}fuente: ${escTxt(foodSource(fd).label)}</div>
-   <div class="field row2"><div><label>UNIDAD${lu?' <span class="u-o60 u-label u-w7" title="última vez">↺</span>':''}</label><select id="l_unit" class="pick">${units.map(u=>`<option value="${u.key}"${u.key===defUnit?' selected':''}>${u.label}</option>`).join('')}</select></div><div><label>CANTIDAD</label><input id="l_qty" type="number" inputmode="decimal" step="0.25" value="${defQty}"/></div></div>
+   ${foodRingsHTML(null,opts.editId||'')}
+   <div class="field row2"><div><label>UNIDAD${lu?' <span class="u-o40 u-w4">· última vez</span>':''}</label><select id="l_unit" class="pick">${units.map(u=>`<option value="${u.key}"${u.key===defUnit?' selected':''}>${u.label}</option>`).join('')}</select></div><div><label>CANTIDAD</label><input id="l_qty" type="number" inputmode="decimal" step="0.25" value="${defQty}"/></div></div>
 
    <div class="lkc" id="l_kcal"></div>
    <div class="lnut" id="l_full"></div>
@@ -12612,6 +12678,7 @@ function openLog(food, opts){ opts=opts||{}; const fd=asCanonical(food);
    <div class="sheetbtns"><button class="ok" data-act="logsave">${primary}</button><button class="cancel" data-act="${hasBack?'faback':'closemodal'}">cancel</button></div>`);   // v271 · cancel NUNCA loguea (antes era logonly → commitLog)
   const nutRow=(lbl,v,u,b)=>`<div class="line"><span class="k${b?' u-fg':''}">${lbl}</span><span class="dots"></span><span class="v${b?' u-fg':''}">${u==='L'?(+v||0).toFixed(2):Math.round(+v||0)}${u?' '+u:''}</span></div>`;
   const lrecalc=()=>{ const u=(document.getElementById('l_unit')||{}).value; const q=parseFloat(val('l_qty'))||1; const nut=computeNutrients(fd,u,q);
+    foodRingsSet(nut);
     const k=document.getElementById('l_kcal'); if(k)k.innerHTML='<b>'+Math.round(nut.kcal)+'</b> <span class="u">kcal · '+numTxt(nut._grams)+' '+fd.base+'</span>';
     const ff=document.getElementById('l_full'); if(ff)ff.innerHTML=nutRow('proteína',nut.protein,'g',1)+nutRow('carbohidratos',nut.carbs,'g',1)+nutRow('grasa',nut.fat,'g',1)+nutRow('azúcar',nut.sugar,'g')+nutRow('fibra',nut.fiber,'g')+nutRow('sodio',nut.sodium,'mg')+nutRow('potasio',nut.potassium,'mg')+nutRow('cafeína',nut.caffeine,'mg')+(nut.alcohol?nutRow('alcohol',nut.alcohol,'g'):'')+(fd.base==='ml'?nutRow('líquidos',nut.water,'L'):''); };
   const us=document.getElementById('l_unit'); if(us)us.addEventListener('change',lrecalc);
@@ -12666,7 +12733,7 @@ function openMealDetail(id){
    <div class="submeta u-mb8">#${escTxt(m.tag)}${(m._food&&m._food.brand)?' · '+escTxt(m._food.brand):''}${m.serving?' · '+escTxt(m.serving):''}${m.qty&&m.qty!==1?' · ×'+numTxt(m.qty):''}</div>
    ${row('kcal',m.kcal,'')}${row('protein',m.protein,'g')}${row('carbs',m.carbs,'g')}${row('fat',m.fat,'g')}${row('sugar',m.sugar,'g')}${row('fiber',m.fiber,'g')}${row('sodium',m.sodium,'mg')}${row('potassium',m.potassium,'mg')}${row('caffeine',m.caffeine,'mg')}${row('liquid',m.water,'L')}
    <div class="line"><span class="k">fuente</span><span class="dots"></span><span class="v">${srcPrefix(m._food)}${escTxt(foodSource(m._food).label)}</span></div>
-   <div class="line"><span class="k">código${(()=>{const fdb=(db.foods||[]).find(x=>(m._food&&m._food.id&&x.id===m._food.id)||x.name===(m.name||'').replace(/ ×[\d.]+$/,'')); const n=(fdb?foodCodes(fdb):foodCodes(m._food||{barcode:bc})).length; return n>1?'s ('+n+')':'';})()}</span><span class="dots"></span><span class="v">${bc?(`<a data-act="mealcode" class="u-tap u-fg">${escTxt(bc)} ✎</a>`):'<a data-act="mealcode" class="u-ul u-tap">+ añadir</a>'}</span></div>
+   <div class="line"><span class="k">código${(()=>{const fdb=(db.foods||[]).find(x=>(m._food&&m._food.id&&x.id===m._food.id)||x.name===(m.name||'').replace(/ ×[\d.]+$/,'')); const n=(fdb?foodCodes(fdb):foodCodes(m._food||{barcode:bc})).length; return n>1?'s ('+n+')':'';})()}</span><span class="dots"></span><span class="v">${bc?(`<a data-act="mealcode" class="u-ul u-tap u-fg">${escTxt(bc)}</a>`):'<a data-act="mealcode" class="u-ul u-tap">+ añadir</a>'}</span></div>
    <div class="sheetbtns u-mt12"><button class="ok" data-act="editmeal">edit</button>${bc?'<button class="cancel" data-act="mealcode">código</button>':''}<button class="cancel" data-act="delmealnow">delete</button><button class="cancel" data-act="closemodal">close</button></div>`);
 }
 function commitLog(saveToDb){
@@ -12803,7 +12870,7 @@ function openGoals(dayArg){   // v256: desde //PERFIL se abre con hoy (antes her
    <hr class="rule u-my8 u-mx0"/>
    <div class="submeta u-label u-o40 u-mb6">SECCIONES · tap para ocultar/mostrar</div>
    <div class="chips u-mb12" id="g_sectog">${[['balance','déficit/mant.'],['electro','electrolitos'],['sugarfiber','azúcar/fibra'],['minor','agua/caf/alc/sueño']].map(s=>`<span class="chip" data-act="goalsechtog" data-sec="${s[0]}" style="${goalSecHidden(s[0])?'opacity:.4;text-decoration:line-through':''}">${s[1]}</span>`).join('')}</div>
-   <div class="sheetbtns"><button class="ok" data-act="okgoals">save</button><button class="cancel" id="g_tomaint" title="poner kcal objetivo = tu mantenimiento">= mantenim.</button><button class="cancel" id="g_recalc" title="recalcular desde tu perfil + actividad">↻ perfil</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
+   <div class="sheetbtns"><button class="ok" data-act="okgoals">save</button><button class="cancel" id="g_tomaint" title="poner kcal objetivo = tu mantenimiento">= mantenim.</button><button class="cancel" id="g_recalc" title="recalcular desde tu perfil + actividad">recalcular</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
   const keys=['protein','carbs','fat'], DIV={protein:4,carbs:4,fat:9}, locks={protein:false,carbs:false,fat:false};
   const gr={protein:+g.protein||0, carbs:+g.carbs||0, fat:+g.fat||0};   // GRAMS = source of truth; locks pin grams
   const Kget=()=>parseFloat(val('gp_kcal'))||0;
@@ -13137,7 +13204,7 @@ function openDupMeal(tag){
    <div class="field"><label>NUEVA MEAL · nombre</label><input id="dm_tag" value="${escTxt(tag)}" placeholder="ej. desayuno"/>
    <div class="chips" id="dm_sugg">${sugg.slice(0,8).map(s=>`<span class="chip" data-act="dmtag" data-v="${escTxt(s)}">${escTxt(s)}</span>`).join('')}</div></div>
    <div class="field"><label>FECHA</label><input id="dm_date" type="date" value="${src}"/></div>
-   <div class="sheetbtns"><button class="ok" id="dm_go">⎘ duplicar</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
+   <div class="sheetbtns"><button class="ok" id="dm_go">duplicar</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
   document.querySelectorAll('#dm_sugg .chip').forEach(c=>c.onclick=()=>{ const inp=document.getElementById('dm_tag'); inp.value=c.dataset.v; });
   document.getElementById('dm_go').onclick=()=>{
     const nt=(val('dm_tag')||tag).trim()||tag; const nd=val('dm_date')||src;
@@ -13360,7 +13427,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
