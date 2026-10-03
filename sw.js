@@ -1,7 +1,9 @@
-﻿const C = 'gymtrk-v294';
+﻿const C = 'gymtrk-v295';
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(C).then(c => c.addAll(['./', './index.html', './manifest.json'].map(x => new Request(x, { cache: 'reload' }))))
+    caches.open(C).then(c => c.addAll(['./', './index.html', './manifest.json'].map(x => new Request(x, { cache: 'reload' })))
+      // v295 · las fichas del catálogo de sustancias: con 'no-cache' el servidor contesta 304 si no cambiaron; si faltan, no frena la versión
+      .then(() => c.add(new Request('./substances.json', { cache: 'no-cache' })).catch(() => {})))
       .then(() => self.skipWaiting()).catch(() => {})
   );
 });
