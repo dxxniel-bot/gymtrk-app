@@ -49,7 +49,7 @@
     --s7:32px; --s8:48px;
     --r-mark:4px;
     --shadow-float:0 6px 22px rgba(0,0,0,.55);
-    --dur-1:120ms; --dur-2:180ms; --dur-3:280ms; --dur-charge:560ms; --dur-screen:140ms; --toast-life:2.3s; --toast-life-err:4.6s;
+    --dur-1:120ms; --dur-2:180ms; --dur-3:280ms; --dur-charge:560ms; --dur-calm:420ms; --dur-screen:140ms; --toast-life:2.3s; --toast-life-err:4.6s;
     --ease-out:cubic-bezier(.22,1,.36,1); --ease-in:cubic-bezier(.4,0,1,1);
     --z-float:20; --z-nav:30; --z-modal:40; --z-tour:45; --z-pop:50; --z-overlay:60; --z-toast:80; --z-dev:90;
     /* v260 · tokens exactos (T): cada uno nace con el valor de HOY — ningún píxel cambió al crearlos. Los mueve el
@@ -1150,23 +1150,31 @@
   .setprog{font-size:var(--t-label); font-weight:700;} .exprog{font-size:var(--t-data); font-weight:800; margin-left:var(--s3);}   /* R1: la forma fija en clase; en línea solo el color calculado */
   .setprogline{display:flex; align-items:center; justify-content:flex-end; gap:6px; padding:0 var(--s3); margin:-1px 0 var(--s2); height:11px; line-height:11px;} .setprogline.nil{height:0; padding:0; margin:0;}
   /* v301 · σ de la serie como barra (SG1): ocupa el renglón a la izquierda del ▲▼ %; punteada = RIR estimado. El renglón sigue midiendo 11 px. */
-  .setprogline .droppct{float:none; margin-right:auto;} .setprogline .sgb{flex:1; min-width:24px;} .sgb[data-gloss]{border-bottom:0;}
-  .sgb.est>i{background:repeating-linear-gradient(90deg,var(--fill) 0 3px,transparent 3px 6px);}
+  /* v305 · el dueño: "está muy grande, hazla más delgada y discreta y que se siga leyendo el num de puntaje": barra corta de 2 px en gris + su número */
+  .setprogline .droppct{float:none; margin-right:auto;}
+  .sgw{display:inline-flex; align-items:center; gap:6px;} .sgw[data-gloss]{border-bottom:0;}
+  .sgw .sgb{flex:0 0 56px; width:56px; height:2px;} .sgw .sgb>i{background:var(--o60);}
+  .sgw .sgb.est>i{background:repeating-linear-gradient(90deg,var(--o60) 0 3px,transparent 3px 6px);}
+  .sgv{font-size:var(--t-label); font-weight:400; color:var(--o40); font-variant-numeric:tabular-nums;}
   /* v304 · F1 · descanso en grande: la pantalla queda tenue y el reloj al centro. Vive encima (no en el flujo): entrar o salir no cambia
      ningún alto ni mueve el scroll. Mientras dura, la lista no recibe toques: el primer toque solo la despierta. Excepción con nombre `rest`
      (el reloj sale de la escala, como el número del anillo). */
-  #restfocus{position:absolute; inset:0; z-index:calc(var(--z-modal) - 1); display:none; flex-direction:column; align-items:center; justify-content:center; gap:var(--s4); pointer-events:none; text-align:center;}
-  #app.rf #restfocus{display:flex; animation:rfin var(--dur-3) var(--ease-out);} @keyframes rfin{from{opacity:0}}
+  #restfocus{position:absolute; inset:0; z-index:calc(var(--z-modal) - 1); display:none; align-items:center; justify-content:center; pointer-events:none; text-align:center;}
+  #app.rf #restfocus,#app.rfout #restfocus{display:flex;}   /* v305 · entra y sale con una transición (rfAnim): `rfout` lo mantiene pintado mientras baja */
+  /* v305 · el bloque va sobre un panel sólido (el material de las hojas): la lista tenue ya no se mezcla con los botones */
+  #restfocus .rfc{display:flex; flex-direction:column; align-items:center; gap:var(--s3); min-width:264px; padding:var(--s6) var(--s6) var(--s5); background:var(--sheet-bg); border:var(--bw-chrome) solid var(--o12); border-radius:var(--r-ctl); will-change:transform,opacity;}
   #app.rf #view,#app.rf #wfooter{opacity:var(--op-rest);} #app.rf #view *,#app.rf #wfooter,#app.rf #wfooter *{pointer-events:none;}
   #restfocus .rfl{font-size:var(--t-label); letter-spacing:var(--ls-caps); color:var(--o50); text-transform:uppercase; min-height:12px;}
   #restfocus .rft{font-size:72px/*ds:exempt*/; font-weight:800; line-height:1; font-variant-numeric:tabular-nums;}
   #restfocus.fin .rft{color:var(--good);}
   #restfocus .rfn{font-size:var(--t-data); color:var(--o60); padding:0 var(--sp-px); min-height:16px;}
-  #restfocus .rfb{display:flex; gap:var(--s3); pointer-events:auto; margin-top:var(--s3);}
-  #restfocus .rfb a{display:inline-flex; align-items:center; justify-content:center; min-width:64px; height:44px; padding:0 var(--s4); color:var(--o70); border:var(--bw-ctl) solid var(--border); border-radius:var(--r-ctl); cursor:pointer; font-size:var(--t-data); -webkit-user-select:none; user-select:none;}
+  #restfocus .rfb{display:flex; gap:var(--s3); pointer-events:auto; margin-top:var(--s3);} #app.rfout #restfocus .rfb{pointer-events:none;}
+  #restfocus .rfb a{display:inline-flex; align-items:center; justify-content:center; min-width:64px; height:44px; padding:0 var(--s4); color:var(--fg); background:var(--card2); border:var(--bw-ctl) solid var(--o40); border-radius:var(--r-ctl); cursor:pointer; font-size:var(--t-data); -webkit-user-select:none; user-select:none;}
   #restfocus.fin .rfb{visibility:hidden;}
   .whyln[data-gloss]{border-bottom:0;} .whyln{padding:var(--s1) var(--s3) var(--s2);}   /* v302 · el porqué del ▼: una razón; el resto al tocarla */
-  @keyframes exlit{from{opacity:var(--op-dim)}} @keyframes exdim{from{opacity:1}} .wfocus .ex.exlit{animation:exlit var(--dur-3) var(--ease-out);} .wfocus .ex.exdim{animation:exdim var(--dur-3) var(--ease-out);}
+  @keyframes exlit{from{opacity:var(--op-dim)}} @keyframes exdim{from{opacity:1}} .wfocus .ex.exlit{animation:exlit var(--dur-calm) var(--ease-out);} .wfocus .ex.exdim{animation:exdim var(--dur-calm) var(--ease-out);}
+  /* v305 · cambio de ejercicio en dos tiempos: primero lo que se va a cerrar se desvanece EN SU LUGAR (nada se mueve); luego el hueco se cierra deslizando y el siguiente se enciende, todo con --dur-calm */
+  @keyframes exfade{to{opacity:0}} .wfocus .ex.exclosing .exsub,.wfocus .ex.exclosing .setprogline,.wfocus .ex.exclosing .addrow,.wfocus .ex.exclosing .swipehint,.wfocus .ex.exclosing .whyln,.wfocus .ex.exclosing .exholdc{animation:exfade var(--dur-2) var(--ease-in) forwards;}
   .pair.phead{margin-bottom:6px;} .pair.phead .thead{margin-bottom:0;} .pair.phead .setn,.pair.phead .pairdone{cursor:default;}   /* v256: cabecera unilateral con la envoltura del par */
   .start.ghost{background:transparent; border:var(--bw-ctl) solid var(--border); color:var(--fg);}
   .fa-empty .fa-em-step.off{opacity:.5; cursor:default;}
@@ -1224,7 +1232,7 @@
 
 <script>
 "use strict";
-const APP_V='v304';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v305';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -3683,8 +3691,9 @@ const fmtSig=fmtT;   // v272 · σ con un decimal
 // Solo dibujo: no cambia σ ni nada del motor. Bajo 0.5 queda un mínimo visible; sin σ no hay barra; RIR estimado = punteada.
 const SIGBAR_K=4;
 function sigBarPct(t){ const x=Math.max(0,Math.min(1,((+t||0)-0.5)/0.5)); return 100*(Math.exp(SIGBAR_K*x)-1)/(Math.exp(SIGBAR_K)-1); }
-function sigBarTag(x,key){ if(!(x&&x.t>0))return ''; const v=(x.est?'~':'')+'σ '+x.t.toFixed(2);
-  return `<span class="vbar sgb${x.est?' est':''}" data-gloss="t" data-gv="${v}" role="img" aria-label="${v}${x.est?' · RIR estimado':''}">${trkBarI(key?('sg:'+key):'',Math.max(1.5,sigBarPct(x.t)))}</span>`; }
+// v305 · barra corta y discreta + el puntaje escrito al lado (de 0.00 a 1.00; con ~ si el RIR es estimado): "que se siga leyendo el num de puntaje"
+function sigBarTag(x,key){ if(!(x&&x.t>0))return ''; const num=(x.est?'~':'')+x.t.toFixed(2), v=(x.est?'~':'')+'σ '+x.t.toFixed(2);
+  return `<span class="sgw" data-gloss="t" data-gv="${v}"><span class="vbar sgb${x.est?' est':''}" role="img" aria-label="${v}${x.est?' · RIR estimado':''}">${trkBarI(key?('sg:'+key):'',Math.max(1.5,sigBarPct(x.t)))}</span><span class="sgv">${num}</span></span>`; }
 function _sigBarSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK sigbar: '+nm); }; const p=sigBarPct;
   A('0.5 = vacía y 1.0 = llena', p(0.5)===0&&Math.abs(p(1)-100)<1e-9);
   A('fuera de rango se acota', p(0.3)===0&&p(0)===0&&Math.abs(p(1.2)-100)<1e-9);
@@ -3693,7 +3702,7 @@ function _sigBarSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
   A('F, RIR 0, RIR 1 y RIR 2 quedan separados', p(1)-p(0.98)>=10&&p(0.98)-p(0.955)>=10&&p(0.955)-p(0.905)>=10);
   A('RIR 2 queda a menos de la mitad', p(0.905)<50);
   const h=sigBarTag({t:0.98},'k1'), he=sigBarTag({t:0.9,est:true},''), lo=sigBarTag({t:0.2},'');
-  A('es una barra, sin el texto σ a la vista', /^<span class="vbar sgb"[^>]*><i[^>]*><\/i><\/span>$/.test(h)&&h.indexOf('data-bk="sg:k1"')>0);
+  A('una barra corta con su puntaje escrito al lado (v305)', /^<span class="sgw"[^>]*><span class="vbar sgb"[^>]*><i[^>]*><\/i><\/span><span class="sgv">0\.98<\/span><\/span>$/.test(h)&&h.indexOf('data-bk="sg:k1"')>0&&he.indexOf('<span class="sgv">~0.90</span>')>0);
   A('el número queda a un toque', h.indexOf('data-gloss="t"')>0&&h.indexOf('data-gv="σ 0.98"')>0);
   A('RIR estimado = punteada y con ~', he.indexOf('sgb est')>0&&he.indexOf('data-gv="~σ 0.90"')>0);
   A('bajo 0.5 queda un mínimo visible', /width:1\.5%/.test(lo));
@@ -6291,8 +6300,19 @@ function sessionContextNote(w){
 // tocar la línea "sigue …" (o el siguiente ejercicio) lo adelanta. Mientras tecleas o hay una hoja abierta, espera.
 const EX_HOLD_MS=4000;
 function exHoldClear(){ const h=state._exHold; if(h){ clearTimeout(h.t); state._exHold=null; } }
+// v305 · "la transición al terminar un ejercicio y pasar al siguiente está muy tosca, no es smooth". Antes todo pasaba en el mismo
+// cuadro: las filas del que termina desaparecían de golpe, el hueco se cerraba en 180 ms y el fundido duraba 280. Ahora van en dos
+// tiempos con una sola curva: (1) lo que se va a cerrar se desvanece en su lugar (--dur-2; nada se mueve); (2) se repinta: el hueco
+// se cierra deslizando y el siguiente se enciende, las dos cosas en --dur-calm. Con movimiento reducido o en pruebas, directo.
+function exSwap(apply){ const v=document.getElementById('view'), old=v&&v.querySelector('.wfocus .ex.current');
+  const go=()=>{ window._flipDur=durMs('--dur-calm',420); try{ apply(); } finally { window._flipDur=0; } };
+  clearTimeout(state._exSwapT); state._exSwapT=0;
+  if(_sbx||!old||reducedMotion()||state.screen!=='workout'){ go(); return; }
+  old.classList.add('exclosing'); state._exSwapT=setTimeout(()=>{ state._exSwapT=0; if(state.screen==='workout')go(); },durMs('--dur-2',180)); }
 function exHoldGo(){ const h=state._exHold; if(!h)return; exHoldClear(); const w=db.activeWork; if(!w||!w.exercises)return;
-  if(state._curEx===w.exercises.indexOf(h.ex)){ state._curEx=null; const nt=currentSetTarget(); if(nt)state._focusSet={exi:nt.exi,si:nt.si};
+  const hi=w.exercises.indexOf(h.ex); if(state._curEx===hi)exSwap(()=>exHoldApply(hi)); }
+function exHoldApply(hi){ const w=db.activeWork; if(!w||!w.exercises)return;
+  if(state._curEx===hi){ state._curEx=null; const nt=currentSetTarget(); if(nt)state._focusSet={exi:nt.exi,si:nt.si};
     if(state.screen==='workout'){ try{ const v=document.getElementById('view'), b=nt&&v.querySelector('.ex[data-exi="'+nt.exi+'"]'); if(b&&b.dataset.rk)_lastTap={sig:'',sel:'',el:null,sheet:null,view:true,off:0,rk:b.dataset.rk,rkOff:b.getBoundingClientRect().top-v.getBoundingClientRect().top}; }catch(_){} reRender(); _lastTap=null; } } }
 function exHoldStart(ex){ exHoldClear();
   const fire=()=>{ const h=state._exHold; if(!h||h.ex!==ex)return; const ae=document.activeElement;
@@ -9852,7 +9872,7 @@ function rk(o){ if(!o||typeof o!=='object')return ''; let k=_rkMap.get(o); if(!k
 function flipCapture(root){ const m=new Map(); if(!root)return m; root.querySelectorAll('[data-rk]').forEach(el=>{ const k=el.dataset.rk; if(k)m.set(k,el.getBoundingClientRect().top); }); return m; }
 function flipPlay(root,prev){ if(!root||!prev||!prev.size||reducedMotion())return; const dys=new Map();
   root.querySelectorAll('[data-rk]').forEach(el=>{ const k=el.dataset.rk; if(!k||!prev.has(k))return; const dy=prev.get(k)-el.getBoundingClientRect().top; if(Math.abs(dy)>=1)dys.set(el,dy); });
-  const D=durMs('--dur-2',180);
+  const D=window._flipDur||durMs('--dur-2',180);   // v305 · un cambio de ejercicio pide su propia duración (exSwap), igual a la de su fundido
   dys.forEach((dy,el)=>{ let a=el.parentElement&&el.parentElement.closest('[data-rk]'), up=0; while(a){ if(dys.has(a)){ up=dys.get(a); break; } a=a.parentElement&&a.parentElement.closest('[data-rk]'); }
     const rel=dy-up; if(Math.abs(rel)<1)return; try{ el.animate([{transform:'translateY('+rel+'px)'},{transform:'none'}],{duration:D,easing:'cubic-bezier(.22,1,.36,1)'}); }catch(_){} }); }
 function reRender(){ let v=null, prev=null; try{ v=document.getElementById('view'); if(v)prev=flipCapture(v); }catch(_){} render(); try{ flipPlay(v,prev); }catch(_){} }   // v285 · la posición la conserva render() (misma vista), con ancla
@@ -9923,7 +9943,7 @@ function rfOn(){ return !(db&&db.settings&&db.settings.restFocus===false); }
 function rfActive(){ const a=document.getElementById('app'); return !!(a&&a.classList.contains('rf')); }
 function rfEl(){ let el=document.getElementById('restfocus'); if(el)return el; const app=document.getElementById('app'); if(!app)return null;
   el=document.createElement('div'); el.id='restfocus'; el.setAttribute('role','timer');
-  el.innerHTML='<div class="rfl" id="rflbl">rest</div><div class="rft" id="rftime">0:00</div><div class="rfn" id="rfnext"></div><div class="rfb"><a role="button" data-act="restminus">−15</a><a role="button" data-act="restplus">+15</a><a role="button" data-act="restskip">skip</a></div>';
+  el.innerHTML='<div class="rfc"><div class="rfl" id="rflbl">rest</div><div class="rft" id="rftime">0:00</div><div class="rfn" id="rfnext"></div><div class="rfb"><a role="button" data-act="restminus">−15</a><a role="button" data-act="restplus">+15</a><a role="button" data-act="restskip">skip</a></div></div>';
   app.appendChild(el); return el; }
 function rfCan(){ const w=db&&db.activeWork, ae=document.activeElement;
   return rfOn()&&state.screen==='workout'&&!!w&&!w.loggedAfter&&!!w.restEnd&&w.restEnd>Date.now()&&!state._wbar&&!state._exHold&&!bioCovered()&&!(ae&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName)); }
@@ -9932,8 +9952,25 @@ function rfArm(ms){ clearTimeout(_rfT); _rfT=0; if(!rfOn())return;
 // la pantalla despierta mientras el descanso está en grande (si el teléfono lo permite; si no, no pasa nada)
 function rfWake(on){ try{ if(on){ if(!_rfWL&&navigator.wakeLock&&navigator.wakeLock.request)navigator.wakeLock.request('screen').then(l=>{ _rfWL=l; try{ l.addEventListener('release',()=>{ if(_rfWL===l)_rfWL=null; }); }catch(_){} }).catch(()=>{}); }
     else if(_rfWL){ const l=_rfWL; _rfWL=null; l.release().catch(()=>{}); } }catch(_){} }
-function rfEnter(){ const el=rfEl(), app=document.getElementById('app'); if(!el||!app)return; _rfFinAt=0; el.classList.remove('fin'); app.classList.add('rf'); rfPaint(); rfWake(true); }
-function rfDock(rearm){ const app=document.getElementById('app'); clearTimeout(_rfT); _rfT=0; if(app)app.classList.remove('rf'); _rfFinAt=0; if(rearm)rfArm(5000); else rfWake(false); }
+// v305 · "el modo focus sale muy de repente. que exista una transición clean": una sola transición (--dur-calm) en los dos sentidos.
+// El panel SALE de la barra de descanso del pie (crece y sube hasta el centro) mientras la lista se atenúa; al bajar hace el camino
+// inverso. Solo transform y opacidad (WAAPI); con movimiento reducido no anima. dir 1 = entrar, dir -1 = salir. Devuelve la duración.
+let _rfAn=[], _rfOutT=0;
+function rfAnim(dir){ _rfAn.forEach(a=>{ try{ a.cancel(); }catch(_){} }); _rfAn=[]; if(reducedMotion())return 0;
+  const c=document.querySelector('#restfocus .rfc'); if(!c||!c.animate)return 0;
+  const D=durMs('--dur-calm',420), ez='cubic-bezier(.22,1,.36,1)', v=document.getElementById('view'), f=document.getElementById('wfooter'), src=document.getElementById('resttime');
+  const dim=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--op-rest'))||0.16;
+  let dx=0, dy=48; try{ const a=c.getBoundingClientRect(), b=src&&src.getBoundingClientRect(); if(b&&b.width){ dx=(b.left+b.width/2)-(a.left+a.width/2); dy=(b.top+b.height/2)-(a.top+a.height/2); } }catch(_){}
+  const far={opacity:0,transform:'translate('+dx+'px,'+dy+'px) scale(.3)'}, near={opacity:1,transform:'translate(0px,0px) scale(1)'}, lo=[{opacity:1},{opacity:dim}], hi=[{opacity:dim},{opacity:1}];
+  const run=(el,kf,fill)=>{ if(!el)return; try{ _rfAn.push(el.animate(kf,{duration:D,easing:ez,fill:fill||'none'})); }catch(_){} };
+  if(dir>0){ run(c,[far,near]); run(v,lo); run(f,lo); } else { run(c,[near,far],'forwards'); run(v,hi); run(f,hi); }
+  return D; }
+function rfEnter(){ const el=rfEl(), app=document.getElementById('app'); if(!el||!app)return; clearTimeout(_rfOutT); _rfOutT=0; _rfFinAt=0; el.classList.remove('fin'); app.classList.remove('rfout'); app.classList.add('rf'); rfPaint(); if(rfActive())rfAnim(1); rfWake(true); }
+function rfDock(rearm){ const app=document.getElementById('app'), was=rfActive(); clearTimeout(_rfT); _rfT=0; _rfFinAt=0;
+  if(app){ if(was)app.classList.add('rfout'); app.classList.remove('rf');
+    const D=was?rfAnim(-1):0; clearTimeout(_rfOutT); _rfOutT=0;
+    if(D)_rfOutT=setTimeout(()=>{ _rfOutT=0; app.classList.remove('rfout'); _rfAn.forEach(a=>{ try{ a.cancel(); }catch(_){} }); _rfAn=[]; },D); else app.classList.remove('rfout'); }
+  if(rearm)rfArm(5000); else rfWake(false); }
 function rfPaint(){ if(!rfActive())return; const w=db&&db.activeWork, el=rfEl(); if(!el)return; const t=document.getElementById('rftime'), l=document.getElementById('rflbl'), n=document.getElementById('rfnext');
   if(_rfFinAt){ if(Date.now()-_rfFinAt>120000)rfDock(false); return; }   // `ready` se queda hasta que lo tocas (tope: 2 min)
   if(!w||state.screen!=='workout'||w.loggedAfter){ rfDock(false); return; }
@@ -9964,7 +10001,7 @@ function _restFocusSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
     fresh(); rfEnter(); db.activeWork.restEnd=null; _restFinT=0; rfPaint(); A('con skip se cierra', !app.classList.contains('rf'));
     fresh(); rfEnter(); state.screen='home'; rfPaint(); A('al salir de la sesión se cierra', !app.classList.contains('rf')); state.screen='workout';
     console.log('restfocus self-check OK');
-  } finally { clearTimeout(_rfT); _rfT=0; if(app)app.classList.remove('rf'); _rfFinAt=0; try{ closeAsk(true); }catch(_){} try{ rfWake(false); }catch(_){} db=real; state.screen=sc0; state._wbar=wb0; state._exHold=eh0; _restFinT=rf0; } }
+  } finally { clearTimeout(_rfT); _rfT=0; clearTimeout(_rfOutT); _rfOutT=0; if(app)app.classList.remove('rf','rfout'); _rfFinAt=0; try{ closeAsk(true); }catch(_){} try{ rfWake(false); }catch(_){} db=real; state.screen=sc0; state._wbar=wb0; state._exHold=eh0; _restFinT=rf0; } }
 function updateRestBar(){ try{ updateRestBarCore(); } finally { try{ rfPaint(); }catch(_){} } }
 function updateRestBarCore(){
   const bar=document.getElementById('resttimer'), tEl=document.getElementById('resttime'); if(!bar||!tEl)return;
@@ -10564,7 +10601,7 @@ document.getElementById('app').addEventListener('click',e=>{
     // v256: terminado el ejercicio, el enfoque pasa solo al siguiente · v279: tras una pausa (exHoldStart), no de golpe
     state._curEx=exi; if(ex.sets.some(s=>s&&!s.done))exHoldClear(); else { state._focusSet=null; exHoldStart(ex); }
     save(); reRender(); }
-  else if(a==='excur'){ exHoldClear(); state._curEx=exi; reRender(); }
+  else if(a==='excur'){ exHoldClear(); exSwap(()=>{ state._curEx=exi; reRender(); }); }
   else if(a==='exholdgo'){ exHoldGo(); }
   // v279 · el corchete se toca para cambiar la variante del MISMO ejercicio (con datos, pregunta antes) · v286 · tres opciones: openLatSelect
   else if(a==='exlat'){ openLatSelect(el,exi); }
