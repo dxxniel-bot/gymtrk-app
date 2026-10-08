@@ -55,7 +55,7 @@
     /* v260 · tokens exactos (T): cada uno nace con el valor de HOY — ningún píxel cambió al crearlos. Los mueve el
        estudio (tools/studio.html) y solo cambian de valor por decisión del dueño (BRAND §9). */
     --lh-tight:1; --lh-ui:1.2; --lh-read:1.4; --lh-share:1.6;                         /* interlineado por rol */
-    --op-press:.7; --op-disabled:.4; --op-pf:.45; --op-drop:.82; --op-dim:.28;          /* opacidad de estado */
+    --op-press:.7; --op-disabled:.4; --op-pf:.45; --op-drop:.82; --op-dim:.28; --op-rest:.16;          /* opacidad de estado */
     /* líneas por rol: separador de lista · caja de dato · subrayado punteado · guía ···· · campo · control ·
        tarjeta · regla · borde del vidrio · marca · foco */
     --bw-sep:.5px; --bw-box:.5px; --bw-dash:1px; --bw-leader:1px; --bw-field:1px; --bw-ctl:1px;
@@ -1152,6 +1152,19 @@
   /* v301 · σ de la serie como barra (SG1): ocupa el renglón a la izquierda del ▲▼ %; punteada = RIR estimado. El renglón sigue midiendo 11 px. */
   .setprogline .droppct{float:none; margin-right:auto;} .setprogline .sgb{flex:1; min-width:24px;} .sgb[data-gloss]{border-bottom:0;}
   .sgb.est>i{background:repeating-linear-gradient(90deg,var(--fill) 0 3px,transparent 3px 6px);}
+  /* v304 · F1 · descanso en grande: la pantalla queda tenue y el reloj al centro. Vive encima (no en el flujo): entrar o salir no cambia
+     ningún alto ni mueve el scroll. Mientras dura, la lista no recibe toques: el primer toque solo la despierta. Excepción con nombre `rest`
+     (el reloj sale de la escala, como el número del anillo). */
+  #restfocus{position:absolute; inset:0; z-index:calc(var(--z-modal) - 1); display:none; flex-direction:column; align-items:center; justify-content:center; gap:var(--s4); pointer-events:none; text-align:center;}
+  #app.rf #restfocus{display:flex; animation:rfin var(--dur-3) var(--ease-out);} @keyframes rfin{from{opacity:0}}
+  #app.rf #view,#app.rf #wfooter{opacity:var(--op-rest);} #app.rf #view *,#app.rf #wfooter,#app.rf #wfooter *{pointer-events:none;}
+  #restfocus .rfl{font-size:var(--t-label); letter-spacing:var(--ls-caps); color:var(--o50); text-transform:uppercase; min-height:12px;}
+  #restfocus .rft{font-size:72px/*ds:exempt*/; font-weight:800; line-height:1; font-variant-numeric:tabular-nums;}
+  #restfocus.fin .rft{color:var(--good);}
+  #restfocus .rfn{font-size:var(--t-data); color:var(--o60); padding:0 var(--sp-px); min-height:16px;}
+  #restfocus .rfb{display:flex; gap:var(--s3); pointer-events:auto; margin-top:var(--s3);}
+  #restfocus .rfb a{display:inline-flex; align-items:center; justify-content:center; min-width:64px; height:44px; padding:0 var(--s4); color:var(--o70); border:var(--bw-ctl) solid var(--border); border-radius:var(--r-ctl); cursor:pointer; font-size:var(--t-data); -webkit-user-select:none; user-select:none;}
+  #restfocus.fin .rfb{visibility:hidden;}
   .whyln[data-gloss]{border-bottom:0;} .whyln{padding:var(--s1) var(--s3) var(--s2);}   /* v302 · el porqué del ▼: una razón; el resto al tocarla */
   @keyframes exlit{from{opacity:var(--op-dim)}} @keyframes exdim{from{opacity:1}} .wfocus .ex.exlit{animation:exlit var(--dur-3) var(--ease-out);} .wfocus .ex.exdim{animation:exdim var(--dur-3) var(--ease-out);}
   .pair.phead{margin-bottom:6px;} .pair.phead .thead{margin-bottom:0;} .pair.phead .setn,.pair.phead .pairdone{cursor:default;}   /* v256: cabecera unilateral con la envoltura del par */
@@ -1211,7 +1224,7 @@
 
 <script>
 "use strict";
-const APP_V='v303';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v304';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -4584,7 +4597,7 @@ function _sessSafetyCheck(){
 // v260 · la escala y el piso de texto se leen de los tokens computados: si el estudio mueve --t-* o --o40, la medición sigue
 const DS_SCALE_DEF=[10,12,14,20,28,14]; function dsScale(){ try{ const cs=getComputedStyle(document.documentElement); const v=['--t-label','--t-data','--t-section','--t-display','--t-hero','--t-field'].map(t=>parseFloat(cs.getPropertyValue(t))); return v.every(x=>x>0)?v:DS_SCALE_DEF; }catch(_){ return DS_SCALE_DEF; } }
 function dsTextFloor(){ try{ const m=getComputedStyle(document.documentElement).getPropertyValue('--o40').match(/rgba?\([^)]*,\s*([\d.]+)\s*\)/); return m?(+m[1]-.005):.495; }catch(_){ return .495; } }
-const DS_SCALE=DS_SCALE_DEF, DS_CHROME='.nav,.modal,.toasts,.toast,.tsel,.gloss,#asklayer,.tour', DS_EXEMPT='.bootov,.scan-reticle,.dz';
+const DS_SCALE=DS_SCALE_DEF, DS_CHROME='.nav,.modal,.toasts,.toast,.tsel,.gloss,#asklayer,.tour', DS_EXEMPT='.bootov,.scan-reticle,.dz,#restfocus';
 // v267 · rad: una esquina de CONTENIDO más redonda que el control/tarjeta (hoy 4) — la prueba de 5 s de BRAND §8. No cuenta lo que flota
 // (DS_CHROME, --r-float), lo exento, los puntos (círculos ≤24 px) ni las barras finas (.bar/.wprog/.vbar, la única píldora).
 function dsRadCeil(){ try{ const cs=getComputedStyle(document.documentElement); return Math.max(parseFloat(cs.getPropertyValue('--r-ctl'))||4, parseFloat(cs.getPropertyValue('--radius'))||4); }catch(_){ return 4; } }
@@ -9652,6 +9665,7 @@ function renderSettings(){
     +`<div class="line u-tap" data-act="editrest"><span class="k">descanso entre sets</span><span class="dots"></span><span class="v">${db.settings.restSec||90}s ›</span></div>`
     +`<div class="line u-tap" role="button" tabindex="0" data-act="editrestside"><span class="k">descanso entre lados · unilateral</span><span class="dots"></span><span class="v">${restSideSec()}s ›</span></div>`
     +`<div class="line u-tap" data-act="togglebeep"><span class="k">beep fin de descanso</span><span class="dots"></span><span class="v">${db.settings.restBeep?'on':'off'} ›</span></div>`
+    +`<div class="line u-tap" role="button" tabindex="0" data-act="togglerestfocus"><span class="k">descanso en grande</span><span class="dots"></span><span class="v">${rfOn()?'on':'off'} ›</span></div>`
     +`<div class="line lnav u-tap" role="button" tabindex="0" data-act="tourreplay"><span class="k">guías de cada sección</span><span class="dots"></span><span class="v">${db.tour&&db.tour.skipped?'apagadas · prender':'repetir'} ›</span></div>`   // v278
     +(db.settings.suppHide?`<div class="line u-tap" data-act="supphideoff"><span class="k">supps en macros</span><span class="dots"></span><span class="v">ocultos · mostrar ›</span></div>`:'')
     +healthSettingsHTML()
@@ -9898,7 +9912,61 @@ function wbarArm(){ clearTimeout(_wbarT); _wbarT=setTimeout(()=>{ if(document.ge
 function wbarSet(on){ const f=document.getElementById('wfooter'); if(!f)return; on=!!on; state._wbar=on; f.classList.toggle('open',on);
   const b=f.querySelector('.wbar'); if(b)b.setAttribute('aria-expanded',on?'true':'false'); clearTimeout(_wbarT); if(on){ _wbarAt=Date.now(); wbarArm(); } }
 try{ document.addEventListener('pointerdown',e=>{ if(!state._wbar)return; const t=e.target; if(t&&t.closest&&t.closest('#wfooter')){ wbarArm(); return; } if(t&&t.closest&&t.closest('#asklayer,#toasts'))return; wbarSet(false); },true); }catch(_){}
-function updateRestBar(){
+// v304 · F1 · DESCANSO EN GRANDE. El dueño: "al terminar una serie, como que se bajara la opacidad en general de la pantalla y en el centro
+// apareciera en grande el tiempo de descanso y los botones… con el simple hecho de scrollear, que se pase abajo otra vez… y en el lapso de
+// cinco segundos de inactividad que vuelva… que el ready salga más grande… y no que estás rellenando una hoja de Excel".
+// Una capa fija (#restfocus) sobre la lista: solo cambia una clase en #app (`rf`), no repinta ni cambia altos. Entra ~1.5 s después de la ✓
+// (deja ver la ✓ y la barra) y a los 5 s sin tocar; sale con cualquier toque, scroll o tecla, y ese toque no dispara nada. Nunca entra con
+// una hoja, un aviso, el pie abierto, una casilla con foco o la pausa de fin de ejercicio. Se apaga en ajustes (`settings.restFocus`).
+let _rfT=0, _rfFinAt=0, _rfWL=null;
+function rfOn(){ return !(db&&db.settings&&db.settings.restFocus===false); }
+function rfActive(){ const a=document.getElementById('app'); return !!(a&&a.classList.contains('rf')); }
+function rfEl(){ let el=document.getElementById('restfocus'); if(el)return el; const app=document.getElementById('app'); if(!app)return null;
+  el=document.createElement('div'); el.id='restfocus'; el.setAttribute('role','timer');
+  el.innerHTML='<div class="rfl" id="rflbl">rest</div><div class="rft" id="rftime">0:00</div><div class="rfn" id="rfnext"></div><div class="rfb"><a role="button" data-act="restminus">−15</a><a role="button" data-act="restplus">+15</a><a role="button" data-act="restskip">skip</a></div>';
+  app.appendChild(el); return el; }
+function rfCan(){ const w=db&&db.activeWork, ae=document.activeElement;
+  return rfOn()&&state.screen==='workout'&&!!w&&!w.loggedAfter&&!!w.restEnd&&w.restEnd>Date.now()&&!state._wbar&&!state._exHold&&!bioCovered()&&!(ae&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName)); }
+function rfArm(ms){ clearTimeout(_rfT); _rfT=0; if(!rfOn())return;
+  _rfT=setTimeout(()=>{ _rfT=0; const w=db&&db.activeWork; if(!w||!w.restEnd||w.restEnd<=Date.now()||state.screen!=='workout'||rfActive())return; if(rfCan())rfEnter(); else rfArm(1500); },ms); }
+// la pantalla despierta mientras el descanso está en grande (si el teléfono lo permite; si no, no pasa nada)
+function rfWake(on){ try{ if(on){ if(!_rfWL&&navigator.wakeLock&&navigator.wakeLock.request)navigator.wakeLock.request('screen').then(l=>{ _rfWL=l; try{ l.addEventListener('release',()=>{ if(_rfWL===l)_rfWL=null; }); }catch(_){} }).catch(()=>{}); }
+    else if(_rfWL){ const l=_rfWL; _rfWL=null; l.release().catch(()=>{}); } }catch(_){} }
+function rfEnter(){ const el=rfEl(), app=document.getElementById('app'); if(!el||!app)return; _rfFinAt=0; el.classList.remove('fin'); app.classList.add('rf'); rfPaint(); rfWake(true); }
+function rfDock(rearm){ const app=document.getElementById('app'); clearTimeout(_rfT); _rfT=0; if(app)app.classList.remove('rf'); _rfFinAt=0; if(rearm)rfArm(5000); else rfWake(false); }
+function rfPaint(){ if(!rfActive())return; const w=db&&db.activeWork, el=rfEl(); if(!el)return; const t=document.getElementById('rftime'), l=document.getElementById('rflbl'), n=document.getElementById('rfnext');
+  if(_rfFinAt){ if(Date.now()-_rfFinAt>120000)rfDock(false); return; }   // `ready` se queda hasta que lo tocas (tope: 2 min)
+  if(!w||state.screen!=='workout'||w.loggedAfter){ rfDock(false); return; }
+  if(!w.restEnd){ if(_restFinT&&Date.now()-_restFinT<3000){ _rfFinAt=Date.now(); el.classList.add('fin'); t.textContent='ready'; l.textContent=''; return; } rfDock(false); return; }   // venció = ready · lo saltaste = se cierra
+  l.textContent=w.restKind==='side'?'rest · side':'rest'; t.textContent=fmtRest((w.restEnd-Date.now())/1000);
+  let nt=null; try{ nt=currentSetTarget(); }catch(_){} n.textContent=nt?('sigue · '+(nt.name||'')+(nt.label?' · serie '+nt.label+'/'+nt.tot:'')):''; }
+// cualquier toque, scroll o tecla: si está en grande, baja (y ese toque no dispara nada); si no, el reloj de 5 s vuelve a empezar
+try{ ['pointerdown','wheel','keydown','scroll'].forEach(k=>document.addEventListener(k,e=>{ const w=db&&db.activeWork;
+    if(rfActive()){ const t=e.target; if(t&&t.closest&&t.closest('#restfocus .rfb'))return; if(k==='scroll')return; window._swipeGuard=Date.now(); rfDock(!_rfFinAt&&!!(w&&w.restEnd)); return; }
+    if(w&&w.restEnd&&state.screen==='workout'&&rfOn())rfArm(5000); },{capture:true,passive:true})); }catch(_){}
+function _restFocusSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK restfocus: '+nm); }; const real=db, sc0=state.screen, wb0=state._wbar, eh0=state._exHold, rf0=_restFinT, app=document.getElementById('app'), v=document.getElementById('view');
+  try{ const fresh=()=>{ db.activeWork.restEnd=Date.now()+60000; _restFinT=0; };
+    db={settings:{},activeWork:{restEnd:0,restKind:'',exercises:[]}}; state.screen='workout'; state._wbar=false; state._exHold=null; fresh();
+    A('con el descanso corriendo puede entrar', rfCan()===true);
+    db.settings.restFocus=false; A('apagado en ajustes no entra', rfCan()===false&&rfOn()===false); delete db.settings.restFocus;
+    db.activeWork.loggedAfter=true; A('en un registro de después no entra', rfCan()===false); db.activeWork.loggedAfter=false;
+    state._wbar=true; A('con el pie abierto no entra', rfCan()===false); state._wbar=false;
+    state._exHold={ex:{},t:0}; A('durante la pausa de fin de ejercicio espera', rfCan()===false); state._exHold=null;
+    askLayer('<h3>x</h3>'); A('con un aviso abierto no entra', rfCan()===false); closeAsk(true);
+    db.activeWork.restEnd=Date.now()-1; A('sin descanso corriendo no entra', rfCan()===false); fresh();
+    const st=v?v.scrollTop:0, h0=v?v.clientHeight:0; rfEnter();
+    A('entra: la lista queda tenue y el reloj a la vista', app.classList.contains('rf')&&/^\d+:\d\d$/.test(document.getElementById('rftime').textContent)&&document.getElementById('rflbl').textContent==='rest');
+    A('…sin mover ni cambiar de alto la pantalla', !v||(v.scrollTop===st&&v.clientHeight===h0));
+    db.activeWork.restKind='side'; rfPaint(); A('entre lados lo dice', document.getElementById('rflbl').textContent==='rest · side'); db.activeWork.restKind='';
+    rfDock(false); A('sale sin mover la pantalla', !app.classList.contains('rf')&&(!v||v.scrollTop===st));
+    fresh(); rfEnter(); db.activeWork.restEnd=null; _restFinT=Date.now(); rfPaint();
+    A('al vencer dice ready en grande', app.classList.contains('rf')&&document.getElementById('rftime').textContent==='ready'&&document.getElementById('restfocus').classList.contains('fin')); rfDock(false);
+    fresh(); rfEnter(); db.activeWork.restEnd=null; _restFinT=0; rfPaint(); A('con skip se cierra', !app.classList.contains('rf'));
+    fresh(); rfEnter(); state.screen='home'; rfPaint(); A('al salir de la sesión se cierra', !app.classList.contains('rf')); state.screen='workout';
+    console.log('restfocus self-check OK');
+  } finally { clearTimeout(_rfT); _rfT=0; if(app)app.classList.remove('rf'); _rfFinAt=0; try{ closeAsk(true); }catch(_){} try{ rfWake(false); }catch(_){} db=real; state.screen=sc0; state._wbar=wb0; state._exHold=eh0; _restFinT=rf0; } }
+function updateRestBar(){ try{ updateRestBarCore(); } finally { try{ rfPaint(); }catch(_){} } }
+function updateRestBarCore(){
   const bar=document.getElementById('resttimer'), tEl=document.getElementById('resttime'); if(!bar||!tEl)return;
   const w=db&&db.activeWork;
   { const rl=bar.querySelector('.rl'), t=(w&&w.restEnd&&w.restKind==='side')?'rest · side':'rest'; if(rl&&rl.textContent!==t)rl.textContent=t; }
@@ -10491,6 +10559,7 @@ document.getElementById('app').addEventListener('click',e=>{
     const _p0=ex.unilateral?Math.floor(si/2)*2:si, _mate=ex.unilateral?ex.sets[_p0+(si===_p0?1:0)]:null, _side=!!(_mate&&!_mate.done);
     if(nowDone&&!w.loggedAfter){ const sec=_side?restSideSec():(db.settings.restSec||90); w.restKind=_side?'side':''; if(sec>0){ restAudioInit(); w.restEnd=Date.now()+sec*1000; _restFinT=0; } else w.restEnd=null; }
     if(nowDone)ex.sets[si].doneAt=Date.now();
+    if(nowDone&&w.restEnd)rfArm(1500);   // v304 · F1 · el descanso sale en grande cuando ya viste la ✓ y la barra
     if(nowDone){ state._focusSet=nextSetTarget(exi,si); state._pop={exi,si}; }
     // v256: terminado el ejercicio, el enfoque pasa solo al siguiente · v279: tras una pausa (exHoldStart), no de golpe
     state._curEx=exi; if(ex.sets.some(s=>s&&!s.done))exHoldClear(); else { state._focusSet=null; exHoldStart(ex); }
@@ -10662,6 +10731,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='editrestside'){ trkPrompt({title:'descanso entre lados',label:'SEGUNDOS',value:restSideSec(),type:'number',inputmode:'numeric',hint:'unilateral: tras un lado, antes del otro · 0 a 300 · 0 = sin descanso'},v=>{ const n=parseInt(v,10); if(isNaN(n)||n<0||n>300){ toast('⚠ entre 0 y 300 segundos','err'); return false; } db.settings.restSideSec=n; save(); render(); toast('✓ descanso guardado'); }); }
   else if(a==='editrest'){ trkPrompt({title:'descanso entre series',label:'SEGUNDOS',value:db.settings.restSec||90,type:'number',inputmode:'numeric',hint:'entre 10 y 600'},v=>{ const n=parseInt(v,10); if(isNaN(n)||n<10||n>600){ toast('⚠ entre 10 y 600 segundos','err'); return false; } db.settings.restSec=n; save(); render(); toast('✓ descanso guardado'); }); }
   else if(a==='togglebeep'){ db.settings.restBeep=!db.settings.restBeep; save(); reRender(); }
+  else if(a==='togglerestfocus'){ db.settings.restFocus=!rfOn(); if(!rfOn())rfDock(false); save(); reRender(); }
   // G2 · M2-08: ↩ deshace el ÚLTIMO ✓ (por su hora) y conserva lo escrito. Antes borraba peso, reps y RIR de la serie
   // más baja de la página con datos, aunque nunca le hubieras dado ✓ y aunque fuera de otro ejercicio.
   else if(a==='undo'){ const w=db.activeWork; if(!w)return; let best=null;
@@ -14501,7 +14571,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
