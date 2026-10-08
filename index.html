@@ -1197,7 +1197,7 @@
 
 <script>
 "use strict";
-const APP_V='v299';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v300';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2243,17 +2243,20 @@ function machineRec(gym,ex){
     const has=x=>Object.prototype.hasOwnProperty.call(m,x);
     // v279 · 1) por ejercicio (exacto); 2) por ejercicio con la marca en blanco de un lado
     const ik=machIdent(ex); if(ik&&has(ik)) return rd(m[ik]);
+    // v300 · un registro vacío (sin marca, sin setup y sin "sin máquina") no tapa a otro con datos: se sigue buscando y solo vuelve si nadie tiene nada
+    const emp=r=>{ const x=rd(r); return !x.na&&!x.brand&&!x.setup; };
     if(ik){ const pre=ik.slice(0,ik.lastIndexOf(MACH_SEP)+1), mine=ik.slice(pre.length);
-      const ks=Object.keys(m).filter(x=>x!==ik&&x.indexOf(pre)===0&&(!mine||x===pre)); if(ks.length) return rd(m[ks[ks.length-1]]); }
+      const ks=Object.keys(m).filter(x=>x!==ik&&x.indexOf(pre)===0&&(!mine||x===pre)); if(ks.length){ const ne=ks.filter(x=>!emp(m[x])), q=ne.length?ne:ks; return rd(m[q[q.length-1]]); } }
     // 3) lo guardado antes en ESTE día
     const k=machKey(ex);
-    if(has(k)) return rd(m[k]);
+    let own=null; if(has(k)){ if(!emp(m[k])) return rd(m[k]); own=rd(m[k]); }
     // 4) lo guardado antes en OTRO día del mismo ejercicio (con setup primero)
     if(ik){ const ids=machIdMap(); const sib=Object.keys(m).filter(x=>x.charAt(0)==='#'&&x!==k&&ids[x.slice(1)]&&machSame(ids[x.slice(1)],ex)).map(x=>rd(m[x])).filter(r=>!r.na&&(r.brand||r.setup));
       if(sib.length) return sib.sort((a,b)=>((!!b.setup)-(!!a.setup))||((!!b.brand)-(!!a.brand)))[0]; }
     // legacy fallback: brand/setup captured before per-instance scoping existed (or no exId at all)
     const nk=exKey(ex);
     if(nk!==k && has(nk)) return rd(m[nk]);
+    if(own) return own;
   }
   return {brand:(ex&&ex.machine)||'',setup:'',na:false};
 }
@@ -4985,6 +4988,12 @@ function _v279SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('la máquina guardada en un día sale en el otro día del mismo ejercicio', machineRec('g1',exB).brand==='Atlantis'&&machineRec('g1',exB).setup==='asiento 4 · pin 3');
     A('otro ejercicio no la hereda', machineRec('g1',{exId:'eC',name:'rear fly',type:'machine'}).setup==='');
     A('otro gym no la hereda', machineRec('g2',exB).setup==='');
+    // v300 · un registro vacío guardado antes en ESE día no tapa la máquina del otro día; "sin máquina" sí se respeta
+    db.machines.g1['#eB']={brand:'',setup:'',na:false}; bumpIdx();
+    A('un registro vacío del día no tapa la máquina del otro día', machineRec('g1',exB).brand==='Atlantis'&&machineRec('g1',exB).setup==='asiento 4 · pin 3');
+    db.machines.g1['#eB']={brand:'',setup:'',na:true}; bumpIdx();
+    A('…y "sin máquina" en ese día se respeta', machineRec('g1',exB).na===true&&machineRec('g1',exB).brand==='');
+    delete db.machines.g1['#eB']; bumpIdx();
     setMachine('g1',exB,{brand:'Atlantis',setup:'asiento 5'});
     A('editarla desde un día la cambia para todos', machineRec('g1',exA).setup==='asiento 5'&&machineRec('g1',exB).setup==='asiento 5');
     A('lo viejo no se borra', db.machines.g1['#eA'].setup==='asiento 4 · pin 3');
@@ -7994,7 +8003,8 @@ function openBioInstall(){ const ob=state.screen==='onboard', out=bioOut();
   const renamed=!!H().shortcut.bio&&!bioHas();   // v293: tenía el atajo con su nombre de antes
   openModal('<h3>sync biometrics</h3><div class="submeta u-mb10">'+(renamed?'el atajo ahora se llama '+BIO_NAME+': instálalo de nuevo.':'un Atajo copia tus datos de Salud y aquí se pegan.')+(out?' se instala desde Safari.':'')+(!out&&!SHORTCUT_URL&&isIOS()?'<br/>'+BIO_STEPS:'')+(isIOS()?'<br/>'+BIO_PERM:'')+'</div><div class="sheetbtns"><a class="ok" href="'+(SHORTCUT_URL||(out?'x-safari-'+bioPageURL():BIO_FILE))+'"'+((SHORTCUT_URL||out)?'':' download="'+BIO_NAME+'.shortcut"')+(out?'':' target="_blank" rel="noopener"')+'>▶ instalar atajo</a>'
     +(out?'</div><div class="sheetbtns"><button class="cancel" data-act="biocopy">copiar enlace</button>':'')
-    +(ob?'<button class="cancel" data-act="closemodal">cerrar</button>':'<button class="cancel" data-act="biorun">ya lo tengo</button>')+'</div>'); }
+    +(ob?'<button class="cancel" data-act="closemodal">cerrar</button>':'<button class="cancel" data-act="biorun">ya lo tengo</button>')+'</div>'
+    +(ob?'':'<div class="sheetbtns"><button class="cancel" data-act="healthimport">pegar a mano</button></div>')); }   // v300 · lo que copió un atajo anterior también se puede pegar desde aquí
 // traer se ofrece UNA vez por corrida: al abrir la hoja se apaga la espera. Si la cierras sin traer (tocar fuera, [pegar a mano]) no vuelve a salir sola y la fila corre el atajo otra vez.
 // v288 · gymtrk.app/?atajo=1 en Safari: bajar el atajo. Corta a propósito: un primario y qué tocar después (Safari no abre la descarga solo).
 function renderAtajo(){ bioGate(); const g=SHORTCUT_URL?'ok':(_bioGate||'ok'), wait=g==='wait', old=g==='old';
@@ -10674,7 +10684,9 @@ function openExEdit(di,ei,liveExi,cat){
   const rep=cat?catLeafRep(cat.mk,cat.key):null; if(cat&&!rep)return;   // v289 · modo catálogo: la hoja de una variante
   const isNew=ei<0&&!live&&!cat; const e=live?live:(cat?rep.e:(isNew?{name:'',muscle:'',type:'free',machine:'',unilateral:false,sets:2}:db.split.days[di].exercises[ei]));
   window._exEdit={di,ei,liveExi:(liveExi==null?null:liveExi),origName:(e&&e.name)||'',cat:cat?{mk:cat.mk,key:cat.key}:null};
-  const xo={liveEx:live||null,key:cat?cat.key:null,gym:live?(db.activeWork.gym||db.activeGym||''):(exSheetGyms(e.name).indexOf(db.activeGym)>=0?db.activeGym:'')};
+  // v300 · en el catálogo la hoja abre en un gym donde ESA hoja tiene registros (el activo si está entre ellos; si no, el de su fila más reciente)
+  const lg=cat?exHistRows(cat.key).map(r=>r.gym).filter(Boolean):[], catGym=lg.length?(lg.indexOf(db.activeGym)>=0?db.activeGym:lg[0]):'';
+  const xo={liveEx:live||null,key:cat?cat.key:null,gym:live?(db.activeWork.gym||db.activeGym||''):(catGym||(exSheetGyms(e.name).indexOf(db.activeGym)>=0?db.activeGym:''))};
   // SETS solo al crear o en el editor de split; el texto libre MACHINE/NOTE solo al crear (después la marca vive en el bloque de máquina, por gym)
   const xsHid='<input id="ee_machine" type="hidden" value="'+escTxt(e.machine||'')+'"/>';
   const xsSets=(live||cat)?xsHid:('<div class="field'+(isNew?' row2':'')+'"><div><label>SETS</label><input id="ee_sets" type="number" value="'+(Array.isArray(e.sets)?e.sets.length:(e.sets||2))+'"/></div>'+(isNew?'<div><label>MACHINE/NOTE</label><input id="ee_machine" value="'+escTxt(e.machine||'')+'" placeholder="opcional"/></div>':xsHid)+'</div>');
@@ -11460,6 +11472,10 @@ function leafMovePlan(key,to,nk){ nk=nk!=null?nk:String(key||'').split('|')[0]; 
   // con ese ejercicio en la sesión abierta no se mueve nada: sus filas vivas no se tocan desde el catálogo (ni se re-siembran ni se deshacen)
   if(R.live.length){ P.refuse='está en la sesión abierta · guárdala antes'; return P; }
   P.exist=exHistRows(P.toKey).length;
+  // v300 · en máquina/polea/smith cada gym tiene la suya: solo "se junta" con lo que el destino ya tiene en los MISMOS gyms; lo de otro gym es un dato y no se toca
+  { const dst=exHistRows(P.toKey), mine=new Set(); R.sess.forEach(x=>mine.add((x.s&&x.s.gym)||'')); P.existHere=P.exist; P.else=[];
+    if(isMachType(P.to.type)){ const o={}; P.existHere=0; dst.forEach(r=>{ const g=r.gym||''; if(!g||mine.has(g)){ P.existHere++; return; } const q=o[g]=o[g]||{gym:g,n:0,brand:''}; q.n++; if(!q.brand)q.brand=String((r.ex&&r.ex.machine)||'').trim(); });
+      P.else=Object.keys(o).map(g=>{ const q=o[g]; if(!q.brand)q.brand=machineRec(g,{name:(dst[0]&&dst[0].ex&&dst[0].ex.name)||P.nk,type:P.to.type,machine:''}).brand||''; return q; }); } }
   { const ds=new Set(); R.split.forEach(x=>ds.add(x.d&&x.d.id)); P.days=ds.size; }
   // bodyweight guarda las series con otra forma (peso corporal + lastre): cruzar ese tipo no mueve registros, solo cambia el plan
   const bwX=(canonType(from.type)==='bodyweight')!==(to.type==='bodyweight');
@@ -11565,7 +11581,13 @@ function catLeafRep(mk,key){ const m=catIndex().byK[mk]; if(!m)return null; cons
 function exSheetGyms(name){ const g=[]; [].concat(db.gyms||[],exGymsFor(name)).forEach(x=>{ if(x&&g.indexOf(x)<0)g.push(x); }); return g; }
 // el bloque de máquina de UN gym. Lo escrito y sin guardar de cada gym se conserva en window._exEdit.mdraft (cambiar de gym no lo tira).
 function xsMachState(e,gym){ const X=window._exEdit||{}, D=X.mdraft=X.mdraft||{}; if(D[gym])return D[gym];
-  const rec=machineRec(gym,e), p=profileFor(e,gym), b0=rec.brand||'', s0=rec.setup||'';
+  let rec=machineRec(gym,e); const p=profileFor(e,gym);
+  // v300 · en el catálogo cada gym enseña SU máquina: su registro propio o, si no hay, la marca de su última fila en ESE gym; nunca la de otro gym
+  if(X.cat&&isMachType(e.type)){ const own=machineRec(gym,Object.assign({},e,{machine:''}));
+    if(own.na||own.brand||own.setup)rec=own;
+    else { const nk=nameKey(e.name), rows=exIndex().filter(q=>q.gym===gym&&q.ex&&!isCardio(q.ex)&&nameKey(q.ex.name)===nk), r=rows.find(q=>exHistKey(q.ex)===X.cat.key)||rows.find(q=>canonType(q.ex.type)===canonType(e.type)), rx=(r&&r.ex)||{};
+      rec={brand:String(rx.machine||'').trim(),setup:String(rx.setup||'').trim(),na:false}; } }
+  const b0=rec.brand||'', s0=rec.setup||'';
   return (D[gym]={brand:b0,setup:s0,na:!!rec.na,b0,s0,n0:!!rec.na,rp:p.rp,rpSrc:p.rpSrc,rpT:false,unit:exUnitPref(e,gym)||(X.unitLive&&gym===X.gym0?X.unitLive:'')||exUnitShown(e,gym),unitT:false}); }
 // cardio no lleva nada de esto; bodyweight no lleva unidad (su peso es el corporal, en kg); marca y setup solo en máquina/polea/smith
 function exMachBodyHTML(e,gym){ const ty=canonType(e.type); if(ty==='cardio')return '';
@@ -11584,7 +11606,8 @@ function xsMachCapture(){ const X=window._exEdit||{}, g=X.gymCur, d=g!=null&&X.m
   if(b)d.brand=b.value; if(s)d.setup=s.value; if(n)d.na=!!n.checked;
   if(rp){ const on=rp.querySelector('.t.on'); if(rp.dataset.touched){ d.rpT=true; d.rp=on?on.dataset.v:''; } }
   if(un){ const on=un.querySelector('.t.on'); if(un.dataset.touched){ d.unitT=true; d.unit=on?on.dataset.v:''; } } }
-function xsMachPaint(){ const X=window._exEdit||{}, box=document.getElementById('xs_mach'); if(!box||!X.eForm)return; xsMachCapture(); const g=xsGym(); X.gymCur=g; box.innerHTML=exMachBodyHTML(Object.assign({},X.eForm,{type:xsType()}),g); }
+function xsMachPaint(){ const X=window._exEdit||{}, box=document.getElementById('xs_mach'); if(!box||!X.eForm)return; xsMachCapture(); const g=xsGym(); X.gymCur=g; box.innerHTML=exMachBodyHTML(Object.assign({},X.eForm,{type:xsType()}),g);
+  const gb=document.getElementById('xs_gyms'); if(gb){ const ck={}; gb.querySelectorAll('.xs_g:not([disabled])').forEach(c=>{ ck[c.value]=c.checked; }); gb.innerHTML=xsGymsHTML(X.eForm,xsType()); gb.querySelectorAll('.xs_g:not([disabled])').forEach(c=>{ if(c.value in ck)c.checked=ck[c.value]; }); } }
 // las etiquetas de músculo tal como están en el formulario (para saber si las tocaste: el formulario solo sabe de un secundario)
 function xsMusSig(){ const w=document.getElementById('ee_mus2wrap'), g=id=>{ const x=document.getElementById(id); return x?x.value:''; }; return [g('ee_muscle'),(w&&w.style.display!=='none')?g('ee_mus2')+'@'+g('ee_mus2w'):''].join('|'); }
 // músculos del motor + longitud (lo que antes solo estaba en `perfil`)
@@ -11597,20 +11620,29 @@ function profMotorHTML(e,gym){ const p=profileFor(e,gym), tg=targetsFor(e);
   return `<div class="field"><label>PRIME MOVER · ${tSrc}</label><select id="pf_prim" class="pfsel"><option value="">— sin resolver —</option>${mOpt(tg[0]&&tg[0].id)}</select></div>
    <div class="field"><label>SECONDARY · cuánto cuenta la serie (0–1)</label><div id="pf_secs">${sec}</div><button type="button" class="addbtn u-mt4" data-act="pf_addsec">+ secundario</button></div>
    <div class="field"><label>MUSCLE LENGTH · ${lenSrc}</label><div class="toggles pftog${p.lenSrc==='suggested'?' sug':''} u-wrap u-gap4" id="pf_len">${len}</div></div>`; }
+// v300 · GYMS. En máquina/polea/smith, un gym donde ya lo entrenaste es un DATO (`gym ···· marca · N×`, y `otra marca` si no es la que tienes
+// a la vista), no una casilla: cada gym tiene su máquina. En peso libre y corporal son casillas (el mismo ejercicio en todos lados).
+// La casilla de un gym con historial sigue en la hoja (oculta) para que lo que se lee al guardar no cambie.
+function xsGymsHTML(e,type){ const X=window._exEdit||{}, nk=nameKey(e.name), gyms=exSheetGyms(e.name), marked=X.gyms0||exGymsFor(e.name), mach=isMachType(type), H={};
+  (db.sessions||[]).forEach(s=>{ if(!s||!s.gym||s.type==='rest')return; (s.exercises||[]).forEach(x=>{ if(!x||nameKey(x.name)!==nk)return; const q=H[s.gym]=H[s.gym]||{n:0,d:'',brand:''}; q.n++; const b=String(x.machine||'').trim(); if(b&&String(s.date||'')>=q.d){ q.d=String(s.date||''); q.brand=b; } }); });
+  const cur=String(((X.mdraft||{})[X.gymCur]||{}).brand||'').toLowerCase().trim();
+  return gyms.map(g=>{ const h=H[g], ck='<input type="checkbox" class="xs_g" value="'+escTxt(g)+'" '+(marked.indexOf(g)>=0?'checked':'')+(h?' disabled':'')+(h&&mach?' hidden':'')+'/>';
+    if(h&&mach){ const b=h.brand||machineRec(g,{name:e.name,type:type,machine:''}).brand||'', other=!!b&&!!cur&&g!==X.gymCur&&b.toLowerCase()!==cur;
+      return '<div class="line">'+ck+'<span class="k">'+escTxt(g)+'</span><span class="dots"></span><span class="v">'+(b?escTxt(b)+' · ':'')+h.n+'×'+(other?' · otra marca':'')+'</span></div>'; }
+    return '<label class="xsck">'+ck+' '+escTxt(g)+'</label>'; }).join(''); }
 // los bloques que siguen al formulario de siempre: máquina por gym · nota · motor · gyms · dónde está en el split
 function exSheetExtraHTML(e,o){ const X=window._exEdit, gyms=exSheetGyms(e.name), gym=o.gym||gyms[0]||'', hist=new Set(); (db.sessions||[]).forEach(s=>{ if(s&&s.gym&&(s.exercises||[]).some(x=>x&&nameKey(x.name)===nameKey(e.name)))hist.add(s.gym); });
   const marked=exGymsFor(e.name), note=o.liveEx?(o.liveEx.note||''):exNoteFor(e,''), days=[]; ((db.split&&db.split.days)||[]).forEach(d=>{ if((d.exercises||[]).some(x=>x&&(o.key?exHistKey(x)===o.key:nameKey(x.name)===nameKey(e.name)))&&days.indexOf(d.name)<0)days.push(d.name); });
   X.gym0=gym; X.gymCur=gym; X.note0=note; X.gyms0=marked.slice(); X.eForm=e; X.mdraft={}; X.unitLive=o.liveEx?exLiveUnit(o.liveEx):'';
   const gymOpts=gyms.map(g=>'<option value="'+escTxt(g)+'"'+(g===gym?' selected':'')+'>'+escTxt(g)+'</option>').join('');
   const gymRow=(!o.liveEx&&gyms.length>1)?'<div class="field"><label>GYM</label><select id="xs_gym">'+gymOpts+'</select></div>':'<div class="submeta u-mb6">'+(gym?'en '+escTxt(gym):'')+'</div>';
-  const gymChecks=gyms.map(g=>'<label class="xsck"><input type="checkbox" class="xs_g" value="'+escTxt(g)+'" '+(marked.indexOf(g)>=0?'checked':'')+(hist.has(g)?' disabled':'')+'/> '+escTxt(g)+'</label>').join('');
   return `<hr class="rule u-my10 u-mx0"/>
    ${gymRow}
    <div id="xs_mach">${exMachBodyHTML(e,gym)}</div>
    <div class="field"><label>NOTE</label><input id="xs_note" value="${escTxt(note)}" placeholder="agarre, asiento, sensación…" autocomplete="off"/></div>
    <div><button type="button" class="b" data-act="xs_fold" aria-expanded="false">motor ›</button></div>
    <div id="xs_motor" hidden>${profMotorHTML(e,gym)}</div>
-   ${gyms.length?'<div class="field u-mt8 u-mb4"><label>GYMS</label></div><div class="u-mb10">'+gymChecks+'</div>':''}
+   ${gyms.length?'<div class="field u-mt8 u-mb4"><label>GYMS</label></div><div class="u-mb10" id="xs_gyms">'+xsGymsHTML(e,e.type)+'</div>':''}
    ${days.length?'<div class="submeta u-mb10">split · '+escTxt(days.join(' · '))+'</div>':''}`; }
 function exSheetWire(){ const X=window._exEdit||{}, m=document.getElementById('modal'), box=document.getElementById('xs_mach'); if(!m||!box)return;
   X.mus0=xsMusSig();
@@ -11635,7 +11667,7 @@ function exSheetExtraApply(e2,D,o){ o=o||{}; if(!D)return ()=>{}; const nk=nameK
   const U={nk,cat:(db.exCat&&db.exCat[nk])?JSON.stringify(db.exCat[nk]):null,mach:[],note:null,live:[]};
   if(ty!=='cardio'){ const mach=isMachType(ty), tch=ty!==canonType(D.type0);   // con el tipo cambiado, la marca y el setup que se ven se escriben en la clave del tipo nuevo
     Object.keys(D.drafts).forEach(g=>{ const d=D.drafts[g]; if(!g)return;
-      if(mach&&(d.brand!==d.b0||d.setup!==d.s0||d.na!==d.n0||(tch&&(d.brand||d.setup||d.na)))){ db.machines=db.machines||{}; const hadG=has(db.machines,g), mm=db.machines[g]=db.machines[g]||{}, k=machIdent(e2)||machKey(e2); U.mach.push([g,k,has(mm,k)?JSON.stringify(mm[k]):null,hadG]); mm[k]={brand:String(d.brand||'').trim(),setup:String(d.setup||'').trim(),na:!!d.na}; }
+      if(mach&&(d.brand!==d.b0||d.setup!==d.s0||d.na!==d.n0||(tch&&g===D.gymCur&&(d.brand||d.setup||d.na)))){ db.machines=db.machines||{}; const hadG=has(db.machines,g), mm=db.machines[g]=db.machines[g]||{}, k=machIdent(e2)||machKey(e2); U.mach.push([g,k,has(mm,k)?JSON.stringify(mm[k]):null,hadG]); mm[k]={brand:String(d.brand||'').trim(),setup:String(d.setup||'').trim(),na:!!d.na}; }
       if(d.rpT&&mach)setRpForGym(e2.name,g,d.rp);
       if(d.unitT&&d.unit&&ty!=='bodyweight'){ const r=exCatRec(e2.name)||{}, ug=Object.assign({},r.unitGym||{}); ug[ty+'|'+g]=d.unit; setExCat(e2.name,{unitGym:ug}); if(o.liveEx&&g===D.gym0)pinUnitSoft(o.liveEx,d.unit); } });
     if(!mach){ const d=D.drafts[D.gymCur]; if(d&&d.rpT)setExCat(e2.name,{rp:d.rp}); } }   // peso libre / corporal: una sola resistencia, la del bloque que tienes a la vista
@@ -11661,6 +11693,9 @@ function xsArchive(){ const c=(window._exEdit||{}).cat; if(!c)return; const on=!
   xsLeave(()=>{ const un=leafArchive(c.mk,c.key,on,nm); if(!save()){ un(); toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err'); return; } closeModal(); reRender(); toast(on?'✓ archivado':'✓ restaurado','ok',{undo:un}); }); }
 // el resumen de mover una hoja: `mover N registros a [alt]` con el dedo, o [solo desde hoy]. Dice todo lo que cambia en los números.
 function leafToTxt(P){ const a=[]; if(canonType(P.from.type)!==P.to.type)a.push(P.to.type); if(P.from.lat!==P.to.lat)a.push('['+P.to.lat+']'); if(!!P.from.assisted!==!!P.to.assisted)a.push(P.to.assisted?'asistido':'sin asistencia'); if(!!P.from.weighted!==!!P.to.weighted)a.push(P.to.weighted?'con lastre':'sin lastre'); return a.join(' '); }
+// v300 · corregir solo el TIPO (misma variante, nada que juntar en ese gym, nada que se quede fuera): un toque, sin "mantén para mover".
+// La foto previa y el [deshacer] de 15 s siguen iguales. Su caso: hack squat free → machine en un gym, con otra marca en otro gym.
+function leafMoveQuick(P){ const eh=P.existHere!=null?P.existHere:P.exist; return !!P.rows.length&&canonType(P.from.type)!==P.to.type&&P.from.lat===P.to.lat&&!!P.from.assisted===!!P.to.assisted&&!!P.from.weighted===!!P.to.weighted&&!eh&&!P.collapsed&&!P.dup&&!P.skipped.length; }
 function leafMoveAsk(P,go){ const n=P.rows.length, to=leafToTxt(P), reg=x=>x+(x===1?' registro':' registros');
   if(!n&&!P.skipped.length){ go(false); return; }   // hoja sin registros: solo cambia el plan
   if(!n){ trkAsk({title:'pasar a '+to+' desde hoy',detail:(P.skipped.length===1?'su registro se queda como está':'sus '+P.skipped.length+' registros se quedan como están')+' · la hoja vieja va a archivados',ok:'cambiar'},()=>go(true)); return; }
@@ -11670,9 +11705,11 @@ function leafMoveAsk(P,go){ const n=P.rows.length, to=leafToTxt(P), reg=x=>x+(x=
   if(Math.abs(pv.vol1-pv.vol0)>=1)L.push('volumen '+kg(pv.vol0)+' → '+kg(pv.vol1)+' kg');
   if(pv.badges)L.push('▲▼ de '+pv.badges+(pv.badges===1?' fila cambia':' filas cambian')+' en esas sesiones');
   if(P.collapsed)L.push('cada par R/L queda en una serie (el lado más flojo) · los pesos no se escalan');
-  if(P.exist)L.push('se junta con '+(P.exist===1?'el registro':'los '+P.exist+' registros')+' que ya tiene '+to);
+  { const eh=P.existHere!=null?P.existHere:P.exist; if(eh)L.push('se junta con '+(eh===1?'el registro':'los '+eh+' registros')+' que ya tiene '+to); }
+  (P.else||[]).forEach(q=>L.push('también en '+q.gym+(q.brand?' · '+q.brand:'')+' · no se toca'));
   if(P.dup)L.push(P.dup+(P.dup===1?' sesión queda':' sesiones quedan')+' con dos filas');
   if(P.skipped.length)L.push(reg(P.skipped.length)+' no se '+(P.skipped.length===1?'mueve':'mueven'));
+  if(leafMoveQuick(P)){ trkAsk({title:canonType(P.from.type)+' → '+P.to.type+' · '+reg(n),detail:L.join('\n'),ok:'cambiar'},()=>go(false)); return; }
   holdConfirm({title:'mover '+reg(n)+' a '+to,detail:L.join('\n'),verb:'mover',alt:{label:'solo desde hoy',fn:()=>go(true)}},()=>go(false)); }
 // guardar desde el catálogo: el ejercicio en todos lados. Todo o nada: se LEE el formulario antes de preguntar o esperar la foto
 // previa; si mover se cancela, la hoja sigue abierta sin guardar nada; si la hoja cambió mientras tanto, no se guarda.
@@ -11871,6 +11908,26 @@ function _catalogo2SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
       setExCat('curl',{gyms:['CAMP']}); bumpIdx(); const gc=catGroups('gym').filter(q=>q.id==='gym|CAMP')[0], it=gc&&gc.items.filter(q=>q.m.k==='curl')[0], html=it?catLeafHTML(it.m,it.leaves[0],'CAMP',true,'x'):'';
       A('vista por gym: un gym marcado a mano lista el ejercicio con — (no con los números de otro gym)', !!it&&it.n===0&&/class="catlc">—</.test(html)&&/class="catld">—</.test(html));
       db.exCat=JSON.parse(ec0); bumpIdx(); }
+    // 12 · v300 · corregir el tipo cuando el destino solo existe en OTRO gym: no es juntar, es un dato; y cada gym enseña su máquina
+    { const n0=db.sessions.length, m0=JSON.stringify(db.machines||{}), c0x=JSON.stringify(db.exCat||{}), S1=w=>({w:String(w),r:'8',rir:'1',unit:'lbs',done:true});
+      db.sessions.push({id:'hk1',date:'2026-09-01',gym:'AGON',exercises:[{name:'hack',muscle:'quads',type:'free',machine:'nautilus',sets:[S1(100)]}]},
+        {id:'hk2',date:'2026-09-03',gym:'AGON',exercises:[{name:'hack',muscle:'quads',type:'free',machine:'nautilus',sets:[S1(110)]}]},
+        {id:'hk3',date:'2026-09-05',gym:'CAMP',exercises:[{name:'hack',muscle:'quads',type:'machine',machine:'lifefitness',sets:[S1(8)]}]}); bumpIdx();
+      const kf=exHistKey(db.sessions[n0].exercises[0]), km=exHistKey(db.sessions[n0+2].exercises[0]), P=leafMovePlan(kf,{type:'machine'},'hack');
+      A('destino en otro gym: nada que juntar aquí y el otro gym sale como dato con su marca', kf!==km&&P.exist===1&&P.existHere===0&&P.else.length===1&&P.else[0].gym==='CAMP'&&P.else[0].brand==='lifefitness');
+      A('…así que corregir el tipo es de un toque', leafMoveQuick(P)===true);
+      const camp0=JSON.stringify(db.sessions[n0+2]), J=leafMoveApply(P,false); bumpIdx();
+      A('las filas de este gym pasan a machine y la del otro queda idéntica', exHistKey(db.sessions[n0].exercises[0])===km&&exHistKey(db.sessions[n0+1].exercises[0])===km&&JSON.stringify(db.sessions[n0+2])===camp0);
+      leafMoveUndo(J); bumpIdx(); A('…y deshacer lo regresa', exHistKey(db.sessions[n0].exercises[0])===kf&&exHistKey(db.sessions[n0+1].exercises[0])===kf);
+      db.sessions.push({id:'hk4',date:'2026-09-06',gym:'AGON',exercises:[{name:'hack',muscle:'quads',type:'machine',machine:'nautilus',sets:[S1(120)]}]}); bumpIdx();
+      const P2=leafMovePlan(kf,{type:'machine'},'hack'); A('con registros del destino en el MISMO gym sí es juntar (sigue pidiendo el dedo)', P2.existHere===1&&P2.else.length===1&&leafMoveQuick(P2)===false);
+      const ee1=window._exEdit; window._exEdit={cat:{mk:'hack',key:km},mdraft:{}};
+      A('la hoja en el otro gym enseña SU marca, no la de este', xsMachState({name:'hack',type:'machine',machine:'nautilus'},'CAMP').brand==='lifefitness');
+      window._exEdit.gyms0=['AGON','CAMP']; window._exEdit.gymCur='AGON'; window._exEdit.mdraft={AGON:{brand:'nautilus'}};
+      const gh=xsGymsHTML({name:'hack'},'machine'), gf=xsGymsHTML({name:'hack'},'free');
+      A('GYMS en máquina: el otro gym es un dato con su marca y dice `otra marca`', /CAMP<\/span>.*lifefitness · 1× · otra marca/.test(gh)&&!/<label class="xsck">[^<]*<input[^>]*value="CAMP"/.test(gh));
+      A('GYMS en peso libre: casillas, como antes', /<label class="xsck"><input[^>]*value="CAMP"/.test(gf)&&gf.indexOf('otra marca')<0);
+      window._exEdit=ee1; db.sessions.length=n0; db.machines=JSON.parse(m0); db.exCat=JSON.parse(c0x); bumpIdx(); }
     try{ if(live0==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,live0); }catch(_){}   // la sesión de prueba se espejó en la caja negra: se repone antes de comparar
     A('el almacenamiento real no se tocó', lsAll()===ls0);
     console.log('catálogo2 self-check OK');
