@@ -1143,6 +1143,7 @@
   /* v301 · σ de la serie como barra (SG1): ocupa el renglón a la izquierda del ▲▼ %; punteada = RIR estimado. El renglón sigue midiendo 11 px. */
   .setprogline .droppct{float:none; margin-right:auto;} .setprogline .sgb{flex:1; min-width:24px;} .sgb[data-gloss]{border-bottom:0;}
   .sgb.est>i{background:repeating-linear-gradient(90deg,var(--fill) 0 3px,transparent 3px 6px);}
+  .whyln[data-gloss]{border-bottom:0;} .whyln{padding:var(--s1) var(--s3) var(--s2);}   /* v302 · el porqué del ▼: una razón; el resto al tocarla */
   @keyframes exlit{from{opacity:var(--op-dim)}} @keyframes exdim{from{opacity:1}} .wfocus .ex.exlit{animation:exlit var(--dur-3) var(--ease-out);} .wfocus .ex.exdim{animation:exdim var(--dur-3) var(--ease-out);}
   .pair.phead{margin-bottom:6px;} .pair.phead .thead{margin-bottom:0;} .pair.phead .setn,.pair.phead .pairdone{cursor:default;}   /* v256: cabecera unilateral con la envoltura del par */
   .start.ghost{background:transparent; border:var(--bw-ctl) solid var(--border); color:var(--fg);}
@@ -1201,7 +1202,7 @@
 
 <script>
 "use strict";
-const APP_V='v301';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v302';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -6070,7 +6071,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
   state._fatCache=state._fatCache||{};
   let baseFatCtx=[];
   if(_bl.sess){ if(!state._fatCache[_bl.sess.id])state._fatCache[_bl.sess.id]=sessionFatigueContext(_bl.sess); baseFatCtx=(state._fatCache[_bl.sess.id][_bl.ei])||[]; }
-  state._align=state._align||{}; state._align[exi]={prevSets,align,curFatCtx,baseFatCtx,level:_bl.level};
+  state._align=state._align||{}; state._align[exi]={prevSets,align,curFatCtx,baseFatCtx,level:_bl.level}; let _dnAny=false;   // v302 · ¿alguna serie YA hecha sale ▼? (para decir por qué, una vez por ejercicio)
   // honest about missing history: no equivalent prior occurrence found for this exact instance/variant
   const noBaseline=!prevSets?`<span class="exprog u-o30 u-label u-ml6" title="sin sesión previa equivalente para comparar">sin baseline</span>`:'';
   // línea 1: [bi] nombre + badges · línea 2: tipo · marca · setup · nota (o [+ nota] si aún no hay)
@@ -6119,6 +6120,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
       const prevA=(prevSets&&align[p]!=null)?prevSets[align[p]]:null;
       const prevB=(prevSets&&align[p+1]!=null)?prevSets[align[p+1]]:null;
       const pBadge=pairBadgeHTML(a,b,prevA,prevB,curFatCtx[p],curFatCtx[p+1],align[p]!=null?baseFatCtx[align[p]]:null,align[p+1]!=null?baseFatCtx[align[p+1]]:null,_bl.level);
+      if(done&&pBadge&&pBadge.indexOf('▼')>=0)_dnAny=true;
       const pInner=progLineInner(pBadge,dropPctTxt(sets,p),sigBarTag(pairTension(_tn,p),rk(a)));
       const progLine=pInner?`<div class="setprogline${done?' dn':''}" data-exi="${exi}" data-si="${p}" data-rk="${rk(a)}p">${pInner}</div>`:`<div class="setprogline nil" data-exi="${exi}" data-si="${p}"></div>`;
       // drop set: ONLY via bottom bar [↓ drop set] — per-row ↓ removed (layout desalineaba tras insertar)
@@ -6141,6 +6143,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
       const z=!s.done?setZone(s):null; const zSty='';   /* v272: sin color por zona (salía de reps+RIR, no de la carga) */
       const prevS=(prevSets&&align[si]!=null)?prevSets[align[si]]:null;
       const sBadge=setBadgeHTML(s,prevS,curFatCtx[si],align[si]!=null?baseFatCtx[align[si]]:null,_bl.level);
+      if(s.done&&sBadge&&sBadge.indexOf('▼')>=0)_dnAny=true;
       const sInner=progLineInner(sBadge,dropPctTxt(sets,si),sigBarTag(_tn&&_tn.per[si],rk(s)));
       const progLine=sInner?`<div class="setprogline${s.done?' dn':''}" data-exi="${exi}" data-si="${si}" data-rk="${rk(s)}p">${sInner}</div>`:`<div class="setprogline nil" data-exi="${exi}" data-si="${si}"></div>`;
       const gcRow=isBwEx?'gc-free-bw':(fsOn?'gc-mach-fs':gc);
@@ -6154,7 +6157,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
     const add=hint+`<div class="addrow ${isM?'amach':'afree'}"><span class="aleft"><button class="addbtn" data-act="addset" data-exi="${exi}">+ set</button><button class="addbtn" data-act="dropset" data-exi="${exi}" data-si="${lastSi}">↓ drop set</button></span><button class="addbtn aex" data-act="addex" data-exi="${exi}">+ exercise</button></div>`;
     rows=thead+body+add;
   }
-  return `<div class="ex${_curCls}"${_curCls?'':' data-act="excur"'} data-exi="${exi}" data-rk="${rk(ex)}">${head}${rows}${exHoldCue(ex)}</div>`;
+  return `<div class="ex${_curCls}"${_curCls?'':' data-act="excur"'} data-exi="${exi}" data-rk="${rk(ex)}">${head}${rows}${(_dnAny&&_bl.sess)?whyLiveHTML(exi,_bl,prevSets):''}${exHoldCue(ex)}</div>`;
 }
 // simplified, mostly-read per-exercise renderer for the history editor: same per-set richness as the
 // live view (bodyweight chip/unit/reps/rir/side/drop/zone-color) so editing a past session is the
@@ -6172,7 +6175,7 @@ function renderHistExercise(exi,ex,sess){ _icM=(sess&&sess.metric)==='rpe'?'rpe'
   const _hpr=isCardioEx?null:histProgress(sess,exi); const _hdn=downNoteFor(sess,exi,_hpr);
   const badge=isCardioEx?'':progBadgeFromProg(_hpr,'capacidad vs sesión equivalente'+(_hdn?' · '+_hdn:''))+exTensChip(_htn);
   const _hnote=ex.note?`<span class="note">${escTxt(ex.note)}</span>`:'';
-  const head=`<div class="exhead">${exLatTagHead(ex)}<span class="n">${escTxt(ex.name)}</span>${badge}</div><div class="exsub">${variantChips(ex)}${mhtml}${_hnote}</div>`+(_hdn?`<div class="submeta u-mt-n2 u-mb6 u-mx0 u-o50">${escTxt(_hdn)}</div>`:'');
+  const head=`<div class="exhead">${exLatTagHead(ex)}<span class="n">${escTxt(ex.name)}</span>${badge}</div><div class="exsub">${variantChips(ex)}${mhtml}${_hnote}</div>`+downNoteHTML(sess,exi,_hpr,'u-mt-n2 u-mb6 u-mx0');
   let rows='';
   if(isCardioEx){
     const fields=cardioFields(ex);
@@ -7585,7 +7588,54 @@ function downContext(sess,ei,base){ const out=[]; if(!sess||!sess.date)return ou
     const w1=sessionWindow(sess), w0=sessionWindow(base.sess);
     if(w1&&w0){ const hr=x=>{ const d=new Date(x); return d.getHours()+d.getMinutes()/60; }; const dh=hr(w1.startMs)-hr(w0.startMs); if(Math.abs(dh)>=3)out.push('entrenaste '+Math.round(Math.abs(dh))+' h '+(dh>0?'más tarde':'más temprano')); } }
   return out; }
-function downNoteFor(sess,ei,pr){ if(!pr||pr.dir!=='down')return ''; const c=downContext(sess,ei,pr._base); return c.length?'▼ posible: '+c.join(' · '):''; }
+// v302 · G9 · "necesita contexto de cómo se está realizando cada ejercicio… hice diferentes ejercicios que posiblemente atacaron de
+// forma indirecta al bíceps… son muchas variables". Las razones de un ▼, en orden de lo que más explica: (a) en crudo no baja (el ▼
+// sale del descuento por cansancio: la vez pasada el ejercicio iba más tarde) · (b) lo que ese músculo YA traía en esta sesión, directo
+// o indirecto con su decimal, contra la vez pasada · (c) qué tan recuperado llegó · luego lo del día, las series de más y la hora.
+// Solo lectura: no cambia ningún número. Son posibles causas, nunca un diagnóstico.
+function whyDown(sess,ei,base){ const out=[]; const e=sess&&(sess.exercises||[])[ei]; if(!e||isCardio(e))return out; const push=x=>{ if(x&&out.indexOf(x)<0)out.push(x); };
+  const cC=(fatCtxOf(sess)[ei]||[])[0], cB=(base&&base.sess)?(fatCtxOf(base.sess)[base.ei]||[])[0]:null;
+  if(base&&base.sets){ const al=alignSetIdx(e.sets,base.sets); let s=0,n=0;
+    (e.sets||[]).forEach((x,i)=>{ const j=al[i]; if(j==null)return; const p=base.sets[j]; if(!x||!p||x.isDrop||p.isDrop||x._pf||p._pf||!rirKnown(x)||!rirKnown(p))return; const cu=unitN(x), pu=unitN(p); if(cu&&pu&&cu!==pu)return; const a=e1rmOf(x), b=e1rmOf(p); if(a>0&&b>0){ s+=a/b; n++; } });
+    if(n&&s/n>=0.98){ const d=(cB&&cC)?Math.round(cB.priorHardSets-cC.priorHardSets):0; push('en crudo no baja'+(d>=2?' · la vez pasada llevabas '+d+' series antes':' · el % descuenta el cansancio de la sesión')); } }
+  { const prior=(S,idx)=>{ const mine=musclesOf(S,idx).map(m=>m.name), acc={}; for(let x=0;x<idx;x++){ const ex=(S.exercises||[])[x]; if(!ex||isCardio(ex))continue;
+        const hs=(ex.sets||[]).reduce((a,st)=>a+((st&&!st._pf&&(st.w||st.r)&&isHardSet(st))?(st.isDrop?0.5:1):0),0); if(!hs)continue;
+        musclesOf(S,x).forEach(m=>{ if(mine.indexOf(m.name)<0)return; const q=acc[m.name]=acc[m.name]||{n:0,top:'',tn:0}, v=hs*(m.weight||1); q.n+=v; if(v>q.tn){ q.tn=v; q.top=ex.name; } }); } return acc; };
+    const a=prior(sess,ei), b=(base&&base.sess)?prior(base.sess,base.ei):{}; let best=null;
+    Object.keys(a).forEach(k=>{ const d=a[k].n-((b[k]&&b[k].n)||0); if(d>=0.5&&(!best||d>best.d))best={k,d,n:a[k].n,top:a[k].top}; });
+    if(best)push(best.k+' ya traía '+(Math.round(best.n*10)/10)+' series ('+best.top+')'); }
+  let rec=false; { const w=sessionWindow(sess), t0=w?w.startMs:(sess.startMs||Date.now());
+    exTargets(sess,ei).filter(g=>g.id&&g.w>=1).forEach(g=>{ const r=muscleRecAt(g.id,t0); if(r&&r.p<80){ rec=true; push(muscleLabel(g.id)+' al '+r.p+' % al empezar'); } }); }
+  downContext(sess,ei,base).forEach(x=>{ if(rec&&/entrenado hace/.test(x))return; push(x); });
+  return out; }
+// la hora del entreno casi siempre cambia (con sus datos salía en 19 de 24 ▼): nunca encabeza la línea, y si es lo único que hay no se dice nada
+function whyHead(R){ return (R||[]).filter(x=>!/^entrenaste \d+ h más (tarde|temprano)$/.test(x)); }
+function whyLineHTML(R,cls){ const H=whyHead(R); if(!H.length)return ''; const more=R.length-1;
+  return `<div class="submeta whyln${cls?' '+cls:''}" data-gloss="why" data-gv="${escTxt(H.concat(R.filter(x=>H.indexOf(x)<0)).join(' · '))}">▼ por: ${escTxt(H[0])}${more?' · +'+more:''}</div>`; }
+function whyLiveHTML(exi,bl,prevSets){ try{ return whyLineHTML(whyDown(db.activeWork,exi,{sess:bl.sess,ei:bl.ei,sets:prevSets}),'u-mx0'); }catch(_){ return ''; } }
+function downNoteFor(sess,ei,pr){ if(!pr||pr.dir!=='down')return ''; const c=whyDown(sess,ei,pr._base), h=whyHead(c); return h.length?'▼ por: '+h[0]+(c.length>1?' · +'+(c.length-1):''):''; }
+function downNoteHTML(sess,ei,pr,cls){ if(!pr||pr.dir!=='down')return ''; return whyLineHTML(whyDown(sess,ei,pr._base),cls); }
+function _whySelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK why: '+nm); }; const real=db;
+  try{ const S=(w,r,rir)=>({w:String(w),r:String(r),rir:String(rir),unit:'lbs',done:true}), curl=(w)=>({name:'curl',muscle:'bicep',type:'free',sets:[S(w,8,1),S(w,8,1),S(w,8,1)]});
+    const row={name:'row',muscle:'lats',muscles:[{name:'lats',weight:1},{name:'bicep',weight:0.5}],type:'machine',sets:[S(100,8,1),S(100,8,1),S(100,8,1)]};
+    db=migrate({profile:{username:'t'},gyms:['g1'],activeGym:'g1',split:{name:'s',days:[]},sessions:[
+      {id:'w0',date:'2026-09-03',gym:'g1',exercises:[curl(20)]},
+      {id:'w1',date:'2026-09-10',gym:'g1',exercises:[row,curl(20)]},
+      {id:'w2',date:'2026-09-17',gym:'g1',exercises:[curl(15)]}]}); bumpIdx();
+    const s0=db.sessions[0], s1=db.sessions[1], s2=db.sessions[2], B={sess:s0,ei:0,sets:s0.exercises[0].sets};
+    const R1=whyDown(s1,1,B);
+    A('mismos números tras un remo: lo primero es que en crudo no baja', /^en crudo no baja/.test(R1[0]||''));
+    A('…y nombra lo que el músculo ya traía, con su decimal y el ejercicio', R1.some(x=>x==='bicep ya traía 1.5 series (row)'));
+    const R2=whyDown(s2,0,B);
+    A('mismo orden y números más bajos: ni "en crudo" ni "ya traía"', !R2.some(x=>/en crudo|ya traía/.test(x)));
+    A('sin ejercicio o cardio no dice nada', whyDown(s1,9,B).length===0);
+    const h=whyLineHTML(['a','b','c']);
+    A('la línea trae UNA razón y cuántas más; el resto queda a un toque', h.indexOf('▼ por: a · +2')>0&&h.indexOf('data-gv="a · b · c"')>0&&h.indexOf('data-gloss="why"')>0);
+    A('la hora sola no dice nada y nunca encabeza', whyLineHTML(['entrenaste 13 h más tarde'])===''&&whyLineHTML(['entrenaste 3 h más temprano','dormiste 5 h']).indexOf('▼ por: dormiste 5 h · +1')>0);
+    A('sin razones no hay línea', whyLineHTML([])===''&&downNoteFor(s1,1,{dir:'up'})===''&&downNoteHTML(s1,1,null)==='');
+    A('la nota corta del historial sale de las mismas razones', downNoteFor(s1,1,{dir:'down',_base:B}).indexOf('▼ por: en crudo no baja')===0);
+    console.log('why self-check OK');
+  } finally { db=real; bumpIdx(); } }
 // what tends to coincide with better/worse capacity days (correlation, not cause; needs ≥8 sessions per variable)
 function performanceInsights(){ const rows=[];
   (db.sessions||[]).forEach(s=>{ if(s.type==='rest'||!s.date)return; const prs=(s.exercises||[]).map((e,ei)=>isCardio(e)?null:histProgress(s,ei)).filter(p=>p&&p.n); if(!prs.length)return;
@@ -14092,6 +14142,7 @@ function _pulgarSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
 // ---- R3 · TRKPop (Smart Popover, §7.18): texto corto anclado al término; un MENÚ va en la capa de TRKAsk (en el
 // marco del teléfono siempre es "móvil": popover en pantalla ancha, sheet en la angosta) ----
 const GLOSS={
+  why:'posibles causas, no un diagnóstico: lo que fue distinto esta vez. El % ya descuenta lo que hiciste antes en la sesión.',
   subev:'evidencia · A = varios ensayos o metaanálisis en humanos · B = algunos ensayos · C = datos humanos pequeños o preliminares · D = solo animales o laboratorio. Dice qué tan sólido es lo que se sabe, no qué tan bien funciona.',
   rpe:'RPE · esfuerzo de la serie: 10 = no salía otra, 9 = te quedaba 1, 8 = te quedaban 2 (medios puntos de 7 a 10). Se guarda como RIR (10 − RPE) para que todo se calcule igual.',
   rir:'RIR · repeticiones en reserva: cuántas más te quedaban. 0 = al fallo · F = fallo con media rep extra. Se registra por serie.',
@@ -14431,7 +14482,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
