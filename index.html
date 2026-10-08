@@ -448,8 +448,10 @@
   .mkc{grid-column:3; grid-row:1; align-self:start; padding-left:var(--s3); color:var(--o70); font-size:var(--t-section); font-weight:700; letter-spacing:var(--ls-num); text-align:right; white-space:nowrap;}
   .mtg .mmac{grid-column:2; grid-row:2; font-size:var(--t-label); color:var(--o50);} .mtg .mmac b{color:var(--fg); font-weight:700;}
   .mhd .gmore{grid-column:2; grid-row:1; position:relative; z-index:1; width:44px; height:22px; margin:0 -12px 0 0; padding:0 12px 0 0; display:flex; align-items:center; justify-content:flex-end; color:var(--o50);}   /* en el renglón de los macros; su toque de 44 baja al renglón de [+ food] */
-  .mhd .gmore::after{content:''; position:absolute; left:0; top:0; width:44px; height:44px;}
-  .mhd .madd{grid-column:1 / -1; grid-row:2; justify-self:start; margin:-10px 0 -8px calc(var(--s5) - var(--s2));}   /* un renglón de 26 con toque de 44 */
+  .mhd .gmore::after{content:''; position:absolute; left:0; bottom:0; width:44px; height:44px;}   /* v308 · el toque de ··· crece hacia ARRIBA: debajo ahora vive [+ food] */
+  .mhd .mact{grid-column:1 / -1; grid-row:2; justify-self:end; display:flex; align-items:center; gap:var(--s5); margin:-10px 0 -8px;}   /* v308 · [time] [+ food] a la derecha, junto al pulgar */
+.mhd .mact .vb{margin-top:0; margin-bottom:0;} .mhd .mact .madd{margin-right:calc(-1 * var(--s2));}
+.exiting{pointer-events:none;}   /* un renglón de 26 con toque de 44 */
   /* v257 · "más acciones": tres puntos dibujados — el texto ··· a 16 salía diminuto y pegado al total. Toque de 44×44
      que se mete 12 px en el margen de la página. v280 · de 3 a 2 px (3 de aire), el grueso del punto de la tipografía:
      "los tres puntitos siguen estando muy grandes para el estilo gráfico que llevamos"; 20 px entre el total y el primero. */
@@ -1240,7 +1242,7 @@
 
 <script>
 "use strict";
-const APP_V='v307';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v308';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -6509,9 +6511,20 @@ function foodSecHTML(iso,items,dayKcal){
     const rows=op?`<div class="mlbody">${list.map((m,i)=>mealItemRow(m,kp[i])).join('')}</div>`:'';
     return `<div class="mrec${op?' open':''}" data-tag="${et}" data-rk="ml:${et}"><div class="mhd"><button type="button" class="mtg" data-act="mealfold" data-tag="${et}" aria-expanded="${op}"><span class="mchev" aria-hidden="true">›</span><span class="mnm">${et}${tm?`<span class="mtm"> · ${escTxt(tm)}</span>`:''}</span><span class="mkc" aria-label="${kc} kcal"><span data-nk="mk:${et}" data-nv="${kc}">${kc.toLocaleString()}</span></span>${meta}</button>`
       +`<button type="button" class="gmore" data-act="mealmenu" data-tag="${et}" aria-label="acciones de ${et}"><span class="dots3" aria-hidden="true"></span></button>`
-      +`<button type="button" class="vb madd" data-act="addtomeal" data-tag="${et}" aria-label="agregar alimento a ${et}">+ food</button></div>${rows}</div>`; }).join('');   // el total ya no es un botón aparte: `ver desglose` vive en ···
-  const n=tags.length;
-  return logSecHTML({k:'food',title:'MEALS',v:`<b>${n}</b> meal${n===1?'':'s'}`,act:`<button type="button" class="lact" data-act="newmeal">+ meal</button>`,body:meals||`<div class="empty">no meals logged</div>`,open:state._lfold.food}); }
+      // v308 · G8 tanda 3: lo de todos los días junto al pulgar — [+ food] a la derecha; y M7: una comida sin hora ofrece [time] (un toque = ahora)
+      +`<div class="mact">${tm?'':`<button type="button" class="vb mtime" data-act="mealtime" data-tag="${et}" aria-label="poner la hora a ${et}">time</button>`}<button type="button" class="vb madd" data-act="addtomeal" data-tag="${et}" aria-label="agregar alimento a ${et}">+ food</button></div></div>${rows}</div>`; }).join('');   // el total ya no es un botón aparte: `ver desglose` vive en ···
+  // v308 · M7 · el dueño: "a las meals agregarle el X/X de las meals loggeadas pero solo que se confirmen al poner la hora… MEAL 2/4…
+  // si le pone hora a otra meal sea 3/4 o si le quita pues 1/4": comidas con hora / comidas del día
+  const n=tags.length, nt=mealsTimed(iso,tags);
+  return logSecHTML({k:'food',title:'MEALS',v:n?`<b data-nk="mealsdone" data-nv="${nt}">${nt}</b> / ${n}`:`<b>0</b> meals`,act:`<button type="button" class="lact" data-act="newmeal">+ meal</button>`,body:meals||`<div class="empty">no meals logged</div>`,open:state._lfold.food}); }
+// v308 · M7 · una comida cuenta como hecha cuando tiene hora. [time] es de un toque: viendo hoy pone la hora de este momento
+// (con deshacer); viendo otro día pregunta la hora. Quitarla (··· → quitar la hora) la descuenta. Nada mueve la pantalla.
+function mealsTimed(iso,tags){ return (tags||[]).filter(t=>!!mealTime(iso,t)).length; }
+function mealTimeSet(d,tag,hm,quiet){ const was=mealTime(d,tag)||null; hm=(hm||'').trim()||null; if(hm===was)return false; setMealTime(d,tag,hm); save(); reRender();
+  if(!quiet)toast(hm?'✓ '+tag+' · '+hm:'✓ '+tag+' · sin hora','ok',{undo:()=>{ setMealTime(d,tag,was); }}); return true; }
+function mealTimeTap(tag){ const d=curDate(); if(mealTime(d,tag))return;
+  if(d===todayISO()){ mealTimeSet(d,tag,nowHM()); return; }
+  trkPrompt({title:'hora de #'+tag,label:'HH:MM',value:'',type:'time',ok:'guardar'},v=>{ v=(v||'').trim(); if(!v){ toast('⚠ pon la hora','err'); return false; } mealTimeSet(d,tag,v); }); }
 // un toque: pendiente → tomado (con su hora real, que nunca se pisa) · tomado/tarde → sin marcar
 function suppQuickTick(id,iso,tk){
   const it=(db.stack||[]).find(x=>x.id===id), t=it&&takeOf(it,tk); if(!t)return;
@@ -9875,6 +9888,21 @@ function trkMark(pct,cls,title){ return `<span class="${cls||'mev'}" style="left
 function animBars(root){ const red=reducedMotion();
   root.querySelectorAll('[data-bk]').forEach(el=>{ const k=el.dataset.bk, to=el.style.width, from=_bk[k]; _bk[k]=to;
     if(red||from==null||from===to||!to)return; try{ el.animate([{width:from},{width:to}],{duration:durMs('--dur-2',180),easing:'cubic-bezier(.22,1,.36,1)'}); }catch(_){} }); }
+// v308 · AN1b · el aro avanza CON su número (misma duración y curva que animNums): la identidad del aro es el data-nk de su centro
+// (más el día que se ve en macros); la primera vez y sin cambio no anima. Solo el trazo: nada cambia de tamaño.
+const _ak={};
+function animArcs(root){ const red=reducedMotion();
+  root.querySelectorAll('.ring').forEach(r=>{ const n=r.querySelector('.ring-center [data-nk]'), f=r.querySelector('.ring-fill'); if(!n||!f)return;
+    const k=n.dataset.nk+(state.screen==='macros'?'@'+curDate():''), d=f.style.strokeDasharray||'', o=f.style.strokeDashoffset||'0', prev=_ak[k]; _ak[k]={d,o};
+    if(red||!prev||!d||(prev.d===d&&prev.o===o))return;
+    try{ f.animate([{strokeDasharray:prev.d||'0 100',strokeDashoffset:prev.o},{strokeDasharray:d,strokeDashoffset:o}],{duration:durMs('--dur-3',280),easing:'cubic-bezier(.22,1,.36,1)'}); }catch(_){} }); }
+// v308 · AN1b · quitar algo: primero se desvanece EN SU LUGAR (--dur-2) y luego se aplica el cambio (reRender cierra el hueco
+// deslizando). En pruebas o con movimiento reducido va directo. Un segundo toque mientras se va no hace nada.
+function exitThen(el,apply){ const els=(Array.isArray(el)?el:[el]).filter(x=>x&&x.isConnected);
+  if(_sbx||!els.length||reducedMotion()){ apply(); return; }
+  if(els[0]._exiting)return; let done=false; const fin=()=>{ if(done)return; done=true; apply(); }, D=durMs('--dur-2',180);
+  els.forEach(x=>{ x._exiting=1; x.classList.add('exiting'); try{ x.animate([{opacity:1},{opacity:0}],{duration:D,easing:'cubic-bezier(.4,0,1,1)',fill:'forwards'}); }catch(_){} });
+  setTimeout(fin,D); }
 function slideTabs(root,swap){ const red=reducedMotion();
   root.querySelectorAll('.mdtabs').forEach(c=>{ const on=c.querySelector('span.on'); let ind=c.querySelector('.tabind'); if(!on){ if(ind)ind.remove(); c.classList.remove('has-ind'); return; }
     if(!ind){ ind=document.createElement('i'); ind.className='tabind'; c.insertBefore(ind,c.firstChild); } c.classList.add('has-ind');
@@ -9894,14 +9922,14 @@ function applyEnter(root){ const e=state._enter, p=state._pop; state._enter=null
   // v301 · SG1 · al dar ✓ la barra de σ de ESA serie carga desde cero (una vez; un repintado sin ✓ no anima)
   if(p){ const pl=root.querySelector('.setprogline[data-exi="'+p.exi+'"][data-si="'+p.si+'"]')||root.querySelector('.setprogline[data-exi="'+p.exi+'"][data-si="'+(p.si-1)+'"]'), bar=pl&&pl.querySelector('.sgb>i');
     if(bar&&bar.style.width){ try{ bar.animate([{width:'0%'},{width:bar.style.width}],{duration:durMs('--dur-charge',560),easing:'cubic-bezier(.22,1,.36,1)'}); }catch(_){} } }
-  if(e&&e.sel){ root.querySelectorAll(e.sel).forEach(x=>x.classList.add('enter')); }
+  if(e&&e.sel){ const xs=root.querySelectorAll(e.sel); xs.forEach(x=>x.classList.add('enter')); if(e.show&&xs[0])showEl(xs[0],16); }
   else if(e){ const el=root.querySelector(e.ex!=null?'.ex[data-exi="'+e.ex+'"]':'.srow[data-exi="'+e.exi+'"][data-si="'+e.si+'"],.pair[data-exi="'+e.exi+'"][data-si="'+e.si+'"]');
     if(el){ el.classList.add('enter'); if(e.scroll)showEl(el.querySelector('.exhd')||el,16); } }
   if(p){ const el=root.querySelector('.dchk[data-exi="'+p.exi+'"][data-si="'+p.si+'"],.pairdone[data-exi="'+p.exi+'"][data-si="'+p.si+'"]'); if(el)el.classList.add('pop'); } }
 function afterPaint(root,swap){ if(!root)return; try{ popClose(); }catch(_){}
   if(state.screen==='home'&&!_sbx&&!window._stkT)window._stkT=setTimeout(()=>{ window._stkT=0; streakLvMaybe(); },450);   // v291 · ¿subiste de nivel de racha?
   try{ footDonePaint(); }catch(_){}
-  try{ animNums(root); }catch(_){} try{ animBars(root); }catch(_){} try{ slideTabs(root,swap); }catch(_){} try{ applyEnter(root); }catch(_){} try{ tourMaybe(); }catch(_){} }
+  try{ animNums(root); }catch(_){} try{ animBars(root); }catch(_){} try{ animArcs(root); }catch(_){} try{ slideTabs(root,swap); }catch(_){} try{ applyEnter(root); }catch(_){} try{ tourMaybe(); }catch(_){} }
 // ---- R4 · TRKRow reflow (§7.18): lo que queda se reacomoda en vez de saltar ----
 // Cada fila/bloque lleva data-rk = identidad de SU objeto (serie, ejercicio) — un WeakMap en memoria, nunca se guarda.
 // reRender() mide antes de pintar y, después, anima a cada elemento desde donde estaba (FLIP). Un elemento que se mueve
@@ -10756,12 +10784,14 @@ document.getElementById('app').addEventListener('click',e=>{
       if(m._food){ openLog(m._food,{editId:m.id,qty:m.qty||1,unit:m._unit,tag:m.tag}); }
       else { const q=m.qty||1; const per={}; ['kcal','protein','carbs','fat','sugar','sodium','potassium','fiber','caffeine','alcohol','water'].forEach(k=>per[k]=(+m[k]||0)/q); openLog({name:(m.name||'').replace(/ ×[\d.]+$/,''),serving:m.serving||'1 serving',per},{editId:m.id,qty:q,tag:m.tag}); } } }
   else if(a==='delmealnow'){ state._scroll=document.getElementById('view').scrollTop; const t=curDate(); db.meals[t]=(db.meals[t]||[]).filter(m=>m.id!==window._mealId); save(); closeModal(); reRender(); }
-  else if(a==='delmealgroup'){ const tag=el.dataset.tag; if(!tag) return; closeModal(); mealDelete(curDate(),tag); reRender(); }   // v283 · un solo camino para borrar una comida (mealDelete: [deshacer], no se lleva el agua); antes este filtraba por tag y se llevaba el agua del día
+  else if(a==='mealtime'){ mealTimeTap(el.dataset.tag); }
+  else if(a==='delmealgroup'){ const tag=el.dataset.tag; if(!tag) return; closeModal(); mealDeleteAnim(curDate(),tag); }   // v283 · un solo camino para borrar una comida (mealDelete: [deshacer], no se lleva el agua); antes este filtraba por tag y se llevaba el agua del día
   else if(a==='editmealx'){ const id=el.dataset.id; const t=curDate(); const m=(db.meals[t]||[]).find(x=>x.id===id); if(m){ if(m._food){ openLog(m._food,{editId:m.id,qty:m.qty||1,unit:m._unit,tag:m.tag}); } else { const q=m.qty||1; const per={}; ['kcal','protein','carbs','fat','sugar','sodium','potassium','fiber','caffeine','alcohol','water'].forEach(k=>per[k]=(+m[k]||0)/q); openLog({name:(m.name||'').replace(/ ×[\d.]+$/,''),serving:m.serving||'1 serving',per},{editId:m.id,qty:q,tag:m.tag}); } } }
   else if(a==='delmealx'){ const id=el.dataset.id, t=curDate(), arr=db.meals[t]||[], i=arr.findIndex(m=>m.id===id); if(i<0)return;
     // v256: antes un toque en [borrar] perdía el alimento para siempre, sin preguntar ni red
-    const m=arr[i]; arr.splice(i,1); if(state.expandedMeal===id)state.expandedMeal=null; save(); reRender();
-    toast('✓ alimento borrado','ok',{undo:()=>{ (db.meals[t]=db.meals[t]||[]).splice(i,0,m); }}); }
+    const m=arr[i], row=[...document.querySelectorAll('#view .mit')].find(e=>e.dataset.id===id), det=row&&row.nextElementSibling&&row.nextElementSibling.classList.contains('mdmeal')?row.nextElementSibling:null;
+    exitThen([row,det],()=>{ const j=arr.indexOf(m); if(j<0)return; arr.splice(j,1); if(state.expandedMeal===id)state.expandedMeal=null; save(); reRender();   // v308 · AN1b · se desvanece y lo de abajo sube
+      toast('✓ alimento borrado','ok',{undo:()=>{ (db.meals[t]=db.meals[t]||[]).splice(Math.min(j,db.meals[t].length),0,m); state._enter={sel:'.mit[data-id="'+id+'"]'}; }}); }); }
   else if(a==='vfixkcal'){ const P=parseFloat(val('v_protein'))||0,C=parseFloat(val('v_carbs'))||0,F=parseFloat(val('v_fat'))||0; const e=document.getElementById('v_kcal'); if(e){ e.value=Math.round(P*4+C*4+F*9); e.dispatchEvent(new Event('input',{bubbles:true})); } }
   else if(a==='foodadd'){ openFoodAdd(); }
   else if(a==='suppopen'){ state.suppOpen=!state.suppOpen; reRender(); }
@@ -10783,8 +10813,9 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='waterother'){ openDrink(); }
   else if(a==='waterdel'){ const id=el.dataset.id, d=curDate(), arr=db.meals[d]||[], i=arr.findIndex(x=>x.id===id); if(i<0)return;
     // v256: lo reversible se quita sin preguntar y se ofrece [deshacer] (vuelve el MISMO vaso al MISMO lugar)
-    const m=arr[i]; arr.splice(i,1); save(); reRender();
-    toast('✓ agua quitada · '+Math.round((+m.water||0)*1000)+' ml','ok',{undo:()=>{ (db.meals[d]=db.meals[d]||[]).splice(i,0,m); }}); }
+    const m=arr[i];
+    exitThen(el,()=>{ const j=arr.indexOf(m); if(j<0)return; arr.splice(j,1); save(); reRender();   // v308 · AN1b
+      toast('✓ agua quitada · '+Math.round((+m.water||0)*1000)+' ml','ok',{undo:()=>{ (db.meals[d]=db.meals[d]||[]).splice(Math.min(j,db.meals[d].length),0,m); }}); }); }
   else if(a==='share'){ trkMenu('compartir',[['el día · tus comidas',()=>{ state.shareType='food'; go('share'); }],['el panel de macros',()=>{ state.shareType='macros'; go('share'); }]]); }   // v276
   else if(a==='radarfold'){ db.settings=db.settings||{}; db.settings.radarOpen=!db.settings.radarOpen; save(); reRender(); }   // v290 · el radar del panel de macros, plegable y recordado
   else if(a==='sharesession'){ state.shareType='session'; state.shareId=el.dataset.id; closeModal(); go('share'); }
@@ -12980,6 +13011,8 @@ function mealNameShow(t){ const h=mealHidden(); if(h.indexOf(t)>=0)db.mealTagsHi
 function mealNames(){ return [...new Set([...mealSuggestions(),'breakfast','lunch','snack','dinner','pre workout','post workout'])].filter(t=>t&&t!=='drink'&&mealHidden().indexOf(t)<0); }
 // la comida de un día = sus alimentos con esa etiqueta. El agua vive en `drink` sin kcal y NO es comida: borrar o renombrar
 // "#drink" no la toca (antes se la llevaba). La hora de la comida se va con ella y vuelve con el deshacer.
+// v308 · AN1b · la comida se desvanece y lo de abajo sube deslizando (antes desaparecía de golpe)
+function mealDeleteAnim(d,tag){ const el=d===curDate()?[...document.querySelectorAll('#view .mrec')].find(e=>e.dataset.tag===String(tag)):null; exitThen(el,()=>mealDelete(d,tag)); }
 function mealDelete(d,tag){ const arr=db.meals[d]||[], gone=[]; arr.forEach((m,i)=>{ if(!isWaterItem(m)&&String(m.tag)===String(tag))gone.push([i,m]); });
   if(!gone.length)return 0;
   const mm=(db.mealMeta||{})[d], meta=(mm&&mm[tag])?JSON.parse(JSON.stringify(mm[tag])):null;
@@ -13041,9 +13074,10 @@ function openMealMenu(tag){
     ['aproximada aquí',()=>openApproxMeal(tag)],
     ['ver desglose',()=>openMealSummary(tag)],
     ['renombrar',()=>{ trkPrompt({title:'renombrar comida',label:'NOMBRE',value:tag,ok:'guardar'},v=>{ v=(v||'').trim(); if(!v){ toast('⚠ escribe un nombre','err'); return false; } renameMealTag(tag,v); }); }],
-    ['hora de la comida',()=>{ trkPrompt({title:'hora de #'+tag,label:'HH:MM',value:mealTime(d,tag)||'',type:'time',ok:'guardar'},v=>{ setMealTime(d,tag,(v||'').trim()||null); save(); reRender(); toast('✓ hora guardada'); }); }],
-    ['borrar la comida',()=>mealDelete(d,tag)],   // v280 · con [deshacer]; antes había que sostener un botón arriba de la pantalla
-  ]);
+    [mealTime(d,tag)?'cambiar la hora · '+mealTime(d,tag):'hora de la comida',()=>{ trkPrompt({title:'hora de #'+tag,label:'HH:MM',value:mealTime(d,tag)||'',type:'time',ok:'guardar'},v=>{ mealTimeSet(d,tag,v); }); }],
+  ].concat(mealTime(d,tag)?[['quitar la hora',()=>mealTimeSet(d,tag,null)]]:[]).concat([   // v308 · M7: sin hora la comida deja de contar en MEALS n / m
+    ['borrar la comida',()=>mealDeleteAnim(d,tag)],   // v280 · con [deshacer]; antes había que sostener un botón arriba de la pantalla
+  ]));
 }
 function renameMealTag(from,to){
   if(!to||to===from)return; const d=curDate();
@@ -13052,6 +13086,59 @@ function renameMealTag(from,to){
   if(Array.isArray(db.mealTags)){ const i=db.mealTags.indexOf(from); if(i>=0&&db.mealTags.indexOf(to)<0)db.mealTags[i]=to; }
   save(); reRender(); toast('✓ comida renombrada');
 }
+// self-check de v308 · MEALS n / m (comidas con hora), [time] de un toque, [+ food] a la derecha, el aro que avanza y quitar que
+// se desvanece. Base de juguete; toast, reRender y reducedMotion se sustituyen; todo se restaura en finally.
+function _mealsSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK meals: '+nm); };
+  const real=db, _t=toast, _rr=reRender, _rm=reducedMotion, md0=state.macroDate, lf0=state._lfold, lfd0=state._lfoldD, mo0=state._mealOpen, sc0=state.screen, sb0=_sbx;
+  const app=document.getElementById('app'); let undo=null, host=null, n=0, msg='';
+  try{ toast=(m,t,o)=>{ msg=String(m); undo=(o&&o.undo)||null; return null; }; reRender=()=>{ n++; };
+    const T=todayISO(), Y=shiftDate(T,-1), I=(id,tag,kc)=>({id:id,tag:tag,name:id,qty:1,kcal:kc||100,protein:10,carbs:10,fat:2});
+    const m={}; m[T]=[I('a','breakfast',400),I('b','lunch',600),I('c','snack',90),I('d','dinner',700),{id:'w1',tag:'drink',name:'agua',water:.5,kcal:0}]; m[Y]=[I('y','lunch',500)];
+    const mt={}; mt[T]={breakfast:{time:'07:00'},lunch:{time:'12:00'}};
+    db=migrate({profile:{username:'t'},sessions:[],mealTags:['breakfast','lunch','snack','dinner'],meals:m,mealMeta:mt,foods:[]});
+    bumpIdx(); state.macroDate=T; state._lfold={food:true,water:false,supps:false}; state._lfoldD=T; state._mealOpen={};
+    const food=d=>(db.meals[d]||[]).filter(x=>!isWaterItem(x)), paint=d=>{ host.innerHTML=foodSecHTML(d,food(d),food(d).reduce((s,x)=>s+x.kcal,0)); return host; };
+    host=document.createElement('div'); host.style.cssText='position:absolute;left:0;top:0;width:357px;visibility:hidden;pointer-events:none'; app.appendChild(host);
+    const lv=()=>host.querySelector('.lsec[data-k="food"] .lv').textContent, rec=t=>[...host.querySelectorAll('.mrec')].find(r=>r.dataset.tag===t);
+    // 1 · su ejemplo: breakfast 7am · lunch 12pm · snack · dinner → 2 / 4
+    paint(T); A('MEALS dice comidas con hora / comidas del día (su ejemplo: 2 / 4)', lv()==='2 / 4'&&mealsTimed(T,['breakfast','lunch','snack','dinner'])===2);
+    A('el agua no es una comida', host.querySelectorAll('.mrec').length===4);
+    A('[time] solo en la comida sin hora', !rec('breakfast').querySelector('.mtime')&&!rec('lunch').querySelector('.mtime')&&!!rec('snack').querySelector('.mtime')&&rec('dinner').querySelector('.mtime').dataset.act==='mealtime');
+    { const r=rec('dinner'), R=s=>r.querySelector(s).getBoundingClientRect(), H=r.querySelector('.mhd').getBoundingClientRect();
+      A('[+ food] va a la derecha, con [time] a su izquierda', R('.madd').right>=H.right-6&&R('.madd').left>H.left+H.width/2&&R('.mtime').right<=R('.madd').left+8);
+      A('[time] y [+ food] se tocan a 44', R('.madd').height>=43.5&&R('.madd').width>=43.5&&R('.mtime').height>=43.5&&R('.mtime').width>=43.5);
+      A('··· se toca hacia arriba: no tapa a [+ food]', getComputedStyle(r.querySelector('.gmore'),'::after').bottom==='0px'&&parseFloat(getComputedStyle(r.querySelector('.gmore'),'::after').height)>=44);
+      const a=rec('breakfast').querySelector('.madd').getBoundingClientRect(); A('[+ food] cae en la misma columna con y sin [time]', Math.abs(a.right-R('.madd').right)<=.5); }
+    // 2 · un toque en [time] hoy = la hora de este momento, con deshacer
+    n=0; mealTimeTap('snack'); A('un toque pone la hora de ahora y repinta una vez', /^\d\d:\d\d$/.test(mealTime(T,'snack'))&&n===1&&msg.indexOf('✓ snack · ')===0&&typeof undo==='function');
+    paint(T); A('…y sube a 3 / 4', lv()==='3 / 4'&&!rec('snack').querySelector('.mtime')&&/· \d\d:\d\d/.test(rec('snack').querySelector('.mtm').textContent));
+    undo(); paint(T); A('deshacer la quita: vuelve a 2 / 4', mealTime(T,'snack')===''&&lv()==='2 / 4');
+    mealTimeTap('lunch'); A('una comida que ya tiene hora no se pisa', mealTime(T,'lunch')==='12:00');
+    // 3 · quitar la hora descuenta ("si le quita pues 1/4")
+    A('quitar la hora descuenta', mealTimeSet(T,'lunch',null)===true&&mealTime(T,'lunch')===''&&msg==='✓ lunch · sin hora'); paint(T); A('…queda 1 / 4', lv()==='1 / 4');
+    undo(); paint(T); A('…y el deshacer la devuelve tal cual', mealTime(T,'lunch')==='12:00'&&lv()==='2 / 4');
+    A('la misma hora no cambia nada', mealTimeSet(T,'lunch','12:00')===false);
+    // 4 · otro día: [time] pregunta la hora (no inventa la de ahora)
+    state.macroDate=Y; _sbx=true; mealTimeTap('lunch'); const inp=document.querySelector('#modal input[type="time"],.sheet input[type="time"]');
+    A('viendo otro día pregunta la hora', mealTime(Y,'lunch')===''&&!!inp); try{ closeModal(); }catch(_){}
+    paint(Y); A('un día sin horas: 0 / 1', lv()==='0 / 1'); state.macroDate=T;
+    db.meals[T]=[]; paint(T); A('sin comidas dice 0 meals', lv()==='0 meals');
+    // 5 · el aro avanza con su número: la primera vez y sin cambio no anima; con cambio, sí
+    reducedMotion=()=>false; state.screen='macros'; const ring=p=>{ const b=document.createElement('div'); b.innerHTML=ringHTML(p,'<div class="num" data-nk="_t308" data-nv="'+p+'">'+p+'</div>'); host.appendChild(b); return b; };
+    const an=b=>(b.querySelector('.ring-fill').getAnimations?b.querySelector('.ring-fill').getAnimations().length:0);
+    let b1=ring(20); animArcs(b1); A('aro: la primera vez no anima', an(b1)===0); b1.remove();
+    b1=ring(20); animArcs(b1); A('aro: sin cambio no anima', an(b1)===0); b1.remove();
+    b1=ring(55); animArcs(b1); A('aro: con cambio avanza desde donde estaba', !b1.querySelector('.ring-fill').getAnimations||an(b1)===1); b1.remove();
+    reducedMotion=()=>true; b1=ring(80); animArcs(b1); A('aro: con movimiento reducido no anima', an(b1)===0); b1.remove(); delete _ak['_t308@'+T];
+    // 6 · quitar: en pruebas y con movimiento reducido va directo; con movimiento, primero se desvanece y un segundo toque no repite
+    let k=0; const el=document.createElement('div'); host.appendChild(el);
+    _sbx=true; exitThen(el,()=>k++); A('quitar en pruebas es inmediato', k===1);
+    _sbx=false; reducedMotion=()=>true; exitThen(el,()=>k++); A('quitar con movimiento reducido es inmediato', k===2);
+    exitThen(null,()=>k++); A('sin elemento también', k===3);
+    reducedMotion=()=>false; exitThen(el,()=>k++); A('con movimiento primero se desvanece', k===3&&el.classList.contains('exiting'));
+    exitThen(el,()=>k++); A('un segundo toque mientras se va no hace nada', k===3); el.remove();
+    console.log('meals self-check OK');
+  } finally { _sbx=sb0; toast=_t; reRender=_rr; reducedMotion=_rm; if(host)host.remove(); db=real; state.macroDate=md0; state._lfold=lf0; state._lfoldD=lfd0; state._mealOpen=mo0; state.screen=sc0; bumpIdx(); } }
 // v280 · self-check de comida (síncrono; no está en la lista del arranque: lo registra el integrador). Base de juguete:
 // cabecera sin "…" a 357 px, controles de 44, borrar una comida con deshacer (sin tocar el agua ni otros días), quitar
 // un nombre sin reescribir la historia, quitar un alimento guardado y un nombre nuevo que sí abre la hoja de agregar.
@@ -13080,7 +13167,7 @@ function _comidaSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
       A(tg+': arriba nombre y total · abajo macros y ··· · [+ food] debajo de los dos', Math.abs(R('.mkc').top-R('.mnm').top)<=3&&R('.mkc').right>=R('.mtg').right-1&&R('.mmac').top>=R('.mnm').bottom-1&&R('.gmore').bottom<=R('.mtg').bottom+1&&R('.gmore').top>=R('.mmac').top-8&&R('.madd').top>=R('.mmac').bottom-8&&R('.madd').bottom>R('.mtg').bottom);
       A(tg+': los macros empiezan donde el nombre (a la izquierda)', Math.abs(R('.mmac').left-R('.mnm').left)<=1);
       A(tg+': el total ya no es un botón aparte (pliega con el resto de la cabecera)', !r.querySelector('[data-act="mealsummary"]')&&!!q('.mtg .mkc')); });
-    { const ml=t=>recs.find(r=>r.dataset.tag===t).querySelector('.madd').getBoundingClientRect().left; A('[+ food] cae en la misma columna con totales de 2 a 4 cifras', Math.abs(ml('post workout')-ml('snack'))<=.5); }
+    { const ml=t=>recs.find(r=>r.dataset.tag===t).querySelector('.madd').getBoundingClientRect().right; A('[+ food] cae en la misma columna (a la derecha desde v308) con totales de 2 a 4 cifras', Math.abs(ml('post workout')-ml('snack'))<=.5); }
     const mmTxt=r=>((r.querySelector('.mtm')||{}).textContent||'')+' | '+r.querySelector('.mtg .mmac').textContent;
     A('el desglose sale completo: la hora junto al nombre y P · C · F con puntos', recs.some(r=>mmTxt(r)===' · 17:05 | P 156 · C 244 · F 103')&&recs.some(r=>mmTxt(r)===' · 10:30 | P 311 · C 1420 · F 665'));
     A('el macro de más gramos va en blanco', recs.every(r=>r.querySelectorAll('.mtg .mmac b').length===1)&&recs.some(r=>r.querySelector('.mtg .mmac b').textContent==='C 244'));
@@ -14043,6 +14130,10 @@ function commitLog(saveToDb){
   const apply=m=>{ m.tag=L.tag; m.name=f.name+(qty!==1?' ×'+numTxt(qty):''); m.qty=qty; m.serving=unitLabel; MACROKEYS.forEach(k=>m[k]=nut[k]); m.water=nut.water; m._food={id:foodId,base:f.base,per100:f.per100,sizes:f.sizes,servingLabel:f.servingLabel,name:f.name,brand:f.brand||'',barcode:bc}; m._unit=unit; };
   if(L.editId){ const m=(db.meals[t]||[]).find(x=>x.id===L.editId); if(m){ apply(m); save(); closeModal(); reRender(); return; } }
   const item={id:uid()}; apply(item); db.meals[t].push(item);
+  // v308 · AN1b · "cuando logueas un alimento… medio choppy": su comida queda abierta, el alimento ENTRA (lo de abajo baja deslizando),
+  // el aro y el número avanzan juntos (animArcs + animNums) y, si quedó fuera de la vista, la pantalla baja lo mínimo para enseñarlo
+  if(!isWaterItem(item)){ state._mealOpen=state._mealOpen||{}; (state._mealOpen[t]=state._mealOpen[t]||{})[String(item.tag)]=true; if(state._lfold)state._lfold.food=true;
+    state._enter={sel:'.mit[data-id="'+item.id+'"]',show:true}; }
   savedToast('✓ comida guardada'); closeModal(); reRender();
 }
 // maintenance (TDEE) from profile via Mifflin-St Jeor × activity — same basis as onboarding
@@ -14728,7 +14819,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
