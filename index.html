@@ -1134,6 +1134,15 @@
   /* R2 · TRKAsk / TRKHold (§7.18): capa PROPIA encima del sheet actual — no lo reemplaza, así lo escrito abajo se conserva */
   .modal.asklayer{z-index:var(--z-pop);}
   .asklayer .sheet{max-height:60%;}
+  /* v303 · G8 tanda 1 · un aviso o menú SIN teclado abre abajo, junto al pulgar (antes colgaba de arriba). Con casilla se queda arriba: el teclado lo taparía.
+     El relleno inferior deja libre la franja del gesto de iOS. Solo cambia de borde: mismo material, mismo contenido. */
+  .modal.asklayer.low{align-items:flex-end;}
+  .asklayer.low .sheet{padding:var(--s4) var(--sp-sheet) calc(var(--s6) + env(safe-area-inset-bottom)); border-radius:var(--r-sheet) var(--r-sheet) 0 0;}
+  .asklayer.low .sheet.glass-strong{border-width:var(--bw-chrome) 0 0;}
+  .modal.asklayer.low.in .sheet{animation:askin var(--dur-3) var(--ease-out);} .modal.asklayer.low.out .sheet{animation:askout var(--dur-2) var(--ease-in) forwards;}
+  @keyframes askin{from{transform:translateY(100%)}} @keyframes askout{to{transform:translateY(100%)}}
+  /* el principal a la derecha (donde cae el pulgar) y, en un aviso que borra, lo que borra a la izquierda y cancelar a la derecha */
+  .sheetbtns:has(> .ok){flex-direction:row-reverse;} .sheetbtns:has(> .danger):not(:has(> .ok)){justify-content:space-between;}
   .hold{position:relative; overflow:hidden; width:100%; height:var(--h-pri); margin-top:var(--s2); border:var(--bw-ctl) solid var(--bad); border-radius:var(--r-ctl); background:transparent; color:var(--bad); font:inherit; font-size:var(--t-data); font-weight:700; letter-spacing:var(--ls-ui); cursor:pointer; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;}
   .hold .hold-fill{position:absolute; inset:0; background:var(--bad); opacity:.22; transform:scaleX(0); transform-origin:left center; pointer-events:none;}
   .hold .hold-lbl{position:relative; font-variant-numeric:tabular-nums;}
@@ -1202,7 +1211,7 @@
 
 <script>
 "use strict";
-const APP_V='v302';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v303';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -5807,13 +5816,13 @@ function _v288SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     { const nm=i=>v.querySelector('.exhead [data-act="editexname"][data-exi="'+i+'"]'), items=()=>Array.from(document.querySelectorAll('#asklayer .nvm')).map(x=>x.textContent.replace('›','').trim()).join();
       const cur=i=>{ state._curEx=i; render(); }; cur(0);
       const y0=nm(0).getBoundingClientRect().top, t0=v.scrollTop; tap(nm(0));
-      A('con historial: editar ejercicio · historial · cambiar ejercicio, en ese orden', items()==='editar ejercicio,historial,cambiar ejercicio');
+      A('con historial: editar ejercicio · historial · cambiar ejercicio, en ese orden (y quitar al final, v303)', items()==='editar ejercicio,historial,cambiar ejercicio,quitar de la sesión');
       A('abrir el menú no mueve el nombre', near(nm(0).getBoundingClientRect().top,y0)&&near(v.scrollTop,t0));
       tap(document.querySelector('#asklayer .nvm')); A('editar ejercicio abre el editor de ESE ejercicio', !!document.getElementById('ee_name')&&document.getElementById('ee_name').value==='cable pullover'&&window._exEdit.liveExi===0); closeModal();
       w.exercises.push({exId:'eN',name:'zz nuevo',muscle:'lats',type:'free',unilateral:false,startSide:'R',sets:[emptySet({type:'free'},null,false)]}); cur(4);
-      tap(nm(4)); A('sin historial el menú también sale, con editar primero', items()==='editar ejercicio,cambiar ejercicio'); closeAsk(true); w.exercises.pop(); cur(1);
+      tap(nm(4)); A('sin historial el menú también sale, con editar primero', items()==='editar ejercicio,cambiar ejercicio,quitar de la sesión'); closeAsk(true); w.exercises.pop(); cur(1);
       // 6 · cambiar ejercicio: solo ese músculo; [cambiar músculo]; el buscador ve todo
-      tap(nm(1)); tap(Array.from(document.querySelectorAll('#asklayer .nvm')).pop());
+      tap(nm(1)); tap(Array.from(document.querySelectorAll('#asklayer .nvm')).find(x=>/cambiar ejercicio/.test(x.textContent)));   /* v303 · ya no es la última fila: debajo va `quitar de la sesión` */
       const m=document.getElementById('modal'), rows=()=>Array.from(m.querySelectorAll('.pickitem[data-q]')), vis=()=>rows().filter(x=>!x.hidden).map(x=>(window._axList[+x.dataset.i]||{}).name).sort().join();
       A('cambiar ejercicio abre con solo los de ese músculo a la vista', !!m&&vis()==='db curl,hammer curl'&&rows().length===4);
       A('trae [cambiar músculo] y ya no el botón de editar al fondo ni "← músculo"', !!m.querySelector('button.b[data-act="axback"]')&&m.querySelector('button.b[data-act="axback"]').textContent==='cambiar músculo'&&!m.querySelector('[data-act="axdetails"]')&&m.textContent.indexOf('← músculo')<0&&m.textContent.indexOf('otros músculos')<0);
@@ -6079,7 +6088,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
   // v256 (B3): el asa vive en SU columna y las dos líneas comparten borde — [bi] sobre [cable]. Antes el asa y el
   // corchete empujaban solo la primera línea (nombre en x≈72, marca en x≈54). [uni]/[bi] se queda AL FRENTE del
   // nombre: es pedido explícito del dueño (21-ago), no se mueve.
-  const head=`<div class="exhd${gripE?' hasgrip':''}">${gripE}<div class="exhdc"><div class="exhead">${exLatTagHead(ex,exi)}<span class="n u-tap" data-act="editexname" data-exi="${exi}">${escTxt(ex.name)}</span>${prBadge}${noBaseline}<button type="button" class="exshr" data-act="exshare" data-exi="${exi}" aria-label="compartir ${escTxt(ex.name||'ejercicio')}" title="compartir · marca la serie que grabaste">${EXSH_SVG}</button><span class="exdel u-o35 u-tap u-data u-py2 u-px6 u-asc" data-act="delex" data-exi="${exi}" title="quitar de la sesión">✕</span></div>`
+  const head=`<div class="exhd${gripE?' hasgrip':''}">${gripE}<div class="exhdc"><div class="exhead">${exLatTagHead(ex,exi)}<span class="n u-tap" data-act="editexname" data-exi="${exi}">${escTxt(ex.name)}</span>${prBadge}${noBaseline}<button type="button" class="exshr" data-act="exshare" data-exi="${exi}" aria-label="compartir ${escTxt(ex.name||'ejercicio')}" title="compartir · marca la serie que grabaste">${EXSH_SVG}</button></div>`
    +`<div class="exsub">${variantChips(ex,{act:'editmach',exi})}${mhtml}${noteHTML}</div></div></div>`;
   // ---- cardio branch: field grid per subtype, no drop sets, no w/r/rir ----
   if(isCardioEx){
@@ -10501,7 +10510,7 @@ document.getElementById('app').addEventListener('click',e=>{
     save(); reRender(); }
   else if(a==='delset'){ delSetLive(exi,si); }
   else if(a==='exshare'){ openExShare(exi); }
-  else if(a==='delex'){ const w=db.activeWork; if(w&&w.exercises[exi]){ trkAsk({title:'quitar "'+((w.exercises[exi].name)||'este ejercicio')+'" de la sesión',detail:'lo registrado en ese ejercicio se descarta · tu split no cambia',ok:'quitar',danger:true},()=>{ const fo=keepFocus(w.exercises); w.exercises.splice(exi,1); fo(); save(); reRender(); }); } }
+  else if(a==='delex'){ delExAsk(exi); }
   else if(a==='addex'){ openAddExercise(exi); }
   else if(a==='axmus'){ const c=window._axCtx||{}; openAddExStep2(c.afterExi, el.dataset.v, c.replaceExi); }
   else if(a==='axpick'){ const c=window._axCtx||{}; const x=(window._axList||[])[+el.dataset.i]; if(x){ if(c.replaceExi!=null)replaceExFromKnown(c.replaceExi,x); else addExFromKnown(c.afterExi,x); } }
@@ -10509,7 +10518,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='axback'){ const c=window._axCtx||{}; sheetBack(()=>openAddExercise(c.afterExi,c.replaceExi)); }
   else if(a==='editmach'){ openMachineEdit(exi); }
   else if(a==='editexname'){ const w=db.activeWork; const ex=w&&w.exercises[exi]; const swap=()=>{ if(ex&&ex.muscle){ openAddExStep2(exi, ex.muscle, exi); } else { openAddExercise(exi, exi); } };
-    const _k=ex?exHistKey(ex):''; if(ex){ const it=[['editar ejercicio',()=>openExEdit(null,-1,exi)]]; if(_k&&exHistRows(_k).length)it.push(['historial',()=>openExHist(_k)]); it.push(['cambiar ejercicio',swap]); trkMenu(ex.name,it); } }   // v288 · editar va primero (antes estaba al fondo de la lista de cambiar)
+    const _k=ex?exHistKey(ex):''; if(ex){ const it=[['editar ejercicio',()=>openExEdit(null,-1,exi)]]; if(_k&&exHistRows(_k).length)it.push(['historial',()=>openExHist(_k)]); it.push(['cambiar ejercicio',swap]); it.push(['quitar de la sesión',()=>delExAsk(exi)]); trkMenu(ex.name,it); } }   // v303 · quitar vive aquí, al final (antes era una ✕ a un roce en la orilla derecha de la cabecera)   // v288 · editar va primero (antes estaba al fondo de la lista de cambiar)
   else if(a==='editexnote'){ const w=db.activeWork; if(w&&w.exercises[exi]){ const cur=w.exercises[exi].note||''; trkPrompt({title:'nota · '+((w.exercises[exi].name)||'ejercicio'),label:'NOTA',value:cur,placeholder:'agarre, asiento, sensación…'},v=>{ w.exercises[exi].note=String(v).trim(); setExNote(w.exercises[exi]); save(); state._scroll=(document.getElementById('view')||{}).scrollTop||0; render(); toast('✓ nota guardada'); }); } }
   else if(a==='save'){ saveSession(); }
   else if(a==='togglemacros'){ state.macroOpen=!state.macroOpen; reRender(); }   // v271 · reRender conserva el scroll (ver gramos/% subía hasta arriba)
@@ -14023,7 +14032,12 @@ function toastTask(msg){ const t=toast(String(msg||'').replace(/^…\s*/,''),'ta
   const fin=(m,ty)=>{ if(!t)return toast(m,ty); t.className='toast glass-strong '+ty; t.setAttribute('role',ty==='err'?'alert':'status'); t.textContent=m; if(ty==='ok')setTimeout(t._kill,durMs('--toast-life',2300)); };
   return { done:m=>fin(m||'✓ listo','ok'), fail:m=>fin(m||'⚠ no se pudo','err') }; }
 // TRKAsk / TRKHold viven en una capa propia (#asklayer, --z-pop) encima del sheet: nunca lo reemplazan.
-function askLayer(html,onDismiss){ const prev=document.getElementById('asklayer'); if(prev&&prev._onReplaced){ try{ prev._onReplaced(); }catch(_){} } closeAsk(true); const m=document.createElement('div'); m.className='modal asklayer'+(reducedMotion()?'':' in'); m.id='asklayer';
+// v303 · quitar un ejercicio de la sesión abierta (se llega desde el menú del nombre; pregunta antes)
+function delExAsk(exi){ const w=db.activeWork; if(!w||!w.exercises[exi])return;
+  trkAsk({title:'quitar "'+((w.exercises[exi].name)||'este ejercicio')+'" de la sesión',detail:'lo registrado en ese ejercicio se descarta · tu split no cambia',ok:'quitar',danger:true},()=>{ const fo=keepFocus(w.exercises); w.exercises.splice(exi,1); fo(); save(); reRender(); }); }
+function askLayer(html,onDismiss){ const prev=document.getElementById('asklayer'); if(prev&&prev._onReplaced){ try{ prev._onReplaced(); }catch(_){} } closeAsk(true); const m=document.createElement('div'); m.className='modal asklayer'+(/<(input|textarea|select)\b/i.test(html)?'':' low')+(reducedMotion()?'':' in'); m.id='asklayer';
+  // v303 · abre bajo el pulgar: los primeros 300 ms no acepta toques (el toque que lo abrió no puede contestar el aviso), como el pie de la sesión
+  { const t0=Date.now(); m.addEventListener('click',ev=>{ if(!_sbx&&Date.now()-t0<300){ ev.stopImmediatePropagation(); ev.preventDefault(); } },true); }
   m.innerHTML='<div class="sheet glass-strong">'+html+'</div>';
   m.addEventListener('click',ev=>{ if(ev.target===m){ ev.stopPropagation(); closeAsk(); if(onDismiss)onDismiss(); } });
   document.getElementById('app').appendChild(m); return m; }
@@ -14135,6 +14149,11 @@ function _pulgarSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
     toast('x'); const box=document.getElementById('toasts'), LIFT='body:has(#resttimer.on) .toasts';   // el estilo calculado de :has() llega un cuadro después: se afirma la regla y su alcance
     rb.classList.remove('on'); const off=box.matches(LIFT); rb.classList.add('on');
     A('con el descanso corriendo los avisos suben', !(window.CSS&&CSS.supports&&CSS.supports('selector(body:has(a))'))||(!off&&box.matches(LIFT)&&rule(LIFT,'bottom').indexOf('--s8')>=0));
+    // v303 · G8 tanda 1 · avisos y menús sin teclado abren abajo; con casilla, arriba; y quitar ejercicio ya no es una ✕ suelta
+    { const m1=askLayer('<h3>x</h3><div class="sheetbtns"><button class="ok" data-ask="ok">a</button><button class="cancel" data-ask="no">b</button></div>'), low1=m1.classList.contains('low'); closeAsk(true);
+      const m2=askLayer('<h3>x</h3><input id="zz_ask"/>'), low2=m2.classList.contains('low'); closeAsk(true);
+      A('un aviso sin teclado abre abajo y uno con casilla se queda arriba', low1&&!low2);
+      A('quitar ejercicio se pregunta desde su función (no hay ✕ suelta en la cabecera)', typeof delExAsk==='function'&&String(renderExercise).indexOf('data-act="delex"')<0); }
     console.log('pulgar self-check OK');
   } finally { _sabT=sab0; window._swipeGuard=sg; try{ closeAsk(true); }catch(_){} try{ closeModal(); }catch(_){} wipe(); if(rb)rb.classList.toggle('on',rbOn);
     db=real; state.screen=rs; state.work=rw; state._curEx=c0; bumpIdx(); try{ render(); }catch(_){} }
