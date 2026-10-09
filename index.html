@@ -668,7 +668,15 @@
   .rvr.m{grid-template-columns:minmax(0,1fr) 8ch 9ch 1ch;}
   .rvr.y{grid-template-columns:10ch 4ch minmax(0,1fr) max-content; min-height:32px;} .rvr.y.hd{min-height:0;} .rvr.y.u-tap{min-height:44px;}
   .rvr.s{grid-template-columns:6ch minmax(0,1fr) 8ch 9ch 1ch;} .rvr.s{align-content:center; row-gap:var(--s1);} .rvr .rvb{grid-row:2; font-size:var(--t-label); line-height:var(--lh-ui); color:var(--o50); white-space:nowrap;} .rvr .rvb.a{grid-column:1;} .rvr .rvb.b{grid-column:2; white-space:normal; overflow-wrap:anywhere;} .rvr .rvb.c{grid-column:3; text-align:right;}   /* E6 · la sesión previa y cuánto subió: un renglón tenue bajo el nombre, a lo ancho de la fila (que sigue en 44) */
-  .exgs{display:flex; flex-wrap:wrap; column-gap:var(--s5); margin:0 0 var(--s2);}
+  .pfr{align-items:center; padding:0;} .pfr .v{flex:0 0 auto;} .pfr .t{text-align:right;}
+.tseln{font-size:var(--t-label); line-height:var(--lh-read); color:var(--o60); margin:0 var(--s1) var(--s3);}
+.exstar,.exrp{position:relative; flex:0 0 auto; padding:0; border:0; background:none; font-size:var(--t-label); font-weight:400; color:var(--o50); letter-spacing:var(--ls-ui);}
+button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::after{content:''; position:absolute; left:0; top:50%; width:44px; min-width:100%; height:44px; transform:translateY(-50%);}
+.exstar{font-size:var(--t-section); font-weight:800; color:var(--o60);} .exstar.rp{font-size:var(--t-label); font-weight:400; color:var(--o40);}   /* la que solo pregunta la resistencia, tenue */
+.tsel.tpf .tselr{flex-wrap:wrap;} .tsel.tpf .tselo{height:auto; min-height:44px; padding:var(--s1) var(--s2); font-size:var(--t-data);} .tsel.tpf .tselr.w2 .tselo{flex:1 0 40%;} .tsel.tpf .tselr.w3 .tselo{flex:1 0 30%;}
+.tsel>.tselb{display:flex; margin:var(--s1) 0 0 auto;}
+.seord{font-size:var(--t-label); min-height:44px; align-items:center; padding:0;}
+.exgs{display:flex; flex-wrap:wrap; column-gap:var(--s5); margin:0 0 var(--s2);}
 .exg{display:inline-flex; align-items:center; gap:var(--s2); min-height:44px; min-width:44px; padding:0; background:none; border:0; font-size:var(--t-label); color:var(--o60); letter-spacing:var(--ls-ui); text-align:left; cursor:pointer;}
 .exg .ck{box-sizing:border-box; width:10px; height:10px; padding:2px; flex:0 0 auto; border:var(--bw-ctl) solid var(--o40); border-radius:var(--r-sm); background-clip:content-box;}
 .exg[aria-pressed="true"] .ck{background-color:var(--fill); border-color:var(--o60);}
@@ -1309,12 +1317,12 @@
 
 <script>
 "use strict";
-const APP_V='v313';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v314';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
 // dueño escribe (datos) no cuentan.
-const GLYPHS='✓○▲▼⠿›‹▾▶↓✕↩~⚠▌×@/→#—−σ';   // v272 · σ = estímulo (griego: sí existe en JetBrains Mono)
+const GLYPHS='✓○▲▼⠿›‹▾▶↓✕↩~⚠▌×@/→#—−σ*';   // v314 · * = falta un dato ("algún asterisco de que hace falta", el dueño, 30-sep)   // v272 · σ = estímulo (griego: sí existe en JetBrains Mono)
 const GLYPHS_VIZ='▖▘▝▗░▒▓█▏▎▍▋▊▉─│┌┐└┘├┤┬┴┼';   // v268 · trabajo (spinner) y medidores de terminal: solo en trkSpin/trkProgress
 // AI vision proxy (Cloudflare Worker holding the owner's Gemini key). Empty => fall back to on-device OCR.
 // After deploying proxy/gymtrk-ai-worker.js, paste its URL here, e.g. 'https://gymtrk-ai.tucuenta.workers.dev'.
@@ -2632,9 +2640,28 @@ function openMuscleMap(){
 // en db.exCat[name].rpGym[gym]; peso libre/corporal → una sola (exCat.rp). Longitud → exCat.len (es del movimiento).
 // Principio de PT2: "la app no debe pretender saber más de lo que sabe" — lo sugerido va marcado "~" y solo se
 // vuelve tuyo si lo tocas; "no sé" es una respuesta válida y apaga la sugerencia.
-const RP_OPTS=[['asc','⬆ ascendente','más duro al final (músculo acortado)'],['desc','⬇ descendente','más duro al inicio (músculo estirado)'],['mid','↔ media','más duro a mitad del recorrido'],['unk','? no sé','no se asume nada']];
-const LEN_OPTS=[['long','estirado'],['mid','media'],['short','acortado'],['mixed','mixto'],['unk','? no sé']];
-const RP_GLYPH={asc:'⬆',desc:'⬇',mid:'↔'}, LEN_TXT={long:'estirado',mid:'media',short:'acortado',mixed:'mixto'};
+// S3 · S4 (v314) · el perfil en palabras, una fila por dato. El dueño (30-sep): "el acomodo no me gusta, se me hace muy grande
+// para lo que es"; (7-oct) "añadir de forma sutil algún indicador del perfil de resistencia y, en caso de que haga falta, su
+// símbolo de que hace falta registrar". CADA FRASE DICE LO QUE EL DATO HACE HOY: _perfilSelfCheck la afirma contra el cálculo
+// real (si un día la resistencia entra a σ, truena y hay que reescribir su frase).
+//  · musc · sin músculo resuelto, muscleExposureIndex() salta el ejercicio: sus series no cuentan para σ ni recuperación.
+//  · bw   · un ejercicio de peso corporal sin tu peso registrado: setSigma() no le da carga (bwMissing).
+//  · rir  · serie hecha sin RIR: se estima (~σ) y refE1RMFor() no la usa para tu máximo de referencia.
+//  · len  · recoveryEstimate(): la ventana estimada crece × (1 + 0.15 · parte estirada); no entra a σ.
+//  · rp   · no entra a σ ni a la recuperación; solo se cuenta en el reparto `perfil` del detalle de músculo (muscleExposureIndex → a.rp) y se
+//           muestra. Por eso se pregunta UNA vez, con una marca más tenue, y no lleva promesa.
+const PROF_DEF={
+  musc:{k:'músculo', why:'sin músculo, sus series no cuentan para σ ni para la recuperación'},
+  bw:{k:'peso corporal', why:'sin tu peso registrado, estas series no tienen carga y no cuentan'},
+  rir:{k:'RIR', why:'sin RIR la app lo estima (~) y esa serie no entra a tu máximo de referencia'},
+  len:{k:'longitud', g:'pflen', h:'longitud · dónde trabaja el músculo', opts:[['long','estirado'],['mid','media'],['short','acortado'],['mixed','mixto'],['unk','no sé']],
+    val:{long:'estirado',mid:'media',short:'acortado',mixed:'mixto',unk:'no sé'},
+    why:'mueve tu recuperación estimada (estirado: hasta +15 %) y el aviso de estiramiento · no cambia σ'},
+  rp:{k:'resistencia', g:'pfrp', h:'resistencia · dónde pesa más', opts:[['desc','al inicio','estirado'],['mid','a mitad'],['asc','al final','acortado'],['unk','no sé']],
+    val:{desc:'al inicio',mid:'a mitad',asc:'al final',unk:'no sé'},
+    why:'no cambia σ ni la recuperación · se lee junto al nombre y en el perfil del músculo'}
+};
+const RP_SHORT={asc:'final',desc:'inicio',mid:'mitad'}, LEN_TXT={long:'estirado',mid:'media',short:'acortado',mixed:'mixto'};
 // sugerencias SOLO donde la evidencia/biomecánica es sólida. types = solo aplica a esos tipos.
 const EX_HINTS=[
   {re:/\b(rdl|sldl|romanian|rumano|stiff|straight ?leg)\b|piernas rectas/, rp:'desc', len:'long', types:['free'], why:'cadera flexionada al fondo: isquios en su máxima longitud; con barra lo más duro es abajo'},
@@ -2653,13 +2680,64 @@ function isMachType(type){ return ['machine','smith','cable'].indexOf(canonType(
 function profileFor(ex,gym){ if(!ex)return null; const cat=exCatRec(ex.name)||{}; const mach=isMachType(ex.type); const hint=exHint(ex.name,ex.type);
   let rp='unk', rpSrc='unknown';
   if(mach){ const v=cat.rpGym&&gym?cat.rpGym[gym]:null; if(v){ rp=v; rpSrc='user'; } }
-  else if(cat.rp){ rp=cat.rp; rpSrc='user'; }
+  else if(cat.rp||(gym&&cat.rpGym&&cat.rpGym[gym])){ rp=cat.rp||cat.rpGym[gym]; rpSrc='user'; }   // en libre también vale lo guardado por gym (un ejercicio que antes fue máquina)
   if(rpSrc==='unknown'&&hint&&hint.rp){ rp=hint.rp; rpSrc='suggested'; }
   let len='unk', lenSrc='unknown'; if(cat.len){ len=cat.len; lenSrc='user'; } else if(hint&&hint.len){ len=hint.len; lenSrc='suggested'; }
   return {rp,rpSrc,len,lenSrc,mach,gym:gym||'',why:hint?hint.why:''}; }
 // en lectura para una sesión (usa el gym DE ESA sesión); nunca se copia a la sesión
 function exProfileOf(sw,ei){ const e=((sw&&sw.exercises)||[])[ei]; if(!e)return null; return profileFor(splitExFor(sw,ei)||e,(sw&&sw.gym)||db.activeGym); }
-function profileTag(p){ if(!p)return ''; const a=[]; if(p.rp!=='unk')a.push((RP_GLYPH[p.rp]||'')+(p.rpSrc==='suggested'?'~':'')); if(p.len!=='unk')a.push(LEN_TXT[p.len]+(p.lenSrc==='suggested'?'~':'')); return a.join(' '); }
+// RP1 · la resistencia en una palabra (junto al nombre; nunca en el corchete, que es solo lateralidad): final · inicio · mitad;
+// ~ = sugerida; '' = sin definir o "no sé"
+function rpTxt(p){ return (!p||!RP_SHORT[p.rp])?'':(p.rpSrc==='suggested'?'~':'')+RP_SHORT[p.rp]; }
+function profileTag(p){ if(!p)return ''; const a=[], r=rpTxt(p); if(r)a.push(r); if(LEN_TXT[p.len])a.push((p.lenSrc==='suggested'?'~':'')+LEN_TXT[p.len]); return a.join(' · '); }
+// una fila de perfil (resistencia o longitud): clave ···· [valor]. [valor] tuyo · [~ valor] sugerido · "sin definir" si falta.
+// El contenedor (id) guarda data-touched cuando ELIGES en el popover; el botón, data-v (lo leen los guardar vía `.t.on`).
+function profRowHTML(id,k,v,src,why,touched){ const D=PROF_DEF[k], sug=src==='suggested'&&!touched, has=!!D.val[v]&&(src!=='unknown'||!!touched);
+  return '<div class="line pfr"><span class="k"><span data-gloss="'+D.g+'">'+D.k+'</span></span><span class="dots"></span><span class="v pftog'+(sug?' sug':'')+'" id="'+id+'"'+(touched?' data-touched="1"':'')+'><button type="button" class="t '+(has?'on':'')+'" data-act="profpick" data-k="'+k+'" data-v="'+(has?v:'')+'"'+(why&&sug?' data-why="'+escTxt(why)+'"':'')+' aria-label="'+D.k+': '+(has?D.val[v]+(sug?' (sugerido)':''):'sin definir')+'">'+(has?(sug?'~ ':'')+D.val[v]:'sin definir')+'</button></span></div>'; }
+// la frase de qué hace HOY ese dato (y, en la sesión, "no preguntar más") dentro del popover que TRKSelect acaba de abrir
+function profNote(why,onOff){ const p=document.getElementById('tsel'); if(!p)return; const a=window._tselEl, app=document.getElementById('app');
+  const n=document.createElement('div'); n.className='tseln'; n.textContent=why; const hd=p.querySelector('.tselh'); if(hd)hd.after(n); else p.prepend(n);
+  if(onOff){ const b=document.createElement('button'); b.type='button'; b.className='b tselb'; b.textContent='no preguntar más'; b.addEventListener('click',ev=>{ ev.stopPropagation(); popClose(); onOff(); }); p.appendChild(b); }
+  if(a&&app){ const r=a.getBoundingClientRect(), fr=app.getBoundingClientRect(), below=r.bottom-fr.top+6, ph=p.offsetHeight; p.style.top=(below+ph>fr.height-90?Math.max(8,r.top-fr.top-6-ph):below)+'px'; } }
+function profSelect(anchor,k,cur,onPick){ const D=PROF_DEF[k], p=trkSelect(anchor,D.opts.map(o=>({v:o[0],t:o[1],sub:o[2]||''})),cur,onPick,{title:D.h});
+  if(p){ p.classList.add('tpf'); const r=p.querySelector('.tselr'); if(r)r.classList.add(D.opts.length>4?'w3':'w2'); } return p; }
+// en una hoja: elegir cambia la fila y la marca tocada; se escribe al guardar. Abrir y cerrar no confirma una sugerencia.
+function profPick(el){ const k=el.dataset.k, D=PROF_DEF[k], box=el.parentElement; if(!D||!D.opts||!box)return;
+  profSelect(el,k,el.dataset.v||'',v=>{ box.dataset.touched='1'; box.classList.remove('sug'); el.dataset.v=v; el.classList.add('on'); el.textContent=D.val[v]; el.setAttribute('aria-label',D.k+': '+D.val[v]); const m=document.getElementById('modal'); if(m)m._dirty=true; });
+  profNote((el.dataset.why&&box.classList.contains('sug')?'~ '+el.dataset.why+' · ':'')+D.why); }
+function profSet(x,gym,k,v){ if(k==='len')setExCat(x.name,{len:v}); else if(isMachType(x.type))setRpForGym(x.name,gym,v); else setExCat(x.name,{rp:v}); }
+// S4 · qué le falta a un ejercicio de la sesión. La marca * sale SOLO por lo que mueve un número (músculo · tu peso en un
+// ejercicio corporal · el RIR de una serie hecha) y, una vez, por la resistencia (se apaga al contestar —"no sé" cuenta— o con
+// "no preguntar más": db.exCat[nombre].noAsk, aditivo). Lo sugerido (~) no cuenta como falta. La longitud no lleva marca.
+function exMissing(sw,ei){ const e=((sw&&sw.exercises)||[])[ei]; if(!e||isCardio(e))return []; const x=splitExFor(sw,ei)||e, out=[];
+  if(!exTargets(sw,ei).some(t=>t.id))out.push({k:'musc'});
+  if((e.sets||[]).some(s=>s&&bwMissing(s,e)))out.push({k:'bw'});
+  const si=(e.sets||[]).findIndex(s=>s&&!s._pf&&s.done&&!s.isDrop&&setReps(s)>0&&!rirKnown(s)); if(si>=0)out.push({k:'rir',si});
+  if((exProfileOf(sw,ei)||{}).rpSrc==='unknown'&&!(exCatRec(x.name)||{}).noAsk)out.push({k:'rp'});
+  return out; }
+// junto al nombre, en la sesión: * (falta algo: tocarla lo pide ahí mismo) o la resistencia en una palabra (tocarla la cambia)
+function exRpHTML(exi){ const w=db.activeWork, m=exMissing(w,exi);
+  if(m.length)return '<button type="button" class="exstar '+(m[0].k==='rp'?'rp':'')+'" data-act="exstar" data-exi="'+exi+'" aria-label="falta un dato: '+PROF_DEF[m[0].k].k+'">*</button>';
+  const t=rpTxt(exProfileOf(w,exi)); return t?'<button type="button" class="exrp" data-act="exrp" data-exi="'+exi+'" aria-label="resistencia: '+t+'">· '+t+'</button>':''; }
+function exRpRead(sess,ei){ const t=rpTxt(exProfileOf(sess,ei)); return t?'<span class="exrp">· '+t+'</span>':''; }
+function exRpSync(exi){ const hd=document.querySelector('#view .ex[data-exi="'+exi+'"] .exhead'); if(!hd)return; hd.querySelectorAll('.exstar,.exrp').forEach(x=>x.remove());
+  const html=exRpHTML(exi), n=hd.querySelector('.n[data-act="editexname"]'); if(html&&n)n.insertAdjacentHTML('afterend',html); }
+function exRpAsk(exi,anchor,cur,ask){ const w=db.activeWork; if(!w||!anchor)return; const x=splitExFor(w,exi)||w.exercises[exi], gym=w.gym||db.activeGym, D=PROF_DEF.rp;
+  const off=ask?()=>{ const k=nameKey(x.name), had=!!(db.exCat&&db.exCat[k]), js=had?JSON.stringify(db.exCat[k]):''; setExCat(x.name,{noAsk:1}); save(); exRpSync(exi);
+    toast('resistencia: no se pregunta más aquí','',{undo:()=>{ if(had)db.exCat[k]=JSON.parse(js); else if(db.exCat)delete db.exCat[k]; save(); exRpSync(exi); }}); }:null;
+  profSelect(anchor,'rp',cur||'',v=>{ profSet(x,gym,'rp',v); savedToast('✓ resistencia · '+D.val[v]); exRpSync(exi); });
+  profNote(D.why,off); }
+// tocar la marca abre DIRECTO el primer dato que falta: la hoja del perfil (músculo), el registro de peso, el selector de RIR
+// de esa serie o las opciones de resistencia ahí mismo
+function exStarAsk(exi){ const w=db.activeWork; if(!w)return; const miss=exMissing(w,exi); if(!miss.length){ exRpSync(exi); return; }
+  const x=splitExFor(w,exi)||w.exercises[exi], m=miss[0], D=PROF_DEF[m.k];
+  if(m.k==='musc'){ openExProfile(x.name,''); return; }
+  if(m.k==='bw'){ openWeightLog(); return; }
+  if(m.k==='rir'){ const b=document.querySelector('#view .ex[data-exi="'+exi+'"] [data-f="rir"][data-si="'+m.si+'"]'); if(!b||b.tagName!=='BUTTON'){ toast(D.why); return; } const sc=scrollerOf(b), y0=sc?sc.scrollTop:0, open=()=>{ if(!b.isConnected)return; openRirSelect(b); profNote(D.why); }; showEl(b); if(sc&&sc.scrollTop!==y0)setTimeout(open,160); else open(); return; }
+  exRpAsk(exi,document.querySelector('#view .ex[data-exi="'+exi+'"] .exstar'),'',true); }
+// el RIR también se anota directo en su celda (setField no repinta): al elegir en un popover de la sesión, las marcas se ponen al día
+document.addEventListener('click',e=>{ const o=e.target&&e.target.closest&&e.target.closest('#tsel .tselo,#tsel .tselx'); if(!o||state.screen!=='workout')return;
+  setTimeout(()=>{ try{ ((db.activeWork||{}).exercises||[]).forEach((_,i)=>exRpSync(i)); }catch(_){} },0); },true);
 function setRpForGym(name,gym,v){ const cur=exCatRec(name)||{}; const g=Object.assign({},cur.rpGym||{}); if(v)g[gym]=v; else delete g[gym]; setExCat(name,{rpGym:g}); }
 // modal de perfil (desde el catálogo o la pantalla de músculos). back = a dónde volver al cerrar.
 function openExProfile(name,back,gymSel){
@@ -2667,8 +2745,6 @@ function openExProfile(name,back,gymSel){
   const gyms=exGymsFor(ex.name); const gym=gymSel||(gyms.indexOf(db.activeGym)>=0?db.activeGym:(gyms[0]||db.activeGym||''));
   const p=profileFor(ex,gym); const tg=targetsFor(ex);
   window._exProf={name:ex.name,back:back||'',gym,ex};
-  const tog=(id,opts,cur,src)=>`<div class="toggles pftog${src==='suggested'?' sug':''} u-wrap u-gap4" id="${id}">${opts.map(o=>`<button class="t ${o[0]===cur?'on':''}" data-act="optpick" data-v="${o[0]}" style="flex:1 1 calc(50% - 2px);min-width:0"${o[2]?` title="${escTxt(o[2])}"`:''}>${o[1]}${o[0]===cur&&src==='suggested'?' ~':''}</button>`).join('')}</div>`;
-  const srcTxt=s=>s==='user'?'tuyo':s==='suggested'?'~ sugerido · toca para confirmarlo':'sin definir';
   const mOpt=sel=>Object.keys(MUSCLES).map(id=>`<option value="${id}"${sel===id?' selected':''}>${escTxt(MUSCLES[id].n)} · ${escTxt(MUSCLES[id].es)}</option>`).join('');
   const sec=tg.slice(1).map((t,i)=>`<div class="pfsec"><select class="pfsel" data-sec="${i}"><option value="">— quitar —</option>${mOpt(t.id)}</select><input class="pfw" data-secw="${i}" type="number" inputmode="decimal" step="0.05" min="0" max="1" value="${t.w}"/></div>`).join('');
   const tSrc=tg[0]?(tg[0].src==='user'?'fijado':tg[0].src==='inferred'?'~ deducido del nombre':tg[0].src==='auto'?'de tu etiqueta':'sin resolver'):'sin músculo';
@@ -2679,15 +2755,10 @@ function openExProfile(name,back,gymSel){
    <div class="submeta u-mb6">tus etiquetas no cambian · esto es a qué músculo real cuenta el volumen, la recuperación y las sugerencias</div>
    <div class="field"><label>PRIMARIO</label><select id="pf_prim" class="pfsel"><option value="">— sin resolver —</option>${mOpt(tg[0]&&tg[0].id)}</select></div>
    <div class="field"><label>SECUNDARIOS · cuánto cuenta la serie (0–1)</label><div id="pf_secs">${sec}</div><button class="addbtn u-mt4" data-act="pf_addsec">+ secundario</button></div>
-   <div class="grp-label sub">RESISTANCE PROFILE <span class="u-o35 u-w4">· ${p.mach?'de la máquina de '+escTxt(gym||'este gym'):'todos los gyms'} · ${srcTxt(p.rpSrc)}</span></div>
-   ${tog('pf_rp',RP_OPTS,p.rp,p.rpSrc)}
-   <div class="submeta u-mt4 u-mb0 u-mx0">⬆ más duro al final (acortado) · ⬇ más duro al inicio (estirado) · ↔ a mitad</div>
-   <div class="grp-label sub">MUSCLE LENGTH <span class="u-o35 u-w4">· dónde trabaja el músculo · ${srcTxt(p.lenSrc)}</span></div>
-   ${tog('pf_len',LEN_OPTS,p.len,p.lenSrc)}
-   ${p.why&&(p.rpSrc==='suggested'||p.lenSrc==='suggested')?`<div class="submeta u-mt6 u-o50">~ ${escTxt(p.why)}</div>`:''}
+   ${profRowHTML('pf_rp','rp',p.rp,p.rpSrc,p.why)}
+   ${profRowHTML('pf_len','len',p.len,p.lenSrc,p.why)}
    <div class="sheetbtns u-mt12"><button class="ok" data-act="pf_save">guardar</button><button class="cancel" data-act="pf_close">cancel</button></div>`);
-  // una sugerencia solo se vuelve tuya si TOCAS esa fila (aunque elijas lo mismo)
-  ['pf_rp','pf_len'].forEach(id=>{ const el=document.getElementById(id); if(el)el.addEventListener('click',()=>{ el.dataset.touched='1'; el.classList.remove('sug'); }); });
+  // una fila solo se escribe si ELEGISTE en su popover (profPick la marca tocada): abrir y cerrar no confirma una sugerencia
   const tw=document.getElementById('modal'); if(tw)tw.querySelectorAll('#pf_prim,.pfsel,.pfw').forEach(x=>x.addEventListener('change',()=>{ tw.dataset.tTouched='1'; }));
   const gs=document.getElementById('pf_gym'); if(gs)gs.addEventListener('change',()=>{ openExProfile(ex.name,back,gs.value); const _m=document.getElementById('modal'); if(_m)_m._dirty=false; });   // v285 · cambiar de gym repinta desde lo guardado: no hay nada escrito que perder
 }
@@ -2988,7 +3059,7 @@ function diagnoseMuscle(inp){ const F=[]; if(!inp||!inp.n28)return {findings:F,s
   if(w1.maxVs>DIAG.sesVs)F.push({k:'session',sev:'info',txt:'sesión cargada',row:'sesión cargada · σ '+fmtSig(w1.maxVs),ev:'σ '+fmtSig(w1.maxVs)+' en una sola sesión (desde ~10 cada serie vale menos; la serie 15 vale la mitad)',do:'pasa algunas series a otro día de la semana'});
   // 5 · secuencia: cayó yendo tras otro al fallo, y la vez anterior NO iba así
   const S=inp.seq; if(S&&S.baseKnown&&!S.baseAfter&&S.pct<=DIAG.drop)
-    F.push({k:'sequence',sev:'warn',txt:'2.º ejercicio tras uno al fallo',row:'orden: '+S.ex2+' tras uno al fallo',ev:fmtShort(S.date)+': '+S.ex2+' después de '+S.ex1+' a RIR ≤1 → '+pc(S.pct)+' vs la vez anterior (que no iba después)',do:'para medir su progreso, ponlo antes o deja el primero a RIR 2'});
+    F.push({k:'sequence',sev:'warn',txt:'2.º ejercicio tras uno al fallo',row:'orden: '+S.ex2+' tras uno al fallo',ev:fmtShort(S.date)+': '+S.ex2+' después de '+S.ex1+' a RIR ≤1 → '+pc(S.pct)+' vs la vez anterior (que no iba después)',do:'para medir su progreso, ponlo antes o deja el primero a RIR 2',seq:S});
   // 6 · lejos del fallo, sin caída de capacidad ni nada del día que lo justifique (Refalo 2023; Robinson 2024)
   if(w1.rir!=null&&w1.rn>=DIAG.farMinRN&&w1.rir>=DIAG.farRIR&&(p14==null||p14>=-1)&&!flagged)
     F.push({k:'far',sev:'info',txt:'lejos del fallo',row:'lejos del fallo · RIR '+r1m(w1.rir),ev:'RIR medio '+r1m(w1.rir)+' en 7 días · capacidad '+(p14==null?'sin comparación':pc(p14)),do:'antes de sumar series, acércate a RIR 1–2: rinde ~90 % de una serie al fallo con mucha menos fatiga (Robinson 2024; Refalo 2024)'});
@@ -3088,7 +3159,7 @@ function openMuscleDetail(id){ const M=MUSCLES[id]; if(!M)return; const t=todayI
     +(rcj?line(glossWrap(rcj.k,'rirjump'),rcj.v,rcj.n):'')   // hermana de `RIR anotado`: veredicto a la vista, en cuántas como nota; cómo se mide, al tocar (su propia entrada del glosario)
     +line('sesión más cargada',c.maxVs>0?'σ '+fmtSig(c.maxVs):'—')
     +line('longitud',[['long','estirado'],['mid','media'],['short','acortado'],['mixed','mixto']].filter(k=>pctOf(c.len,k[0])).map(k=>k[1]+' '+pctOf(c.len,k[0])+'%').join(' · ')||'—',pctOf(c.len,'unk')?pctOf(c.len,'unk')+'% sin definir':'')
-    +line('perfil',[['asc','⬆'],['desc','⬇'],['mid','↔']].filter(k=>pctOf(c.rp,k[0])).map(k=>k[1]+' '+pctOf(c.rp,k[0])+'%').join(' · ')||'—',pctOf(c.rp,'unk')?pctOf(c.rp,'unk')+'% sin definir':'')
+    +line('perfil',[['asc','final'],['desc','inicio'],['mid','mitad']].filter(k=>pctOf(c.rp,k[0])).map(k=>k[1]+' '+pctOf(c.rp,k[0])+'%').join(' · ')||'—',pctOf(c.rp,'unk')?pctOf(c.rp,'unk')+'% sin definir':'')
     +`<div class="grp-label sub">FATIGUE · 72 h</div>`
     +(fmx>0?bar('fat',acute/fmx*100,chronic>0?trkMark(chronic/fmx*100):'',chronic>0?'marca: tu promedio':''):'')
     +line('costo en 72 h',r1m(acute),fr!=null?'vs '+r1m(chronic)+' de tu promedio · '+(fr>1.4?'alto':fr<0.6?'bajo':'normal'):'sin historial de 4 semanas')
@@ -4634,6 +4705,74 @@ function _muscleSelfCheck(){
 }
 // v229 — perfil del ejercicio: sugerencias solo donde hay evidencia, resistencia por gym en máquinas, "no sé"
 // como respuesta válida y lo del usuario por encima de lo sugerido. db de juguete restaurada.
+// self-check de S3 · S4 · RP1 · ORD1a (v314): qué falta y en qué orden; que cada frase diga lo que el dato hace HOY (contra el
+// cálculo real); las filas del perfil en las hojas; la marca junto al nombre; la sugerencia de orden. Base de juguete; se restaura.
+function _perfilSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK perfil: '+nm); }; const real=db, rr=reRender, tt=toast, sc=state.screen;
+  try{ const S=(w,rir,o)=>Object.assign({w:String(w),r:'8',rir:rir,unit:'lbs',done:true},o||{}), dI=n=>shiftDate(todayISO(),-n);
+    const ses=(id,date)=>({id,date,dayId:'d1',gym:'g1',exercises:[{exId:'e1',name:'leg ext',muscle:'quads',type:'machine',unilateral:false,sets:[S(100,'1'),S(100,'1'),S(100,'0')]}]});
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1'],activeGym:'g1',bodyweight:{},split:{name:'s',days:[{id:'d1',name:'A',exercises:[{id:'e1',name:'leg ext',muscle:'quads',type:'machine',sets:3}]}]},sessions:[ses('s1',dI(10)),ses('s2',dI(6))]});
+    db.bodyweight={}; if(db.profile)db.profile.weightKg=0;
+    db.activeWork={id:'w',date:todayISO(),dayId:'d1',gym:'g1',exercises:[
+      {exId:'e1',name:'leg ext',muscle:'quads',type:'machine',unilateral:false,sets:[S(100,'1',{done:false}),S(100,'',{done:false})]},
+      {exId:'e2',name:'sldl',muscle:'hamstrings',type:'free',unilateral:false,sets:[S(100,'1',{done:false})]},
+      {exId:'e3',name:'cosa rara',muscle:'zzzq',type:'free',unilateral:false,sets:[S(50,'1',{done:false})]},
+      {exId:'e4',name:'run',muscle:'cardio',type:'cardio',sets:[{done:false}]},
+      {exId:'e5',name:'pull up',muscle:'lats',type:'bodyweight',unilateral:false,sets:[{bw:true,w:'',r:'8',rir:'1',unit:'kg',done:false}]}]}; bumpIdx();
+    toast=function(){ return null; }; reRender=function(){}; state.screen='workout';
+    const w=db.activeWork, K=i=>exMissing(w,i).map(m=>m.k).join(',');
+    // 1 · qué falta: solo lo que mueve un número, y la resistencia una vez
+    A('máquina sin perfil: solo se pregunta la resistencia (la longitud no lleva marca), con la marca tenue', K(0)==='rp'&&/class="exstar rp"/.test(exRpHTML(0)));
+    A('lo sugerido (~) no cuenta como falta', K(1)===''&&rpTxt(exProfileOf(w,1))==='~inicio');
+    A('un músculo sin resolver va primero', K(2).indexOf('musc')===0);
+    A('cardio no lleva marca', K(3)===''&&exRpHTML(3)==='');
+    A('corporal sin tu peso registrado: falta el peso', K(4).indexOf('bw')>=0);
+    db.bodyweight[todayISO()]=70; A('…y con tu peso ya no', K(4).indexOf('bw')<0);
+    w.exercises[0].sets[1].done=true; A('una serie HECHA sin RIR va antes que la resistencia', K(0)==='rir,rp'&&exMissing(w,0)[0].si===1);
+    A('una sola marca por ejercicio', (exRpHTML(0).match(/<button/g)||[]).length===1&&/class="exstar "/.test(exRpHTML(0)));
+    w.exercises[0].sets[1].rir='F'; A('F cuenta como RIR anotado', K(0)==='rp');
+    setRpForGym('leg ext','g1','unk'); A('"no sé" es una respuesta: deja de faltar y no se lee nada junto al nombre', K(0)===''&&exRpHTML(0)==='');
+    setRpForGym('leg ext','g1','asc'); A('con la resistencia dada se lee en una palabra, sin marca', K(0)===''&&/class="exrp"[^>]*>· final</.test(exRpHTML(0))&&exRpRead(w,0)==='<span class="exrp">· final</span>');
+    setRpForGym('leg ext','g1',''); setExCat('leg ext',{noAsk:1}); A('"no preguntar más" apaga la pregunta de ESE ejercicio y solo de ese', K(0)===''&&K(2)!=='');
+    setExCat('leg ext',{noAsk:0}); A('…y se puede volver a prender', K(0)==='rp');
+    setExCat('dumbbell thing',{rpGym:{g1:'mid'}}); A('en peso libre también vale lo guardado por gym', profileFor({name:'dumbbell thing',type:'free'},'g1').rp==='mid');
+    // 2 · EL MENSAJE ES VERDAD: cada frase contra el cálculo real
+    const mid=(exTargets(db.sessions[1],0)[0]||{}).id;
+    const sig=()=>{ bumpIdx(); return sessionTensionTotal(db.sessions[1]); }, rec=()=>{ bumpIdx(); const a=muscleExposureIndex()[mid]||[]; return recoveryEstimate(a[a.length-1])||{}; };
+    const s0=sig(), r0=rec(); A('la base de juguete tiene σ y ventana de recuperación', s0>0&&r0.hi>0);
+    setRpForGym('leg ext','g1','desc');
+    A('resistencia: no mueve σ ni la recuperación, y su frase no promete nada', sig()===s0&&rec().hi===r0.hi&&rec().lo===r0.lo&&!/%|precisi/.test(PROF_DEF.rp.why)&&/no cambia σ ni la recuperación/.test(PROF_DEF.rp.why));
+    A('…y sí se cuenta en el reparto de perfil del músculo, como dice su frase', (x=>!!x&&!!x.rp&&x.rp.desc>0)((()=>{ bumpIdx(); const a=muscleExposureIndex()[mid]||[]; return a[a.length-1]; })())&&/perfil del músculo/.test(PROF_DEF.rp.why));
+    setRpForGym('leg ext','g1','');
+    setExCat('leg ext',{len:'long'}); const r1=rec();
+    A('longitud: estirado alarga la recuperación estimada ×1.15 y no toca σ, como dice su frase', sig()===s0&&r1.hi>r0.hi&&Math.abs(r1.f/r0.f-1.15)<0.02&&/\+15 %/.test(PROF_DEF.len.why)&&/no cambia σ/.test(PROF_DEF.len.why));
+    setExCat('leg ext',{len:''}); bumpIdx();
+    const tgt=Object.assign(exIdentity(w,0),{orderIdx:0}), ref0=refE1RMFor(tgt,'lbs',null,true); db.sessions[1].exercises[0].sets.push(S(300,''));
+    bumpIdx(); const refNo=refE1RMFor(tgt,'lbs',null,true); db.sessions[1].exercises[0].sets[3].rir='1'; bumpIdx(); const refYes=refE1RMFor(tgt,'lbs',null,true); db.sessions[1].exercises[0].sets.pop(); bumpIdx();
+    A('RIR: una serie sin RIR no entra a tu máximo de referencia; anotada, sí', ref0>0&&refNo===ref0&&refYes>ref0);
+    w.exercises[0].sets[1].rir='1'; const tA=exTensionSets(w,0); w.exercises[0].sets[1].rir=''; const tB=exTensionSets(w,0); w.exercises[0].sets[1].rir='F';
+    A('RIR: vacío, σ sale estimado (~)', !!tA&&!tA.est&&!!tB&&tB.est===true&&/estima/.test(PROF_DEF.rir.why));
+    db.sessions.push({id:'s3',date:dI(4),dayId:'d1',gym:'g1',exercises:[{exId:'e3',name:'cosa rara',muscle:'zzzq',type:'free',unilateral:false,sets:[S(50,'1')]}]}); bumpIdx();
+    A('músculo: sin resolver, sus series no cuentan para ningún músculo', !exTargets(w,2).some(t=>t.id)&&Object.values(muscleExposureIndex()).every(arr=>arr.every(a=>(a.ex||[]).every(x=>x.name!=='cosa rara'))));
+    db.sessions.pop(); bumpIdx();
+    delete db.bodyweight[todayISO()]; const bwT=exTensionSets(w,4); db.bodyweight[todayISO()]=70; const bwT2=(w.exercises[4].sets[0].done=true,exTensionSets(w,4));
+    A('peso corporal: sin tu peso la serie no tiene carga', !!bwT&&bwT.total===0&&!!bwT2&&bwT2.total>0);
+    // 3 · la hoja del perfil: una fila por dato; el valor se elige en el popover y solo se guarda lo que elegiste
+    openExProfile('leg ext',''); let box=document.getElementById('pf_rp'), b=box&&box.querySelector('button.t');
+    A('hoja: una fila por dato y ninguna rejilla de opciones', document.querySelectorAll('#modal .pfr').length===2&&!document.querySelector('#modal .toggles.pftog')&&!!b&&/sin definir/.test(b.textContent)&&!b.classList.contains('on'));
+    profPick(b); let ts=document.getElementById('tsel');
+    A('hoja: el popover trae las 4 opciones en palabras y dice lo que el dato hace hoy', !!ts&&ts.querySelectorAll('.tselo').length===4&&!!ts.querySelector('.tseln')&&ts.querySelector('.tseln').textContent===PROF_DEF.rp.why&&!/[⬆⬇↔]/.test(ts.textContent));
+    popClose(); A('abrir y cerrar no confirma nada', !box.dataset.touched);
+    profPick(b); [...document.querySelectorAll('#tsel .tselo')].find(o=>/al final/.test(o.textContent)).click();
+    A('elegir cambia la fila y la marca tocada', box.dataset.touched==='1'&&b.classList.contains('on')&&b.dataset.v==='asc'&&b.textContent==='al final');
+    saveExProfile(); A('guardar escribe la resistencia de ESE gym y no la longitud que no tocaste', ((exCatRec('leg ext')||{}).rpGym||{}).g1==='asc'&&!(exCatRec('leg ext')||{}).len);
+    try{ closeModal(); }catch(_){}
+    // 4 · la sugerencia de orden sale del hallazgo de secuencia y solo en el día que los tiene en ese orden
+    const d1={id:'x',name:'legs',exercises:[{name:'RDL'},{name:'leg curl'}]}, d2={id:'y',name:'legs2',exercises:[{name:'leg curl'},{name:'rdl'}]};
+    _diagCache={_d:todayISO(),hamstrings:{findings:[{k:'sequence',ev:'ev',do:'do',seq:{ex1:'rdl',ex2:'leg curl',date:todayISO(),pct:-6}}],state:'findings'}};
+    A('orden: una sugerencia en el día que los tiene en ese orden', dayOrderSugs(d1).length===1&&dayOrderSugs(d1)[0].ex2==='leg curl');
+    A('…y ninguna si ya van al revés o falta uno', dayOrderSugs(d2).length===0&&dayOrderSugs({exercises:[{name:'rdl'}]}).length===0);
+    console.log('perfil self-check OK');
+  } finally { try{ popClose(); closeModal(); }catch(_){} db=real; reRender=rr; toast=tt; state.screen=sc; bumpIdx(); } }
 function _exProfileSelfCheck(){
   const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK profile: '+nm); };
   const real=db;
@@ -4653,7 +4792,7 @@ function _exProfileSelfCheck(){
     A('"no sé" es una respuesta: apaga la sugerencia', profileFor(sldl,'AGON').rp==='unk'&&profileFor(sldl,'AGON').rpSrc==='user');
     setExCat('sldl',{len:'mid'});
     A('lo tuyo gana sobre lo sugerido', profileFor(sldl,'AGON').len==='mid'&&profileFor(sldl,'AGON').lenSrc==='user');
-    A('la etiqueta corta marca lo sugerido con ~', profileTag(profileFor(dlr,'AGON'))==='⬆~ acortado~');
+    A('la etiqueta corta marca lo sugerido con ~', profileTag(profileFor(dlr,'AGON'))==='~final · ~acortado'&&rpTxt(profileFor(dlr,'AGON'))==='~final');
   } finally { db=real; bumpIdx(); }
   console.log('profile self-check OK');
 }
@@ -6409,7 +6548,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
   // v256 (B3): el asa vive en SU columna y las dos líneas comparten borde — [bi] sobre [cable]. Antes el asa y el
   // corchete empujaban solo la primera línea (nombre en x≈72, marca en x≈54). [uni]/[bi] se queda AL FRENTE del
   // nombre: es pedido explícito del dueño (21-ago), no se mueve.
-  const head=`<div class="exhd${gripE?' hasgrip':''}">${gripE}<div class="exhdc"><div class="exhead">${exLatTagHead(ex,exi)}<span class="n u-tap" data-act="editexname" data-exi="${exi}">${escTxt(ex.name)}</span>${prBadge}${noBaseline}<button type="button" class="exshr" data-act="exshare" data-exi="${exi}" aria-label="compartir ${escTxt(ex.name||'ejercicio')}" title="compartir · marca la serie que grabaste">${EXSH_SVG}</button></div>`
+  const head=`<div class="exhd${gripE?' hasgrip':''}">${gripE}<div class="exhdc"><div class="exhead">${exLatTagHead(ex,exi)}<span class="n u-tap" data-act="editexname" data-exi="${exi}">${escTxt(ex.name)}</span>${exRpHTML(exi)}${prBadge}${noBaseline}<button type="button" class="exshr" data-act="exshare" data-exi="${exi}" aria-label="compartir ${escTxt(ex.name||'ejercicio')}" title="compartir · marca la serie que grabaste">${EXSH_SVG}</button></div>`
    +`<div class="exsub">${variantChips(ex,{act:'editmach',exi})}${mhtml}${noteHTML}</div></div></div>`;
   // ---- cardio branch: field grid per subtype, no drop sets, no w/r/rir ----
   if(isCardioEx){
@@ -6507,7 +6646,7 @@ function renderHistExercise(exi,ex,sess){ _icM=(sess&&sess.metric)==='rpe'?'rpe'
   const _hnote=ex.note?`<span class="note">${escTxt(ex.note)}</span>`:'';
   // v307 · compartir ESTE ejercicio también desde una sesión guardada (el mismo botón de la sesión viva, con el id de la sesión)
   const _hshr=(!isCardioEx&&sess&&sess.id!=null)?`<button type="button" class="exshr" data-act="exshare" data-exi="${exi}" data-sid="${escTxt(String(sess.id))}" aria-label="compartir ${escTxt(ex.name||'ejercicio')}" title="compartir · marca la serie que grabaste">${EXSH_SVG}</button>`:'';
-  const head=`<div class="exhead">${exLatTagHead(ex)}<span class="n">${escTxt(ex.name)}</span>${badge}${_hshr}</div><div class="exsub">${variantChips(ex)}${mhtml}${_hnote}</div>`+downNoteHTML(sess,exi,_hpr,'u-mt-n2 u-mb6 u-mx0');
+  const head=`<div class="exhead">${exLatTagHead(ex)}<span class="n">${escTxt(ex.name)}</span>${exRpRead(sess,exi)}${badge}${_hshr}</div><div class="exsub">${variantChips(ex)}${mhtml}${_hnote}</div>`+downNoteHTML(sess,exi,_hpr,'u-mt-n2 u-mb6 u-mx0');
   let rows='';
   if(isCardioEx){
     const fields=cardioFields(ex);
@@ -10012,6 +10151,17 @@ function sdOpen(d,sp){ const o=state._sdOpen&&state._sdOpen[d.id]; return o!=nul
 // cerraban solos en cada repintada)
 function stkOpen(k,def){ const o=state._stkOpen&&state._stkOpen[k]; return (o!=null?o:def)?' open':''; }
 try{ document.addEventListener('toggle',e=>{ const d=e.target; if(d&&d.dataset&&d.dataset.sk)(state._stkOpen=state._stkOpen||{})[d.dataset.sk]=!!d.open; },true); }catch(_){}
+// ORD1a (v314) · el dueño (7-oct): "el orden de los ejercicios también depende… hacer sugerencias… que tenga sentido". Lo que
+// sale de TUS sesiones: el hallazgo de secuencia del diagnóstico (un primario que rindió menos yendo después de otro del mismo
+// músculo a RIR ≤1, cuando la vez anterior no iba así). Se enseña en el día del split que hoy los tiene en ese orden. Solo se
+// dice: nada se mueve solo. (La evidencia general de orden por grupo muscular es ORD1b: investigación, aparte.)
+function dayOrderSugs(day){ const xs=((day&&day.exercises)||[]).map(x=>nameKey(x&&x.name)), out=[], seen={};
+  Object.keys(MUSCLES).forEach(id=>{ let D=null; try{ D=muscleDiag(id); }catch(_){} ((D&&D.findings)||[]).forEach(f=>{ const S=f.seq; if(f.k!=='sequence'||!S)return;
+    const i1=xs.indexOf(nameKey(S.ex1)), i2=xs.indexOf(nameKey(S.ex2)), k=nameKey(S.ex1)+'>'+nameKey(S.ex2); if(i1<0||i2<0||i2<i1||seen[k])return; seen[k]=1; out.push({id,ex1:S.ex1,ex2:S.ex2,date:S.date,pct:S.pct,ev:f.ev,do:f.do}); }); });
+  return out; }
+function openDayOrder(di){ const d=((db.split&&db.split.days)||[])[di]; if(!d)return; const L=dayOrderSugs(d); if(!L.length)return;
+  openModal('<h3>orden · '+escTxt(d.name||'día')+'</h3>'+L.map(s=>'<div class="line"><span class="k">probar</span><span class="dots"></span><span class="v">'+escTxt(s.ex2)+' antes de '+escTxt(s.ex1)+'</span></div><div class="submeta u-mb10">'+escTxt(s.ev)+' · '+escTxt(s.do)+'</div>').join('')
+    +'<div class="submeta u-mb10">sale de tus sesiones · nada se mueve solo</div><div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div>'); }
 function renderSplitEdit(){
   const sp=db.split||{name:'',days:[]};
   let body=statusBar(true)
@@ -10031,6 +10181,7 @@ function renderSplitEdit(){
       body+=`<div class="seex"><span class="seexn" data-act="sd_ex" data-di="${di}" data-ei="${ei}">${latTxt(e)}${escTxt(e.name)} <span class="seexm">${escTxt(fmtMuscles(e))}${tlbl}${e.assisted?' · assisted':''}${e.weighted?' · weighted':''} · ${e.sets||1}×</span></span><span class="semv"><span data-act="sd_exup" data-di="${di}" data-ei="${ei}">▲</span><span data-act="sd_exdn" data-di="${di}" data-ei="${ei}">▼</span></span><span class="sedel" data-act="sd_delex" data-di="${di}" data-ei="${ei}">✕</span></div>`;
     });
     body+=`<div class="seadd" data-act="sd_addex" data-di="${di}">+ ejercicio</div>`
+      +((n=>n?`<div class="line u-tap seord" role="button" tabindex="0" data-act="sd_order" data-di="${di}"><span class="k">orden</span><span class="dots"></span><span class="v">${n} ${n===1?'sugerencia':'sugerencias'} ›</span></div>`:'')(dayOrderSugs(d).length))
       +(_drift?`<div class="sedrift"><span class="u-f1">lo que entrenas este día ya no es esto · <b>${escTxt(_drift.list.map(x=>x.name).join(' · '))}</b></span><button class="b" data-act="sd_adopt" data-di="${di}">adoptar</button></div>`:'')+`</div>`;   // v285 · el aviso va DEBAJO de la lista: al aparecer no empuja lo que tocaste
   });
   return body+`<div class="secondary u-mt6"><button class="b" data-act="sd_addday">+ agregar día</button></div>`+plannedVolumeSection();   // v285 · el catálogo subió a la cabecera de //SPLIT y al menú u/; coverage, al final
@@ -11131,6 +11282,10 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='catmerge'){ catSelSet(true); }
   else if(a==='catselx'){ catSelSet(false); }
   else if(a==='pf_save'){ saveExProfile(); }
+  else if(a==='profpick'){ profPick(el); }
+  else if(a==='exstar'){ exStarAsk(+el.dataset.exi); }
+  else if(a==='exrp'){ const w=db.activeWork, i=+el.dataset.exi, p=w&&exProfileOf(w,i); exRpAsk(i,el,p&&p.rpSrc==='user'?p.rp:''); }
+  else if(a==='sd_order'){ openDayOrder(+el.dataset.di); }
   else if(a==='pf_close'){ closeProfileBack((window._exProf||{}).back); }
   else if(a==='pf_addsec'){ const box=document.getElementById('pf_secs'); if(box){ const i=box.querySelectorAll('select[data-sec]').length; if(i<3){
       box.insertAdjacentHTML('beforeend','<div class="pfsec"><select class="pfsel" data-sec="'+i+'"><option value="">— quitar —</option>'+Object.keys(MUSCLES).map(id=>'<option value="'+id+'">'+escTxt(MUSCLES[id].n)+' · '+escTxt(MUSCLES[id].es)+'</option>').join('')+'</select><input class="pfw" data-secw="'+i+'" type="number" inputmode="decimal" step="0.05" min="0" max="1" value="0.5"/></div>');
@@ -12498,14 +12653,13 @@ function xsMachState(e,gym){ const X=window._exEdit||{}, D=X.mdraft=X.mdraft||{}
   return (D[gym]={brand:b0,setup:s0,na:!!rec.na,b0,s0,n0:!!rec.na,rp:p.rp,rpSrc:p.rpSrc,rpT:false,unit:exUnitPref(e,gym)||(X.unitLive&&gym===X.gym0?X.unitLive:'')||exUnitShown(e,gym),unitT:false}); }
 // cardio no lleva nada de esto; bodyweight no lleva unidad (su peso es el corporal, en kg); marca y setup solo en máquina/polea/smith
 function exMachBodyHTML(e,gym){ const ty=canonType(e.type); if(ty==='cardio')return '';
-  const d=xsMachState(e,gym), mach=isMachType(ty), src=d.rpT?'tuyo':d.rpSrc==='user'?'tuyo':d.rpSrc==='suggested'?'~ sugerido':'sin definir';
-  const rp=RP_OPTS.map(o=>'<button type="button" class="t '+(o[0]===d.rp?'on':'')+' u-fhalf u-min0" data-act="optpick" data-v="'+o[0]+'" title="'+escTxt(o[2])+'">'+o[1]+'</button>').join('');
+  const d=xsMachState(e,gym), mach=isMachType(ty);
   const un=XS_UNITS.map(u=>'<button type="button" class="t '+(d.unit===u?'on':'')+'" data-act="optpick" data-v="'+u+'">'+u+'</button>').join('');
   return (mach?`<div class="field"><label>MACHINE · BRAND</label><input id="mc_brand" value="${escTxt(d.brand)}" placeholder="ej. Hammer Strength, Technogym" autocomplete="off"/></div>
    <div class="field"><label>SETUP</label><textarea id="mc_setup" class="ta sm" placeholder="asiento 4 · respaldo 2 · pin 60">${escTxt(d.setup)}</textarea></div>
    <label class="xsck"><input type="checkbox" id="xs_na" ${d.na?'checked':''}/> sin máquina en este gym</label>`:'')
-   +`<div class="field"><label>RESISTANCE · ${src}</label><div class="toggles pftog${(!d.rpT&&d.rpSrc==='suggested')?' sug':''} u-wrap u-gap4" id="mc_rp"${d.rpT?' data-touched="1"':''}>${rp}</div></div>`
-   +(ty==='bodyweight'?'':`<div class="field"><label>UNIT</label><div class="toggles" id="xs_unit"${d.unitT?' data-touched="1"':''}>${un}</div></div>`); }
+   +(ty==='bodyweight'?'':`<div class="field"><label>UNIT</label><div class="toggles" id="xs_unit"${d.unitT?' data-touched="1"':''}>${un}</div></div>`)
+   +profRowHTML('mc_rp','rp',d.rp||'unk',d.rpT?'user':d.rpSrc,(profileFor(e,gym)||{}).why,d.rpT); }
 function xsType(){ const x=document.querySelector('#ee_type .t.on'); return x?x.dataset.v:'free'; }
 function xsGym(){ const s=document.getElementById('xs_gym'); return (s&&s.value)||((window._exEdit||{}).gym0)||''; }
 // lo que hay escrito en el bloque de máquina vuelve a su borrador (antes de repintarlo o de guardar)
@@ -12522,11 +12676,8 @@ function profMotorHTML(e,gym){ const p=profileFor(e,gym), tg=targetsFor(e);
   const mOpt=sel=>Object.keys(MUSCLES).map(id=>'<option value="'+id+'"'+(sel===id?' selected':'')+'>'+escTxt(MUSCLES[id].n)+' · '+escTxt(MUSCLES[id].es)+'</option>').join('');
   const sec=tg.slice(1).map((t,i)=>'<div class="pfsec"><select class="pfsel" data-sec="'+i+'"><option value="">— quitar —</option>'+mOpt(t.id)+'</select><input class="pfw" data-secw="'+i+'" type="number" inputmode="decimal" step="0.05" min="0" max="1" value="'+t.w+'"/></div>').join('');
   const tSrc=tg[0]?(tg[0].src==='user'?'fijado':tg[0].src==='inferred'?'~ deducido del nombre':tg[0].src==='auto'?'de tu etiqueta':'sin resolver'):'sin músculo';
-  const lenSrc=p.lenSrc==='user'?'tuyo':p.lenSrc==='suggested'?'~ sugerido':'sin definir';
-  const len=LEN_OPTS.map(o=>'<button type="button" class="t '+(o[0]===p.len?'on':'')+' u-fhalf u-min0" data-act="optpick" data-v="'+o[0]+'">'+o[1]+(o[0]===p.len&&p.lenSrc==='suggested'?' ~':'')+'</button>').join('');
   return `<div class="field"><label>PRIME MOVER · ${tSrc}</label><select id="pf_prim" class="pfsel"><option value="">— sin resolver —</option>${mOpt(tg[0]&&tg[0].id)}</select></div>
-   <div class="field"><label>SECONDARY · cuánto cuenta la serie (0–1)</label><div id="pf_secs">${sec}</div><button type="button" class="addbtn u-mt4" data-act="pf_addsec">+ secundario</button></div>
-   <div class="field"><label>MUSCLE LENGTH · ${lenSrc}</label><div class="toggles pftog${p.lenSrc==='suggested'?' sug':''} u-wrap u-gap4" id="pf_len">${len}</div></div>`; }
+   <div class="field"><label>SECONDARY · cuánto cuenta la serie (0–1)</label><div id="pf_secs">${sec}</div><button type="button" class="addbtn u-mt4" data-act="pf_addsec">+ secundario</button></div>`; }
 // v300 · GYMS. En máquina/polea/smith, un gym donde ya lo entrenaste es un DATO (`gym ···· marca · N×`, y `otra marca` si no es la que tienes
 // a la vista), no una casilla: cada gym tiene su máquina. En peso libre y corporal son casillas (el mismo ejercicio en todos lados).
 // La casilla de un gym con historial sigue en la hoja (oculta) para que lo que se lee al guardar no cambie.
@@ -12546,6 +12697,7 @@ function exSheetExtraHTML(e,o){ const X=window._exEdit, gyms=exSheetGyms(e.name)
   return `<hr class="rule u-my10 u-mx0"/>
    ${gymRow}
    <div id="xs_mach">${exMachBodyHTML(e,gym)}</div>
+   ${isCardio(e)?'':(p=>profRowHTML('pf_len','len',p.len,p.lenSrc,p.why))(profileFor(e,gym))}
    <div class="field"><label>NOTE</label><input id="xs_note" value="${escTxt(note)}" placeholder="agarre, asiento, sensación…" autocomplete="off"/></div>
    <div><button type="button" class="b" data-act="xs_fold" aria-expanded="false">motor ›</button></div>
    <div id="xs_motor" hidden>${profMotorHTML(e,gym)}</div>
@@ -12553,11 +12705,10 @@ function exSheetExtraHTML(e,o){ const X=window._exEdit, gyms=exSheetGyms(e.name)
    ${days.length?'<div class="submeta u-mb10">split · '+escTxt(days.join(' · '))+'</div>':''}`; }
 function exSheetWire(){ const X=window._exEdit||{}, m=document.getElementById('modal'), box=document.getElementById('xs_mach'); if(!m||!box)return;
   X.mus0=xsMusSig();
-  box.addEventListener('click',ev=>{ const t=ev.target.closest&&ev.target.closest('#mc_rp,#xs_unit'); if(t){ t.dataset.touched='1'; t.classList.remove('sug'); } });
+  box.addEventListener('click',ev=>{ const t=ev.target.closest&&ev.target.closest('#xs_unit'); if(t){ t.dataset.touched='1'; t.classList.remove('sug'); } });
   m.addEventListener('click',ev=>{ if(ev.target.closest&&ev.target.closest('.t,input[type="checkbox"]'))m._dirty=true; });   // una opción tocada también es un cambio sin guardar
   const gs=document.getElementById('xs_gym'); if(gs)gs.addEventListener('change',()=>keepUnder(gs,xsMachPaint));
   document.querySelectorAll('#ee_type .t').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>keepUnder(b,xsMachPaint),0)));   // el tipo decide si hay máquina y de qué clave
-  const len=document.getElementById('pf_len'); if(len)len.addEventListener('click',()=>{ len.dataset.touched='1'; len.classList.remove('sug'); });
   const mo=document.getElementById('xs_motor'); if(mo)mo.addEventListener('change',ev=>{ if(ev.target&&ev.target.matches&&ev.target.matches('#pf_prim,.pfsel,.pfw'))m.dataset.tTouched='1'; }); }
 // LEE los bloques de arriba a un objeto (sin tocar db). El catálogo lee ANTES de esperar la foto previa: si mientras tanto la hoja
 // cambia o se cierra, no se guarda lo de otra hoja.
@@ -12577,7 +12728,7 @@ function exSheetExtraApply(e2,D,o){ o=o||{}; if(!D)return ()=>{}; const nk=nameK
       if(mach&&(d.brand!==d.b0||d.setup!==d.s0||d.na!==d.n0||(tch&&g===D.gymCur&&(d.brand||d.setup||d.na)))){ db.machines=db.machines||{}; const hadG=has(db.machines,g), mm=db.machines[g]=db.machines[g]||{}, k=machIdent(e2)||machKey(e2); U.mach.push([g,k,has(mm,k)?JSON.stringify(mm[k]):null,hadG]); mm[k]={brand:String(d.brand||'').trim(),setup:String(d.setup||'').trim(),na:!!d.na}; }
       if(d.rpT&&mach)setRpForGym(e2.name,g,d.rp);
       if(d.unitT&&d.unit&&ty!=='bodyweight'){ const r=exCatRec(e2.name)||{}, ug=Object.assign({},r.unitGym||{}); ug[ty+'|'+g]=d.unit; setExCat(e2.name,{unitGym:ug}); if(o.liveEx&&g===D.gym0)pinUnitSoft(o.liveEx,d.unit); } });
-    if(!mach){ const d=D.drafts[D.gymCur]; if(d&&d.rpT)setExCat(e2.name,{rp:d.rp}); } }   // peso libre / corporal: una sola resistencia, la del bloque que tienes a la vista
+    if(!mach){ const d0=D.drafts[D.gymCur], d=(d0&&d0.rpT)?d0:Object.keys(D.drafts).map(g=>D.drafts[g]).find(q=>q&&q.rpT); if(d)setExCat(e2.name,{rp:d.rp}); } }   // peso libre / corporal: una sola resistencia, la del bloque que tienes a la vista
   if(D.note!=null){ const k=noteKey(e2); db.exNotes=db.exNotes||{}; U.note=[k,has(db.exNotes,k)?db.exNotes[k]:null]; db.exNotes[k]=D.note;
     if(db.activeWork)(db.activeWork.exercises||[]).forEach(x=>{ if(x&&noteKey(x)===k){ U.live.push([x,x.note]); x.note=D.note; } }); }
   if(D.len!=null)setExCat(e2.name,{len:D.len});
@@ -13291,10 +13442,10 @@ function openMachineEdit(exi){
    <div class="submeta u-mb10">${escTxt(ex.name)} · en <b>${escTxt(w.gym)}</b></div>
    <div class="field"><label>MÁQUINA / MARCA</label><input id="mc_brand" value="${escTxt(rec.brand||'')}" placeholder="ej. Hammer Strength, Technogym" autocomplete="off"/></div>
    <div class="field"><label>SETUP (opcional)</label><textarea id="mc_setup" class="ta sm" placeholder="asiento 4 · respaldo 2 · pin 60kg">${escTxt(rec.setup||'')}</textarea></div>
-   ${(()=>{ const p=profileFor(ex,w.gym); return `<div class="field"><label>PERFIL DE RESISTENCIA · esta máquina en ${escTxt(w.gym)} · ${p.rpSrc==='user'?'tuyo':p.rpSrc==='suggested'?'~ sugerido':'sin definir'}</label><div class="toggles pftog${p.rpSrc==='suggested'?' sug':''} u-wrap u-gap4" id="mc_rp">${RP_OPTS.map(o=>`<button class="t ${o[0]===p.rp?'on':''} u-fhalf u-min0" data-act="optpick" data-v="${o[0]}" title="${escTxt(o[2])}">${o[1]}</button>`).join('')}</div><div class="submeta u-mt4">⬆ más duro al final · ⬇ más duro al inicio (estirado) · ↔ a mitad</div></div>`; })()}
+   ${(p=>profRowHTML('mc_rp','rp',p.rp,p.rpSrc,p.why))(profileFor(ex,w.gym))}
    <div class="submeta u-mt2 u-mb10 u-mx0">queda guardado para <b>${escTxt(ex.name)}</b> en <b>${escTxt(w.gym)}</b> · sale igual en todos los días donde tengas este ejercicio</div>
    <div class="sheetbtns"><button class="ok" id="mc_save">guardar</button><button class="cancel" id="mc_na">N/A</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
-  const _rpEl=document.getElementById('mc_rp'); if(_rpEl)_rpEl.addEventListener('click',()=>{ _rpEl.dataset.touched='1'; _rpEl.classList.remove('sug'); });
+  const _rpEl=document.getElementById('mc_rp');
   document.getElementById('mc_save').onclick=()=>{ if(_rpEl&&_rpEl.dataset.touched){ const on=_rpEl.querySelector('.t.on'); setRpForGym(ex.name,w.gym,on?on.dataset.v:''); }
     setMachine(w.gym,ex,{brand:val('mc_brand'),setup:val('mc_setup'),na:false}); toast('✓ máquina guardada'); closeModal(); reRender(); };
   document.getElementById('mc_na').onclick=()=>{ setMachine(w.gym,ex,{brand:'',setup:'',na:true}); closeModal(); reRender(); };
@@ -15080,6 +15231,8 @@ function _pulgarSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
 // ---- R3 · TRKPop (Smart Popover, §7.18): texto corto anclado al término; un MENÚ va en la capa de TRKAsk (en el
 // marco del teléfono siempre es "móvil": popover en pantalla ancha, sheet en la angosta) ----
 const GLOSS={
+  pfrp:'resistencia: en qué parte del recorrido pesa más (en máquina, polea y smith se guarda por gym) · '+PROF_DEF.rp.why,
+  pflen:'longitud: en qué posición trabaja el músculo · '+PROF_DEF.len.why,
   exsig:'σ del ejercicio en esa sesión: suma el estímulo de sus series según las reps y qué tan cerca del fallo quedaron, contra tu propio máximo en esa máquina. No depende de la unidad: 15 placas × 7 al fallo cuentan lo mismo que 200 lbs × 7 al fallo.',
   why:'posibles causas, no un diagnóstico: lo que fue distinto esta vez. El % ya descuenta lo que hiciste antes en la sesión.',
   subev:'evidencia · A = varios ensayos o metaanálisis en humanos · B = algunos ensayos · C = datos humanos pequeños o preliminares · D = solo animales o laboratorio. Dice qué tan sólido es lo que se sabe, no qué tan bien funciona.',
@@ -15424,7 +15577,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
