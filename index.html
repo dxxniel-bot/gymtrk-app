@@ -497,6 +497,15 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .lcq{position:relative; z-index:1; flex:0 0 auto; align-self:stretch; min-width:44px; margin:calc(-1 * var(--s2)) calc(-1 * var(--s3)); padding:0 var(--s2); border:0; background:none; color:var(--o60); font-family:inherit; font-size:var(--t-data); font-weight:700; letter-spacing:var(--ls-num); text-align:center; white-space:nowrap; cursor:pointer;}   /* 2.ª vuelta · su toque mide 44 × 44 (antes 33 × 35) */
   .lcq.chg{color:var(--fg);} .lc.on .lcq{color:inherit;} .lc.on .lcq.chg{color:var(--o60);}
   .lc.sp{min-height:calc(44px + var(--bw-sep)); padding-top:var(--s2); padding-bottom:var(--s2);} .lc.sp .k{min-width:var(--s5);}   /* el glifo en su casilla: ○ y ✓ miden distinto y recorrían el número; y deja 12 px de marcar antes del número */
+  /* v326 · S-EXTRA · un extra registrado se lee como una toma hecha (✓, tenue): cuántas delante y su hora al final; tocarlo abre su hoja */
+  .lc.xt .lcq{display:flex; align-items:center; justify-content:center; z-index:auto; pointer-events:none; cursor:default; color:inherit; font-weight:400;}
+  .lc.xt.x1{grid-column:1;}   /* los extras empiezan en su propio renglón, debajo de lo que no tiene momento */
+  .lcg>.empty{grid-column:1 / -1; padding:var(--s3) 0; text-align:left;}
+  .lseg span{white-space:nowrap;}   /* `EXTRA 0/3+1` no se parte en dos renglones (a 320 la fila crecía 16 px al registrar el primer extra) */
+  /* 2.ª vuelta · un aviso con [deshacer] nunca lo esconde: el texto baja de renglón y el botón conserva su sitio (con más de 29 letras quedaba fuera de la caja) */
+  .toast:has(.tundo){display:flex; align-items:center; white-space:normal; text-align:left;} .toast:has(.tundo) .tm{flex:1 1 auto; min-width:0; overflow-wrap:anywhere; line-height:var(--lh-ui);} .toast .tundo{flex:0 0 auto;}
+  .sheetbtns.spl{justify-content:space-between;}   /* dos salidas sin principal: una a cada orilla (cerrar, a la derecha) */
+  .modal.hold,.modal.hold *{pointer-events:none;}   /* la hoja que acaba de cambiar de contenido no recibe el segundo toque de un doble toque */
   .lc.sp .t{white-space:normal; overflow:visible; text-overflow:clip; overflow-wrap:anywhere; line-height:var(--lh-ui);}   /* con el número delante el nombre tiene menos ancho: baja de renglón, nunca se corta (B-12) */
   @media (max-width:380px){ .lsec[data-k="supps"] .lcg{grid-template-columns:minmax(0,1fr);} }   /* angosta: una columna */
   #modal .sheet h3{overflow-wrap:anywhere;}   /* un nombre de una sola palabra larguísima no desborda el título de la hoja */
@@ -1411,7 +1420,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v325';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v326';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -1663,7 +1672,7 @@ function _idSelfCheck(){
   A('gated: a second call is a no-op once _idfix is set', JSON.stringify(fx)===before);
   console.log('id self-check OK');
 }
-function migrate(d){ if(!d.version){d.version=1;} if(d.profile&&d.profile.username&&!(d.onb&&d.onb.done))d.onb={done:true,at:'antes'};   /* v277 · quien ya tiene perfil nunca ve el alta */ if(!d.tour||typeof d.tour!=='object'||Array.isArray(d.tour))d.tour={v:1,seen:{home:1,homeEmpty:1,workout:1,macros:1,progress:1,settings:1},step:{},skipped:false};   /* v278 · quien ya usaba la app no ve el tour */  if(!d._meta||typeof d._meta!=='object')d._meta={seq:0,t:0}; if(!d.meals||typeof d.meals!=='object'||Array.isArray(d.meals))d.meals={}; if(!Array.isArray(d.foods))d.foods=[]; d.foods=d.foods.map(f=>(f&&f.per100)?f:asCanonical(f)); if(!Array.isArray(d.sessions))d.sessions=[]; if(!d.split||typeof d.split!=='object')d.split={name:'',days:[]}; if(!Array.isArray(d.split.days))d.split.days=[]; d.split.days.forEach(day=>{ if(!Array.isArray(day.exercises))day.exercises=[]; day.exercises.forEach(e=>{ if(e&&!e.id)e.id='e'+uid(); }); }); fixDuplicateExIds(d); fixLeakedFullStack(d); fixStraySides(d); purgeMood(d); d.health=healthShape((d.health&&typeof d.health==='object'&&!Array.isArray(d.health))?d.health:{}); if(!d.steps||typeof d.steps!=='object')d.steps={}; if(!d.machines||typeof d.machines!=='object')d.machines={}; if(!d.exCat||typeof d.exCat!=='object')d.exCat={}; if(!d.muscleMap||typeof d.muscleMap!=='object')d.muscleMap={}; if(!d.muscleNames||typeof d.muscleNames!=='object')d.muscleNames={}; if(!d.bodyweight||typeof d.bodyweight!=='object')d.bodyweight={}; if(!d.sleep||typeof d.sleep!=='object')d.sleep={}; if('selfcheck' in d)delete d.selfcheck;/* v263 · la auto-percepción estética se retira: el dato se borra una vez y no vuelve (boot, respaldo, log in, sync y archivo pasan por aquí) */ if(!d.adhoc||typeof d.adhoc!=='object')d.adhoc={}; if(!Array.isArray(d.mealTags))d.mealTags=['breakfast','lunch','snack','dinner']; if(!Array.isArray(d.stack))d.stack=[]; subHygiene(d); if(!d.lastUsed||typeof d.lastUsed!=='object')d.lastUsed={}; if(!d.settings||typeof d.settings!=='object')d.settings={goals:seed().settings.goals}; if(d.settings&&d.settings.goals&&d.settings.goals.alcohol==null)d.settings.goals.alcohol=(d.profile&&d.profile.sex==='F')?14:28; if(d.settings&&d.settings.restSec==null)d.settings.restSec=90; if(d.settings&&d.settings.restBeep==null)d.settings.restBeep=true; if(d.settings&&d.settings.goals&&d.settings.goals.sleep==null)d.settings.goals.sleep=8; if(d.profile&&!d.profile.since){ try{ const _cd=[]; (d.sessions||[]).forEach(s=>{if(s.date)_cd.push(s.date);}); Object.keys(d.meals||{}).forEach(k=>_cd.push(k)); Object.keys(d.bodyweight||{}).forEach(k=>_cd.push(k)); if(_cd.length)d.profile.since=_cd.sort()[0]; }catch(_){} }
+function migrate(d){ if(!d.version){d.version=1;} if(d.adhoc&&typeof d.adhoc==='object')Object.keys(d.adhoc).forEach(k=>{ if(Array.isArray(d.adhoc[k]))d.adhoc[k].forEach((a,i)=>{ if(a&&!a.id)a.id='ad_'+k+'_'+i; }); });   /* v326 · un extra de antes sin id: se le da el suyo (para tocarlo y quitarlo) */ if(d.profile&&d.profile.username&&!(d.onb&&d.onb.done))d.onb={done:true,at:'antes'};   /* v277 · quien ya tiene perfil nunca ve el alta */ if(!d.tour||typeof d.tour!=='object'||Array.isArray(d.tour))d.tour={v:1,seen:{home:1,homeEmpty:1,workout:1,macros:1,progress:1,settings:1},step:{},skipped:false};   /* v278 · quien ya usaba la app no ve el tour */  if(!d._meta||typeof d._meta!=='object')d._meta={seq:0,t:0}; if(!d.meals||typeof d.meals!=='object'||Array.isArray(d.meals))d.meals={}; if(!Array.isArray(d.foods))d.foods=[]; d.foods=d.foods.map(f=>(f&&f.per100)?f:asCanonical(f)); if(!Array.isArray(d.sessions))d.sessions=[]; if(!d.split||typeof d.split!=='object')d.split={name:'',days:[]}; if(!Array.isArray(d.split.days))d.split.days=[]; d.split.days.forEach(day=>{ if(!Array.isArray(day.exercises))day.exercises=[]; day.exercises.forEach(e=>{ if(e&&!e.id)e.id='e'+uid(); }); }); fixDuplicateExIds(d); fixLeakedFullStack(d); fixStraySides(d); purgeMood(d); d.health=healthShape((d.health&&typeof d.health==='object'&&!Array.isArray(d.health))?d.health:{}); if(!d.steps||typeof d.steps!=='object')d.steps={}; if(!d.machines||typeof d.machines!=='object')d.machines={}; if(!d.exCat||typeof d.exCat!=='object')d.exCat={}; if(!d.muscleMap||typeof d.muscleMap!=='object')d.muscleMap={}; if(!d.muscleNames||typeof d.muscleNames!=='object')d.muscleNames={}; if(!d.bodyweight||typeof d.bodyweight!=='object')d.bodyweight={}; if(!d.sleep||typeof d.sleep!=='object')d.sleep={}; if('selfcheck' in d)delete d.selfcheck;/* v263 · la auto-percepción estética se retira: el dato se borra una vez y no vuelve (boot, respaldo, log in, sync y archivo pasan por aquí) */ if(!d.adhoc||typeof d.adhoc!=='object')d.adhoc={}; if(!Array.isArray(d.mealTags))d.mealTags=['breakfast','lunch','snack','dinner']; if(!Array.isArray(d.stack))d.stack=[]; subHygiene(d); if(!d.lastUsed||typeof d.lastUsed!=='object')d.lastUsed={}; if(!d.settings||typeof d.settings!=='object')d.settings={goals:seed().settings.goals}; if(d.settings&&d.settings.goals&&d.settings.goals.alcohol==null)d.settings.goals.alcohol=(d.profile&&d.profile.sex==='F')?14:28; if(d.settings&&d.settings.restSec==null)d.settings.restSec=90; if(d.settings&&d.settings.restBeep==null)d.settings.restBeep=true; if(d.settings&&d.settings.goals&&d.settings.goals.sleep==null)d.settings.goals.sleep=8; if(d.profile&&!d.profile.since){ try{ const _cd=[]; (d.sessions||[]).forEach(s=>{if(s.date)_cd.push(s.date);}); Object.keys(d.meals||{}).forEach(k=>_cd.push(k)); Object.keys(d.bodyweight||{}).forEach(k=>_cd.push(k)); if(_cd.length)d.profile.since=_cd.sort()[0]; }catch(_){} }
   // recompute alcohol for old meal items logged before alcohol was in MACROKEYS
   try{ Object.values(d.meals||{}).forEach(arr=>arr.forEach(m=>{ if(m.alcohol==null){ if(m._food&&m._food.per100&&m._food.per100.alcohol&&m._unit){ m.alcohol=computeNutrients(m._food,m._unit,m.qty||1).alcohol; } else m.alcohol=0; } })); }catch(e){}
   // goalHist: snapshot of intake goals at the moment of first logging that day (history is FROZEN — past days never re-read the current goal)
@@ -6166,6 +6175,55 @@ function _doseDaySelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHEC
       const b2=suppSplitTake(A1,mo.id); A('…y al separarlas regresa con ellas', !!b2&&!!b2.tickQty&&b2.tickQty[Y]===3); }
     console.log('cuántas self-check OK');
   } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } save=_sv; reRender=_rr; toast=_t; db=real; state.macroDate=md0; state.suppSeg=sg0; state.suppSegD=sd0; state._lfold=lf0; state._lfoldD=lfd0; _sbx=sb0; bumpIdx(); } }
+// self-check de v326 (S-EXTRA): la pestaña EXTRA, registrar un extra de tu lista con cuántas y hora, y dónde cuenta. Base de juguete; no guarda nada.
+function _extraSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK extra: '+nm); }; const real=db, sb0=_sbx, _sv=save, _rr=reRender, _t=toast, md0=state.macroDate, sg0=state.suppSeg, sd0=state.suppSegD, lf0=state._lfold, lfd0=state._lfoldD; let undo=null, msg='';
+  try{ _sbx=true; save=()=>{}; reRender=()=>{}; toast=(m,t,o)=>{ msg=String(m); undo=(o&&o.undo)||null; return null; };
+    const T=todayISO(), D=k=>shiftDate(T,-k), TM=shiftDate(T,1);
+    db=migrate({_idfix:true,_fsfix:true,_dataVer:3,profile:{username:'t'},split:{name:'t',days:[]},sessions:[],adhoc:{[T]:[{name:'melatonina 3mg',time:'22:10',ts:1}]},stack:[
+      {id:'k1',name:'potasio',category:'supp',dose:'1000',unit:'mg',when:['AM'],periodization:{type:'daily'},startDate:D(30),ticks:{[D(1)]:'taken'},nutr:{potassium:1000},
+        products:[{id:'p1',brand:'X',form:'cápsulas',per:2,size:60,dose:'1000',unit:'mg',nutr:{potassium:1000}}],cur:'p1',containers:[{id:'c1',prod:'p1',opened:D(10),size:60}]},
+      {id:'z1',name:'zinc',category:'supp',dose:'15',unit:'mg',when:[],periodization:{type:'daily'},startDate:D(30),ticks:{},status:'paused',archived:true,statusLog:[{d:D(2),to:'paused',why:'x'}]},
+      {id:'a1',name:'viejo',category:'supp',dose:'1',unit:'g',when:['PM'],periodization:{type:'daily'},startDate:D(90),ticks:{},status:'archived',archived:true}]});
+    bumpIdx(); state.macroDate=T; state.suppSeg='AM'; state.suppSegD=T; state._lfold={food:true,water:false,supps:true}; state._lfoldD=T;
+    const it=db.stack[0], old=extrasOn(T)[0]; let h=suppSecHTML(T);
+    A('la pestaña se llama EXTRA y siempre está (aunque nada sin momento toque hoy)', /data-act="suppseg" data-v="otros">EXTRA/.test(h)&&h.indexOf('OTROS')<0&&SUPP_SEG[3][1]==='EXTRA');
+    A('lo viejo (una toma puntual escrita a mano) se cuenta como extra, con su identidad', /EXTRA<i>\+1<\/i>/.test(h)&&!!old.id&&extraQty(old)===1);
+    state.suppSeg='otros'; h=suppSecHTML(T);
+    A('en EXTRA el botón de la cabecera es + extra (no marcar todo)', /class="lact" data-act="extraadd" data-d="[^"]+">\+ extra</.test(h)&&h.indexOf('data-act="suppall"')<0&&h.indexOf('data-act="extraedit" data-id="'+old.id+'"')>0&&/melatonina 3mg/.test(h)&&/<span class="m"[^>]*>22:10<\/span>/.test(h));
+    const L0=suppLeft(it), n0=suppDue(T).all.length;
+    const e=extraSave(T,it,3,'14:32');
+    A('un extra de tu lista guarda qué, cuántas pastillas, cuántas era una toma y la hora', e.sid==='k1'&&e.qty===3&&e.per===2&&e.time==='14:32'&&e.name==='potasio'&&!('dose' in e));
+    A('…suma sus nutrientes en proporción (3 de 2 por toma = 1.5 tomas)', !!e.nutr&&e.nutr.potassium===1500);
+    A('…descuenta del frasco las que tomaste', Math.abs(suppLeft(it).left-(L0.left-3))<1e-9);
+    A('…y no cuenta como toma pendiente ni saltada', suppDue(T).all.length===n0&&suppDue(T).pend===1);
+    A('la dosis del día en su ficha suma el extra (1,000 + 1,500)', (d=>!!d&&d.length===2&&d[0].n===1000&&d[1].n===1500)(subTakeDoses(it,null,{n:1000,u:'mg'}))&&subTakeDoses({name:'sin id',dose:'1',unit:'g'},null,{n:1,u:'g'})===null);
+    const e2=extraSave(T,it,1,'18:00'); A('varios extras de lo mismo el mismo día no se pisan', extrasOn(T).filter(a=>a.sid==='k1').length===2&&e2.id!==e.id&&Math.abs(suppLeft(it).left-(L0.left-4))<1e-9);
+    h=suppSecHTML(T); A('cada extra se ve en la pestaña con cuántas delante (solo el número) y su hora', /<span class="lcq"[^>]*>3<\/span><span class="t"[^>]*>potasio<\/span><span class="m"[^>]*>14:32<\/span>/.test(h)&&/EXTRA<i>\+3<\/i>/.test(h)&&!/1500\s?mg|1000\s?mg/.test(h));
+    { db.stack.push({id:'u1',name:'potasio',category:'supp',dose:'1',unit:'g',when:[],periodization:{type:'daily'},startDate:D(5),ticks:{}}); bumpIdx(); const h2=suppSecHTML(T); A('con tomas sin momento y extras el contador va junto, sin espacio (no se parte en dos renglones)', /EXTRA<i>0\/1\+3<\/i>/.test(h2));
+      openExtraAdd(T); const rr=[...document.getElementById('modal').querySelectorAll('.nvm[data-x]')]; A('dos de tu lista con el mismo nombre dicen su momento', rr.length===3&&/AM/.test(rr[0].textContent)&&/sin momento/.test(rr[1].textContent)); closeModal(); db.stack=db.stack.filter(x=>x.id!=='u1'); bumpIdx(); }
+    { const x=extraDel(T,e.id); A('quitar uno lo quita y deja lo demás', !!x&&extrasOn(T).length===2&&Math.abs(suppLeft(it).left-(L0.left-1))<1e-9); extraPut(T,x); A('…y el deshacer lo regresa a su lugar', extrasOn(T)[1].id===e.id&&Math.abs(suppLeft(it).left-(L0.left-4))<1e-9); }
+    { extraSetQty(T,e,4); A('cambiar cuántas de un extra mueve sus nutrientes y el frasco', e.qty===4&&e.nutr.potassium===2000&&Math.abs(suppLeft(it).left-(L0.left-5))<1e-9); extraSetQty(T,e,3); }
+    // las hojas
+    openExtraAdd(T); let m=document.getElementById('modal'), rows=[...m.querySelectorAll('.nvm[data-x]')];
+    A('+ extra abre tu lista con tus nombres: lo activo y lo que está en pausa (lo archivado no), y [otro…] pegado abajo junto a cerrar', rows.map(r=>r.dataset.x).join()==='k1,z1'&&/^potasio/.test(rows[0].textContent)&&/en pausa/.test(rows[1].textContent)&&/otro…/.test(m.querySelector('.sheetbtns.xsave.spl #ex_other').textContent)&&!/mg/.test(rows[0].textContent));
+    rows[0].click(); m=document.getElementById('modal'); A('al elegir uno pide cuántas (las de una toma de siempre) y la hora (ahora)', !!m.querySelector('#ex_q')&&m.querySelector('#ex_q').value==='2'&&/^\d\d:\d\d$/.test(m.querySelector('#ex_t').value)&&/^tu toma de siempre: 2$/.test(m.querySelector('.submeta').textContent));
+    m.querySelector('#ex_q').value='0'; m.querySelector('#ex_ok').click(); A('sin cuántas no guarda', !!document.getElementById('modal')&&/^⚠/.test(msg));
+    const k0=extrasOn(T).length; m.querySelector('#ex_q').value='5'; m.querySelector('#ex_ok').click(); m.querySelector('#ex_ok').click();   // el segundo toque (o Enter) mientras se cierra no registra otro
+    A('guardar lo registra UNA vez, cierra, deja la pestaña EXTRA a la vista y avisa corto, con deshacer', extrasOn(T).length===k0+1&&extrasOn(T)[k0].qty===5&&!document.getElementById('modal')&&state.suppSeg==='otros'&&msg==='✓ extra · 5 potasio'&&msg.length<=29&&typeof undo==='function');
+    undo(); A('…y el deshacer lo quita', extrasOn(T).length===k0);
+    openExtraEdit(T,e.id); m=document.getElementById('modal'); A('tocar un extra abre cuántas y su hora, con quitar', m.querySelector('#ex_q2').value==='3'&&m.querySelector('#ex_t2').value==='14:32'&&!!m.querySelector('#ex_del'));
+    m.querySelector('#ex_q2').value='2'; m.querySelector('#ex_t2').value='15:00'; m.querySelector('#ex_ok2').click(); A('…guardar corrige cuántas y la hora', e.qty===2&&e.time==='15:00'&&e.nutr.potassium===1000&&msg==='✓ extra · 2 potasio');
+    undo(); { const e3=extrasOn(T).find(x=>x.id===e.id); A('…y se deshace exacto', e3.qty===3&&e3.time==='14:32'&&e3.nutr.potassium===1500); }
+    openExtraEdit(T,e2.id); document.getElementById('modal').querySelector('#ex_del').click(); A('quitar desde su hoja lo quita y avisa con deshacer', !extrasOn(T).some(x=>x.id===e2.id)&&msg==='✓ extra quitado'); undo(); A('…y vuelve', extrasOn(T).some(x=>x.id===e2.id));
+    openExtraOther(T); m=document.getElementById('modal'); m.querySelector('#ad_name').value='ibuprofeno'; m.querySelector('#ad_qty').value='2'; m.querySelector('#ad_save').click();
+    A('otro…: algo que no está en tu lista, con su nombre y cuántas', (x=>!!x&&x.qty===2&&!x.sid)(extrasOn(T).find(x=>x.name==='ibuprofeno'))&&/^✓ extra · 2 ibuprofeno/.test(msg));
+    // un día sin nada que toque, con suplementos activos: la sección sigue (EXTRA siempre está); sin suplementos activos, la invitación; ignorada, nada
+    db.stack[0].periodization={type:'occasional'}; bumpIdx(); state.suppSeg=null; state.suppSegD=null; h=suppSecHTML(TM);
+    A('sin nada que toque ese día la sección sigue ahí, en EXTRA, con + extra', suppDue(TM).all.length===0&&/data-v="otros"/.test(h)&&/data-act="extraadd"/.test(h)&&/sin extras/.test(h)&&suppSegFor(TM,suppDue(TM))==='otros');
+    db.settings.suppHide=true; A('…y si la ignoraste, no sale (salvo el día que tiene un extra)', suppSecHTML(TM)===''&&suppSecHTML(T)!==''); db.settings.suppHide=false;
+    db.stack.forEach(x=>{ x.status='archived'; x.archived=true; }); bumpIdx(); A('sin suplementos activos y sin extras, la invitación de siempre', /supempty/.test(suppSecHTML(TM)));
+    console.log('extra self-check OK');
+  } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } save=_sv; reRender=_rr; toast=_t; db=real; state.macroDate=md0; state.suppSeg=sg0; state.suppSegD=sd0; state._lfold=lf0; state._lfoldD=lfd0; _sbx=sb0; bumpIdx(); } }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -7225,35 +7283,63 @@ function waterSecHTML(iso){
   return logSecHTML({k:'water',title:'WATER',v,act:`<button type="button" class="lact" data-act="waterpick">+ water</button>`,body,open:state._lfold.water}); }
 // ---- supps: el momento en pestañas (Filter Grid de 21st.dev) y una rejilla que nunca se reordena ni se desplaza de lado.
 // El riel horizontal volvía al inicio en cada toque: render() rehace el DOM y el riel nuevo nace con scrollLeft = 0.
-const SUPP_SEG=[['AM','AM'],['PM','PM'],['entreno','ENTRENO'],['otros','OTROS']];
+const SUPP_SEG=[['AM','AM'],['PM','PM'],['entreno','ENTRENO'],['otros','EXTRA']];   // v326 · S-EXTRA: lo que no tiene momento y lo que tomas fuera de plan
 function suppSlot(it){ const w=(it&&it.when)||[]; for(const [k] of SUPP_SEG){ if(k!=='otros'&&w.indexOf(k)>=0)return k; } return 'otros'; }   // varios momentos → el primero (1 tick por día)
 function suppDue(iso){ const all=dayTakes(iso), done=t=>takeDone(t,iso);   // v297 · una entrada por TOMA (un item con dos tomas sale dos veces)
   const n=all.filter(done).length; return {all,done,n,pend:all.length-n}; }
 // pestaña inicial: ENTRENO con sesión viva · AM antes de las 14:00 · PM después; si esa no tiene pendientes, la primera que sí
 function suppSegFor(iso,s){
-  if(state.suppSegD===iso&&state.suppSeg&&s.all.some(t=>t.when===state.suppSeg))return state.suppSeg;
+  if(state.suppSegD===iso&&state.suppSeg&&(state.suppSeg==='otros'||s.all.some(t=>t.when===state.suppSeg)))return state.suppSeg;   // v326 · EXTRA siempre está
   const keys=SUPP_SEG.map(x=>x[0]), has=k=>s.all.some(t=>t.when===k), pendIn=k=>s.all.some(t=>t.when===k&&!s.done(t));
   let k=iso===todayISO()?((db.activeWork&&has('entreno'))?'entreno':(new Date().getHours()<14?'AM':'PM')):null;
-  if(!k||!pendIn(k))k=keys.find(pendIn)||keys.find(has)||'AM';
+  if(!k||!pendIn(k))k=keys.find(pendIn)||keys.find(has)||'otros';
   state.suppSeg=k; state.suppSegD=iso; return k; }
+// ---- v326 · S-EXTRA · lo que tomas fuera de plan. El dueño (8-oct): "en lugar de otros lo pondría extra… que me salga el catálogo de los
+// que quiero, lo selecciono y cuántas, y cuando le dé enter o ok ya se quede registrado que consumí eso como extra. Y que se quede la hora" ·
+// (9-oct) "aquí tiene que decir extra y en extra poder elegir qué será el extra y cantidad". Vive en db.adhoc[fecha] (la "toma puntual" de
+// antes), ahora con sid (el suplemento de tu lista), qty (cuántas pastillas) y per (cuántas era una toma en ese momento). Cuenta en
+// nutrientes, frasco, dosis del día de su ficha y hora contra la de dormir; nunca como toma pendiente ni saltada.
+function extrasOn(iso){ return (db.adhoc&&db.adhoc[iso])||[]; }
+// guardar desde una hoja no deja toque que anclar: se ancla el bloque (como mealAnchor) para que, si lo de arriba crece (el panel de
+// macros gana un renglón), lo que mirabas no se mueva
+function rkAnchor(rk){ try{ const v=document.getElementById('view'), b=v&&rkFind(v,rk); if(b)_lastTap={sig:'',sel:'',el:null,sheet:null,view:true,off:0,rk,rkOff:b.getBoundingClientRect().top-v.getBoundingClientRect().top}; }catch(_){} }
+function sheetHold(){ if(_sbx)return; const m=document.getElementById('modal'); if(!m)return; m.classList.add('hold'); setTimeout(()=>{ try{ m.classList.remove('hold'); }catch(_){} },350); }
+function extraQty(a){ const q=+(a&&a.qty); return q>0?q:1; }
+function extraAdd(iso,o){ const e=Object.assign({id:'ad_'+Date.now()+Math.random().toString(36).slice(2,7),ts:Date.now()},o); db.adhoc=db.adhoc||{}; (db.adhoc[iso]=db.adhoc[iso]||[]).push(e); return e; }
+function extraDel(iso,id){ const L=db.adhoc&&db.adhoc[iso]; if(!L)return null; const i=L.findIndex(a=>a&&a.id===id); if(i<0)return null; const a=L.splice(i,1)[0]; if(!L.length)delete db.adhoc[iso]; return {a,i}; }
+function extraPut(iso,x){ if(!x)return; db.adhoc=db.adhoc||{}; const L=db.adhoc[iso]=db.adhoc[iso]||[]; L.splice(Math.min(x.i,L.length),0,x.a); }
+function nutrScale(n,k){ if(!n)return null; const o={}; let any=false; for(const x in n){ const v=parseFloat(n[x]); if(!isNaN(v)){ o[x]=Math.round(v*k*100)/100; any=true; } } return any?o:null; }
+// los nutrientes de un extra de tu lista: lo de UNA toma de siempre de ese suplemento, en proporción a cuántas
+function extraNutr(it,iso,qty,per){ return nutrScale(suppNutrOn(it,iso),qty/(per>0?per:1)); }
+function extraSave(iso,it,qty,time){ const per=suppPer(it,suppProdOn(it,iso)||suppProd(it)), o={name:it.name||'extra',sid:it.id,qty,per,time:time||''}, n=extraNutr(it,iso,qty,per); if(n)o.nutr=n; return extraAdd(iso,o); }
+// cambiar cuántas de un extra ya registrado: sus nutrientes van en proporción (con lo de ese suplemento si sigue en tu lista)
+function extraSetQty(iso,a,qty){ const q0=extraQty(a), it=a.sid&&(db.stack||[]).find(x=>x&&x.id===a.sid); a.qty=qty;
+  if(it){ const n=extraNutr(it,iso,qty,+a.per||suppPer(it)); if(n)a.nutr=n; else delete a.nutr; } else if(a.nutr){ const n=nutrScale(a.nutr,qty/q0); if(n)a.nutr=n; }
+  if(a.elementalMg!=null)a.elementalMg=Math.round(a.elementalMg*qty/q0*100)/100; }
 function suppSecHTML(iso){
-  const s=suppDue(iso);
+  const s=suppDue(iso), xs=extrasOn(iso);
   // v269 · cuenta sin suplementos: la invitación vive aquí arriba de las comidas; ··· → ignorar (se reactiva en ajustes)
-  if(!s.all.length){ if((db.stack||[]).some(x=>x&&suppStatus(x)==='active')||(db.settings&&db.settings.suppHide))return '';   // v275: solo cuentan los activos
+  // v326 · con suplementos activos (o con un extra ese día) la sección sale siempre: la pestaña EXTRA siempre está
+  if(!s.all.length&&!xs.length){ if(db.settings&&db.settings.suppHide)return '';
+    if(!(db.stack||[]).some(x=>x&&suppStatus(x)==='active'))   // v275: solo cuentan los activos
     return logSecHTML({k:'supps',title:'SUPPS',v:'<span class="u-o40">—</span>',open:true,
       act:'<button type="button" class="lact" data-act="suppadd">+ supp</button><button type="button" class="lsmore" data-act="suppmenu" aria-label="opciones de suplementos"><span class="dots3" aria-hidden="true"></span></button>',
       body:'<div class="empty supempty">marca tus suplementos con un toque, aquí arriba de tus comidas</div>'}); }
   const seg=suppSegFor(iso,s);
-  const tabs=SUPP_SEG.filter(([k])=>s.all.some(t=>t.when===k)).map(([k,l])=>{ const its=s.all.filter(t=>t.when===k), d=its.filter(s.done).length;
-    return `<span class="${k===seg?'on':''}" role="tab" aria-selected="${k===seg}" data-act="suppseg" data-v="${k}">${l}<i>${d}/${its.length}</i></span>`; }).join('');
+  const tabs=SUPP_SEG.filter(([k])=>k==='otros'||s.all.some(t=>t.when===k)).map(([k,l])=>{ const its=s.all.filter(t=>t.when===k), d=its.filter(s.done).length, x=k==='otros'?xs.length:0;
+    return `<span class="${k===seg?'on':''}" role="tab" aria-selected="${k===seg}" data-act="suppseg" data-v="${k}">${l}${its.length||x?`<i>${its.length?d+'/'+its.length:''}${x?'+'+x:''}</i>`:''}</span>`; }).join('');
   const cur=s.all.filter(t=>t.when===seg), pendSeg=cur.filter(t=>!s.done(t)).length;
   const cells=cur.map(t=>{ const it=t.it, on=s.done(t), tt=on&&takeTime(t,iso), q=qtyTxt(takeUnitsOn(t,iso)), chg=takeDayQty(t,iso)!=null, nm=escTxt(it.name||'supp'), A=`data-id="${escTxt(it.id)}" data-tk="${escTxt(t.id)}" data-d="${iso}"`;
     // v325 · `○ 2 melatonina`: cuántas pastillas va ANTES del nombre y siempre; tocar el número lo cambia (solo ese día, o el de siempre)
     return `<div class="lc sp${on?' on':''}" data-rk="sp:${escTxt(it.id)}:${escTxt(t.id)}"><button type="button" class="lct" data-act="suppq" ${A} aria-pressed="${on}" aria-label="${q} ${nm}" title="${on?'tomado'+(tt?' a las '+escTxt(tt):'')+' · toca para deshacer':'toca = tomado'}"></button><span class="k" aria-hidden="true">${on?'✓':'○'}</span><button type="button" class="lcq${chg?' chg':''}" data-act="suppdose" ${A} aria-label="cuántas de ${nm} ${iso===todayISO()?'hoy':'ese día'}: ${q}">${q}</button><span class="t" aria-hidden="true">${nm}</span>${t.id?'':suppCellMark(it)}</div>`; }).join('');
+  // v326 · los extras de ese día: `✓ 2 potasio 14:32` (tocarlo: cuántas, la hora o quitarlo)
+  const xcells=seg==='otros'?xs.map((a,i)=>{ const q=qtyTxt(extraQty(a)), nm=escTxt(a.name||'extra');
+    return `<div class="lc sp on xt${i?'':' x1'}" data-rk="xt:${escTxt(a.id)}"><button type="button" class="lct" data-act="extraedit" data-id="${escTxt(a.id)}" data-d="${iso}" aria-label="extra · ${q} ${nm}${a.time?' · '+escTxt(a.time):''}"></button><span class="k" aria-hidden="true">✓</span><span class="lcq" aria-hidden="true">${q}</span><span class="t" aria-hidden="true">${nm}</span>${a.time?`<span class="m" aria-hidden="true">${escTxt(a.time)}</span>`:''}</div>`; }).join(''):'';
   const lbl=(SUPP_SEG.find(x=>x[0]===seg)||['',''])[1];
-  const act=`<button type="button" class="lact" data-act="suppall" data-d="${iso}" data-seg="${seg}"${pendSeg?'':' aria-disabled="true"'}>✓ ${lbl}</button>`;
-  const v=`<b data-nk="lv-supps" data-nv="${s.n}">${s.n}</b> / ${s.all.length}`;
-  return logSecHTML({k:'supps',title:'SUPPS',v,act,body:`<div class="mdtabs lseg" data-tk="supps" role="tablist">${tabs}</div><div class="lcg" role="group" aria-label="${lbl}">${cells}</div>`,open:state._lfold.supps}); }
+  const act=seg==='otros'?`<button type="button" class="lact" data-act="extraadd" data-d="${iso}">+ extra</button>`
+    :`<button type="button" class="lact" data-act="suppall" data-d="${iso}" data-seg="${seg}"${pendSeg?'':' aria-disabled="true"'}>✓ ${lbl}</button>`;
+  const v=s.all.length?`<b data-nk="lv-supps" data-nv="${s.n}">${s.n}</b> / ${s.all.length}`:(xs.length?'+'+xs.length:'<span class="u-o40">—</span>');
+  return logSecHTML({k:'supps',title:'SUPPS',v,act,body:`<div class="mdtabs lseg" data-tk="supps" role="tablist">${tabs}</div><div class="lcg" role="group" aria-label="${lbl}">${cells}${xcells}${cells||xcells?'':'<div class="empty">sin extras</div>'}</div>`,open:state._lfold.supps}); }
 // ---- comida: cada comida es UNA fila plegable con su total a 16/800; sus alimentos a 12/400 alineados bajo el total
 // (queja 9: antes el total de la comida salía más chico que las kcal de sus alimentos). Solo la más reciente abre sola.
 // redondeo de resto mayor (Hamilton): los enteros de las partes suman EXACTAMENTE el total redondeado. Sin esto, cinco
@@ -7345,9 +7431,57 @@ function mealsTick(){ try{ const nx=window._mealNext; if(!nx||state.screen!=='ma
 // v325 · S-UNI · la hoja del número: cuántas tomas. `solo hoy` vale para esa fecha (la toma queda tomada, como al fijarle hora) y mañana
 // regresa sola la de siempre; `siempre` cambia la de siempre (it.qty, y `por toma` de su producto si lo tiene). Si nunca dijiste cuántas,
 // la hoja abre en `siempre`. `volver a N` quita el cambio de ese día.
+// ---- v326 · las hojas de EXTRA ----
+// `+ extra`: UNA lista (tu stack tal como lo escribiste: lo activo y, al final, lo que está en pausa) y `otro…` para lo que no esté.
+function openExtraAdd(iso){ iso=iso||curDate(); const st=(db.stack||[]).filter(x=>x&&suppStatus(x)!=='archived'), ord=st.filter(x=>suppStatus(x)==='active').concat(st.filter(x=>suppStatus(x)!=='active'));
+  const cnt={}; ord.forEach(x=>{ const k=String(x.name||'').toLowerCase(); cnt[k]=(cnt[k]||0)+1; });
+  const row=x=>{ const dup=cnt[String(x.name||'').toLowerCase()]>1, sl=suppSlot(x), tag=[suppStatus(x)!=='active'?'en pausa':'',dup?(sl==='otros'?'sin momento':sl):''].filter(Boolean).join(' · ');   // dos con el mismo nombre: cada una dice su momento
+    return '<div class="nvm" data-x="'+escTxt(x.id)+'"><span>'+escTxt(x.name||'supp')+'</span><span class="nvm-x">'+(tag?'<span class="u-o40 u-label">'+escTxt(tag)+'</span> ':'')+'›</span></div>'; };
+  openModal('<h3>extra <span class="u-o40 u-w4">· '+(iso===todayISO()?'hoy':escTxt(fmtShort(iso)))+'</span></h3><div class="nvm-list">'+ord.map(row).join('')+'</div><div class="sheetbtns xsave spl"><button class="cancel" id="ex_other">otro…</button><button class="cancel" data-act="closemodal">cerrar</button></div>');   // [otro…] y [cerrar] pegados abajo: siempre a la vista aunque tu lista sea larga
+  document.querySelectorAll('#modal .nvm[data-x]').forEach(el=>el.onclick=()=>openExtraQty(iso,el.dataset.x)); { const b=document.getElementById('ex_other'); if(b)b.onclick=()=>openExtraOther(iso); } }
+function extraDone(iso,e){ rkAnchor('ls:supps'); state.suppSeg='otros'; state.suppSegD=iso; state._lfold=Object.assign({},state._lfold,{supps:true}); save(); closeModal(); reRender(); _lastTap=null;
+  toast('✓ extra · '+qtyTxt(extraQty(e))+' '+(e.name||''),'ok',{undo:()=>{ extraDel(iso,e.id); }}); }   // corto: su hora ya se lee en la celda
+// cuántas y a qué hora, en la misma hoja (Enter guarda). Nace con las de una toma de siempre y la hora de este momento.
+function openExtraQty(iso,sid){ const it=(db.stack||[]).find(x=>x&&x.id===sid); if(!it)return; const p=suppProd(it), per=suppPer(it,p), pu=p?suppPU(p):'';
+  openModal('<h3>extra <span class="u-o40 u-w4">· '+escTxt(it.name||'supp')+'</span></h3>'
+    +'<div class="field row2"><div><label>CUÁNTAS'+(pu&&pu!=='u'?' · '+escTxt(pu):'')+'</label><input id="ex_q" type="text" inputmode="decimal" autocomplete="off" value="'+qtyTxt(per)+'"/></div><div><label>HORA</label><input id="ex_t" type="time" value="'+(iso===todayISO()?nowHM():'')+'"/></div></div>'
+    +'<div class="submeta">tu toma de siempre: '+qtyTxt(per)+'</div>'
+    +'<div class="sheetbtns"><button class="ok" id="ex_ok">guardar</button><button class="cancel" id="ex_back">‹ lista</button><button class="cancel" data-act="closemodal">cancelar</button></div>');
+  sheetHold(); let busy=false;   // un segundo Enter (o toque) mientras la hoja se cierra no registra otro
+  const go=()=>{ if(busy)return; const n=qtyParse(val('ex_q')); if(!n){ toast('⚠ pon cuántas','err'); return; } busy=true; extraDone(iso,extraSave(iso,it,n,val('ex_t'))); };
+  document.getElementById('ex_ok').onclick=go; document.getElementById('ex_back').onclick=()=>openExtraAdd(iso);
+  ['ex_q','ex_t'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('keydown',ev=>{ if(ev.key==='Enter')go(); }); }); }
+// `otro…`: algo que no está en tu lista (nombre y cuántas). Si es un mineral con sales conserva la forma química de la toma puntual de antes.
+function openExtraOther(iso){
+  openModal('<h3>extra <span class="u-o40 u-w4">· otro</span></h3>'
+    +'<div class="field"><label>NOMBRE</label><input id="ad_name" autocomplete="off"/></div><div class="field u-mt-n2"><div id="ad_idstrip"></div><div id="ad_formbox"></div></div>'
+    +'<div class="field row2"><div><label>CUÁNTAS</label><input id="ad_qty" type="text" inputmode="decimal" autocomplete="off" value="1"/></div><div><label>HORA</label><input id="ad_time" type="time" value="'+(iso===todayISO()?nowHM():'')+'"/></div></div>'
+    +'<div class="sheetbtns"><button class="ok" id="ad_save">guardar</button><button class="cancel" id="ad_back">‹ lista</button><button class="cancel" data-act="closemodal">cancelar</button></div>');
+  sheetHold(); let se=null, busy=false; const strip=document.getElementById('ad_idstrip'), fb=document.getElementById('ad_formbox');
+  const paint=()=>{ const nm=val('ad_name'), R=subOfItem({name:nm,category:'supp'}).items, s=R.length?R[0].s:null; strip.innerHTML=''; fb.innerHTML=''; se=s; if(!s||nm.trim().length<2)return;
+    strip.innerHTML='<span class="u-good u-label">✓</span> <span class="u-label u-o60">'+escTxt(R.map(x=>x.s.name).join(' + '))+'</span>';
+    if(s.forms){ const df=detectForm(nm,s); fb.innerHTML='<div class="field row2 u-mt6"><div><label>FORMA QUÍMICA</label><select id="ad_form">'+Object.keys(s.forms).map(fk=>'<option value="'+escTxt(fk)+'"'+(fk===df?' selected':'')+'>'+escTxt(fk)+' · '+Math.round(s.forms[fk]*100)+'%</option>').join('')+'</select></div><div><label>MG POR PASTILLA</label><input id="ad_dose" type="text" inputmode="decimal" autocomplete="off"/></div></div>'; } };
+  document.getElementById('ad_name').addEventListener('input',paint);
+  const go=()=>{ if(busy)return; const name=val('ad_name'); if(!name){ toast('⚠ pon un nombre','err'); return; } const qty=qtyParse(val('ad_qty')); if(!qty){ toast('⚠ pon cuántas','err'); return; } busy=true;
+    const o={name,qty,time:val('ad_time')||''}, mg=parseFloat(String(val('ad_dose')||'').replace(',','.')); let nutr=null;
+    if(se&&se.forms&&se.elem&&mg>0){ const form=val('ad_form'), em=Math.round(elementalMg(mg,se,form)*qty*100)/100; o.elem=se.elem; o.form=form; o.compoundMg=mg; o.elementalMg=em; nutr={}; nutr[se.elem]=em; }
+    if(!nutr)nutr=nutrScale(subItemNutr({name,category:'supp'}),qty);   // v295: a la dosis que dice el nombre, por cuántas
+    if(nutr&&Object.keys(nutr).length)o.nutr=nutr; extraDone(iso,extraAdd(iso,o)); };
+  document.getElementById('ad_save').onclick=go; document.getElementById('ad_back').onclick=()=>openExtraAdd(iso);
+  ['ad_name','ad_qty','ad_time'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('keydown',ev=>{ if(ev.key==='Enter')go(); }); }); }
+// tocar un extra ya registrado: corregir cuántas o su hora, o quitarlo (con deshacer)
+function openExtraEdit(iso,id){ const a=extrasOn(iso).find(x=>x&&x.id===id); if(!a)return; const snap=JSON.stringify(a);
+  openModal('<h3>extra <span class="u-o40 u-w4">· '+escTxt(a.name||'')+'</span></h3>'
+    +'<div class="field row2"><div><label>CUÁNTAS</label><input id="ex_q2" type="text" inputmode="decimal" autocomplete="off" value="'+qtyTxt(extraQty(a))+'"/></div><div><label>HORA</label><input id="ex_t2" type="time" value="'+escTxt(a.time||'')+'"/></div></div>'
+    +'<div class="sheetbtns"><button class="ok" id="ex_ok2">guardar</button><button class="cancel danger" id="ex_del">quitar</button><button class="cancel" data-act="closemodal">cancelar</button></div>');
+  const back=()=>{ const L=extrasOn(iso), i=L.findIndex(x=>x&&x.id===id); if(i>=0)L[i]=JSON.parse(snap); };
+  const go=()=>{ const n=qtyParse(val('ex_q2')); if(!n){ toast('⚠ pon cuántas','err'); return; } if(n!==extraQty(a))extraSetQty(iso,a,n); a.time=val('ex_t2')||''; rkAnchor('ls:supps'); save(); closeModal(); reRender(); _lastTap=null;
+    toast('✓ extra · '+qtyTxt(extraQty(a))+' '+(a.name||''),'ok',{undo:back}); };
+  document.getElementById('ex_ok2').onclick=go; ['ex_q2','ex_t2'].forEach(k=>{ const e=document.getElementById(k); if(e)e.addEventListener('keydown',ev=>{ if(ev.key==='Enter')go(); }); });
+  document.getElementById('ex_del').onclick=()=>{ const x=extraDel(iso,id); if(!x)return; rkAnchor('ls:supps'); save(); closeModal(); reRender(); _lastTap=null; toast('✓ extra quitado','ok',{undo:()=>{ extraPut(iso,x); }}); }; }
 function openQtyDay(id,iso,tk){ iso=iso||todayISO(); const it=(db.stack||[]).find(x=>x.id===id), t=it&&takeOf(it,tk,iso); if(!t)return;
   const p=suppProd(it), base=takeUnits(t,iso), day=takeDayQty(t,iso), cur=day!=null?day:base, known=!!(+it.qty>0||(p&&+p.per>0)||day!=null), main=!t.id, pu=p?suppPU(p):'', dz=takeDoseTxt(t), sn=takeSnap(t,iso), q0=it.qty, p0=p?p.per:undefined;
-  const done=(msg)=>{ save(); closeModal(); reRender(); toast(msg,'ok',{undo:()=>{ takeRestore(t,iso,sn); if(q0===undefined)delete it.qty; else it.qty=q0; if(p)p.per=p0; }}); };
+  const done=(msg)=>{ rkAnchor('sp:'+it.id+':'+t.id); save(); closeModal(); reRender(); _lastTap=null; toast(msg,'ok',{undo:()=>{ takeRestore(t,iso,sn); if(q0===undefined)delete it.qty; else it.qty=q0; if(p)p.per=p0; }}); };
   const opt=(v,l,on)=>'<button type="button" class="t'+(on?' on':'')+'" data-act="optpick" data-v="'+v+'">'+l+'</button>', today=iso===todayISO();
   openModal('<h3>'+escTxt(it.name||'supp')+' <span class="u-o40 u-w4">· '+(today?'hoy':escTxt(fmtShort(iso)))+'</span></h3>'
     +'<div class="field"><label>CUÁNTAS'+(pu&&pu!=='u'?' · '+escTxt(pu):'')+'</label><input id="dd_v" type="text" inputmode="decimal" autocomplete="off" value="'+qtyTxt(cur)+'"/></div>'
@@ -10229,7 +10363,8 @@ function suppReactivate(it,keep,why){ suppSetStatus(it,'active',why||'reactivado
 // cuántas quedan: lo que trae el frasco − (días con toma tomada o tarde desde que lo abriste) × por toma + tu corrección
 function suppLeft(it,iso){ const c=suppCont(it); if(!c)return null; const p=suppProd(it,c.prod)||suppProd(it), size=+c.size||0; if(!p||!(size>0))return null;
   const per=suppPer(it,p), end=iso||todayISO(); let used=0;
-  takesOf(it).forEach(t=>{ const f=takeFactor(t), T=t.o.ticks||{}; Object.keys(T).forEach(d=>{ if(d>=c.opened&&d<=end&&tickDone(T[d]))used+=f*takeDayMul(t,d); }); });   // v297 · cada toma marcada gasta lo suyo
+  takesOf(it).forEach(t=>{ const f=takeFactor(t), T=t.o.ticks||{}; Object.keys(T).forEach(d=>{ if(d>=c.opened&&d<=end&&tickDone(T[d]))used+=f*takeDayMul(t,d); }); });
+  if(db.adhoc&&it.id)Object.keys(db.adhoc).forEach(d=>{ if(d>=c.opened&&d<=end)(db.adhoc[d]||[]).forEach(a=>{ if(a&&a.sid===it.id)used+=extraQty(a)/per; }); });   // v326 · y cada extra, las suyas   // v297 · cada toma marcada gasta lo suyo
   used=Math.round(used*100)/100;
   return {left:Math.round((size-used*per+(+c.adj||0))*100)/100, per, pu:suppPU(p), size, used}; }
 // días que alcanzan: las tomas que quedan entre las que te tocan por día según su periodización (próximas 4 semanas)
@@ -10296,8 +10431,10 @@ function openSuppDups(){ const G=suppDups(); if(!G.length){ closeModal(); return
       if(suppDups().length)openSuppDups(); }); }); }
 // la dosis de cada toma de hoy, para comparar contra lo estudiado (null = una sola toma). Si la dosis sale del nombre
 // (un producto con varias sustancias), todas las tomas llevan esa.
-function subTakeDoses(it,nameDose,dose){ if(!it||!dose||!(it.more||[]).length)return null; const T=takesOf(it,todayISO()); if(T.length<2)return null;
-  return T.map(t=>(!nameDose&&t.id&&subItemDose({dose:t.dose,unit:t.unit}))||dose); }
+function subTakeDoses(it,nameDose,dose){ if(!it||!dose)return null; const d0=todayISO(), T=takesOf(it,d0), X=it.id?extrasOn(d0).filter(a=>a&&a.sid===it.id):[], M=T.map(t=>takeDayMul(t,d0));
+  if(T.length<2&&!X.length&&M.every(m=>m===1))return null;   // una toma de siempre y sin extras: vale tu dosis tal cual
+  const sc=(o,k)=>k===1?o:Object.assign({},o,{n:Math.round(o.n*k*100)/100}), per=suppPer(it);   // v325 · las de hoy · v326 · y los extras de hoy
+  return T.map((t,i)=>sc((!nameDose&&t.id&&subItemDose({dose:t.dose,unit:t.unit}))||dose,M[i])).concat(X.map(a=>sc(dose,extraQty(a)/(+a.per||per||1)))); }
 // ---- v297 · la hora de tu toma contra tu hora de dormir: lo que queda en sangre al acostarte (vida media de la ficha) ----
 // Tu hora de dormir = la mediana del inicio de tus noches con hora (3 a 14, de las últimas 3 semanas); sin eso no se inventa.
 function usualBedMin(){ const t=todayISO(), a=[]; for(let i=0;i<21&&a.length<14;i++){ sleepBlocks(db.sleep&&db.sleep[shiftDate(t,-i)]).forEach(b=>{ if(!b||!b.start||!isNocturnal(b.start))return; const m=hm2min(b.start); if(isFinite(m))a.push(m<720?m+1440:m); }); }
@@ -10305,7 +10442,8 @@ function usualBedMin(){ const t=todayISO(), a=[]; for(let i=0;i<21&&a.length<14;
 function subBedNote(P,it){ const h=+(P&&P.halfH); if(!(h>0)||!it)return null;
   if(!((P.sleep&&P.sleep.effect==='empeora')||(P.tags||[]).indexOf('estimulante')>=0))return null;   // solo lo que puede quitar el sueño
   const bed=usualBedMin(); if(bed==null)return null; const t0=todayISO(); let best=null;
-  for(let i=0;i<7&&!best;i++){ const d=shiftDate(t0,-i); takesOf(it,d).forEach(t=>{ if(!takeDone(t,d))return; const hm=takeTime(t,d), m=hm2min(hm); if(isFinite(m)&&(!best||m>best.m))best={m,hm,d}; }); }
+  for(let i=0;i<7&&!best;i++){ const d=shiftDate(t0,-i); takesOf(it,d).forEach(t=>{ if(!takeDone(t,d))return; const hm=takeTime(t,d), m=hm2min(hm); if(isFinite(m)&&(!best||m>best.m))best={m,hm,d}; });
+    if(it.id)extrasOn(d).forEach(a=>{ if(!a||a.sid!==it.id)return; const m=hm2min(a.time); if(isFinite(m)&&(!best||m>best.m))best={m,hm:a.time,d}; }); }   // v326 · un extra también cuenta
   if(!best)return null; const gap=(bed-best.m)/60; if(!(gap>0)||gap>24)return null; const left=Math.pow(0.5,gap/h);
   return {hm:best.hm,d:best.d,bed:minToHM(bed),gap,left,txt:'tu toma de las '+best.hm+' · al dormir (~'+minToHM(bed)+') queda ~'+Math.round(left*100)+' %'}; }
 // ---- v297 · interacciones entre lo que tomas (de las fichas ya bajadas): solo las moderadas y graves suben a la lista ----
@@ -10437,8 +10575,8 @@ function renderStack(){
   if(!all.length){
     out+=`<div class="empty u-mt24 u-mb16 u-mx0">stack vacío<br/><span class="ehint">agrega tu primer suplemento, skincare o medicamento abajo</span></div>`;
   } else {
-    // agrupado por TIMING (no por categoría): bloques colapsables AM/PM/ENTRENO/OTROS
-    const BLOCKS=[{k:'AM',lbl:'AM'},{k:'PM',lbl:'PM'},{k:'entreno',lbl:'ENTRENO'},{k:'otros',lbl:'OTROS'}];
+    // agrupado por TIMING (no por categoría): bloques colapsables AM/PM/ENTRENO/EXTRA
+    const BLOCKS=[{k:'AM',lbl:'AM'},{k:'PM',lbl:'PM'},{k:'entreno',lbl:'ENTRENO'},{k:'otros',lbl:'EXTRA'}];
     const inBlock=(it,bk)=>{ const w=it.when||[]; return bk==='otros' ? !(w.indexOf('AM')>=0||w.indexOf('PM')>=0||w.indexOf('entreno')>=0) : w.indexOf(bk)>=0; };
     // ponytail: 1 tick/día/item — un item multi-timing (AM+PM) aparece en ambos bloques y comparte el mismo check; si se requiere check por-horario, ticks[iso][block]
     // v297 · una fila por TOMA: la primera es el item (lo de siempre); las demás, su dosis, su momento y su propio check
@@ -10489,10 +10627,10 @@ function renderStack(){
       const dl=it=>{ const lg=(it.statusLog||[]).slice(-1)[0], p=suppProd(it); const why=[p&&p.brand,lg&&lg.why&&lg.why!=='pausa'?lg.why:'',lg&&lg.d?fmtShort(lg.d):''].filter(Boolean).join(' · ');
         return `<div class="line u-py6 u-px0 u-aic"><span class="k"><span data-act="stackedit" data-id="${it.id}" class="u-tap">${escTxt(it.name)}</span>${why?' <span class="u-o40 u-label">· '+escTxt(why)+'</span>':''}</span><span class="dots"></span><span class="v"><button type="button" class="b" data-act="suppreact" data-id="${it.id}">reactivar</button></span></div>`; };
       [['paused','EN PAUSA',' open'],['archived','ARCHIVADOS','']].forEach(([k,l,o])=>{ const g=dz.filter(x=>suppStatus(x)===k); if(g.length)out+=`<details class="stk-blk" data-sk="${k}"${stkOpen(k,!!o)}><summary>${l} <span class="u-o30">· ${g.length}</span></summary>${g.map(dl).join('')}</details>`; }); }
-    const adhocHoy=(db.adhoc&&db.adhoc[iso])||[];
+    const adhocHoy=extrasOn(iso);
     if(adhocHoy.length){
-      const rows=adhocHoy.map((a,i)=>`<div class="line u-py6 u-px0 u-ais"><span class="k">${escTxt(a.name)}${a.compoundMg?' · '+a.compoundMg+' mg':''}${a.form?' ('+escTxt(a.form)+')':''}${a.time?' · '+escTxt(a.time):''}</span><span class="dots"></span><span class="v"><span data-act="deladhoc" data-i="${i}" class="u-tap u-bad">✕</span></span></div>`).join('');
-      out+=`<details class="stk-blk" data-sk="adhoc"${stkOpen('adhoc',true)}><summary>TOMAS PUNTUALES · hoy</summary>${rows}</details>`;
+      const rows=adhocHoy.map(a=>`<div class="line u-py6 u-px0 u-ais"><span class="k">${qtyTxt(extraQty(a))} ${escTxt(a.name||'')}${a.form?' ('+escTxt(a.form)+')':''}${a.time?' · '+escTxt(a.time):''}</span><span class="dots"></span><span class="v"><span data-act="deladhoc" data-id="${escTxt(a.id||'')}" data-d="${iso}" class="u-tap u-bad">✕</span></span></div>`).join('');
+      out+=`<details class="stk-blk" data-sk="adhoc"${stkOpen('adhoc',true)}><summary>EXTRA · hoy</summary>${rows}</details>`;
     }
   }
   out+=`<hr class="rule"/><div class="u-flex u-gap8 u-mt12">`
@@ -10500,7 +10638,7 @@ function renderStack(){
     +`<button class="b u-f1" data-act="stackadd" data-c="skin">+ skin</button>`
     +`<button class="b u-f1" data-act="stackadd" data-c="meds">+ meds</button>`
     +`</div>`
-    +`<div class="u-mt8"><button class="b u-w100" data-act="adhoclog">+ toma puntual</button></div>`;
+    +`<div class="u-mt8"><button class="b u-w100" data-act="extraadd">+ extra</button></div>`;
   return out;
 }
 function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volver con otra marca · opt.forceNew: crear aparte aunque el nombre ya exista
@@ -10819,45 +10957,6 @@ function openSubFixes(){ const L=db._dataLog&&db._dataLog.v3; if(!L)return; cons
     +'<div class="sheetbtns"><button class="ok" id="sf_ok">ok</button>'+(L.undone?'':'<button class="cancel" id="sf_undo">deshacer</button>')+'</div>');
   const ok=document.getElementById('sf_ok'); if(ok)ok.onclick=()=>{ L.seen=true; closeModal(); save(); reRender(); };
   const un=document.getElementById('sf_undo'); if(un)un.onclick=()=>holdConfirm({title:'deshacer lo que acomodé',detail:'tus items vuelven a como estaban (también el magnesio que no era suyo)',verb:'deshacer'},()=>{ subHygieneUndo(); closeModal(); save(); reRender(); toast('✓ como estaba'); }); }
-
-function openAdhocLog(){
-  const today=todayISO();
-  openModal(`<h3>toma puntual</h3>
-    <div class="submeta u-mb10">registra algo que tomaste ahora sin añadirlo al stack</div>
-    <div class="field"><label>NOMBRE</label><input id="ad_name" placeholder="ej. melatonina 3mg, vitamina C" autocomplete="off"/></div>
-    <div class="field u-mt-n2"><div id="ad_idstrip" style="min-height:14px"></div><div id="ad_formbox"></div></div>
-    <div class="field"><label>FECHA</label><input id="ad_date" type="date" value="${today}" max="${today}"/></div>
-    <div class="field"><label>HORA</label><input id="ad_time" type="time" value="${nowHM()}"/></div>
-    <div class="sheetbtns"><button class="ok" id="ad_save">guardar</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
-  const root=document.getElementById('modal'); if(!root) return;
-  var _adSe=null;
-  function _adRender(){
-    var nm=val('ad_name'); var _ar=subOfItem({name:nm,category:'supp'}).items; var s=_ar.length?_ar[0].s:null; var strip=document.getElementById('ad_idstrip'); var fb=document.getElementById('ad_formbox');
-    if(strip) strip.innerHTML=''; if(fb) fb.innerHTML=''; _adSe=s;
-    if(!s||!nm||nm.trim().length<2) return;
-    if(strip) strip.innerHTML='<span class="u-good u-label">✓ '+escTxt(_ar.map(x=>x.s.name).join(' + '))+'</span>';
-    if(s.forms&&fb){
-      var _df=detectForm(nm,s);
-      var _opts=Object.keys(s.forms).map(function(fk){ return '<option value="'+fk+'"'+(fk===_df?' selected':'')+'>'+escTxt(fk)+' · '+Math.round(s.forms[fk]*100)+'% elem</option>'; }).join('');
-      fb.innerHTML='<div class="field u-mt6"><label>FORMA QUÍMICA</label><select id="ad_form">'+_opts+'</select></div><div class="field u-mt-n2"><label>MG DEL COMPUESTO</label><input id="ad_dose" type="number" inputmode="decimal" placeholder="ej. 500"/></div><div class="submeta u-o50" id="ad_elem"></div>';
-      var _recalc=function(){ var f=val('ad_form')||_df; var comp=parseFloat(val('ad_dose'))||0; var em=elementalMg(comp,s,f); var bv=(s.bioav&&s.bioav[f])?' · '+escTxt(s.bioav[f]):''; var el=document.getElementById('ad_elem'); if(el) el.innerHTML=comp>0?('≈ <b class="u-good">'+em+' mg</b> elementales'+bv):''; };
-      var fsel=document.getElementById('ad_form'); if(fsel)fsel.onchange=_recalc; var dsel=document.getElementById('ad_dose'); if(dsel)dsel.addEventListener('input',_recalc);
-    }
-  }
-  var nameEl=document.getElementById('ad_name'); if(nameEl) nameEl.addEventListener('input',_adRender);
-  root.querySelector('#ad_save').onclick=function(){
-    var name=val('ad_name'); if(!name||!name.trim()){ toast('⚠ pon un nombre','err'); return; }
-    var d=val('ad_date')||today; var time=val('ad_time')||nowHM();
-    var s=_adSe; var form=null,compoundMg=null,elemMg=null,elem=null; var nutr={};
-    if(s&&s.forms){ form=val('ad_form'); compoundMg=parseFloat(val('ad_dose'))||null; if(compoundMg){ elemMg=elementalMg(compoundMg,s,form); elem=s.elem; if(elem) nutr[elem]=elemMg; } }
-    else { const _n=subItemNutr({name:name,category:'supp'}); if(_n)nutr=_n; }   // v295: a la dosis que dice el nombre
-    var entry={id:'ad_'+Date.now()+Math.random().toString(36).slice(2,5),name:name.trim(),time:time,ts:Date.now()};
-    if(elem){ entry.elem=elem; entry.form=form; entry.compoundMg=compoundMg; entry.elementalMg=elemMg; }
-    if(Object.keys(nutr).length) entry.nutr=nutr;
-    db.adhoc=db.adhoc||{}; db.adhoc[d]=db.adhoc[d]||[]; db.adhoc[d].push(entry);
-    savedToast('✓ toma registrada'); closeModal(); reRender();
-  };
-}
 
 // ---------- render: split editor ----------
 // v224: el editor mostraba db.split, pero desde v213 la sesión se siembra de la ÚLTIMA SESIÓN REAL del
@@ -11971,8 +12070,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='suppadd'){ openStackEdit(null,'supp'); }
   else if(a==='suppmenu'){ trkMenu('suplementos',[['+ agregar suplemento',()=>openStackEdit(null,'supp')],['ignorar por ahora',()=>{ db.settings.suppHide=true; save(); reRender(); toast('supps ocultos · vuelven en ajustes','',{undo:()=>{ delete db.settings.suppHide; save(); reRender(); }}); }]]); }
   else if(a==='supphideoff'){ delete db.settings.suppHide; save(); reRender(); toast('✓ supps de vuelta en macros'); }
-  else if(a==='adhoclog'){ openAdhocLog(); }
-  else if(a==='deladhoc'){ const d=todayISO(),i=+el.dataset.i; if(db.adhoc&&db.adhoc[d]){db.adhoc[d].splice(i,1); if(!db.adhoc[d].length)delete db.adhoc[d]; save(); render();} }
+  else if(a==='deladhoc'){ const d=el.dataset.d||todayISO(), x=extraDel(d,el.dataset.id); if(x){ save(); reRender(); toast('✓ extra quitado','ok',{undo:()=>{ extraPut(d,x); }}); } }
   else if(a==='stackview'){ window._stackView=el.dataset.v||'today'; render(); }
   else if(a==='chartpt'){ try{ const pts=JSON.parse(el.dataset.pts||'[]'); if(pts.length){ const r=el.getBoundingClientRect(); const x=(e.clientX-r.left)/(r.width||1); let best=pts[0],bd=9; pts.forEach(p=>{ const d=Math.abs(p.f-x); if(d<bd){bd=d;best=p;} }); if(best&&best.l)toast(best.l); } }catch(_){} }
   else if(a==='editbw'){ const d=el.dataset.d; const dt=document.getElementById('bw_date'), kg=document.getElementById('bw_kg'); if(dt)dt.value=d; if(kg){ kg.value=(db.bodyweight&&db.bodyweight[d])||''; focusEl(kg); } }
@@ -11982,6 +12080,8 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='navmenu'){ openNavMenu(); }
   else if(a==='suppq'){ suppQuickTick(el.dataset.id,el.dataset.d,el.dataset.tk); }
   else if(a==='suppdose'){ openQtyDay(el.dataset.id,el.dataset.d,el.dataset.tk); }
+  else if(a==='extraadd'){ openExtraAdd(el.dataset.d||todayISO()); }
+  else if(a==='extraedit'){ openExtraEdit(el.dataset.d||todayISO(),el.dataset.id); }
   else if(a==='calday'){ openCalDay(el.dataset.d); }
   else if(a==='calday_food'){ closeModal(); state.screen='macros'; state.macroDate=el.dataset.d; state._trans=true; render(); }
   else if(a==='calday_gym'){ closeModal(); openSessionEdit(el.dataset.id); }
@@ -16383,6 +16483,8 @@ function buildExportMd(db){
     stack.forEach(it=>{ const p=suppProd(it), k=suppStock(it); L.push('- '+it.name+(p&&p.brand?' ('+p.brand+')':'')+(it.dose?' · '+it.dose+(it.unit?' '+it.unit:''):'')+(p&&p.per?' · '+p.per+' '+suppPU(p)+' por toma':'')+(it.when&&it.when.length?' · '+it.when.join('/'):'')+takesOf(it).slice(1).map(x=>' + '+[takeDoseTxt(x),x.when!=='otros'?x.when:''].filter(Boolean).join(' ')).join('')+(it.category?' ['+it.category+']':'')+(k?' · '+suppStockTxt(k):'')); });
     L.push('');
   }
+  { const xd=Object.keys(db.adhoc||{}).filter(d=>(db.adhoc[d]||[]).length).sort().reverse(), n=xd.reduce((s,d)=>s+db.adhoc[d].length,0);   // v326 · lo que tomaste fuera de plan
+    if(n){ L.push('## //EXTRAS ('+n+')',''); xd.forEach(d=>db.adhoc[d].forEach(a=>{ if(a)L.push('- '+fd(d)+(a.time?' '+a.time:'')+' · '+qtyTxt(extraQty(a))+' '+(a.name||'')); })); L.push(''); } }
   return L.join('\n');
 }
 function exportMarkdown(db){ saveFileSafe('gymtrk-export-'+todayISO()+'.md',buildExportMd(db),'text/markdown'); }
@@ -16464,7 +16566,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
