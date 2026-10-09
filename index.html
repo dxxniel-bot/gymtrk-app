@@ -500,9 +500,9 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .mtg{grid-column:1 / -1; grid-row:1; display:grid; grid-template-columns:var(--s5) minmax(0,1fr) auto; align-content:center; row-gap:var(--s1); min-width:0; min-height:44px; padding:var(--mpad) 0; border:0; background:none; color:inherit; font-family:inherit; text-align:left; line-height:var(--lh-ui); cursor:pointer;}
   .mchev{display:inline-block; grid-column:1; grid-row:1; align-self:start; width:var(--s5); font-size:var(--t-section); color:var(--o30); transform-origin:.3em 50%; transition:transform var(--dur-2) var(--ease-out);} .mrec.open .mchev{transform:rotate(90deg);}   /* gira sobre el centro del glifo (medio avance de la mono), no de su caja: abierto queda en su sitio */
   .mnm{grid-column:2; grid-row:1; font-size:var(--t-section); font-weight:800; color:var(--fg); overflow-wrap:anywhere;}   /* un nombre largo baja de renglón, no se corta (B-12) */
-  .mtm{font-size:var(--t-label); font-weight:400; color:var(--o50); letter-spacing:0; white-space:nowrap;}
+  .mtm{display:inline-block; margin-left:.6em; font-size:var(--t-label); font-weight:400; color:var(--o50); letter-spacing:0; white-space:nowrap;}
   .mkc{grid-column:3; grid-row:1; align-self:start; padding-left:var(--s3); color:var(--o70); font-size:var(--t-section); font-weight:700; letter-spacing:var(--ls-num); text-align:right; white-space:nowrap;}
-  .mtg .mmac{grid-column:2; grid-row:2; font-size:var(--t-label); color:var(--o50);} .mtg .mmac b{color:var(--fg); font-weight:700;}
+  .mtg .mmac{grid-column:2 / -1; grid-row:2; justify-self:start; font-size:var(--t-label); color:var(--o50);} .mtg .mmac b{color:var(--fg); font-weight:700;}
   .mhd .gmore{grid-column:2; grid-row:1; position:relative; z-index:1; width:44px; height:22px; margin:0 -12px 0 0; padding:0 12px 0 0; display:flex; align-items:center; justify-content:flex-end; color:var(--o50);}   /* en el renglón de los macros, bajo el total; los verbos terminan donde empieza su toque y, como antes, el total que tiene encima abre este menú */
   .mhd .gmore::after{content:''; position:absolute; left:0; bottom:0; width:44px; height:44px;}   /* v308 · el toque de ··· crece hacia ARRIBA: ocupa el alto de su cabecera, nunca la comida de abajo */
   /* repaso de v308 · [time] [+ food] a la derecha, junto al pulgar, EN el renglón de los macros y antes de ··· (el mismo .vb y el mismo sitio que
@@ -512,10 +512,28 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .mhd .mact .vb{margin-top:0; margin-bottom:0; align-items:flex-end; padding-bottom:var(--mpad); line-height:var(--lh-ui);} .mhd .mact .madd{margin-right:0;}   /* 2.ª vuelta · la caja entera de [+ food] (etiqueta + 4 por lado, como [goals] contra su orilla) termina donde empieza el toque de ···: nada suyo queda debajo */
   /* 2.ª vuelta · lo que pliega sigue plegando: la tinta del nombre, de su hora y del total va por encima del toque de los verbos (este gana solo
      donde no hay letra), así un nombre que pasa sobre ellos o baja de renglón, o un total de 4 cifras, nunca pone la hora ni abre add food. */
-  .mnm>span,.mkc>span{position:relative; z-index:1;}
+  .mnh,.mnl,.mkc>span,.mtg .mmac{position:relative; z-index:1;}
   /* v317 · M8 · el reloj. Sin hora: el icono lleva ENCIMA el <input type="time"> del sistema, transparente: el toque es suyo y abre el reloj
      nativo. Con hora: el icono encendido abre cambiar / quitar. La tinta del nombre sigue por encima (z-index 1 contra auto). */
-  .mclk{position:relative;} .mclk svg{flex:0 0 auto; width:var(--t-section); height:var(--t-section);} .mclk.on{color:var(--fg);}
+  /* v324 · M9 · el dueño (9-oct): "el reloj está muy grande y los corchetes sobran… lo único que me gusta es el nombre del meal y abajo los
+     macros"; eligió "reloj arriba, food abajo". El reloj (12 px, --o50, sin corchetes: un icono no es un verbo) va justo después del nombre; con
+     hora, la hora misma es lo que se toca. Lo que se VE vive dentro del botón que pliega (.mnm); lo que se TOCA es una capa hermana (.mtk) que
+     repite el renglón en invisible para caer en el mismo sitio (también si el nombre baja de renglón) y le da 44 de toque sin tapar el pliegue:
+     la tinta del nombre, del total y de los macros sigue por encima (z-index 1 contra auto). */
+  .mck{display:inline-block; margin-left:var(--s3); color:var(--o50); line-height:var(--lh-tight);} .mck svg{display:block; width:var(--t-data); height:var(--t-data);}
+  .mnm .mck{vertical-align:-1px;}
+  .mtk{grid-column:1 / -1; grid-row:1; align-self:start; display:grid; grid-template-columns:var(--s5) minmax(0,1fr) auto; min-width:0; padding:var(--mpad) 0 0; line-height:var(--lh-ui); pointer-events:none;}
+  .mtkn{grid-column:2; min-width:0; font-size:var(--t-section); font-weight:800; overflow-wrap:anywhere;}
+  .mtkt{grid-column:3; padding-left:var(--s3); font-size:var(--t-section); font-weight:700; letter-spacing:var(--ls-num); white-space:nowrap;}
+  .mtkg,.mtkt,.mtz{visibility:hidden;} .mtz{position:relative; vertical-align:top;}
+  .mtz>.mclk{position:absolute; left:0; top:calc(-1 * var(--mpad)); width:max(100%,44px); height:44px; margin:0; padding:0; border:0; background:none; visibility:visible; pointer-events:auto; cursor:pointer;}
+  /* 2.ª vuelta (verificador) · el toque del reloj nunca llega a [+ food]: la 3.ª columna del renglón reserva, en invisible, la caja de [+ food]
+     (.mgh: la misma clase, así mide lo mismo con cualquier fuente) + la columna de ··· + 24 de aire. El nombre baja de renglón ANTES de que el
+     reloj quede encima de los verbos. El toque del icono empieza donde acaba el nombre (8 antes del dibujo) y el reloj va atado a lo último del
+     nombre (.mnt no se parte): nunca se queda solo en un renglón. */
+  .mck.mtz>.mclk{left:calc(-1 * var(--s3));}
+  .mnt{white-space:nowrap;}
+  .vb.mgh{grid-column:3; grid-row:1; justify-self:end; min-height:0; height:0; margin:0 var(--mcol) 0 var(--s6); visibility:hidden; pointer-events:none;}
   .mclki{position:absolute; inset:0; width:100%; height:100%; margin:0; padding:0; border:0; background:none; opacity:0; font-size:var(--t-field); cursor:pointer; -webkit-appearance:none; appearance:none;}
   .mtm.sch{color:var(--o40);} .mtm.sch>span{border-bottom:var(--bw-dash) dashed var(--o50);}   /* programada: su hora aún no llega (punteado = previsto) */
   .mclk:has(.mclki:focus-visible){outline:var(--bw-focus) solid var(--fg); outline-offset:calc(-1 * var(--s3));}   /* con teclado se ve dónde está el foco */
@@ -530,8 +548,9 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
      que se mete 12 px en el margen de la página. v280 · de 3 a 2 px (3 de aire), el grueso del punto de la tipografía:
      "los tres puntitos siguen estando muy grandes para el estilo gráfico que llevamos"; 20 px entre el total y el primero. */
   .dots3{display:block; width:2px; height:2px; margin-right:10px; border-radius:50%; background:currentColor; box-shadow:5px 0 0 currentColor, 10px 0 0 currentColor/*ds:exempt*/;}   /* la "sombra" dibuja los puntos 2 y 3 */
-  .mlbody{padding-bottom:var(--s2);}
-  .mit{display:flex; align-items:center; gap:var(--s3); width:100%; min-height:36px; padding:0 0 0 var(--s5); border:0; background:none; color:inherit; font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
+  .mlbody{margin-left:calc(var(--s5) + var(--s2)); padding-bottom:var(--s2); border-left:var(--bw-rule) solid var(--o20);}   /* v324 · M10 · "no se diferencia entre los alimentos de la meal y el título": los alimentos van con sangría y una guía, como hijos de su comida */
+  .mlbody .mdmeal{padding-left:var(--s4);}
+  .mit{display:flex; align-items:center; gap:var(--s3); width:100%; min-height:36px; padding:0 0 0 var(--s4); border:0; background:none; color:inherit; font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
   .mit .nm{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--o70);} .mit .q{font-weight:700; color:var(--o70);} .mit .kc{flex:0 0 auto; color:var(--o50);}
   .mit:active,.mit.exp{background:var(--o10);}
   .mit .nm1{display:block; overflow:hidden; text-overflow:ellipsis;} .mit .mmac{display:block; font-size:var(--t-label); color:var(--o50); line-height:var(--lh-tight); margin-top:1px;} .mit .mmac b{color:var(--fg); font-weight:700;}   /* v271 · macros por alimento, el principal en blanco */
@@ -1381,7 +1400,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v323';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v324';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -1668,7 +1687,7 @@ async function nativeBoot(){ const fs=capP('Filesystem'); if(!fs)return;
   if(best&&(seqOf(best.db)>seqOf(db)||!(db&&db.profile&&db.profile.username))){ db=migrate(best.db); save(); render(); try{ toast('✓ datos recuperados del respaldo de la app'); }catch(_){} }
   else if(dbMass(db)>0){ nativeMirrorSoon(JSON.stringify(db)); } }
 // files in the native app: write to Documents (visible in Archivos) and open the share sheet — <a download> doesn't work in a WebView
-async function nativeShareFile(name,text,enc){   // v256: enc='base64' para la imagen const fs=capP('Filesystem'), sh=capP('Share'); if(!fs){ toast('⚠ no pude acceder a Archivos','err'); return; }
+async function nativeShareFile(name,text,enc){ const fs=capP('Filesystem'), sh=capP('Share'); if(!fs){ toast('⚠ no pude acceder a Archivos','err'); return; }   // v256: enc='base64' para la imagen
   try{ await fs.writeFile(Object.assign({path:name,data:text,directory:'DOCUMENTS'},enc==='base64'?{}:{encoding:'utf8'})); const u=await fs.getUri({path:name,directory:'DOCUMENTS'});
     if(sh) await sh.share({title:name,files:[u.uri]}); else toast('guardado en Archivos › gym//TRK › '+name,'ok'); }
   catch(e){ if(!/cancel/i.test(String(e&&e.message)))toast('⚠ no pude exportar · '+((e&&e.message)||''),'err'); } }
@@ -6068,6 +6087,17 @@ function _ageSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fi
     A('ajustar la actividad la guarda como tuya (deja de ser estimada)', db.profile.pa.set===true&&db.profile.pa.i===10&&fitnessAge().pa.est===false&&fitnessAge().pa.idx===45);
     console.log('fitness age self-check OK');
   } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } saveSoon=_ss; db=real; state.screen=sc0; _sbx=sb0; _faCache=null; bumpIdx(); } }
+// self-check de v324 (BK1): el respaldo como texto ya no existe; exportar vive solo en ajustes. Base de juguete; no guarda nada.
+function _v324SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v324: '+nm); }; const real=db, sb0=_sbx;
+  try{ _sbx=true; db=migrate({profile:{username:'t'},split:{days:[]},sessions:[]}); bumpIdx();
+    A('BK1 · la hoja de copiar y pegar el respaldo ya no existe', typeof openSync==='undefined');
+    openNavMenu(); const rows=[...document.querySelectorAll('#modal .nvm')].map(x=>x.dataset.nav); closeModal();
+    A('BK1 · el menú del usuario ya no trae respaldo / exportar (y conserva lo demás)', rows.indexOf('sync')<0&&rows.join()==='settings,history,splitedit,catalog,muscles,stack,sharefood');
+    const st=renderSettings(); A('BK1 · en ajustes quedan export file, export .md e import file, sin el botón de copiar y pegar', /data-act="export"/.test(st)&&/data-act="exportmd"/.test(st)&&/data-act="import"/.test(st)&&!/data-act="sync"/.test(st)&&!/copy \/ paste/.test(st));
+    openTextSheet('x.json','a'.repeat(50000)); A('BK1 · la hoja de reserva ya no pinta un respaldo entero (solo el principio; copiar se lleva todo)', document.getElementById('ts_txt').value.length<3000&&/KB/.test(document.querySelector('#modal .submeta').textContent)); closeModal();
+    openTextSheet('x.txt','hola'); A('…y un texto corto sale completo', document.getElementById('ts_txt').value==='hola'); closeModal();
+    console.log('v324 self-check OK');
+  } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } db=real; _sbx=sb0; bumpIdx(); } }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -7172,21 +7202,25 @@ function macroLineHTML(m){ const p=+m.protein||0, c=+m.carbs||0, f=+m.fat||0; if
   return `<span class="mmac">${m.approx?'~':''}${x(p,'P','p')} · ${x(c,'C','c')} · ${x(f,'F','f')}</span>`; }
 function mealItemRow(m,kc){ const nm=(m.name||'').replace(/ ×[\d.]+$/,''); const exp=state.expandedMeal===m.id;
   return `<div class="mit${exp?' exp':''}" data-act="viewmeal" data-id="${m.id}" data-rk="mi:${m.id}"><span class="nm"><span class="nm1"><b class="q">${itemQtyLabel(m)}</b> ${escTxt(nm)}</span>${macroLineHTML(m)}</span><span class="kc">${m.approx?'~':''}${kc==null?(Math.round(m.kcal)||0):kc}</span></div>`+(exp?mealDetailInline(m):''); }
+// v324 · el nombre de una comida en dos partes para pintarlo: lo último (su última palabra si es corta; si no, sus últimas 4 letras) va en una
+// caja que no se parte junto con el reloj o la hora (.mnt), así el reloj nunca se queda solo en un renglón
+function mealNmParts(tag){ const s=String(tag==null?'':tag), i=s.lastIndexOf(' '); let c=i+1; if(s.length-c>8)c=s.length-4; return [s.slice(0,c),s.slice(c)]; }
 function foodSecHTML(iso,items,dayKcal){
   const DP=dayMealParts(iso,items,dayKcal), byTag=DP.byTag, tags=DP.tags;   // v256: los totales de las comidas suman exacto el anillo
   state._mealOpen=state._mealOpen||{};
   if(!state._mealOpen[iso]){ state._mealOpen[iso]={}; if(tags.length)state._mealOpen[iso][tags[tags.length-1]]=true; }
   const om=state._mealOpen[iso];
   const meals=tags.map(tag=>{ const list=byTag[tag], mt={kcal:0,protein:0,carbs:0,fat:0}; list.forEach(m=>{ for(const k in mt)mt[k]+=+m[k]||0; });
-    const op=!!om[tag], tm=mealTime(iso,tag), et=escTxt(tag), kc=DP.meal[tags.indexOf(tag)], sch=mealSched(iso,tag);
+    const op=!!om[tag], tm=mealTime(iso,tag), et=escTxt(tag), [nh,nl]=mealNmParts(tag).map(x=>escTxt(x)), kc=DP.meal[tags.indexOf(tag)], sch=mealSched(iso,tag);
     // v290 · la hora va en el renglón del nombre (sin hora no queda hueco) y los macros a la izquierda, con puntos y el de más gramos en blanco
     const meta=macroLineHTML(mt)||'<span class="mmac">—</span>';
     const kp=kcalParts(list,kc);
     const rows=op?`<div class="mlbody">${list.map((m,i)=>mealItemRow(m,kp[i])).join('')}</div>`:'';
-    return `<div class="mrec${op?' open':''}" data-tag="${et}" data-rk="ml:${et}"><div class="mhd"><button type="button" class="mtg" data-act="mealfold" data-tag="${et}" aria-expanded="${op}"><span class="mchev" aria-hidden="true">›</span><span class="mnm"><span>${et}</span>${tm?`<span class="mtm${sch?' sch':''}"> · <span>${escTxt(tm)}</span></span>`:''}</span><span class="mkc" aria-label="${kc} kcal"><span data-nk="mk:${et}" data-nv="${kc}">${kc.toLocaleString()}</span></span>${meta}</button>`
-      // v308 · G8 tanda 3: lo de todos los días junto al pulgar — [+ food] a la derecha; y M7: una comida sin hora ofrece [time] (un toque = ahora).
-      // Repaso de v308: van en el renglón de los macros, antes de ··· — y en ese mismo orden en el DOM (el foco sigue lo que se ve: time → food → ···)
-      +`<div class="mact">${tm?`<button type="button" class="vb mclk on" data-act="mealclock" data-tag="${et}" aria-label="hora de ${et} · ${escTxt(tm)}">${CLOCK_SVG}</button>`:`<label class="vb mtime mclk" aria-label="poner la hora a ${et}">${CLOCK_SVG}<input type="time" class="mclki" data-mt="${et}" aria-label="hora de ${et}"/></label>`}<button type="button" class="vb madd" data-act="addtomeal" data-tag="${et}" aria-label="agregar alimento a ${et}">+ food</button></div>`
+    return `<div class="mrec${op?' open':''}" data-tag="${et}" data-rk="ml:${et}"><div class="mhd"><button type="button" class="mtg" data-act="mealfold" data-tag="${et}" aria-expanded="${op}"><span class="mchev" aria-hidden="true">›</span><span class="mnm">${nh?`<span class="mnh">${nh}</span>`:''}<span class="mnt"><span class="mnl">${nl}</span>${tm?`<span class="mtm${sch?' sch':''}"> · <span>${escTxt(tm)}</span></span>`:`<span class="mck" aria-hidden="true">${CLOCK_SVG}</span>`}</span></span><span class="mkc" aria-label="${kc} kcal"><span data-nk="mk:${et}" data-nv="${kc}">${kc.toLocaleString()}</span></span><span class="vb mgh" aria-hidden="true">+ food</span>${meta}</button>`
+      // v324 · M9 · el reloj sale del renglón de los verbos: va junto al nombre (lo que se ve, dentro de .mnm) y su toque es esta capa hermana,
+      // que repite nombre y total en invisible para caer justo después del nombre. Orden en el DOM = orden de lectura: reloj → [+ food] → ···
+      +`<div class="mtk"><span class="mtkn">${nh?`<span class="mtkg" aria-hidden="true">${nh}</span>`:''}<span class="mnt"><span class="mtkg" aria-hidden="true">${nl}</span>${tm?`<span class="mtm mtz"><button type="button" class="mclk on" data-act="mealclock" data-tag="${et}" aria-label="hora de ${et} · ${escTxt(tm)}"></button> · <span>${escTxt(tm)}</span></span>`:`<span class="mck mtz"><label class="mtime mclk" aria-label="poner la hora a ${et}"><input type="time" class="mclki" data-mt="${et}" aria-label="hora de ${et}"/></label>${CLOCK_SVG}</span>`}</span></span><span class="mtkt" aria-hidden="true">${kc.toLocaleString()}</span><span class="vb mgh" aria-hidden="true">+ food</span></div>`
+      +`<div class="mact"><button type="button" class="vb madd" data-act="addtomeal" data-tag="${et}" aria-label="agregar alimento a ${et}">+ food</button></div>`
       +`<button type="button" class="gmore" data-act="mealmenu" data-tag="${et}" aria-label="acciones de ${et}"><span class="dots3" aria-hidden="true"></span></button></div>${rows}</div>`; }).join('');   // el total ya no es un botón aparte: `ver desglose` vive en ···
   // v308 · M7 · el dueño: "a las meals agregarle el X/X de las meals loggeadas pero solo que se confirmen al poner la hora… MEAL 2/4…
   // si le pone hora a otra meal sea 3/4 o si le quita pues 1/4": comidas con hora / comidas del día
@@ -7200,7 +7234,14 @@ function foodSecHTML(iso,items,dayKcal){
 function mealNowHM(){ return window._mealNow||nowHM(); }   // _mealNow = el reloj de las pruebas
 function mealSched(iso,tag){ const t=mealTime(iso,tag), T=todayISO(); return !!t&&(iso>T||(iso===T&&t>mealNowHM())); }
 function mealsTimed(iso,tags){ return (tags||[]).filter(t=>!!mealTime(iso,t)&&!mealSched(iso,t)).length; }
-function mealTimeSet(d,tag,hm,quiet){ const was=mealTime(d,tag)||null; hm=(hm||'').trim()||null; if(hm===was)return false; mealAnchor(tag); setMealTime(d,tag,hm); save(); reRender(); _lastTap=null;   /* v317 · la comida queda donde estaba */
+function mealTimeSet(d,tag,hm,quiet){ const was=mealTime(d,tag)||null; hm=(hm||'').trim()||null; if(hm===was)return false;
+  // v317 · la comida queda donde estaba (el scroll la sigue) · v324 · y si el scroll no alcanza (lista corta: tendría que subir más de lo que
+  // hay), el orden por hora espera: las comidas conservan su lugar hasta que vuelvas a entrar a macros. Nada se mueve bajo el dedo.
+  const v=document.getElementById('view'), top=()=>{ const b=v&&rkFind(v,'ml:'+tag); if(!b)return null; let y=0,e=b; while(e&&e!==v){ y+=e.offsetTop; e=e.offsetParent; } return y-v.scrollTop; };
+  const y0=top(), ord0=v?[...v.querySelectorAll('.mrec[data-tag]')].map(x=>x.dataset.tag):[];
+  mealAnchor(tag); const a0=_lastTap?Object.assign({},_lastTap):null; setMealTime(d,tag,hm); save(); reRender();
+  { const y1=top(); if(y0!=null&&y1!=null&&Math.abs(y1-y0)>1&&ord0.length>1&&!(state._mealHold&&state._mealHold.d===d)){ state._mealHold={d,tags:ord0}; _lastTap=a0; reRender(); } }
+  _lastTap=null;
   if(!quiet)toast(hm?'✓ '+tag+' · '+hm+(mealSched(d,tag)?' · programada':''):'✓ '+tag+' · sin hora','ok',{undo:()=>{ mealAnchor(tag); setMealTime(d,tag,was); }}); return true; }
 // v317 · el reloj es el del SISTEMA (el dueño: "la nativa emergente de iOS"): un <input type="time"> transparente sobre el icono. Al tocarlo
 // (viendo hoy) nace con la hora de este momento; otro día nace vacío (no se inventa la hora). Se guarda al CERRARSE (focusout), nunca
@@ -7554,6 +7595,7 @@ function dayMealParts(iso,food,dayKcal){
   const order=['breakfast','lunch','snack','dinner','drink'];
   const _tmin=tg=>{ const mm=hm2min(mealTime(iso,tg)); return isFinite(mm)?mm:Infinity; };
   const tags=Object.keys(byTag).sort((a,b)=>{ const A=_tmin(a),B=_tmin(b); return A!==B?A-B:(order.indexOf(a)-order.indexOf(b)); });
+  { const H=state._mealHold; if(H&&H.d===iso&&H.tags.length===tags.length&&H.tags.every(t=>byTag[t]))tags.sort((a,b)=>H.tags.indexOf(a)-H.tags.indexOf(b)); }   // v324 · el orden que se quedó quieto (ver mealTimeSet)
   const sums=tags.map(tag=>byTag[tag].reduce((a,m)=>a+(+m.kcal||0),0)), mealsK=sums.reduce((a,x)=>a+x,0);
   const restK=Math.max(0,(+dayKcal||mealsK)-mealsK);
   const parts=kcalParts(sums.map(k=>({kcal:k})).concat([{kcal:restK}]),Math.round(+dayKcal||mealsK));
@@ -10902,7 +10944,7 @@ function renderSettings(){
     +`<div class="line lnav u-tap" role="button" tabindex="0" data-act="tourreplay"><span class="k">guías de cada sección</span><span class="dots"></span><span class="v">${db.tour&&db.tour.skipped?'apagadas · prender':'repetir'} ›</span></div>`   // v278
     +(db.settings.suppHide?`<div class="line u-tap" data-act="supphideoff"><span class="k">supps en macros</span><span class="dots"></span><span class="v">ocultos · mostrar ›</span></div>`:'')
     +healthSettingsHTML()
-    +`<hr class="rule"/><div class="cta"><button class="start" data-act="sync">sync data (copy / paste)</button>`
+    +`<hr class="rule"/><div class="cta">`
     +`<div class="secondary"><button class="b" data-act="storage">espacio</button><button class="b" data-act="export">export file</button><button class="b" data-act="exportmd">export .md</button><button class="b" data-act="import">import file</button></div>`
     +`<div class="secondary u-mt10"><button class="b" data-act="reset">reset data</button></div></div>`
     +`<div class="submeta u-mt12">tus datos se guardan solos en este dispositivo (con respaldo automático). para no perderlos: <b class="u-o60">agrega la app a inicio</b> y ábrela seguido. si vas a cambiar de teléfono, usa export.</div>`;
@@ -11131,7 +11173,7 @@ function nextSetTarget(exi,si){
   return null;
 }
 function go(s){ if(state.progEdit&&s!=='progress')state.progEdit=null; return _goInner(s); }
-function _goInner(screen){ flushSave(); state._trans=(state.screen!==screen); if(state._trans)state._from=state.screen; state.screen=screen; if(screen==='macros') state.macroDate=todayISO(); render(); }
+function _goInner(screen){ flushSave(); state._mealHold=null; state._trans=(state.screen!==screen); if(state._trans)state._from=state.screen; state.screen=screen; if(screen==='macros') state.macroDate=todayISO(); render(); }
 
 // ---------- rest timer (between sets) ----------
 // state lives in db.activeWork.restEnd (epoch ms) → persisted by save(), survives re-renders, reloads and iOS kills.
@@ -12134,7 +12176,6 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='stfree'){ const f=freeOrphanBackups(); closeModal(); if(f>0){ toast('✓ '+Math.round(f/1024)+' KB liberados'); if(!_saveErr||save())saveOK(); } else toast('no había nada que liberar'); }
   else if(a==='exportmd'){ exportMarkdown(db); }
   else if(a==='import'){ doImport(); }
-  else if(a==='sync'){ openSync(); }
   else if(a==='reset'){ holdConfirm({title:'borrar TODOS los datos',detail:'sesiones, comidas, split y ajustes de este dispositivo · queda una copia interna por si fue un error',verb:'borrar todo'},()=>{ idbSnap('reset',db).then(()=>idbDel('latest')).catch(()=>{}); localStorage.removeItem(LS_KEY); try{localStorage.removeItem(LS_BACKUP);}catch(_){} try{ localStorage.removeItem(LS_LIVE); localStorage.removeItem(LS_LIVE_PENDING); localStorage.removeItem(LS_GROWTH); freeOrphanBackups(); }catch(_){} db=seed(); save(); go('home'); }); }
   else if(a==='restminus'){ const w=db.activeWork; if(w&&w.restEnd){ w.restEnd-=15000; save(); updateRestBar(); } }
   else if(a==='restplus'){ const w=db.activeWork; if(w&&w.restEnd){ w.restEnd+=15000; save(); updateRestBar(); } }
@@ -14463,40 +14504,67 @@ function _mealsSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
     // 1 · su ejemplo: breakfast 7am · lunch 12pm · snack · dinner → 2 / 4
     paint(T); A('MEALS dice comidas con hora / comidas del día (su ejemplo: 2 / 4)', lv()==='2 / 4'&&mealsTimed(T,['breakfast','lunch','snack','dinner'])===2);
     A('el agua no es una comida', host.querySelectorAll('.mrec').length===4);
-    A('el reloj: sin hora, el icono con el reloj del sistema encima (ya no dice time); con hora, el icono encendido', !rec('breakfast').querySelector('.mtime')&&rec('breakfast').querySelector('.mclk.on').dataset.act==='mealclock'&&!rec('lunch').querySelector('.mtime')&&!!rec('snack').querySelector('.mtime .mclki')&&rec('dinner').querySelector('.mtime input').type==='time'&&!!rec('dinner').querySelector('.mtime svg')&&rec('dinner').querySelector('.mtime').textContent.trim()==='');
-    { const r=rec('dinner'), R=s=>r.querySelector(s).getBoundingClientRect(), H=r.querySelector('.mhd').getBoundingClientRect();
-      A('[+ food] va a la derecha, junto a ···, con [time] a su izquierda', R('.madd').left>H.left+H.width/2&&Math.abs(R('.madd').right-R('.gmore').left)<=.5&&R('.mtime').right<=R('.madd').left+8);
+    A('M9 · el reloj: sin hora, un icono chico junto al nombre con el reloj del sistema encima; con hora, la hora misma se toca', !rec('breakfast').querySelector('.mtime')&&rec('breakfast').querySelector('.mtk .mclk.on').dataset.act==='mealclock'&&!rec('breakfast').querySelector('.mnm .mck')&&!rec('lunch').querySelector('.mtime')&&!!rec('snack').querySelector('.mtk .mtime .mclki')&&rec('dinner').querySelector('.mtk .mtime input').type==='time'&&!!rec('dinner').querySelector('.mnm .mck svg')&&rec('dinner').querySelector('.mtime').textContent.trim()===''&&!rec('dinner').querySelector('.mact .mclk')&&!rec('dinner').querySelector('.mtime').classList.contains('vb'));
+    A('M9 · el nombre se parte en dos cajas y se lee igual (lo último va atado al reloj)', mealNmParts('dinner').join('|')==='|dinner'&&mealNmParts('breakfast').join('|')==='break|fast'&&mealNmParts('pre entreno').join('|')==='pre |entreno'&&mealNmParts('a b').join('|')==='a |b'&&rec('breakfast').querySelector('.mnm').textContent.indexOf('breakfast')===0&&rec('dinner').querySelector('.mnm .mnt .mnl').textContent==='dinner');
+    { const r=rec('dinner'), R=s=>r.querySelector(s).getBoundingClientRect(), H=r.querySelector('.mhd').getBoundingClientRect(), ink=e=>{ const g=document.createRange(); g.selectNodeContents(e); return g.getBoundingClientRect(); }, mid=b=>(b.top+b.bottom)/2;
+      { const nm=ink(r.querySelector('.mnm .mnl')), ic=R('.mnm .mck svg'), z=R('.mtk .mtime');
+        A('M9 · el reloj es chico (12, como los datos) y va en el renglón del nombre, justo después de él', Math.abs(ic.width-12)<=.5&&Math.abs(ic.height-12)<=.5&&ic.left>=nm.right&&ic.left-nm.right<=12&&Math.abs(mid(ic)-mid(nm))<=3);
+        A('M9 · su toque mide 44 × 44, empieza donde acaba el nombre, cubre el icono y no sale de su cabecera', z.width>=43.5&&z.height>=43.5&&z.top>=H.top-.5&&z.bottom<=H.bottom+.5&&Math.abs(z.left-nm.right)<=1&&z.right>=ic.right); }
+      A('[+ food] va a la derecha, junto a ···', R('.madd').left>H.left+H.width/2&&Math.abs(R('.madd').right-R('.gmore').left)<=.5);
       A('el ] de [+ food] no entra al toque de ···: la etiqueta completa queda en el suyo', R('.madd').right-parseFloat(getComputedStyle(r.querySelector('.madd')).paddingRight)<=R('.gmore').left+.5&&R('.madd').right<=R('.gmore').left+.5);
-      A('[time] y [+ food] se tocan a 44', R('.madd').height>=43.5&&R('.madd').width>=43.5&&R('.mtime').height>=43.5&&R('.mtime').width>=43.5);
+      A('[+ food] se toca a 44', R('.madd').height>=43.5&&R('.madd').width>=43.5);
       A('··· se toca hacia arriba y deja 44 de [+ food] libres', getComputedStyle(r.querySelector('.gmore'),'::after').bottom==='0px'&&parseFloat(getComputedStyle(r.querySelector('.gmore'),'::after').height)>=44&&R('.gmore').left-R('.madd').left>=43.5);
-      // repaso de v308 · dos renglones: los verbos van EN el renglón de los macros (misma altura de texto), ocupan el alto de su cabecera y no se enciman
-      { const ink=e=>{ const g=document.createRange(); g.selectNodeContents(e); return g.getBoundingClientRect(); }, mid=b=>(b.top+b.bottom)/2, mm=ink(r.querySelector('.mtg .mmac'));
+      A('la columna reservada mide lo que [+ food] (misma caja, en invisible) y deja 24 antes', Math.abs(R('.mtg .mgh').left-R('.madd').left)<=.5&&Math.abs(R('.mtg .mgh').right-R('.madd').right)<=.5&&Math.abs(R('.mtk .mgh').left-R('.madd').left)<=.5&&R('.mtg .mgh').height===0&&Math.abs(R('.mnm').right-(R('.madd').left-24))<=1&&Math.abs(R('.mtkn').right-R('.mnm').right)<=.5);
+      { const mm=ink(r.querySelector('.mtg .mmac'));
         A('la cabecera mide 44: no hay un renglón solo para los verbos', H.height<=45&&Math.abs(R('.mact').top-H.top)<=.5&&Math.abs(R('.mact').bottom-H.bottom)<=.5);
-        A('[time] y [+ food] se leen en el renglón de los macros', Math.abs(mid(ink(r.querySelector('.madd')))-mid(mm))<=1&&Math.abs(mid(ink(r.querySelector('.mtime svg')))-mid(mm))<=1);
-        A('[time] y [+ food] no se enciman y los macros no llegan a ellos', R('.mtime').right<=R('.madd').left+.5&&mm.right<R('.mtime').left);
-        A('en el DOM van como se ven: [time] → [+ food] → ···', !!(r.querySelector('.mtime').compareDocumentPosition(r.querySelector('.madd'))&4)&&!!(r.querySelector('.madd').compareDocumentPosition(r.querySelector('.gmore'))&4)); }
-      const a=rec('breakfast').querySelector('.madd').getBoundingClientRect(); A('[+ food] cae en la misma columna con y sin [time]', Math.abs(a.right-R('.madd').right)<=.5); }
+        A('[+ food] se lee en el renglón de los macros', Math.abs(mid(ink(r.querySelector('.madd')))-mid(mm))<=1);
+        A('los macros no llegan a [+ food] y el toque del reloj tampoco', mm.right<R('.madd').left&&R('.mtk .mtime').right<=R('.madd').left+.5);
+        A('en el DOM van como se leen: reloj → [+ food] → ···', !!(r.querySelector('.mtime').compareDocumentPosition(r.querySelector('.madd'))&4)&&!!(r.querySelector('.madd').compareDocumentPosition(r.querySelector('.gmore'))&4)); }
+      const a=rec('breakfast').querySelector('.madd').getBoundingClientRect(); A('[+ food] cae en la misma columna con y sin hora', Math.abs(a.right-R('.madd').right)<=.5);
+      { const b=rec('breakfast'), t=b.querySelector('.mnm .mtm').getBoundingClientRect(), z=b.querySelector('.mtk .mclk.on').getBoundingClientRect(), hb=b.querySelector('.mhd').getBoundingClientRect();
+        A('M9 · con hora, el toque cubre la hora escrita, mide 44 de alto y no sale de su cabecera', z.left<=t.left+1&&z.right>=t.right-1&&z.width>=43.5&&z.height>=43.5&&z.top>=hb.top-.5&&z.bottom<=hb.bottom+.5); } }
     // …y el caso más ancho a 357 de contenido (macros de 4 cifras en una comida sin hora) tampoco se toca
     { const it=db.meals[T].find(x=>x.id==='d'), o={protein:it.protein,carbs:it.carbs,fat:it.fat}; Object.assign(it,{protein:311,carbs:1420,fat:665}); paint(T);
       const r=rec('dinner'), g=document.createRange(); g.selectNodeContents(r.querySelector('.mtg .mmac'));
-      A('macros de 4 cifras no llegan a [time]', g.getBoundingClientRect().right<r.querySelector('.mtime').getBoundingClientRect().left); Object.assign(it,o); paint(T); }
-    // 2.ª vuelta · un nombre que baja de renglón (B-12) y un total de 4 cifras: los verbos siguen en el renglón de los macros y lo que pliega
-    // (la tinta del nombre y del total) sigue plegando aunque pase por encima de ellos
+      A('macros de 4 cifras no llegan a [+ food]', g.getBoundingClientRect().right<r.querySelector('.madd').getBoundingClientRect().left); Object.assign(it,o); paint(T); }
+    // 2.ª vuelta (verificador) · con CUALQUIER largo de nombre, con y sin hora y a dos anchos: el toque del reloj no entra a la caja de [+ food]
+    // ni sale de su cabecera, el reloj (o la hora) va en el renglón de lo último del nombre (nunca solo) y la etiqueta de [+ food] sigue siendo suya
+    { const base='desayuno antes de la oficina con fruta y cafe de olla para llevar al trabajo', w0=host.style.width, hs=host.style.cssText; let bad='';
+      try{ [357,288].forEach(w=>{ host.style.width=w+'px'; for(let L=4;L<=base.length&&!bad;L+=1){ const nm=base.slice(0,L).trim(); if(rec(nm))continue; [null,'08:30'].forEach(hm=>{ if(bad)return;
+            db.meals[T].push(I('sw',nm,321)); if(hm)setMealTime(T,nm,hm); paint(T); const r=rec(nm), q=s=>r.querySelector(s), z=q('.mtk .mclk').getBoundingClientRect(), md=q('.madd').getBoundingClientRect(), H=q('.mhd').getBoundingClientRect(),
+              tl=q('.mnm .mnl').getBoundingClientRect(), ck=(q('.mnm .mck svg')||q('.mnm .mtm')).getBoundingClientRect(), mid=b=>(b.top+b.bottom)/2;
+            if(z.right>md.left+.5&&z.left<md.right-.5)bad='el toque del reloj entra a [+ food]'; else if(z.width<43.5||z.height<43.5)bad='el toque del reloj mide menos de 44';
+            else if(z.top<H.top-.5||z.bottom>H.bottom+.5)bad='el toque del reloj sale de su cabecera'; else if(tl.width>0&&Math.abs(mid(ck)-mid(tl))>4)bad='el reloj quedó solo en su renglón';
+            if(bad)bad+=' · ancho '+w+' · '+L+' letras'+(hm?' · con hora':'');
+            if(hm)setMealTime(T,nm,null); db.meals[T]=db.meals[T].filter(x=>x.id!=='sw'); }); } }); }
+      finally{ host.style.cssText=hs; host.style.width=w0; db.meals[T]=db.meals[T].filter(x=>x.id!=='sw'); paint(T); }
+      A('con cualquier largo de nombre el reloj no choca con [+ food] ni se queda solo'+(bad?' → '+bad:''), !bad); }
+    // un nombre que baja de renglón (B-12) y un total de 4 cifras: la capa del reloj sigue al nombre renglón por renglón, [+ food] sigue en el
+    // renglón de los macros y lo que pliega (la tinta del nombre, del total y de los macros) sigue plegando aunque el toque del reloj pase por ahí
     { const LN='desayuno largo de domingo en casa con toda la familia'; db.meals[T].push(I('ln',LN,1817)); paint(T);
       const r=rec(LN), q=s=>r.querySelector(s), mid=b=>(b.top+b.bottom)/2, ink=e=>{ const g=document.createRange(); g.selectNodeContents(e); return g.getBoundingClientRect(); };
-      const nm=q('.mnm>span'), ln=[...nm.getClientRects()], mm=ink(q('.mtg .mmac')), kc=q('.mkc>span').getBoundingClientRect();
-      A('el nombre largo baja de renglón y pasa por encima de los verbos; el total de 4 cifras también', ln.length>=2&&ln[0].right>q('.mtime').getBoundingClientRect().left&&kc.left<q('.madd').getBoundingClientRect().right);
-      A('…y [time] y [+ food] siguen en el renglón de los macros', Math.abs(mid(ink(q('.madd')))-mid(mm))<=1&&Math.abs(mid(ink(q('.mtime svg')))-mid(mm))<=1);
-      A('la tinta del nombre y del total va por encima del toque de los verbos', [nm,q('.mkc>span')].every(e=>getComputedStyle(e).position==='relative'&&getComputedStyle(e).zIndex==='1')&&getComputedStyle(q('.mact')).zIndex==='auto'&&getComputedStyle(q('.mtime')).zIndex==='auto'&&getComputedStyle(q('.mtime .mclki')).zIndex==='auto');
+      const nm=q('.mnm .mnh'), tl=q('.mnm .mnl'), ln=[...nm.getClientRects()], gh=[...q('.mtkg').getClientRects()], mm=ink(q('.mtg .mmac')), kc=q('.mkc>span').getBoundingClientRect(), H=q('.mhd').getBoundingClientRect(), z=q('.mtk .mtime').getBoundingClientRect(), ic=q('.mnm .mck svg').getBoundingClientRect();
+      A('el nombre largo baja de renglón y la capa del reloj lo repite igual', ln.length>=2&&gh.length===ln.length&&Math.abs(gh[gh.length-1].right-ln[ln.length-1].right)<=1&&Math.abs(gh[0].top-ln[0].top)<=1);
+      A('…el toque del reloj cae sobre su icono también ahí, y no sale de la cabecera', z.left<=ic.left+.5&&z.right>=ic.right-.5&&z.top<=ic.top&&z.bottom>=ic.bottom&&z.top>=H.top-.5&&z.bottom<=H.bottom+.5);
+      A('…y [+ food] sigue en el renglón de los macros', Math.abs(mid(ink(q('.madd')))-mid(mm))<=1);
+      A('la tinta del nombre, del total y de los macros va por encima de los toques', [nm,tl,q('.mkc>span'),q('.mtg .mmac')].every(e=>getComputedStyle(e).position==='relative'&&getComputedStyle(e).zIndex==='1')&&getComputedStyle(q('.mact')).zIndex==='auto'&&getComputedStyle(q('.mtk .mtime')).zIndex==='auto'&&getComputedStyle(q('.mtk .mclki')).zIndex==='auto'&&Math.abs(q('.mtg .mmac').getBoundingClientRect().right-mm.right)<=1);
       // el toque de verdad (elementFromPoint) con la sección a la vista un instante (sin transición: con movimiento reducido toda propiedad lleva
       // una de 0.01 ms y la visibilidad no cambiaría hasta el cuadro siguiente); si algo la tapa o cae fuera de la pantalla, no hay punto que medir
       const hs=host.style.cssText; host.style.cssText+=';transition:none;visibility:visible;pointer-events:auto;z-index:2147483647';
-      try{ const at=(x,y)=>{ const e=document.elementFromPoint(x,y); return e&&host.contains(e)?e.closest('[data-act]'):null; }, pts=[[kc.left+1,mid(kc)]];
-        ln.forEach(c=>{ for(let x=c.left+1;x<c.right-1;x+=6)pts.push([x,mid(c)]); });
-        A('tocar el nombre largo (cada renglón) o el total pliega: nunca pone la hora ni abre add food', pts.map(p=>at(p[0],p[1])).filter(Boolean).every(e=>e===q('.mtg')));
-        A('la etiqueta de [time] y la de [+ food] siguen siendo suyas', ['.mtime','.madd'].every(s=>{ const b=ink(q(s)), e=at((b.left+b.right)/2,mid(b)); return !e||e===q(s)||q(s).contains(e); })); }
+      try{ const raw=(x,y)=>{ const e=document.elementFromPoint(x,y); return e&&host.contains(e)?e:null; }, at=(x,y)=>{ const e=raw(x,y); return e?e.closest('[data-act]'):null; }, pts=[[kc.left+1,mid(kc)],[mm.left+2,mid(mm)],[mm.right-2,mid(mm)]];
+        ln.concat([...tl.getClientRects()]).forEach(c=>{ for(let x=c.left+1;x<c.right-1;x+=6)pts.push([x,mid(c)]); });
+        A('tocar el nombre largo (cada renglón), el total o los macros pliega: nunca pone la hora ni abre add food', pts.map(p=>at(p[0],p[1])).filter(Boolean).every(e=>e===q('.mtg')));
+        A('el icono del reloj y la etiqueta de [+ food] siguen siendo suyos', (()=>{ const e1=raw((ic.left+ic.right)/2,mid(ic)), b=ink(q('.madd')), e2=at((b.left+b.right)/2,mid(b)), e3=at(b.left+1,mid(b)), e4=at(b.right-1,mid(b)); return (!e1||q('.mtk .mtime').contains(e1))&&[e2,e3,e4].every(e=>!e||e===q('.madd')); })()); }
       finally{ host.style.cssText=hs; }
       db.meals[T]=db.meals[T].filter(x=>x.id!=='ln'); paint(T); }
+    // el orden que se queda quieto: si al ponerle hora la comida tendría que saltar (el scroll no alcanza), las comidas conservan su lugar
+    { const tg=dayMealParts(T,food(T),0).tags.slice(), rv=tg.slice().reverse(); state._mealHold={d:T,tags:rv};
+      A('con el orden en espera las comidas conservan su lugar ese día…', dayMealParts(T,food(T),0).tags.join()===rv.join()&&dayMealParts(Y,food(Y),0).tags.join()==='lunch');
+      state._mealHold={d:T,tags:rv.concat(['otra'])}; A('…y si cambia qué comidas hay, vuelve el orden por hora', dayMealParts(T,food(T),0).tags.join()===tg.join()); state._mealHold=null; }
+    // M10 · desplegada: los alimentos van con sangría y guía, más adentro que el nombre de su comida
+    { state._mealOpen[T]={dinner:true}; paint(T); const r=rec('dinner'), nmL=r.querySelector('.mnm').getBoundingClientRect().left, it=r.querySelector('.mlbody .mit .nm'), lb=r.querySelector('.mlbody');
+      A('M10 · los alimentos van con sangría (más adentro que el nombre de su comida) y una guía a su izquierda', !!it&&it.getBoundingClientRect().left>=nmL+12&&parseFloat(getComputedStyle(lb).borderLeftWidth)>=1&&lb.getBoundingClientRect().left>nmL&&Math.abs(r.querySelector('.mit .kc').getBoundingClientRect().right-r.querySelector('.mkc').getBoundingClientRect().right)<=1);
+      A('M10 · cada alimento conserva su línea de macros con el principal en blanco', !!r.querySelector('.mit .mmac b')); state._mealOpen[T]={}; paint(T); }
     // 2 · el reloj: hoy nace con la hora de este momento; se guarda al CERRARSE, no mientras gira la rueda
     { const i2=rec('dinner').querySelector('.mclki'); mealClockArm(i2,true); A('un dedo que solo pasó por el icono (sin foco) no deja ninguna hora', /^\d\d:\d\d$/.test(i2.value)&&(mealClockDisarm(i2),i2.value==='')&&!i2.dataset.d&&mealClockDone(i2)===false&&mealTime(T,'dinner')==='');
       mealClockArm(i2,false); A('con teclado (foco sin dedo) nace vacío: pasar con Tab no guarda', i2.value===''&&mealClockDone(i2)===false&&mealTime(T,'dinner')===''); }
@@ -14577,7 +14645,7 @@ function _comidaSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
     A('el desglose sale completo: la hora junto al nombre y P · C · F con puntos', recs.some(r=>mmTxt(r)===' · 17:05 | P 156 · C 244 · F 103')&&recs.some(r=>mmTxt(r)===' · 10:30 | P 311 · C 1420 · F 665'));
     A('el macro de más gramos va en blanco', recs.every(r=>r.querySelectorAll('.mtg .mmac b').length===1)&&recs.some(r=>r.querySelector('.mtg .mmac b').textContent==='C 244'));
     A('v290 · sin hora no queda hueco: el nombre va solo', (r=>!!r&&!r.querySelector('.mtm')&&r.querySelector('.mnm').textContent==='snack')(recs.find(r=>r.dataset.tag==='snack')));
-    A('el nombre largo sale entero', recs.some(r=>r.querySelector('.mnm').firstChild.textContent===LONG));
+    A('el nombre largo sale entero', recs.some(r=>[...r.querySelectorAll('.mnm .mnh,.mnm .mnl')].map(e=>e.textContent).join('')===LONG));   // v324 · va en dos cajas (lo último atado al reloj): juntas dicen el nombre completo
     A('los tres puntos son finos', getComputedStyle(host.querySelector('.dots3')).width==='2px');
     // 2 · borrar una comida: solo sus alimentos de ese día, con su hora, y todo vuelve con el deshacer
     A('borra los dos alimentos de #lunch', mealDelete(D,'lunch')===2&&ids(D)==='w1,b,k');
@@ -16055,10 +16123,9 @@ function openNavMenu(){
      ${item('músculos · cómo los cuenta el motor'+(_un?' · '+_un+' sin asignar':''),'muscles')}
      ${item('suplementos · administrar','stack')}
      ${item('compartir el día','sharefood')}
-     ${item('respaldo / exportar','sync')}
    </div>`);
   document.querySelectorAll('#modal .nvm').forEach(el=>el.onclick=()=>{ const a=el.dataset.nav;
-    if(a==='sync'){ openSync(); return; } if(a==='muscles'){ openMuscleMap(); return; } if(a==='catalog'){ window._mgSel=[]; openExerciseDirectory(); return; } closeModal();
+    if(a==='muscles'){ openMuscleMap(); return; } if(a==='catalog'){ window._mgSel=[]; openExerciseDirectory(); return; } closeModal();
     if(a==='settings')go('settings'); else if(a==='history')go('history'); else if(a==='splitedit')go('splitedit'); else if(a==='stack')go('stack');
     else if(a==='sharefood'){ state.shareType='food'; go('share'); } });
 }
@@ -16098,15 +16165,6 @@ function openMoveItem(m){
   document.getElementById('mv_go').onclick=()=>{ const nt=(val('mv_new')||'').trim(); if(!nt){ toast('⚠ pon un nombre de comida o elige una','err'); return; } moveItemTo(nt); toast('✓ alimento movido'); };
 }
 function moveItemTo(newTag){ const t=curDate(); const arr=db.meals[t]||[]; const mm=arr.find(x=>x.id===window._moveId); if(mm){ mm.tag=newTag; save(); closeModal(); state.expandedMeal=null; render(); } }
-function openSync(){
-  openModal(`<h3>sync data</h3>
-   <div class="submeta u-mb10">Copia este texto para respaldar o pasar a otro equipo (iPhone ↔ aquí). O pega un backup y dale import.</div>
-   <textarea id="sy_txt" class="ta xl"></textarea>
-   <div class="sheetbtns"><button class="ok" data-act="sycopy">copy</button><button class="cancel" data-act="syimport">import from text</button><button class="cancel" data-act="closemodal">close</button></div>`);
-  const ta=document.getElementById('sy_txt'); ta.value=JSON.stringify(db);
-  document.querySelector('[data-act="sycopy"]').onclick=()=>{ ta.select(); ta.setSelectionRange(0,ta.value.length); let ok=false; try{ok=document.execCommand('copy');}catch(e){} if(navigator.clipboard){navigator.clipboard.writeText(ta.value).then(()=>{},()=>{});} toast('✓ copiado'); };
-  document.querySelector('[data-act="syimport"]').onclick=()=>{ try{const d=JSON.parse(ta.value); if(!d.split)throw 0; const _go17=()=>{ db=migrate(d); save(); closeModal(); go('home'); toast('✓ datos importados'); }; return confirmReplace(d,_go17);}catch(e){ toast('⚠ texto inválido','err'); } };
-}
 // v255 · respaldo AL TELÉFONO, eligiendo la carpeta. En iOS la web no tiene selector de archivos (Safari no
 // implementa showSaveFilePicker), pero navigator.share SÍ abre la hoja nativa → "Guardar en Archivos", y ahí
 // el dueño elige iCloud, "En mi iPhone" o donde quiera. Un toque por respaldo, pero sale del navegador.
@@ -16138,14 +16196,15 @@ function saveFileSafe(name,text,mime,onDone){
 // la salida que nunca atrapa: el contenido en una hoja, con [copiar]. Se pega en Notas o en Archivos.
 function openTextSheet(name,text,onDone){
   openModal(`<h3>guardar ${escTxt(name)}</h3>`
-    +`<div class="submeta u-mb8">este navegador no deja guardar el archivo directo · cópialo y pégalo en Notas o en un archivo nuevo</div>`
+    +`<div class="submeta u-mb8">este navegador no deja guardar el archivo directo · cópialo y pégalo en Notas o en un archivo nuevo${text.length>20000?' · '+Math.round(text.length/1024)+' KB: aquí se ve solo el principio, copiar se lleva todo':''}</div>`
     +`<textarea id="ts_txt" class="ta lg" readonly></textarea>`
     +`<div class="sheetbtns u-mt12"><button class="ok" id="ts_copy">copiar</button><button class="cancel" data-act="closemodal">cerrar</button></div>`);
-  const ta=document.getElementById('ts_txt'); if(ta)ta.value=text;
+  // v324 · BK1 · un respaldo entero en un cuadro de texto es lo que trababa el teléfono: si es largo se ve solo el principio; [copiar] se lleva todo
+  const BIG=text.length>20000, ta=document.getElementById('ts_txt'), full=()=>{ if(BIG&&ta&&ta.value.length!==text.length)ta.value=text; }; if(ta)ta.value=BIG?text.slice(0,2000)+'\n…':text;
   const b=document.getElementById('ts_copy');
   if(b)b.onclick=()=>{ const ok=()=>{ toast('✓ copiado · '+Math.round(text.length/1024)+' KB'); if(onDone)onDone(); };
-    try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(ok,()=>{ focusEl(ta); ta.select(); toast('selecciona y copia a mano'); }); return; } }catch(_){}
-    focusEl(ta); ta.select(); try{ if(document.execCommand('copy'))ok(); }catch(_){} };
+    try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(ok,()=>{ full(); focusEl(ta); ta.select(); toast('selecciona y copia a mano'); }); return; } }catch(_){}
+    full(); focusEl(ta); ta.select(); try{ if(document.execCommand('copy'))ok(); }catch(_){} };
 }
 function doBackupShare(){ doExport(); }
 // el recordatorio terco: si pasaron 7 días sin respaldo, se pide UNA vez (no un toast que se va)
@@ -16294,7 +16353,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
