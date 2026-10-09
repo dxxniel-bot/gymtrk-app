@@ -1300,7 +1300,7 @@
 
 <script>
 "use strict";
-const APP_V='v310';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v311';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -4546,11 +4546,28 @@ function _chartSelfCheck(){
   // 4 · ids de gradiente únicos (antes todas repetían id="lcg")
   const g1=(lineChart([1,2],{}).match(/id="(lcg\d+)"/)||[])[1], g2=(lineChart([1,2],{}).match(/id="(lcg\d+)"/)||[])[1];
   A('cada gráfica con su propio gradiente', g1&&g2&&g1!==g2);
-  // 5 · rango normal propio y tendencias
-  const flat=Array(40).fill(10); const nb=normalBandFixed(flat,5,90);
-  A('banda de una serie plana = su valor', nb.lo===10&&nb.hi===10);
-  A('sin 7 días previos no hay banda, pero sí cuenta cuántos faltan', (()=>{ const b=normalBandFixed([1,2,3,4],2,90); return b.lo==null&&b.n===2&&b.need===7; })());
-  A('la banda es UNA sola (fija del periodo), no una por día', typeof normalBandFixed(Array.from({length:120},(_,i)=>i),30,90).lo==='number');
+  // 5 · GR1 · tu normal por día: sube y baja con lo que venías haciendo, se ve, y no aplasta la línea
+  const flat=Array(40).fill(10); const nb=normalBandRolling(flat,5,30);
+  A('franja de una serie plana = su valor, una por día', nb.bands.length===5&&nb.bands.every(b=>b&&b[0]===10&&b[1]===10));
+  A('sin 7 días previos no hay franja, pero sí cuenta cuántos hay', (()=>{ const b=normalBandRolling([1,2,3,4],2,30); return b.bands.every(x=>x===null)&&b.ns.join()==='2,3'&&b.need===7; })());
+  A('el día mismo no entra en su normal', (()=>{ const b=normalBandRolling(Array(10).fill(5).concat([99]),1,30); return b.bands[0][0]===5&&b.bands[0][1]===5; })());
+  A('son días calendario: los días sin registro no alargan la ventana', (()=>{ const r=Array(100).fill(null); [0,10,20,30,40,50,60,70,80,90].forEach(i=>{ r[i]=5; }); return normalBandRolling(r,1,30).bands[0]===null&&normalBandRolling(r,1,30).ns[0]===3; })());
+  A('la gráfica de métricas va sin degradado y las demás lo conservan', !/url\(#/.test(lineChart([1,2,3],{noFill:true}))&&/url\(#/.test(lineChart([1,2,3],{})));
+  { const up=Array.from({length:120},(_,i)=>i), rb=normalBandRolling(up,30,30).bands, px=h=>(((h.match(/<path d="([^"]+)" class="chband"/)||[])[1]||'').replace(/[MLZ]/g,' ').trim().split(/\s+/).filter(Boolean).map(q=>q.split(',').map(Number)));
+    A('la franja sube con tu promedio (una por día, no una fija)', rb.every(Boolean)&&rb[29][0]>rb[0][0]&&rb[29][1]>rb[0][1]&&rb[29][0]-rb[0][0]===29);
+    const D=Array.from({length:30},(_,i)=>shiftDate('2026-03-01',i)), T={tlo:Date.parse(D[0]+'T12:00:00'),thi:Date.parse(D[29]+'T12:00:00')}, sv=lineChart(up.slice(-30),Object.assign({h:150,detail:true,dates:D,band:rb},T));
+    A('la franja se pinta como relleno visible (--o20), una sola pieza', (sv.match(/class="chband"/g)||[]).length===1&&/class="chband" fill="var\(--o20\)"/.test(sv));
+    A('la franja no se sale del cuadro', px(sv).length>=60&&px(sv).every(p=>p[1]>=1&&p[1]<=149));
+    const far=rb.map(b=>[b[0]+1000,b[1]+1000]), sf=lineChart(up.slice(-30),Object.assign({h:150,detail:true,dates:D,band:far},T)), yf=px(sf).map(p=>p[1]);
+    A('fuera del cuadro no desaparece: queda una tira de 2 px en el borde de arriba', yf.length>=60&&Math.min(...yf)===1&&Math.max(...yf)===3);
+    A('una franja lejana no aplasta la línea (la escala no cambia)', dotsY(parse(lineChart(up.slice(-30),Object.assign({h:150,detail:true,dates:D},T)))).join()===dotsY(parse(sf)).join());
+    const gap=rb.map((b,i)=>i>=10&&i<15?null:b); A('días sin normal parten la franja', (lineChart(up.slice(-30),Object.assign({h:150,detail:true,dates:D,band:gap},T)).match(/class="chband"/g)||[]).length===2);
+    // pocos registros (peso): la línea trae 3 puntos y la franja, con sus propias fechas, cubre los 30 días
+    const s3=lineChart([5,6,7],Object.assign({h:150,detail:true,dates:[D[2],D[15],D[28]],band:D.map(()=>[5,7]),bandDates:D},T)), x3=px(s3).map(p=>p[0]);
+    A('con pocos registros la franja cubre todo el periodo, no solo los días con dato', x3.length===60&&Math.min(...x3)<=4.1&&Math.max(...x3)>=295.9);
+    const s1=lineChart([5,6,7],Object.assign({h:150,detail:true,dates:[D[2],D[15],D[28]],band:D.map((_,i)=>i===10?[5,7]:null),bandDates:D},T)), x1=px(s1).map(p=>p[0]);
+    A('un solo día con normal ocupa su día entero, no un palito', x1.length===4&&Math.abs((Math.max(...x1)-Math.min(...x1))-292/29)<0.3);
+    A('una franja con otro largo y sin fechas no se pinta', !/chband/.test(lineChart([5,6,7],{h:150,detail:true,dates:[D[2],D[15],D[28]],band:D.map(()=>[5,7])}))); }
   const rising=Array.from({length:40},(_,i)=>i<20?100:130); const tr=trendRows(rising);
   A('un salto claro sale como tendencia ▲ significativa', tr.some(t=>t.H===14&&t.d>0&&t.sig));
   A('una serie plana no inventa tendencia', trendRows(flat).every(t=>!t.sig));
@@ -7458,9 +7475,12 @@ function lineChart(vals,opt){ opt=opt||{};
   const W=300, H=opt.h||56, padX=opt.detail?4:7, padT=opt.detail?12:(opt.pad!=null?opt.pad:7), padB=opt.detail?8:(opt.pad!=null?opt.pad:7);
   const rlo=Math.min(...real), rhi=Math.max(...real);
   let lo=rlo, hi=rhi;
-  // U4 (E13): la banda ya NO expande el dominio — en pasos, p15–p85 de 90 días es tan ancha que aplastaba la serie.
-  // Solo se ensancha lo justo para que las dos líneas de referencia quepan si están cerca del rango real (±25 %).
-  if(opt.band2){ const sp=(hi-lo)||1; if(opt.band2[0]>=lo-sp*0.25)lo=Math.min(lo,opt.band2[0]); if(opt.band2[1]<=hi+sp*0.25)hi=Math.max(hi,opt.band2[1]); }
+  // GR1 · el dueño (8-oct): "la franja se ve a simple vista y sube y baja con tu promedio, sin aplastar la línea… si la franja
+  // queda fuera del cuadro, se indica en el borde en vez de desaparecer". opt.band = un [lo,hi] por día (o null), con sus
+  // propias fechas en opt.bandDates (en peso la línea solo trae los días con registro) o, sin ellas, una por punto. No expande
+  // el dominio (U4/E13: en pasos aplastaba la serie): solo se ensancha lo justo si sus extremos quedan cerca del rango real (±25 %).
+  const bnd=(opt.band&&opt.band.some(Boolean)&&(opt.bandDates?opt.bandDates.length===opt.band.length:opt.band.length===n))?opt.band:null;
+  if(bnd){ const bl=bnd.filter(Boolean), sp=(hi-lo)||1, b0=Math.min(...bl.map(b=>b[0])), b1=Math.max(...bl.map(b=>b[1])); if(b0>=lo-sp*0.25)lo=Math.min(lo,b0); if(b1<=hi+sp*0.25)hi=Math.max(hi,b1); }
   if(opt.avg!=null&&isFinite(opt.avg)){ lo=Math.min(lo,opt.avg); hi=Math.max(hi,opt.avg); }
   if(opt.zero)lo=Math.min(0,lo);
   if(hi-lo<1e-9){ const k=Math.abs(hi)*0.05||1; hi+=k; lo-=opt.zero&&lo>=0?0:k; }
@@ -7478,11 +7498,20 @@ function lineChart(vals,opt){ opt=opt||{};
   const gid='lcg'+(++_chartSeq);
   const segs=[]; let cur=null;
   nums.forEach((v,i)=>{ if(v==null){ cur=null; return; } if(!cur){ cur=[]; segs.push(cur); } cur.push(i); });
-  // U4 (E11): en monocromo un BORDE marca un rango mejor que un relleno tenue (--o10 sobre negro era invisible:
-  // ratio ≈1.1:1). Dos líneas de referencia de .5 px en --o25, con el interior vacío; fuera del dominio no se dibujan.
+  // GR1 · la franja: un relleno en --o20 (a --o10 era invisible, U4/E11; dos rayas de medio pixel tampoco se veían) que sigue a
+  // cada día, también donde ese día no hay registro. Donde se sale del cuadro (o es plana) queda una tira de 2 px pegada a ese
+  // borde: se indica en vez de desaparecer. Un día suelto con normal ocupa su día entero (medio día a cada lado), no un palito.
   let band='';
-  if(opt.band2){ [0,1].forEach(k=>{ const v=opt.band2[k]; if(v==null||v<lo||v>hi)return; const y=Y(v);
-    band+='<path d="M'+padX+','+y+' L'+(W-padX)+','+y+'" class="sw-grid" stroke="var(--o30)" stroke-width=".5" fill="none" vector-effect="non-scaling-stroke"/>'; }); }
+  if(bnd){ const top=1, bot=H-1, MINH=2;
+    const bx=(opt.bandDates&&opt.tlo!=null&&opt.thi!=null)?opt.bandDates.map(d=>padX+((Date.parse(String(d).slice(0,10)+'T12:00:00')||0)-opt.tlo)/((opt.thi-opt.tlo)||1)*(W-2*padX)):xs;
+    const half=bx.length>1?Math.max(2,Math.abs(bx[1]-bx[0])/2):(W-2*padX)/2; let run=[];
+    const flush=()=>{ if(!run.length)return; const up=[], dn=[];
+      const put=(x,i)=>{ let a=Math.max(top,Math.min(bot,Y(bnd[i][1]))), b=Math.max(top,Math.min(bot,Y(bnd[i][0])));
+        if(b-a<MINH){ if(a<=top+0.01)b=a+MINH; else if(b>=bot-0.01)a=b-MINH; else { const m=(a+b)/2; a=m-MINH/2; b=m+MINH/2; } }
+        up.push(x.toFixed(1)+','+a.toFixed(2)); dn.push(x.toFixed(1)+','+b.toFixed(2)); };
+      if(run.length===1){ put(Math.max(padX,bx[run[0]]-half),run[0]); put(Math.min(W-padX,bx[run[0]]+half),run[0]); } else run.forEach(i=>put(bx[i],i));
+      band+='<path d="M'+up.join(' L')+' L'+dn.reverse().join(' L')+' Z" class="chband" fill="var(--o20)" stroke="none"/>'; run=[]; };
+    bnd.forEach((b,i)=>{ if(b&&isFinite(b[0])&&isFinite(b[1]))run.push(i); else flush(); }); flush(); }
   let area='', line='';
   segs.forEach(sg=>{ if(sg.length<2)return; const p=sg.map(i=>xs[i].toFixed(1)+','+Y(nums[i])).join(' L');
     line+='<path d="M'+p+'" fill="none" stroke="'+(opt.stroke||(opt.detail?'var(--fill)':'var(--o60)'))+'" stroke-width="'+(opt.detail?1.8:1.4)+'" class="'+(opt.detail?'sw-data-lg':'sw-data')+'" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
@@ -7525,14 +7554,16 @@ function lineChart(vals,opt){ opt=opt||{};
 }
 // días que terminan en endISO (lastDays(n) = daysEnding(n, hoy)) — el detalle puede paginar hacia atrás
 function daysEnding(n,endISO){ const e=new Date((endISO||todayISO())+'T12:00:00'); const out=[]; for(let i=n-1;i>=0;i--){ const d=new Date(e); d.setDate(e.getDate()-i); out.push(todayISO(d)); } return out; }
-// U4 (E12/E13/E15): rango normal FIJO del periodo — un solo par p15–p85 de los `win` días previos al final de la
-// ventana, para TODAS las métricas (el peso también). Devuelve {lo,hi,n} o {n} si aún no hay 7 días con dato:
-// con eso el detalle puede decir "sin normal · 4/7 d" en vez de no mostrar nada (Intuit: progreso literal).
-function normalBandFixed(rawLong,nShow,win){ win=win||90; const end=rawLong.length-nShow; const w=[];
-  for(let j=Math.max(0,end-win);j<end;j++){ const v=rawLong[j]; if(v!=null)w.push(v); }
-  if(w.length<7)return {n:w.length,need:7};
-  w.sort((a,b)=>a-b); const q=p=>w[Math.min(w.length-1,Math.max(0,Math.round(p*(w.length-1))))];
-  return {lo:q(.15),hi:q(.85),n:w.length}; }
+// GR1 · "tu normal" POR DÍA, para todas las métricas (el peso también): para cada día de la ventana, p15–p85 de los `win` días
+// CALENDARIO anteriores a ese día (el día mismo no entra: se juzga contra lo que venías haciendo), con un mínimo de 7 días con
+// dato. rawLong va en rejilla diaria (null = día sin registro; dailyRawFor). Antes (U4) era un solo par fijo para todo el
+// periodo. Devuelve {bands:[[lo,hi]|null…], ns:[días con dato de cada ventana], need}: con ns el detalle puede decir
+// "sin normal · 4/7 d" en vez de no mostrar nada.
+function normalBandRolling(rawLong,nShow,win){ win=win||30; const off=rawLong.length-nShow, bands=[], ns=[];
+  for(let i=0;i<nShow;i++){ const a=off+i, w=[]; for(let j=Math.max(0,a-win);j<a;j++){ const v=rawLong[j]; if(v!=null)w.push(v); }
+    ns.push(w.length); if(w.length<7){ bands.push(null); continue; }
+    w.sort((x,y)=>x-y); const q=p=>w[Math.min(w.length-1,Math.max(0,Math.round(p*(w.length-1))))]; bands.push([q(.15),q(.85)]); }
+  return {bands,ns,need:7}; }
 // // tendencias: promedio de los últimos H días vs los H anteriores. La flecha solo lleva acento si el cambio
 // supera ~1 error estándar de esa ventana (1.41·σ/√H); si no, gris — ruido no es tendencia.
 function trendRows(raw){ const mean=a=>{ const v=a.filter(x=>x!=null); return v.length?v.reduce((s,x)=>s+x,0)/v.length:null; };
@@ -7559,10 +7590,12 @@ function openMetricDetail(key){
   const sp=metricSeries(key,days,end); if(!sp)return;
   const raw=seriesRaw(sp), real=raw.filter(v=>v!=null), better=metricBetter(key);
   const vf=v=>sp.fmt(mdRound(v));
-  const lg=metricSeries(key,days+90,end); const nb=lg?normalBandFixed(seriesRaw(lg),raw.length,90):null;   // el peso ya también tiene rango normal (E12)
-  const band2=(nb&&nb.lo!=null)?[nb.lo,nb.hi]:null;
+  // GR1 · la franja se calcula SIEMPRE en rejilla diaria (un par por día del periodo, con sus 30 días calendario anteriores): la
+  // serie del peso solo trae los días con registro y contaba 30 registros en vez de 30 días (verificador, 8-oct). Así "tu
+  // normal" de un día es el mismo en 30D, 3M o 1A.
+  const bdays=daysEnding(days,end), nb=normalBandRolling(dailyRawFor(key,days+30,end),days,30), band=nb.bands;
   let li=-1; for(let i=raw.length-1;i>=0;i--){ if(raw[i]!=null){ li=i; break; } }
-  const lastV=li>=0?raw[li]:null, lastBand=band2;
+  const bi=li>=0?bdays.indexOf(String(sp.dates[li]).slice(0,10)):-1, lastV=li>=0?raw[li]:null, lastBand=bi>=0?band[bi]:null, nbN=nb.ns[bi>=0?bi:nb.ns.length-1]||0;
   let st='', stCol='var(--o60)';
   if(lastBand&&lastV!=null){ const up=lastV>lastBand[1], dn=lastV<lastBand[0];
     st=up?'sobre lo normal':dn?'bajo lo normal':'en rango';
@@ -7571,7 +7604,7 @@ function openMetricDetail(key){
   const win=daysEnding(days,end);
   const labels=raw.map((v,i)=>(v!=null?vf(v):'sin registro')+' · '+fmtShort(sp.dates[i]));
   const yz=(window._chartYZ&&window._chartYZ.md)||1;
-  const chart=real.length?lineChart(raw,{h:150,detail:true,dates:sp.dates,tlo:Date.parse(win[0]+'T12:00:00'),thi:Date.parse(end+'T12:00:00'),band2,avg,fmt:vf,tfmt:sp.tfmt,labels,kind:'md',ladder:MD_LADDER,cur:cust?'':days,yZoom:yz}):'';
+  const chart=real.length?lineChart(raw,{h:150,detail:true,dates:sp.dates,tlo:Date.parse(win[0]+'T12:00:00'),thi:Date.parse(end+'T12:00:00'),band,bandDates:bdays,noFill:true,avg,fmt:vf,tfmt:sp.tfmt,labels,kind:'md',ladder:MD_LADDER,cur:cust?'':days,yZoom:yz}):'';
   let bI=-1,wI=-1; raw.forEach((v,i)=>{ if(v==null)return; if(bI<0||v>raw[bI])bI=i; if(wI<0||v<raw[wI])wI=i; });
   const tab=d=>`<span data-act="mdrange" data-r="${d}" data-m="${key}" class="${(!cust&&days===d)?'on':''}">${MD_LBL[d]}</span>`;
   const segs=MD_LADDER.map(tab).join('')+`<span data-act="mdcustom" class="${cust||window._mdShowCustom?'on':''}" title="rango personalizado">▦</span>`;
@@ -7591,7 +7624,7 @@ function openMetricDetail(key){
     ${!real.length?`<div class="mdtop2"><div><div class="mdval u-o30">—</div><div class="mdmeta">sin registros en este rango</div></div></div>${nav}<div class="empty u-py32 u-px0">sin registros en este rango</div>`:`
       <div class="mdtop2"><div><div class="mdval">${sp.valHTML?sp.valHTML(mdRound(lastV)):escTxt(vf(lastV))}</div><div class="mdmeta">${li>=0?fmtShort(sp.dates[li]):''}${avg!=null?' · prom '+escTxt(vf(avg)):''}</div></div>
         ${st?`<div class="mdst" style="color:${stCol}">${st}<div class="mdstl">tu normal ${escTxt(vf(lastBand[0]))} – ${escTxt(vf(lastBand[1]))}</div></div>`
-            :(nb&&nb.lo==null?`<div class="mdst u-o40">sin normal<div class="mdstl">${nb.n}/${nb.need} d</div></div>`:'')}</div>
+            :(!lastBand&&li>=0?`<div class="mdst u-o40">sin normal<div class="mdstl">${nbN}/${nb.need} d</div></div>`:'')}</div>
       ${nav}
       ${chart}
       ${key==='sleep'?sleepPhasesBlock(sp.dates)+(etLastNight()?etWhyHTML(etLastNight(),'ÚLTIMA NOCHE · '+fmtShort(etLastNight())):''):''}
