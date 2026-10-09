@@ -488,7 +488,18 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .lc{display:flex; align-items:center; gap:var(--s3); min-width:0; min-height:36px; padding:0 var(--s2) 0 0; border:0; border-bottom:var(--bw-sep) solid var(--o10); background:none; color:var(--fg); font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
   .lc .k{flex:0 0 auto; color:var(--o40);} .lc .t{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .lc .m{flex:0 0 auto; font-size:var(--t-label); color:var(--o40);} .lc .x{flex:0 0 auto; color:var(--o30);}
-  .lc.on{color:var(--o35);} .lc.on .k{color:var(--good);} .lc:active{background:var(--o10);}
+  .lc.on{color:var(--o40);} .lc.on .k{color:var(--good);} .lc:active{background:var(--o10);}   /* v325 · tomado va en --o40 (antes --o35: bajo el piso de texto de B-11) */
+  /* v325 · S-UNI · el dueño (9-oct): "los supples debe de venir la unidad/cantidad antes del nombre del supp. que pueda ser editable pero
+     siempre regrese al siguiente día a la dosis gestionada" · "solo el número de cantidad de pastilla, 2, 3 etc, no los mg". La celda es
+     `○ 2 melatonina`: toda ella marca (un botón de fondo) y el NÚMERO es su propio toque (cuántas hoy, o cuántas siempre). El de siempre va
+     en gris; el cambiado hoy, en blanco. */
+  .lc.sp{position:relative;} .lc.sp>.lct{position:absolute; inset:0; margin:0; padding:0; border:0; background:none; color:inherit; font:inherit; cursor:pointer;}
+  .lcq{position:relative; z-index:1; flex:0 0 auto; align-self:stretch; min-width:44px; margin:calc(-1 * var(--s2)) calc(-1 * var(--s3)); padding:0 var(--s2); border:0; background:none; color:var(--o60); font-family:inherit; font-size:var(--t-data); font-weight:700; letter-spacing:var(--ls-num); text-align:center; white-space:nowrap; cursor:pointer;}   /* 2.ª vuelta · su toque mide 44 × 44 (antes 33 × 35) */
+  .lcq.chg{color:var(--fg);} .lc.on .lcq{color:inherit;} .lc.on .lcq.chg{color:var(--o60);}
+  .lc.sp{min-height:calc(44px + var(--bw-sep)); padding-top:var(--s2); padding-bottom:var(--s2);} .lc.sp .k{min-width:var(--s5);}   /* el glifo en su casilla: ○ y ✓ miden distinto y recorrían el número; y deja 12 px de marcar antes del número */
+  .lc.sp .t{white-space:normal; overflow:visible; text-overflow:clip; overflow-wrap:anywhere; line-height:var(--lh-ui);}   /* con el número delante el nombre tiene menos ancho: baja de renglón, nunca se corta (B-12) */
+  @media (max-width:380px){ .lsec[data-k="supps"] .lcg{grid-template-columns:minmax(0,1fr);} }   /* angosta: una columna */
+  #modal .sheet h3{overflow-wrap:anywhere;}   /* un nombre de una sola palabra larguísima no desborda el título de la hoja */
   .lseg{margin-bottom:var(--s2);} .lseg span i{margin-left:var(--s2); font-style:normal; font-size:var(--t-label); font-weight:400; color:var(--o50);}
   /* comidas plegables: el total (16/800) manda sobre sus alimentos (12/400) — queja 9 */
   .mrec{--mcol:32px; --mpad:calc((44px - (var(--t-section) + var(--t-label)) * var(--lh-ui) - var(--s1)) / 2);} .mrec+.mrec{border-top:var(--bw-sep) solid var(--o10);}   /* --mpad: el aire de arriba y de abajo de una cabecera de 44 (nombre + macros + su separación); lo usan .mtg y los verbos, así su texto cae siempre a la misma altura */
@@ -1400,7 +1411,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v324';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v325';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -6098,6 +6109,63 @@ function _v324SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     openTextSheet('x.txt','hola'); A('…y un texto corto sale completo', document.getElementById('ts_txt').value==='hola'); closeModal();
     console.log('v324 self-check OK');
   } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } db=real; _sbx=sb0; bumpIdx(); } }
+// self-check de v325 (S-UNI): cuántas pastillas antes del nombre, la de un día y la de siempre. Base de juguete; no guarda nada.
+function _doseDaySelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK cuántas: '+nm); }; const real=db, sb0=_sbx, _sv=save, _rr=reRender, _t=toast, md0=state.macroDate, sg0=state.suppSeg, sd0=state.suppSegD, lf0=state._lfold, lfd0=state._lfoldD; let undo=null, msg='';
+  try{ _sbx=true; save=()=>{}; reRender=()=>{}; toast=(m,t,o)=>{ msg=String(m); undo=(o&&o.undo)||null; return null; };
+    const T=todayISO(), D=k=>shiftDate(T,-k), Y=D(1);
+    db=migrate({_idfix:true,_fsfix:true,_dataVer:3,profile:{username:'t'},split:{name:'t',days:[]},sessions:[],stack:[
+      {id:'m1',name:'melatonina',category:'supp',dose:'10',unit:'mg',when:['AM'],periodization:{type:'daily'},startDate:D(30),ticks:{},nutr:{sodium:10},
+        products:[{id:'p1',brand:'X',form:'cápsulas',per:2,size:60,dose:'10',unit:'mg',nutr:{sodium:10}}],cur:'p1',containers:[{id:'c1',prod:'p1',opened:D(10),size:60}]},
+      {id:'n1',name:'creatina',category:'supp',dose:'5',unit:'g',when:['AM'],periodization:{type:'daily'},startDate:D(30),ticks:{}},
+      {id:'d1',name:'magnesio 400mg',category:'supp',dose:'800',unit:'mg',when:['AM'],periodization:{type:'daily'},startDate:D(30),ticks:{}},
+      {id:'c2',name:'cafeína',category:'supp',dose:'100',unit:'mg',when:['AM'],periodization:{type:'daily'},startDate:D(20),ticks:{}},
+      {id:'c1',name:'caffeine',category:'supp',dose:'200',unit:'mg',when:['entreno'],periodization:{type:'daily'},startDate:D(30),ticks:{},tickQty:{[Y]:3}}]});
+    bumpIdx(); state.macroDate=T; state.suppSeg='AM'; state.suppSegD=T; state._lfold={food:true,water:false,supps:true}; state._lfoldD=T;
+    const it=db.stack[0], t=takeOf(it,''), cr=db.stack[1], tc=takeOf(cr,''), html=()=>suppSecHTML(T);
+    A('antes del nombre va CUÁNTAS pastillas (lo de `por toma`), nunca los mg', /<span class="k"[^>]*>○<\/span><button[^>]*class="lcq"[^>]*data-act="suppdose"[^>]*>2<\/button><span class="t"[^>]*>melatonina<\/span>/.test(html())&&!/>10\s?mg</.test(html())&&takeUnits(t,T)===2);
+    A('sin producto ni número tuyo, una toma es 1', />1<\/button><span class="t"[^>]*>creatina</.test(html())&&suppPer(cr)===1);
+    A('si el nombre dice lo que trae cada pastilla, sale de tu dosis (800 mg de 400 mg = 2)', suppPer(db.stack[2])===2&&suppDerive({name:'x 5mg',dose:'10',unit:'mg'})===2&&suppDerive({name:'d3 5000ui',dose:'5000',unit:'UI'})===1&&suppDerive({name:'x',dose:'10',unit:'mg'})===0);
+    A('si tu dosis ya está escrita en pastillas, esas son (2 caps, 1 drop); un texto raro o un número suelto no se adivina', suppDerive({name:'x',dose:'2',unit:'cap'})===2&&suppDerive({name:'x',dose:'1 drop',unit:''})===1&&suppDerive({name:'x',dose:'0,5',unit:'tab'})===0.5&&suppDerive({name:'x',dose:'6-6 sprays',unit:''})===0&&suppDerive({name:'x',dose:'500',unit:''})===0&&suppPer({name:'x',dose:'3 caps',unit:''},null)===3);
+    A('la celda entera marca (un botón de fondo con su data-tk) y el número es otro toque, en todas', /<div class="lc sp" data-rk="sp:m1:"><button type="button" class="lct" data-act="suppq" data-id="m1" data-tk="" /.test(html())&&(html().match(/data-act="suppdose"/g)||[]).length===4);
+    A('sin tocar nada, todo se lee como antes', takeDayQty(t,T)===null&&takeDayMul(t,T)===1&&takeFactor(t)===1&&!('tickQty' in it)&&!('qty' in it));
+    A('cambiar las de hoy: 3 solo hoy (guarda cuántas y contra cuántas)', takeQtySet(t,T,3)===true&&it.tickQty[T].q===3&&it.tickQty[T].b===2&&takeUnitsOn(t,T)===3&&takeDayMul(t,T)===1.5);
+    A('…ayer y mañana siguen con las de siempre', takeUnitsOn(t,Y)===2&&takeUnitsOn(t,shiftDate(T,1))===2&&it.products[0].per===2);
+    A('la celda de hoy dice 3 y va marcada como cambiada', /class="lcq chg"[^>]*>3</.test(html()));
+    takeMark(t,T,'taken'); takeMark(t,Y,'taken');
+    A('el frasco gasta lo de cada día: 3 hoy + 2 ayer', (L=>L&&L.left===55&&L.per===2&&L.used===2.5)(suppLeft(it)));
+    A('los nutrientes de hoy van en proporción; los de ayer, igual', suppNutrOn(it,T,t).sodium===15&&suppNutrOn(it,Y,t).sodium===10);
+    { const sn=takeSnap(t,T); A('coma o punto, y media pastilla gasta media; lo que no es un número no entra', qtyParse('0,5')===0.5&&qtyParse('abc')===0&&qtyParse('-2')===0&&qtyParse('2abc')===0&&qtyParse('1e1')===0&&qtyParse('2,5,1')===0&&qtyParse('1000')===0&&takeQtySet(t,T,qtyParse('0,5'))===true&&it.tickQty[T].q===0.5&&takeDayMul(t,T)===0.25); takeRestore(t,T,sn); A('deshacer devuelve las de ese día tal cual', it.tickQty[T].q===3&&takeDone(t,T)); }
+    A('escribir las de siempre quita el cambio (y no deja restos)', takeQtySet(t,T,2)===false&&!('tickQty' in it)&&takeUnitsOn(t,T)===2);
+    // la hoja: con número ya dicho abre en `solo hoy`
+    takeMark(t,T,null); openQtyDay('m1',T,''); let m=document.getElementById('modal');
+    A('la hoja trae cuántas tomas hoy, con su presentación y tu dosis como dato', !!m&&m.querySelector('#dd_v').value==='2'&&/^CUÁNTAS · cáps$/.test(m.querySelector('.field label').textContent)&&!!m.querySelector('#dd_when .t.on[data-v="day"]')&&/10 mg/.test(m.querySelector('.submeta').textContent)&&!m.querySelector('#dd_back'));
+    m.querySelector('#dd_v').value='3'; m.querySelector('#dd_ok').click();
+    A('guardar solo hoy: vale hoy, deja la toma tomada y avisa con deshacer', it.tickQty[T].q===3&&takeDone(t,T)&&msg==='✓ melatonina · 3 · solo hoy'&&typeof undo==='function'&&!document.getElementById('modal')&&it.products[0].per===2);
+    undo(); A('…y el deshacer regresa la toma a como estaba', !takeDone(t,T)&&takeDayQty(t,T)===null);
+    takeQtySet(t,T,3); openQtyDay('m1',T,''); m=document.getElementById('modal'); A('con las de hoy cambiadas, la hoja ofrece volver a las de siempre', !!m.querySelector('#dd_back')&&/volver a 2/.test(m.querySelector('#dd_back').textContent)); m.querySelector('#dd_back').click();
+    A('volver las regresa el mismo día', takeDayQty(t,T)===null&&msg==='✓ melatonina · 2');
+    // nunca dijiste cuántas: la hoja abre en `siempre` y guarda la de siempre
+    openQtyDay('n1',T,''); m=document.getElementById('modal');
+    A('sin número tuyo la hoja abre en siempre', m.querySelector('#dd_v').value==='1'&&!!m.querySelector('#dd_when .t.on[data-v="all"]')&&/^CUÁNTAS$/.test(m.querySelector('.field label').textContent));
+    m.querySelector('#dd_v').value='2'; m.querySelector('#dd_ok').click();
+    A('guardar siempre cambia las de siempre, no marca la toma y no deja nada por día', cr.qty===2&&takeUnits(tc,T)===2&&takeUnitsOn(tc,shiftDate(T,1))===2&&!takeDone(tc,T)&&!('tickQty' in cr)&&msg==='✓ creatina · 2 por toma'&&/>2<\/button><span class="t"[^>]*>creatina</.test(html()));
+    A('…y su dosis y sus nutrientes por toma no cambian (2 pastillas = tu dosis)', cr.dose==='5'&&takeDayMul(tc,T)===1);
+    undo(); A('…el deshacer la deja como estaba', !('qty' in cr)&&takeUnits(tc,T)===1);
+    openQtyDay('m1',T,''); m=document.getElementById('modal'); m.querySelector('#dd_when .t[data-v="all"]').click(); m.querySelector('#dd_v').value='1'; m.querySelector('#dd_ok').click();
+    A('con producto, siempre cambia también su `por toma` (el frasco gasta lo nuevo)', it.qty===1&&it.products[0].per===1&&takeUnits(t,T)===1&&suppLeft(it).per===1); undo(); A('…y se deshace', it.products[0].per===2&&!('qty' in it));
+    // 2.ª vuelta (verificador) · un día con su número no se reescribe al cambiar el de siempre, y la hoja de ese día abre en `solo hoy`
+    { takeQtySet(t,Y,3); takeMark(t,Y,'taken'); const n0=suppNutrOn(it,Y,t).sodium; suppPerSet(it,4); A('cambiar las de siempre no reescribe un día que ya tenía las suyas', n0===15&&suppNutrOn(it,Y,t).sodium===15&&takeUnitsOn(t,Y)===3&&takeUnits(t,T)===4); suppPerSet(it,2); delete it.qty; takeQtySet(t,Y,0); takeMark(t,Y,null); }
+    { takeQtySet(tc,T,3); openQtyDay('n1',T,''); const mm=document.getElementById('modal'); A('un día con su número abre la hoja en solo hoy aunque nunca dijiste las de siempre', !!mm.querySelector('#dd_when .t.on[data-v="day"]')&&mm.querySelector('#dd_v').value==='3'); closeModal(); takeQtySet(tc,T,0); }
+    // …y el editor escribe el mismo número: tras un `siempre`, poner 1 en el editor SÍ lo deja en 1; sin producto, el campo abre con el tuyo
+    { suppPerSet(it,3); openStackEdit('m1'); let mm=document.getElementById('modal'); A('el editor abre con las de una toma', mm.querySelector('#se_per').value==='3'); mm.querySelector('#se_per').value='1'; mm.querySelector('#se_save').click();
+      A('poner 1 en el editor lo deja en 1 (celda y frasco)', it.qty===1&&it.products[0].per===1&&suppPer(it)===1&&suppLeft(it).per===1&&/>1<\/button><span class="t"[^>]*>melatonina</.test(html()));
+      cr.qty=2; openStackEdit('n1'); mm=document.getElementById('modal'); A('sin producto, el editor abre con tu número y guardarlo no inventa un producto', mm.querySelector('#se_per').value==='2'); mm.querySelector('#se_save').click(); A('…y lo conserva', cr.qty===2&&!(cr.products||[]).length); delete cr.qty; suppPerSet(it,2); delete it.qty; }
+    // unir y separar la arrastran
+    { const G=suppDups(); const g=G.find(x=>x.items.some(i=>i.id==='c2')); A('se ofrece unir la cafeína', !!g); suppMerge(g); const A1=db.stack.find(x=>x.id==='c2'||x.id==='c1'), mo=(A1.more||[])[0]||{};
+      A('unir dos repetidas conserva las de un día (van con su toma)', !!mo.tickQty&&mo.tickQty[Y]===3);
+      const b2=suppSplitTake(A1,mo.id); A('…y al separarlas regresa con ellas', !!b2&&!!b2.tickQty&&b2.tickQty[Y]===3); }
+    console.log('cuántas self-check OK');
+  } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } save=_sv; reRender=_rr; toast=_t; db=real; state.macroDate=md0; state.suppSeg=sg0; state.suppSegD=sd0; state._lfold=lf0; state._lfoldD=lfd0; _sbx=sb0; bumpIdx(); } }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -7179,8 +7247,9 @@ function suppSecHTML(iso){
   const tabs=SUPP_SEG.filter(([k])=>s.all.some(t=>t.when===k)).map(([k,l])=>{ const its=s.all.filter(t=>t.when===k), d=its.filter(s.done).length;
     return `<span class="${k===seg?'on':''}" role="tab" aria-selected="${k===seg}" data-act="suppseg" data-v="${k}">${l}<i>${d}/${its.length}</i></span>`; }).join('');
   const cur=s.all.filter(t=>t.when===seg), pendSeg=cur.filter(t=>!s.done(t)).length;
-  const cells=cur.map(t=>{ const it=t.it, on=s.done(t), tt=on&&takeTime(t,iso), dl=(it.more||[]).length?takeDoseTxt(t):'';   // con varias tomas, cada celda dice su dosis
-    return `<button type="button" class="lc${on?' on':''}" data-act="suppq" data-id="${escTxt(it.id)}" data-tk="${escTxt(t.id)}" data-d="${iso}" aria-pressed="${on}" data-rk="sp:${escTxt(it.id)}:${escTxt(t.id)}" title="${on?'tomado'+(tt?' a las '+escTxt(tt):'')+' · toca para deshacer':'toca = tomado'}"><span class="k">${on?'✓':'○'}</span><span class="t">${escTxt(it.name||'supp')}${dl?` <span class="u-o40">${escTxt(dl)}</span>`:''}</span>${t.id?'':suppCellMark(it)}</button>`; }).join('');
+  const cells=cur.map(t=>{ const it=t.it, on=s.done(t), tt=on&&takeTime(t,iso), q=qtyTxt(takeUnitsOn(t,iso)), chg=takeDayQty(t,iso)!=null, nm=escTxt(it.name||'supp'), A=`data-id="${escTxt(it.id)}" data-tk="${escTxt(t.id)}" data-d="${iso}"`;
+    // v325 · `○ 2 melatonina`: cuántas pastillas va ANTES del nombre y siempre; tocar el número lo cambia (solo ese día, o el de siempre)
+    return `<div class="lc sp${on?' on':''}" data-rk="sp:${escTxt(it.id)}:${escTxt(t.id)}"><button type="button" class="lct" data-act="suppq" ${A} aria-pressed="${on}" aria-label="${q} ${nm}" title="${on?'tomado'+(tt?' a las '+escTxt(tt):'')+' · toca para deshacer':'toca = tomado'}"></button><span class="k" aria-hidden="true">${on?'✓':'○'}</span><button type="button" class="lcq${chg?' chg':''}" data-act="suppdose" ${A} aria-label="cuántas de ${nm} ${iso===todayISO()?'hoy':'ese día'}: ${q}">${q}</button><span class="t" aria-hidden="true">${nm}</span>${t.id?'':suppCellMark(it)}</div>`; }).join('');
   const lbl=(SUPP_SEG.find(x=>x[0]===seg)||['',''])[1];
   const act=`<button type="button" class="lact" data-act="suppall" data-d="${iso}" data-seg="${seg}"${pendSeg?'':' aria-disabled="true"'}>✓ ${lbl}</button>`;
   const v=`<b data-nk="lv-supps" data-nv="${s.n}">${s.n}</b> / ${s.all.length}`;
@@ -7273,6 +7342,24 @@ function openMealClock(tag){ const d=curDate(), tm=mealTime(d,tag); if(!tm)retur
 function mealsTick(){ try{ const nx=window._mealNext; if(!nx||state.screen!=='macros'||curDate()!==todayISO()||mealNowHM()<nx)return;
     const ae=document.activeElement; if(document.getElementById('modal')||document.getElementById('asklayer')||(ae&&ae.classList&&ae.classList.contains('mclki')))return;
     window._mealNext=null; reRender(); }catch(_){} }
+// v325 · S-UNI · la hoja del número: cuántas tomas. `solo hoy` vale para esa fecha (la toma queda tomada, como al fijarle hora) y mañana
+// regresa sola la de siempre; `siempre` cambia la de siempre (it.qty, y `por toma` de su producto si lo tiene). Si nunca dijiste cuántas,
+// la hoja abre en `siempre`. `volver a N` quita el cambio de ese día.
+function openQtyDay(id,iso,tk){ iso=iso||todayISO(); const it=(db.stack||[]).find(x=>x.id===id), t=it&&takeOf(it,tk,iso); if(!t)return;
+  const p=suppProd(it), base=takeUnits(t,iso), day=takeDayQty(t,iso), cur=day!=null?day:base, known=!!(+it.qty>0||(p&&+p.per>0)||day!=null), main=!t.id, pu=p?suppPU(p):'', dz=takeDoseTxt(t), sn=takeSnap(t,iso), q0=it.qty, p0=p?p.per:undefined;
+  const done=(msg)=>{ save(); closeModal(); reRender(); toast(msg,'ok',{undo:()=>{ takeRestore(t,iso,sn); if(q0===undefined)delete it.qty; else it.qty=q0; if(p)p.per=p0; }}); };
+  const opt=(v,l,on)=>'<button type="button" class="t'+(on?' on':'')+'" data-act="optpick" data-v="'+v+'">'+l+'</button>', today=iso===todayISO();
+  openModal('<h3>'+escTxt(it.name||'supp')+' <span class="u-o40 u-w4">· '+(today?'hoy':escTxt(fmtShort(iso)))+'</span></h3>'
+    +'<div class="field"><label>CUÁNTAS'+(pu&&pu!=='u'?' · '+escTxt(pu):'')+'</label><input id="dd_v" type="text" inputmode="decimal" autocomplete="off" value="'+qtyTxt(cur)+'"/></div>'
+    +(main?'<div class="line lsv"><span class="k">aplica</span><span class="dots"></span><span class="toggles" id="dd_when">'+opt('day',today?'solo hoy':'solo ese día',known)+opt('all','siempre',!known)+'</span></div>':'')
+    +(dz?'<div class="submeta">tu dosis de siempre: '+escTxt(dz)+'</div>':'')
+    +'<div class="sheetbtns"><button class="ok" id="dd_ok">guardar</button>'+(day!=null?'<button class="cancel" id="dd_back">volver a '+qtyTxt(base)+'</button>':'')+'<button class="cancel" data-act="closemodal">cancelar</button></div>');
+  const i=document.getElementById('dd_v'), nmz=it.name||'supp', go=()=>{ const n=qtyParse(i.value); if(!n){ toast('⚠ pon cuántas','err'); return; }
+    const all=main&&!!document.querySelector('#dd_when .t.on[data-v="all"]');
+    if(all){ suppPerSet(it,n); takeQtySet(t,iso,0); done('✓ '+nmz+' · '+qtyTxt(n)+' por toma'); return; }
+    const ch=takeQtySet(t,iso,n); if(!takeState(t,iso))takeMark(t,iso,'taken',today); done('✓ '+nmz+' · '+qtyTxt(n)+(ch?(today?' · solo hoy':' · solo ese día'):'')); };
+  document.getElementById('dd_ok').onclick=go; i.addEventListener('keydown',e=>{ if(e.key==='Enter')go(); });
+  const bk=document.getElementById('dd_back'); if(bk)bk.onclick=()=>{ takeQtySet(t,iso,0); done('✓ '+nmz+' · '+qtyTxt(base)); }; }
 // un toque: pendiente → tomado (con su hora real, que nunca se pisa) · tomado/tarde → sin marcar
 function suppQuickTick(id,iso,tk){
   const it=(db.stack||[]).find(x=>x.id===id), t=it&&takeOf(it,tk); if(!t)return;
@@ -10091,14 +10178,37 @@ function takeTime(t,iso){ return (t.o.tickTimes&&t.o.tickTimes[iso])||''; }
 function takeMark(t,iso,st,stamp){ const o=t.o; o.ticks=o.ticks||{}; if(st)o.ticks[iso]=st; else delete o.ticks[iso];
   o.tickTimes=o.tickTimes||{}; if(stamp&&(st==='taken'||st==='late')&&!o.tickTimes[iso])o.tickTimes[iso]=nowHM();
   o.tickEdited=o.tickEdited||{}; o.tickEdited[iso]=Date.now(); }
-function takeSnap(t,iso){ const o=t.o; return [(o.ticks||{})[iso],(o.tickTimes||{})[iso],(o.tickEdited||{})[iso]]; }
-function takeRestore(t,iso,sn){ const o=t.o; ['ticks','tickTimes','tickEdited'].forEach((k,i)=>{ o[k]=o[k]||{}; if(sn[i]===undefined)delete o[k][iso]; else o[k][iso]=sn[i]; }); }
+function takeSnap(t,iso){ const o=t.o; return [(o.ticks||{})[iso],(o.tickTimes||{})[iso],(o.tickEdited||{})[iso],(o.tickQty||{})[iso]]; }
+function takeRestore(t,iso,sn){ const o=t.o; ['ticks','tickTimes','tickEdited'].forEach((k,i)=>{ o[k]=o[k]||{}; if(sn[i]===undefined)delete o[k][iso]; else o[k][iso]=sn[i]; });
+  if(sn[3]===undefined){ if(o.tickQty){ delete o.tickQty[iso]; if(!Object.keys(o.tickQty).length)delete o.tickQty; } } else { o.tickQty=o.tickQty||{}; o.tickQty[iso]=sn[3]; } }   // v325 · cuántas tomaste ese día (el mapa solo existe si hay alguna)
 function itemTaken(it,iso){ return takesOf(it,iso).some(t=>takeDone(t,iso)); }   // ¿tomó algo de esto ese día?
 function dayTakes(iso){ const out=[]; (db.stack||[]).forEach(x=>{ if(x&&!x.archived&&isDueToday(x,iso))takesOf(x,iso).forEach(t=>out.push(t)); }); return out; }
 // la dosis de una toma contra la del item (escala lo de tu etiqueta y lo que gasta del frasco); 1 si no se pueden comparar
 function takeFactor(t){ if(!t||!t.id)return 1; const a=subItemDose({dose:t.dose,unit:t.unit}), b=subItemDose(t.it); if(!a||!b)return 1;
   const x=subAmount(a.n,a.u,{unit:b.u}); return x>0&&b.n>0?x/b.n:1; }
 function takeDoseTxt(t){ return t&&t.dose!=null&&String(t.dose).trim()!==''?String(t.dose).trim()+(t.unit?' '+t.unit:''):''; }
+// v325 · S-UNI · CUÁNTAS pastillas (cáps, tabletas, scoops…) es una toma. El dueño (9-oct): "solo el número de cantidad de pastilla, 2, 3
+// etc, no los mg… si la melatonina la registré que la pill es de 5 mg, la dosis son 10mg, o sea 2". De dónde sale el número de siempre
+// (suppPer): lo que tú pusiste (it.qty, aditivo: lo escriben la hoja del número y el editor) → `por toma` de su producto si no es el 1 por
+// omisión → tu dosis en pastillas o entre lo que dice el nombre ("melatonina 5mg" a 10 mg = 2) → 1. El de UN día vive por fecha en la toma
+// (tickQty[fecha]={q,b}: cuántas y cuántas era una toma ese día; junto a ticks y tickTimes): un día sin clave usa el de siempre, por eso
+// "mañana regresa solo"; y como guarda su base, cambiar el de siempre no reescribe ese día. Nutrientes y frasco van en proporción.
+function suppDerive(it,p){ const raw=String(it&&it.dose!=null?it.dose:'').trim(), u=String((it&&it.unit)||'').trim();
+  { const m=/^(\d+(?:[.,]\d+)?)\s*(?:caps?|c[aá]psulas?|c[aá]ps|tabs?|tabletas?|pastillas?|pills?|softgels?|gomitas?|scoops?|gotas?|drops?|sprays?|puffs?|pumps?)$/i.exec(u?raw+' '+u:raw);
+    if(m){ const n=parseFloat(m[1].replace(',','.')); if(n>0&&n<=20)return n; } }   // tu dosis ya está escrita en pastillas ("2 caps", "1 drop"): esas son
+  const a=subItemDose(it); if(!a)return 0; for(const s of [p&&p.name,it&&it.name]){ const b=s&&subDoses(String(s)).out[0]; if(!b)continue;
+    const x=subAmount(a.n,a.u,{unit:b.u}), r=x>0&&b.n>0?x/b.n:0; if(r>=0.25&&r<=20&&Math.abs(r*4-Math.round(r*4))<1e-6)return Math.round(r*4)/4; } return 0; }
+function suppPer(it,p){ if(p===undefined)p=suppProd(it); const a=+(p&&p.per)||0, b=+(it&&it.qty)||0; if(b>0)return b; if(a>0&&a!==1)return a; return suppDerive(it,p)||a||1; }
+function suppPerSet(it,n){ it.qty=n; const p=suppProd(it); if(p)p.per=n; }
+function qtyTxt(n){ return String(Math.round((+n||0)*100)/100); }
+function qtyParse(v){ const s=String(v==null?'':v).trim(); if(!/^\d+(?:[.,]\d+)?$/.test(s))return 0; const n=parseFloat(s.replace(',','.')); return n>0&&n<=99?Math.round(n*100)/100:0; }   // solo un número (2 · 0.5 · 1,5)
+function takeUnits(t,iso){ const it=t.it, base=suppPer(it,(iso&&suppProdOn(it,iso))||suppProd(it)); return t.id?Math.round(base*takeFactor(t)*100)/100:base; }   // una toma extra del día: en proporción a su dosis
+function takeDayQty(t,iso){ const o=iso&&t&&t.o&&t.o.tickQty?t.o.tickQty[iso]:0, q=o&&typeof o==='object'?+o.q:+o; return q>0?q:null; }
+function takeUnitsOn(t,iso){ const q=takeDayQty(t,iso); return q!=null?q:takeUnits(t,iso); }
+function takeDayMul(t,iso){ const q=takeDayQty(t,iso); if(q==null)return 1; const o=t.o.tickQty[iso], b=o&&+o.b>0?+o.b:takeUnits(t,iso); return b>0?q/b:1; }   // ese día contra las de siempre DE ESE DÍA
+function takeQtySet(t,iso,n){ const o=t.o, same=!(n>0)||Math.abs(n-takeUnits(t,iso))<1e-9;
+  if(same){ if(o.tickQty){ delete o.tickQty[iso]; if(!Object.keys(o.tickQty).length)delete o.tickQty; } } else { (o.tickQty=o.tickQty||{})[iso]={q:n,b:takeUnits(t,iso)}; }
+  (o.tickEdited=o.tickEdited||{})[iso]=Date.now(); return !same; }
 // ---- v275 · suplementos con marca, frasco y aviso ----
 // El dueño: la marca/producto, "cuántas pastillas… por porción", la frecuencia, "cuántas… trae el frasco", que avise
 // "una semana antes de que se acabe", archivar / pausar / "no lo encontré", y si vuelve con otra marca, confirmar si cambió
@@ -10118,8 +10228,8 @@ function suppOpenContainer(it,prodId,size,iso){ const d=iso||todayISO(), c=suppC
 function suppReactivate(it,keep,why){ suppSetStatus(it,'active',why||'reactivado'); const p=suppProd(it); if(!keep&&!suppCont(it)&&p&&p.size>0)suppOpenContainer(it,p.id,p.size,todayISO()); }
 // cuántas quedan: lo que trae el frasco − (días con toma tomada o tarde desde que lo abriste) × por toma + tu corrección
 function suppLeft(it,iso){ const c=suppCont(it); if(!c)return null; const p=suppProd(it,c.prod)||suppProd(it), size=+c.size||0; if(!p||!(size>0))return null;
-  const per=+p.per||1, end=iso||todayISO(); let used=0;
-  takesOf(it).forEach(t=>{ const f=takeFactor(t), T=t.o.ticks||{}; Object.keys(T).forEach(d=>{ if(d>=c.opened&&d<=end&&tickDone(T[d]))used+=f; }); });   // v297 · cada toma marcada gasta lo suyo
+  const per=suppPer(it,p), end=iso||todayISO(); let used=0;
+  takesOf(it).forEach(t=>{ const f=takeFactor(t), T=t.o.ticks||{}; Object.keys(T).forEach(d=>{ if(d>=c.opened&&d<=end&&tickDone(T[d]))used+=f*takeDayMul(t,d); }); });   // v297 · cada toma marcada gasta lo suyo
   used=Math.round(used*100)/100;
   return {left:Math.round((size-used*per+(+c.adj||0))*100)/100, per, pu:suppPU(p), size, used}; }
 // días que alcanzan: las tomas que quedan entre las que te tocan por día según su periodización (próximas 4 semanas)
@@ -10133,10 +10243,10 @@ function suppStockTxt(k){ if(!k)return ''; if(k.out)return 'se acabó'; return '
 function suppCellMark(it){ const k=suppStock(it); return k&&(k.low||k.out)?'<span class="m"><span class="u-warn">⚠</span> '+(k.out?'se acabó':'~'+k.d+' d')+'</span>':''; }
 // la nutrición de un día: la del producto que estaba abierto ese día (si guardó la suya); si no, la del item; si no, la típica
 function suppProdOn(it,iso){ const C=((it&&it.containers)||[]).filter(c=>c.opened<=iso&&(!c.closed||c.closed>=iso)); const c=C[C.length-1]; return c?suppProd(it,c.prod):null; }
-function suppNutrOn(it,iso,tk){ const p=suppProdOn(it,iso), f=takeFactor(tk);   // v295: lo típico, escalado a tu dosis · v297: a la dosis de ESA toma
+function suppNutrOn(it,iso,tk){ const p=suppProdOn(it,iso), g=tk?takeDayMul(tk,iso):1, f=takeFactor(tk)*g;   // v295: lo típico, escalado a tu dosis · v297: a la dosis de ESA toma
   const sc=n=>{ if(f===1)return n; const o={}; for(const k in n){ const v=parseFloat(n[k]); o[k]=isNaN(v)?n[k]:Math.round(v*f*100)/100; } return o; };
   if(p&&p.nutr&&Object.keys(p.nutr).length)return sc(p.nutr); if(it.nutr&&Object.keys(it.nutr).length)return sc(it.nutr);
-  return subItemNutr(tk&&tk.id?Object.assign({},it,{dose:tk.dose,unit:tk.unit}):it); }
+  { const n=subItemNutr(tk&&tk.id?Object.assign({},it,{dose:tk.dose,unit:tk.unit}):it); if(!n||g===1)return n; const o={}; for(const k in n){ const v=parseFloat(n[k]); o[k]=isNaN(v)?n[k]:Math.round(v*g*100)/100; } return o; } }
 // el mismo nombre en pausa o archivado: se retoma ESE (con otra marca si quieres) en vez de crear otro
 function suppFindDormant(name){ const k=nameKey(name); return k?(db.stack||[]).find(x=>x&&nameKey(x.name)===k&&suppStatus(x)!=='active')||null:null; }
 function suppSnap(it){ return JSON.stringify(['status','archived','statusLog','products','cur','containers'].map(k=>[k,it[k]])); }
@@ -10156,15 +10266,15 @@ function suppDups(){ const G={}; (db.stack||[]).forEach(x=>{ if(!x||suppStatus(x
 // la primera toma = la del momento más temprano (AM · PM · entreno · sin momento) y, si empatan, la que más historial tiene
 function suppMerge(g){ const ord=['AM','PM','entreno','otros'], n=x=>Object.keys(x.ticks||{}).length;
   const L=g.items.slice().sort((a,b)=>ord.indexOf(suppSlot(a))-ord.indexOf(suppSlot(b))||n(b)-n(a)), A=L[0], made=[];
-  L.slice(1).forEach(X=>{ const was=JSON.parse(JSON.stringify(X)); delete was.ticks; delete was.tickTimes; delete was.tickEdited; delete was.more; was._pos=db.stack.indexOf(X);
-    const m={id:uid(),when:suppSlot(X)==='otros'?((X.when||[])[0]||''):suppSlot(X),dose:X.dose==null?'':String(X.dose),unit:X.unit||'',from:X.startDate||'',ticks:X.ticks||{},tickTimes:X.tickTimes||{},tickEdited:X.tickEdited||{},was};
+  L.slice(1).forEach(X=>{ const was=JSON.parse(JSON.stringify(X)); delete was.ticks; delete was.tickTimes; delete was.tickEdited; delete was.tickQty; delete was.more; was._pos=db.stack.indexOf(X);
+    const m={id:uid(),when:suppSlot(X)==='otros'?((X.when||[])[0]||''):suppSlot(X),dose:X.dose==null?'':String(X.dose),unit:X.unit||'',from:X.startDate||'',ticks:X.ticks||{},tickTimes:X.tickTimes||{},tickEdited:X.tickEdited||{},was}; if(X.tickQty)m.tickQty=X.tickQty;
     if((X.more||[]).length)m.sub=X.more.map(x=>x.id);
     (A.more=A.more||[]).push(m); (X.more||[]).forEach(x=>A.more.push(x)); made.push(m.id); db.stack=db.stack.filter(x=>x!==X); });
   return {into:A,takes:made}; }
 // una toma vuelve a ser su propio item: el que era (was) con las tomas que marcaste desde entonces; si no venía de unir, uno nuevo
 function suppSplitTake(it,tk){ const i=(it&&it.more||[]).findIndex(m=>m.id===tk); if(i<0)return null; const m=it.more[i]; it.more.splice(i,1);
   const b=m.was?JSON.parse(JSON.stringify(m.was)):{id:'st_'+uid(),name:it.name,category:it.category,dose:takeDoseTxt({dose:m.dose})?m.dose:it.dose,unit:takeDoseTxt({dose:m.dose})?(m.unit||''):it.unit,when:m.when?[m.when]:[],periodization:JSON.parse(JSON.stringify(it.periodization||{type:'daily'})),notes:'',startDate:m.from||it.startDate||todayISO()};
-  const pos=b._pos; delete b._pos; b.ticks=m.ticks||{}; b.tickTimes=m.tickTimes||{}; b.tickEdited=m.tickEdited||{};
+  const pos=b._pos; delete b._pos; b.ticks=m.ticks||{}; b.tickTimes=m.tickTimes||{}; b.tickEdited=m.tickEdited||{}; if(m.tickQty)b.tickQty=m.tickQty;
   if(m.was&&(String(m.dose==null?'':m.dose)!==String(m.was.dose==null?'':m.was.dose)||(m.unit||'')!==(m.was.unit||''))){ b.dose=m.dose; b.unit=m.unit; }   // la dosis que le cambiaste ya unida se va con ella
   if(m.sub&&m.sub.length){ b.more=it.more.filter(x=>m.sub.indexOf(x.id)>=0); it.more=it.more.filter(x=>m.sub.indexOf(x.id)<0); }
   if(!it.more.length)delete it.more;
@@ -10414,7 +10524,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
   const unitOpts=UNITS.map(u=>`<option value="${u}"${(it.unit||'')===u?' selected':''}>${u||'—'}</option>`).join('');
   // v275 · producto y frasco (opcional): marca, presentación, por toma, lo que trae, cuándo lo abriste y cuántas quedan
   const _PB=suppProd(it), _PP=opt.newBrand?null:_PB, _C=opt.newBrand?null:suppCont(it), _L=opt.newBrand?null:suppLeft(it), _SK=opt.newBrand?null:suppStock(it);
-  const _pf=(_PB&&_PB.form)||'cápsulas', _brands=[...new Set((it.products||[]).map(p=>p.brand).filter(Boolean))], _per=(_PB&&_PB.per)||'';
+  const _pf=(_PB&&_PB.form)||'cápsulas', _brands=[...new Set((it.products||[]).map(p=>p.brand).filter(Boolean))], _per=(+it.qty>0||(_PB&&+_PB.per>0))?qtyTxt(suppPer(it,_PB)):'';   // v325 · cuántas es una toma (lo que ves en la lista)
   const _formOpts=SUPP_FORMS.map(([f,u])=>`<option value="${f}"${_pf===f?' selected':''}>${f===u?f:f+' · '+u}</option>`).join('');
   const _prodHTML=`<div class="grp-label sub">PRODUCTO · FRASCO <span class="u-o40 u-w4">· opcional · para avisarte antes de que se acabe</span></div>`
     +(opt.newBrand?`<div class="submeta u-mb6">otra marca de ${escTxt(it.name)} · su historial sigue aquí</div>`:'')
@@ -10524,7 +10634,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
   const _prodForm=()=>{ const n=id=>{ const v=parseFloat(String(val(id)||'').replace(',','.')); return isFinite(v)?v:0; }, le=document.getElementById('se_left');
     return {brand:(val('se_brand')||'').trim(),pname:(val('se_pname')||'').trim(),form:val('se_pform')||'cápsulas',per:n('se_per'),size:n('se_size'),opened:val('se_opened')||todayISO(),
       left:le?n('se_left'):null,leftEdited:!!(le&&String(le.value).trim()!==''&&String(le.value).trim()!==String(le.dataset.v0))}; };
-  const _newProd=pf=>{ const pp=suppProd(it); return !!(pf.brand||pf.pname||pf.per>0||pf.size>0)&&(!pp||!!opt.newBrand||(!!pp.brand&&!!pf.brand&&nameKey(pf.brand)!==nameKey(pp.brand))); };
+  const _newProd=pf=>{ const pp=suppProd(it); return !!(pf.brand||pf.pname||pf.size>0)&&(!pp||!!opt.newBrand||(!!pp.brand&&!!pf.brand&&nameKey(pf.brand)!==nameKey(pp.brand))); };
   const _prodChanges=pf=>{ const pp=suppProd(it); if(!pp||!_newProd(pf))return []; const out=[];
     if(pf.form!==pp.form)out.push('presentación: '+(pp.form||'—')+' → '+pf.form);
     if(pf.per>0&&(+pp.per||0)!==pf.per)out.push('por toma: '+(pp.per||'—')+' '+suppPU(pp)+' → '+pf.per+' '+suppPU({form:pf.form}));
@@ -10580,7 +10690,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
     savedToast('✓ suplemento guardado'); closeModal(); reRender();
   };
   // v275 · marca nueva = producto nuevo con su frasco; el anterior guarda su dosis y nutrición para los días viejos
-  const _applyProd=(pf,nutr0,dose0)=>{ const pp=suppProd(it), any=!!(pf.brand||pf.pname||pf.per>0||pf.size>0); if(!any&&!pp)return;
+  const _applyProd=(pf,nutr0,dose0)=>{ const pp=suppProd(it), any=!!(pf.brand||pf.pname||pf.size>0); if(pf.per>0)it.qty=pf.per; else delete it.qty; if(!any&&!pp)return;   // v325 · cuántas es del suplemento
     const snapN=()=>it.nutr?JSON.parse(JSON.stringify(it.nutr)):undefined;
     if(_newProd(pf)){
       if(pp){ if(pp.nutr===undefined&&nutr0)pp.nutr=nutr0; if(pp.dose===undefined){ pp.dose=dose0.dose; pp.unit=dose0.unit; } }
@@ -11871,6 +11981,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='profile'||a==='editprofile'){ goPerfil(); }
   else if(a==='navmenu'){ openNavMenu(); }
   else if(a==='suppq'){ suppQuickTick(el.dataset.id,el.dataset.d,el.dataset.tk); }
+  else if(a==='suppdose'){ openQtyDay(el.dataset.id,el.dataset.d,el.dataset.tk); }
   else if(a==='calday'){ openCalDay(el.dataset.d); }
   else if(a==='calday_food'){ closeModal(); state.screen='macros'; state.macroDate=el.dataset.d; state._trans=true; render(); }
   else if(a==='calday_gym'){ closeModal(); openSessionEdit(el.dataset.id); }
@@ -16353,7 +16464,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
