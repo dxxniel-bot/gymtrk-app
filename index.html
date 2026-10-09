@@ -344,12 +344,14 @@
   .mdv{color:var(--fg); white-space:nowrap; text-align:right;}
   .mdsub{color:var(--o40); font-size:var(--t-label); margin-left:6px;}
   /* v269 · //PROGRESS en modo editar (widgets): − arriba a la izquierda (20 visibles, 44 de toque), ⠿ arriba a la derecha
-     (arrastra; tocarlo abre mover antes/después/quitar), barra abajo con + add · cancel · ✓ done. Sin temblor (B-09). */
+     (arrastra; tocarlo abre mover antes/después/quitar), barra abajo con + add · cancel · ✓ done. Sin temblor (B-09).
+     v310 · al arrastrar no hay fantasma ni raya de destino: la tile levantada (.lift) sigue al dedo y las vecinas le abren hueco. */
   .ptile.ed,.pwide.ed{position:relative; -webkit-touch-callout:none;} .ptile.ed{border-color:var(--o40);} .ptile.ed .ptchev{visibility:hidden;} .pwide.ed>*:not(.pdel){pointer-events:none;}
   .pdel{position:absolute; left:-6px; top:-6px; z-index:1; width:20px; height:20px; padding:0; border:0; border-radius:50%; background:var(--fg); color:var(--on-fill); font-family:inherit; font-size:var(--t-data); font-weight:800; line-height:var(--lh-tight); display:flex; align-items:center; justify-content:center; cursor:pointer;} .pdel::after{content:''; position:absolute; inset:-12px;}
-  .pgrip{position:absolute; right:0; top:0; width:44px; height:44px; display:flex; align-items:flex-start; justify-content:flex-end; padding:var(--s3) var(--s3) 0 0; color:var(--o50); font-size:var(--t-section); line-height:var(--lh-tight); touch-action:none; cursor:grab;}
-  .ptile.dragsrc{opacity:var(--op-dim);} .ptile.dropbefore{box-shadow:inset var(--bw-mark) 0 0 var(--fill);} .ptile.dropafter{box-shadow:inset calc(-1 * var(--bw-mark)) 0 0 var(--fill);}
-  .scroll.pedit{padding-bottom:0;} .pwide.ed{padding-left:var(--s6);}
+  .pgrip{position:absolute; right:0; top:0; width:44px; height:44px; display:flex; align-items:flex-start; justify-content:flex-end; padding:var(--s3) var(--s3) 0 0; color:var(--o50); font-size:var(--t-section); line-height:var(--lh-tight); touch-action:none; -webkit-user-select:none; user-select:none; cursor:grab;}
+  .ptile.lift{z-index:2; background:var(--card2); border-color:var(--fg); box-shadow:var(--shadow-float);}
+  .pgrid.ped>.ptile.ed{transition:none!important;}   /* con movimiento reducido la regla global deja una transición de .01 ms en todo: al medir la tile tras quitarle el transform se leía el rectángulo viejo y dejaba de seguir al dedo (verificador, 8-oct) */
+  .scroll.pedit{padding-bottom:0; overflow-x:hidden; overflow-anchor:none;} .pwide.ed{padding-left:var(--s6);}
   .pedbar{position:sticky; bottom:0; z-index:2; display:flex; align-items:center; gap:0 var(--s4); margin-top:var(--s5); padding:var(--s3) 0 calc(var(--s3) + env(safe-area-inset-bottom)); background:var(--bg); border-top:var(--bw-sep) solid var(--o10);} .pedbar .pedok{flex:1; width:auto;}
   .ptile{background:var(--card); border:var(--bw-card) solid var(--border); border-radius:var(--radius); padding:var(--s4); min-width:0; overflow:hidden;}
   .ptile .ptlh{display:flex; align-items:center; justify-content:space-between; gap:6px;}
@@ -1298,7 +1300,7 @@
 
 <script>
 "use strict";
-const APP_V='v309';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v310';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -8977,8 +8979,8 @@ function openProgConfig(){ progEditStart(); }
 function progEditStart(){ if(state.screen!=='progress')return; const L=progLayout(); state.progEdit={order:L.order.slice(),hidden:L.hidden.slice()}; reRender(); renderNav(); }
 function progVisible(e){ return e.order.filter(k=>e.hidden.indexOf(k)<0); }
 function progPlace(k,target,after){ const e=state.progEdit; if(!e||k===target)return; const o=e.order.filter(x=>x!==k), i=o.indexOf(target); if(i<0)return; o.splice(after?i+1:i,0,k); e.order=o; }
-function progMove(k,d){ const e=state.progEdit; if(!e)return; const v=progVisible(e), i=v.indexOf(k), j=i+d; if(i<0||j<0||j>=v.length)return; progPlace(k,v[j],d>0); reRender(); }
-function progGripMenu(k){ trkMenu('mover · '+(PROG_LBL[k]||k),[['mover antes',()=>progMove(k,-1)],['mover después',()=>progMove(k,1)],['quitar',()=>{ const e=state.progEdit; if(e&&e.hidden.indexOf(k)<0)e.hidden.push(k); reRender(); }]]); }
+function progMove(k,d){ const e=state.progEdit; if(!e)return; const v=progVisible(e), i=v.indexOf(k), j=i+d; if(i<0||j<0||j>=v.length)return; progPlace(k,v[j],d>0); progReflow(); }
+function progGripMenu(k){ trkMenu('mover · '+(PROG_LBL[k]||k),[['mover antes',()=>progMove(k,-1)],['mover después',()=>progMove(k,1)],['quitar',()=>{ const e=state.progEdit; if(e&&e.hidden.indexOf(k)<0)e.hidden.push(k); progReflow(); }]]); }
 function openProgAdd(){ const e=state.progEdit; if(!e)return; const hid=['consistency'].concat(PROG_KEYS).filter(k=>e.hidden.indexOf(k)>=0);
   openModal('<h3>agregar a progreso</h3>'+(hid.length?hid.map(k=>'<div class="line u-tap" data-act="progaddk" data-k="'+k+'"><span class="k">'+escTxt(PROG_LBL[k])+'</span><span class="dots"></span><span class="v">+ ›</span></div>').join(''):'<div class="empty">ya tienes todo a la vista</div>')
     +'<div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div>'); }
@@ -11126,7 +11128,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='atajoback'){ state.screen='home'; try{ if(/[?&]atajo=1\b/.test(location.search))history.replaceState(null,'',location.pathname); }catch(_){} render(); }
   else if(a==='deloadinfo'){ openDeloadInfo(); }
   else if(a==='perfinfo'){ openPerfInfo(); }
-  else if(a==='progdel'){ const e=state.progEdit, k=el.dataset.k; if(e&&e.hidden.indexOf(k)<0){ e.hidden.push(k); reRender(); } }
+  else if(a==='progdel'){ const e=state.progEdit, k=el.dataset.k; if(e&&e.hidden.indexOf(k)<0){ e.hidden.push(k); progReflow(); } }
   else if(a==='progadd'){ openProgAdd(); }
   else if(a==='progaddk'){ const e=state.progEdit, k=el.dataset.k; if(e){ e.hidden=e.hidden.filter(x=>x!==k); if(k!=='consistency'){ e.order=e.order.filter(x=>x!==k); e.order.push(k); } } closeModal(); reRender(); }
   else if(a==='progcancel'){ state.progEdit=null; reRender(); renderNav(); }
@@ -11261,29 +11263,147 @@ document.getElementById('app').addEventListener('change',e=>{
   setField(+el.dataset.exi,+el.dataset.si,el.dataset.f,el.value);
 });
 // v269 · //PROGRESS: presionar 0.5 s una tile entra al modo editar; en modo editar, ⠿ arrastra (tocarlo sin mover abre un menú)
+// v310 · el arrastre funciona como mover widgets en iOS. El dueño (30-sep): "lo desplazas y se desplazan los demás como para
+// abrir espacio; que se vea la interacción en el momento y al soltarlo ahí se queda y ya después confirmar".
+// Sin fantasma ni rayas de destino: la tile misma se levanta (.lift) y sigue al dedo con transform; cuando su centro queda
+// más cerca de otro hueco, las vecinas se recorren EN VIVO (se reordena el DOM y cada una viaja desde donde estaba: FLIP en
+// X e Y, solo transform). La tile arrastrada nunca sale del documento (se mueven las vecinas a su alrededor), así no pierde
+// la captura del dedo. La copia de trabajo (state.progEdit.order) va al día en cada hueco; nada se guarda hasta ✓ done y
+// cancel la descarta. Con movimiento reducido el resultado es el mismo, sin animación.
+const PROG_DRAG={lift:6, hyst:10, edge:72, pad:16, vmax:.7};   // px · umbral para levantar · ventaja que pide otro hueco · franja de autoscroll · aire al llegar al borde de la rejilla · tope de autoscroll en px/ms
+function progTiles(root){ return root?[].slice.call(root.querySelectorAll('.pgrid.ped>.ptile.ed')):[]; }
+// índice del hueco cuyo centro queda más cerca del punto; el propio gana mientras otro no le saque `hyst` px (sin vaivén)
+function progSlotAt(rects,cx,cy,own){ let b=-1, bd=Infinity, od=Infinity;
+  rects.forEach((r,i)=>{ const v=Math.hypot(cx-(r.left+r.width/2),cy-(r.top+r.height/2)); if(i===own)od=v; if(v<bd){ bd=v; b=i; } });
+  return (b!==own&&od<Infinity&&bd+PROG_DRAG.hyst>=od)?own:b; }
+// lleva la tile al hueco j moviendo a las VECINAS (ella se queda en el documento)
+function progDomShift(grid,tile,j){ const ts=[].slice.call(grid.children), i=ts.indexOf(tile); if(i<0||j===i||j<0||j>=ts.length)return false;
+  if(j>i){ for(let n=i+1;n<=j;n++)grid.insertBefore(ts[n],tile); } else { for(let n=i-1;n>=j;n--)grid.insertBefore(ts[n],tile.nextSibling); }
+  return true; }
+// FLIP de la rejilla en dos ejes, por clave de tile (flipCapture/flipPlay solo miden `top`: en dos columnas el cambio de
+// columna saltaba). Misma duración y curva que TRKRow; `skip` = la tile que va en el dedo.
+const _pflip=new WeakMap();
+function progFlipCapture(root){ const m=new Map(); progTiles(root).forEach(t=>{ const r=t.getBoundingClientRect(); m.set(t.dataset.pk,[r.left,r.top]); }); return m; }
+function progFlipPlay(root,first,skip){ const ts=progTiles(root); let n=0;
+  ts.forEach(t=>{ const a=_pflip.get(t); if(a){ _pflip.delete(t); try{ a.cancel(); }catch(_){} } });
+  if(!first||!first.size||reducedMotion())return n; const D=durMs('--dur-2',180);
+  ts.forEach(t=>{ const k=t.dataset.pk, p=first.get(k); if(!p||k===skip)return; const r=t.getBoundingClientRect(), dx=p[0]-r.left, dy=p[1]-r.top; if(Math.abs(dx)<1&&Math.abs(dy)<1)return;
+    try{ _pflip.set(t,t.animate([{transform:'translate('+dx+'px,'+dy+'px)'},{transform:'none'}],{duration:D,easing:'cubic-bezier(.22,1,.36,1)'})); n++; }catch(_){} });
+  return n; }
+// repintar el modo editar (menú mover antes/después, −) con las tiles viajando a su lugar nuevo, sin mover el scroll
+function progReflow(){ const v=document.getElementById('view'), first=progFlipCapture(v); if(v)state._scroll=v.scrollTop; render(); progFlipPlay(v,first); }
 (function(){ const app=document.getElementById('app'); let lp=null, lx=0, ly=0, d=null;
+  // la tile sigue al dedo: su esquina queda donde la tomaste, esté en el hueco que esté y con el scroll que haya
+  function place(){ const t=d.tile; t.style.transform=''; const r=t.getBoundingClientRect(); d.tx=d.x-d.ox-r.left; d.ty=d.y-d.oy-r.top;
+    t.style.transform='translate3d('+d.tx+'px,'+d.ty+'px,0)'; return r; }
+  // ¿su centro ya está sobre otro hueco? → las vecinas se recorren ahora mismo
+  function seek(r){ const t=d.tile, ts=[].slice.call(d.grid.children), i=ts.indexOf(t); if(i<0)return;
+    const rects=ts.map(s=>({left:r.left+s.offsetLeft-t.offsetLeft, top:r.top+s.offsetTop-t.offsetTop, width:s.offsetWidth, height:s.offsetHeight}));   // huecos de layout: no los mueve una animación en curso
+    const j=progSlotAt(rects,d.x-d.ox+d.w0/2,d.y-d.oy+d.h0/2,i); if(j<0||j===i)return;
+    // solo hacia donde va el dedo (medido desde el último hueco, con el scroll incluido): al cambiar de fila cambian las alturas
+    // y, sin esto, lo recién abierto podía "quedar más cerca" del hueco anterior y la tile iba y venía
+    const cy=d.y+d.v.scrollTop, mx=d.x-d.rx, my=cy-d.ry, a=rects[i], b=rects[j];
+    if(Math.hypot(mx,my)<PROG_DRAG.lift||mx*(b.left+b.width/2-a.left-a.width/2)+my*(b.top+b.height/2-a.top-a.height/2)<=0)return;
+    const first=progFlipCapture(d.v), s0=d.v.scrollTop;
+    if(!progDomShift(d.grid,t,j))return; progPlace(d.k,ts[j].dataset.pk,j>i); d.rx=d.x; d.ry=cy;
+    t.style.transform=''; progFlipPlay(d.v,first,d.k);
+    { const gh=d.grid.scrollHeight; if(gh>d.mh){ d.mh=gh; d.grid.style.minHeight=gh+'px'; } }   // crece si hace falta, nunca encoge (se suelta en el siguiente render)
+    if(d.v.scrollTop!==s0)d.v.scrollTop=s0; d.maxS=Math.max(0,d.v.scrollHeight-d.v.clientHeight); place(); }
+  // cerca del borde la pantalla se recorre sola aunque el dedo esté quieto, y solo mientras quede rejilla escondida de ese lado
+  function loop(now){ if(!d||!d.on)return; if(!d.tile.isConnected){ up(null); return; }
+    const v=d.v, vr=v.getBoundingClientRect(), gr=d.grid.getBoundingClientRect(), bar=v.querySelector('.pedbar'), bot=bar?Math.min(vr.bottom,bar.getBoundingClientRect().top):vr.bottom, E=PROG_DRAG.edge, G=PROG_DRAG.pad;
+    const dt=Math.max(0,Math.min(48,(now||0)-(d.t||now||0))); d.t=now||0;   // por tiempo, no por cuadro: misma velocidad a 60 y a 120 Hz
+    let k=0; if(d.y<vr.top+E&&gr.top<vr.top+G)k=-Math.min(1,(vr.top+E-d.y)/E); else if(d.y>bot-E&&gr.bottom>bot-G)k=Math.min(1,(d.y-(bot-E))/E);
+    if(!k)d.acc=0; else if(dt){ d.acc=(d.acc||0)+k*PROG_DRAG.vmax*dt; const s=d.acc<0?Math.ceil(d.acc):Math.floor(d.acc);
+      if(s){ d.acc-=s; const to=Math.max(0,Math.min(d.maxS,v.scrollTop+s)); if(Math.abs(to-v.scrollTop)>=1){ v.scrollTop=to; seek(place()); } } }
+    d.raf=requestAnimationFrame(loop); }
+  function lift(){ const v=document.getElementById('view'), t=(state.progEdit&&v)?v.querySelector('.pgrid.ped>.ptile.ed[data-pk="'+d.k+'"]'):null; if(!t){ stop(); return false; }
+    try{ (t.getAnimations?t.getAnimations():[]).forEach(a=>a.cancel()); }catch(_){}
+    const r=t.getBoundingClientRect();
+    Object.assign(d,{on:true,v:v,tile:t,grid:t.parentElement,ox:d.x0-r.left,oy:d.y0-r.top,w0:r.width,h0:r.height,rx:d.x0,ry:d.y0+v.scrollTop,tx:0,ty:0,maxS:Math.max(0,v.scrollHeight-v.clientHeight)});
+    d.mh=d.grid.offsetHeight; d.grid.style.minHeight=d.mh+'px';   // la rejilla no encoge mientras arrastras (las filas miden lo que su tile más alta): si encogiera, cerca del final el navegador subiría el scroll solo
+    t.classList.add('lift'); document.body.classList.add('dragging'); try{ navigator.vibrate&&navigator.vibrate(28); }catch(_){}
+    d.raf=requestAnimationFrame(loop); return true; }
+  function mv(ev){ if(!d||ev.pointerId!==d.id)return; d.x=ev.clientX; d.y=ev.clientY;
+    if(!d.on){ if(Math.hypot(d.x-d.x0,d.y-d.y0)<PROG_DRAG.lift||!lift())return; }
+    if(!d.tile.isConnected){ up(null); return; }
+    if(ev.cancelable)ev.preventDefault(); seek(place()); }
+  function stop(){ const x=d; d=null; window.removeEventListener('pointermove',mv); window.removeEventListener('pointerup',up); window.removeEventListener('pointercancel',up); if(x&&x.raf)cancelAnimationFrame(x.raf); return x; }
+  // soltar: cae en el hueco que ya tiene abierto. Un gesto cortado por el sistema (pointercancel) también se queda donde iba:
+  // es lo que se ve en pantalla, y nada se guarda hasta ✓ done.
+  function up(ev){ if(!d||(ev&&ev.pointerId!==d.id))return; const rel=!!ev&&ev.type==='pointerup';
+    if(d.on&&rel&&d.tile.isConnected){ d.x=ev.clientX; d.y=ev.clientY; seek(place()); }
+    const x=stop(); if(!x.on){ if(rel)progGripMenu(x.k); return; }
+    document.body.classList.remove('dragging'); window._swipeGuard=Date.now();
+    const t=x.tile, e=state.progEdit, done=()=>{ if(!(d&&d.on&&d.tile===t))t.classList.remove('lift'); }; t.style.transform='';
+    const dk=progTiles(x.v).map(q=>q.dataset.pk);   // red de seguridad: si algo repintó a media maniobra, lo visible y la copia de trabajo vuelven a coincidir
+    if(e&&(!t.isConnected||progVisible(e).filter(k=>dk.indexOf(k)>=0).join()!==dk.join())){ done(); progReflow(); return; }
+    if(t.isConnected&&!reducedMotion()&&(Math.abs(x.tx)>=1||Math.abs(x.ty)>=1)){
+      try{ const a=t.animate([{transform:'translate3d('+x.tx+'px,'+x.ty+'px,0)'},{transform:'none'}],{duration:durMs('--dur-2',180),easing:'cubic-bezier(.22,1,.36,1)'}); _pflip.set(t,a); a.onfinish=a.oncancel=done; return; }catch(_){} }
+    done(); }
   app.addEventListener('pointerdown',ev=>{
     const g=ev.target.closest&&ev.target.closest('.pgrip');
-    if(g&&state.progEdit){ ev.preventDefault(); d={k:g.dataset.pgrip,x0:ev.clientX,y0:ev.clientY,on:false,id:ev.pointerId,ghost:null,tgt:null,after:false}; try{ g.setPointerCapture(ev.pointerId); }catch(_){} return; }
+    if(g&&state.progEdit){ ev.preventDefault(); if(d)up(null);   // un dedo anterior que nunca avisó que se levantó: lo suyo se queda donde iba
+      d={k:g.dataset.pgrip,id:ev.pointerId,x0:ev.clientX,y0:ev.clientY,x:ev.clientX,y:ev.clientY,on:false}; try{ g.setPointerCapture(ev.pointerId); }catch(_){}
+      window.addEventListener('pointermove',mv,{passive:false}); window.addEventListener('pointerup',up); window.addEventListener('pointercancel',up); return; }
     if(state.screen!=='progress'||state.progEdit)return; const tile=ev.target.closest&&ev.target.closest('.pgrid .ptile'); if(!tile)return;
     lx=ev.clientX; ly=ev.clientY; clearTimeout(lp); lp=setTimeout(()=>{ lp=null; window._swipeGuard=Date.now()+300; try{ navigator.vibrate&&navigator.vibrate(20); }catch(_){} progEditStart(); },500); });
-  app.addEventListener('pointermove',ev=>{
-    if(lp&&Math.hypot(ev.clientX-lx,ev.clientY-ly)>8){ clearTimeout(lp); lp=null; }
-    if(!d||ev.pointerId!==d.id)return;
-    if(!d.on){ if(Math.hypot(ev.clientX-d.x0,ev.clientY-d.y0)<6)return; d.on=true; document.body.classList.add('dragging');
-      const src=document.querySelector('.ptile.ed[data-pk="'+d.k+'"]'); if(src)src.classList.add('dragsrc');
-      d.ghost=document.createElement('div'); d.ghost.className='dragghost'; d.ghost.textContent=PROG_LBL[d.k]||d.k; document.body.appendChild(d.ghost); try{ navigator.vibrate&&navigator.vibrate(28); }catch(_){} }
-    d.ghost.style.transform='translate('+(ev.clientX+8)+'px,'+(ev.clientY-18)+'px)';
-    document.querySelectorAll('.ptile.dropbefore,.ptile.dropafter').forEach(x=>x.classList.remove('dropbefore','dropafter'));
-    let best=null, bd=1e9; document.querySelectorAll('.ptile.ed').forEach(t=>{ if(t.dataset.pk===d.k)return; const r=t.getBoundingClientRect(), dd=Math.hypot(ev.clientX-(r.left+r.width/2),ev.clientY-(r.top+r.height/2)); if(dd<bd){ bd=dd; best=t; } });
-    d.tgt=best; if(best){ const r=best.getBoundingClientRect(); d.after=ev.clientX>r.left+r.width/2; best.classList.add(d.after?'dropafter':'dropbefore'); }
-    const v=document.getElementById('view'), vr=v.getBoundingClientRect(); if(ev.clientY<vr.top+80)v.scrollTop-=12; else if(ev.clientY>vr.bottom-80)v.scrollTop+=12; });
-  const end=(ev,cancel)=>{ clearTimeout(lp); lp=null; if(!d||(ev&&ev.pointerId!==d.id))return; const x=d; d=null; document.body.classList.remove('dragging'); if(x.ghost)x.ghost.remove();
-    document.querySelectorAll('.dragsrc,.dropbefore,.dropafter').forEach(el=>el.classList.remove('dragsrc','dropbefore','dropafter'));
-    if(cancel)return; if(!x.on){ progGripMenu(x.k); return; } window._swipeGuard=Date.now();
-    if(x.tgt&&state.progEdit){ progPlace(x.k,x.tgt.dataset.pk,x.after); reRender(); } };
-  app.addEventListener('pointerup',ev=>end(ev,false)); app.addEventListener('pointercancel',ev=>end(ev,true));
+  app.addEventListener('pointermove',ev=>{ if(lp&&Math.hypot(ev.clientX-lx,ev.clientY-ly)>8){ clearTimeout(lp); lp=null; } });
+  const lpEnd=()=>{ clearTimeout(lp); lp=null; }; app.addEventListener('pointerup',lpEnd); app.addEventListener('pointercancel',lpEnd);
+  app.addEventListener('contextmenu',ev=>{ if(d||(state.progEdit&&ev.target.closest&&ev.target.closest('.pgrip')))ev.preventDefault(); });   // mantener ⠿ no abre el menú del sistema
 })();
+function _widgetsSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK widgets: '+nm); };
+  // 1 · el hueco: el más cercano al centro de la tile; el propio gana si al otro le falta ventaja
+  const R=[[0,0,100],[110,0,100],[0,110,60],[110,110,60]].map(q=>({left:q[0],top:q[1],width:100,height:q[2]}));
+  A('quieta se queda en su hueco', progSlotAt(R,50,50,0)===0);
+  A('apenas pasada la mitad aún no brinca', progSlotAt(R,108,50,0)===0);
+  A('encima del vecino toma su hueco', progSlotAt(R,125,50,0)===1);
+  A('hacia abajo toma la fila siguiente', progSlotAt(R,50,125,0)===2);
+  A('fuera de la rejilla toma el hueco más cercano', progSlotAt(R,400,900,0)===3);
+  // 2 · las vecinas se recorren alrededor; la tile arrastrada nunca se saca del documento (no pierde el dedo)
+  const g=document.createElement('div'); g.innerHTML='abcde'.split('').map(k=>'<i data-pk="'+k+'"></i>').join('');
+  const ord=()=>[].map.call(g.children,x=>x.dataset.pk).join(''), ib=g.insertBefore, mvd=[]; g.insertBefore=function(n,ref){ mvd.push(n.dataset.pk); return ib.call(g,n,ref); };
+  A('a al hueco 3', progDomShift(g,g.children[0],3)&&ord()==='bcdae');
+  A('e al hueco 1', progDomShift(g,g.children[4],1)&&ord()==='becda');
+  A('al mismo hueco no hace nada', !progDomShift(g,g.children[2],2)&&ord()==='becda');
+  A('solo se movieron las vecinas', mvd.join('')==='bcdadc');
+  // 3 · el gesto de verdad sobre la pantalla (base de juguete; nada llega al disco)
+  const v=document.getElementById('view'); if(typeof PointerEvent!=='function'||!v||!v.getBoundingClientRect().width){ console.log('widgets self-check OK (sin gesto: no hay pantalla)'); return; }
+  const real=db, rs=state.screen, pe=state.progEdit, sc0=v.scrollTop, _t=toast, _s=save, sg=window._swipeGuard;
+  const P=(ty,el,x,y)=>el.dispatchEvent(new PointerEvent(ty,{bubbles:true,cancelable:true,pointerId:91,pointerType:'touch',isPrimary:true,clientX:x,clientY:y}));
+  const tiles=()=>progTiles(v), keys=()=>tiles().map(t=>t.dataset.pk), mid=r=>[r.left+r.width/2,r.top+r.height/2], lay=t=>[t.offsetLeft+t.offsetWidth/2,t.offsetTop+t.offsetHeight/2];   // lay = centro de layout (no lo mueve una animación)
+  try{ db=migrate({profile:{username:'t'},sessions:[]}); bumpIdx(); toast=()=>null; save=()=>true;
+    db.settings.progLayout={v:1,order:PROG_KEYS.slice(),hidden:['consistency']}; const saved=db.settings.progLayout.order.join();
+    state.screen='progress'; state.progEdit={order:PROG_KEYS.slice(),hidden:['consistency']}; state._scroll=0; render();
+    const k0=keys(); A('la rejilla en modo editar trae sus tiles', k0.length>=6);
+    const a=tiles()[0], grip=a.querySelector('.pgrip'), ar=a.getBoundingClientRect(), gm=mid(grip.getBoundingClientRect()), tm=lay(tiles()[3]), am=lay(a), dx=tm[0]-am[0], dy=tm[1]-am[1];
+    P('pointerdown',grip,gm[0],gm[1]); P('pointermove',grip,gm[0]+3,gm[1]+3);
+    A('menos de 6 px no la levanta', !a.classList.contains('lift')&&keys().join()===k0.join());
+    P('pointermove',grip,gm[0]+dx/4,gm[1]+dy/4);
+    A('al arrastrar se levanta, sin fantasma ni raya', a.classList.contains('lift')&&!document.querySelector('.dragghost,.dropbefore,.dropafter'));
+    P('pointermove',grip,gm[0]+dx,gm[1]+dy);
+    const want=k0.slice(1,4).concat(k0[0],k0.slice(4)), now=a.getBoundingClientRect();
+    A('a medio arrastre las vecinas ya le abrieron hueco', keys().join()===want.join());
+    A('es la misma tile y sigue al dedo', tiles()[3]===a&&Math.abs(now.left-(ar.left+dx))<2&&Math.abs(now.top-(ar.top+dy))<2);
+    A('la copia de trabajo va al día', progVisible(state.progEdit).filter(k=>want.indexOf(k)>=0).join()===want.join());
+    A('nada se guarda antes de ✓', db.settings.progLayout.order.join()===saved);
+    A('el scroll no brincó', v.scrollTop===0);
+    P('pointerup',grip,gm[0]+dx,gm[1]+dy);
+    A('al soltar cae en su hueco', keys().join()===want.join()&&!a.style.transform&&!document.body.classList.contains('dragging'));
+    const g2=tiles()[1].querySelector('.pgrip'), m2=mid(g2.getBoundingClientRect()); P('pointerdown',g2,m2[0],m2[1]); P('pointerup',g2,m2[0],m2[1]);
+    A('tocar ⠿ sin arrastrar abre mover antes · mover después · quitar', (()=>{ const l=document.getElementById('asklayer'); return !!l&&l.querySelectorAll('.nvm').length===3&&keys().join()===want.join(); })());
+    closeAsk(true);
+    // 4 · cancel descarta · ✓ done confirma
+    window._swipeGuard=0; v.querySelector('[data-act="progcancel"]').click();
+    A('cancel descarta lo arrastrado', !state.progEdit&&db.settings.progLayout.order.join()===saved);
+    progEditStart(); const b=tiles()[2], bg=b.querySelector('.pgrip'), bm=mid(bg.getBoundingClientRect()), b0=lay(b), z=lay(tiles()[0]);
+    P('pointerdown',bg,bm[0],bm[1]); P('pointermove',bg,bm[0]+(z[0]-b0[0])/2,bm[1]+(z[1]-b0[1])/2); P('pointermove',bg,bm[0]+z[0]-b0[0],bm[1]+z[1]-b0[1]); P('pointercancel',bg,0,0);
+    A('si el sistema corta el gesto, se queda donde iba', keys()[0]===k0[2]&&!b.style.transform&&!document.body.classList.contains('dragging'));
+    window._swipeGuard=0; v.querySelector('[data-act="progdone"]').click();
+    A('✓ done guarda el orden nuevo', !state.progEdit&&db.settings.progLayout.order[0]===k0[2]&&db.settings.progLayout.order.length===PROG_KEYS.length);
+    console.log('widgets self-check OK');
+  } finally { try{ closeAsk(true); }catch(_){} document.body.classList.remove('dragging'); db=real; toast=_t; save=_s; window._swipeGuard=sg; state.screen=rs; state.progEdit=pe; bumpIdx(); state._scroll=sc0; render(); }
+}
 document.getElementById('app').addEventListener('keydown',e=>{ if(e.key!=='Enter'||!e.target.classList||!e.target.classList.contains('obi'))return;
   const all=[...document.querySelectorAll('.obi')], i=all.indexOf(e.target); e.preventDefault(); if(i>=0&&i<all.length-1)focusEl(all[i+1]); else e.target.blur(); });
 document.getElementById('app').addEventListener('input',e=>{
@@ -15135,7 +15255,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
