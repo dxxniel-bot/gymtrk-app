@@ -385,6 +385,18 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .lvb i{background:var(--o12);} .lvb i:nth-child(n+4){background:var(--o20);} .lvb i:nth-child(n+7){background:var(--o40);} .lvb i:nth-child(n+9){background:var(--o60);}
   .lvb b{position:absolute; top:var(--s1); transform:translateX(-50%); font-size:var(--t-label); font-weight:400; line-height:var(--lh-tight); color:var(--fg);}
   .rdyd{font-size:var(--t-data); color:var(--o70); margin:0 0 var(--s3);} .rdyd b{color:var(--fg); font-weight:700;}
+  /* v323 · FA1 · fitness age: el arco (decisión del dueño, 9-oct: "Arco como Baro"; segunda gráfica circular de la app) y las palancas */
+  .faarc{position:relative; width:calc(var(--s8) * 5); max-width:100%; margin:var(--s4) auto var(--s2);} .faarc svg{display:block; width:100%; height:auto; overflow:visible;}
+  .faarc path{fill:none; stroke:var(--o20); stroke-width:calc(var(--sw-ring-md) * 4); stroke-linecap:butt;} .faarc path.on{stroke:var(--fg);} .faarc circle{fill:var(--fg);} .faarc line{stroke:var(--o60); stroke-width:calc(var(--sw-ref) * 2);}
+  .faarc .fac{position:absolute; left:0; right:0; top:34%; text-align:center;} .fan{font-size:var(--t-hero); font-weight:800; letter-spacing:var(--ls-num); line-height:var(--lh-tight);}
+  .fal{font-size:var(--t-label); letter-spacing:var(--ls-caps); color:var(--o50); margin-top:var(--s2);} .fad{font-size:var(--t-data); font-weight:700; margin-top:var(--s2);}
+  .faends{display:flex; justify-content:space-between; width:calc(var(--s8) * 5); max-width:100%; font-size:var(--t-label); color:var(--o40); margin:calc(-1 * var(--s5)) auto 0;} .line.fapar{min-height:44px; align-items:center;}
+  .fa3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--s3); margin:var(--s5) 0 var(--s3); padding:var(--s4) 0; border-top:var(--bw-sep) solid var(--o12); border-bottom:var(--bw-sep) solid var(--o12); text-align:center;}
+  .fa3 b{display:block; font-size:var(--t-section); font-weight:700;} .fa3 span{font-size:var(--t-label); letter-spacing:var(--ls-caps); color:var(--o40);}
+  .falv{padding:var(--s3) 0 0;} .falv .lvb{margin:var(--s3) 0 var(--s4);} .falv .falh{display:flex; align-items:baseline; justify-content:space-between; gap:var(--s3);} .falv .faln{font-size:var(--t-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--o60);}
+  .falv .falx{font-size:var(--t-section); font-weight:700; white-space:nowrap;} .falv .falx span{font-size:var(--t-label); font-weight:400; color:var(--o50); margin-left:var(--s2);} .falv .falt{font-size:var(--t-label); color:var(--o50); margin-top:var(--s1);}
+  .falv.off .falx,.falv.off .faln{color:var(--o40);} .falv.u-tap{cursor:pointer;}
+  .fahow{font-size:var(--t-label); color:var(--o60); line-height:var(--lh-read);} .fahow p{margin:0 0 var(--s3);} .fahow b{color:var(--fg); font-weight:700;}
   .ptile.w2{grid-column:1 / -1;} .pgrid{grid-auto-flow:row dense; align-content:start;} .pgrid>.ptile{min-height:128px;} .ptile.ed>.pdel::after{inset:6px -30px -30px 6px;}   /* todos los recuadros miden lo mismo de alto (como los widgets de iOS): al cambiar de tamaño nada se mueve de renglón, y caben ⠿ y el asa (44 cada uno); el − toca 44 × 44 dentro del recuadro (la tile recorta lo que sale: medía 26 × 26) */   /* un individual que quedaría solo junto a un doble sube al hueco (como los widgets de iOS) */
   .ptw{display:grid; grid-template-columns:minmax(0,2fr) minmax(0,3fr); gap:var(--s4); align-items:end;} .ptwc{min-width:0;} .ptw .pst{font-weight:400; color:var(--o50);}
   .psz{position:absolute; right:0; bottom:0; z-index:1; width:44px; height:44px; padding:0; border:0; background:none; cursor:pointer;}
@@ -1369,7 +1381,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v322';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v323';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -6028,6 +6040,34 @@ function _readiness2SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFC
     A('la cuenta vieja se queda para comparar y daba más', readinessScoreV1(T).score==null||readinessScoreV1(T).score>readinessScore(T).score);
     console.log('readiness objetivo self-check OK');
   } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } db=real; _sbx=sb0; bumpIdx(); } }
+// self-check de v323 (FA1): fitness age con los números de los artículos (contexto/fitness-age.md). Base de juguete; no guarda nada.
+function _ageSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fitness age: '+nm); }; const real=db, sc0=state.screen, sb0=_sbx, _ss=saveSoon, near=(a,b,e)=>Math.abs(a-b)<=(e||0.05);
+  try{ _sbx=true; saveSoon=()=>{}; const T=todayISO(), D=k=>shiftDate(T,-k);
+    A('la tabla (Loe 2013): 54.4 = 25 años, 47.2 = 45, a mitad de camino se interpola; mujeres con la suya', near(faAgeOf(54.4,'M').age,25)&&near(faAgeOf(47.2,'M').age,45)&&near(faAgeOf(51.75,'M').age,30)&&near(faAgeOf(40,'F').age,35)&&near(faAgeOf(36.4,'F').age,50));
+    A('fuera de la escala no se inventa: arriba de 57.05 (hombres) o 44.5 (mujeres) es "menos de 20"; abajo, "75 o más"', faAgeOf(57.05,'M').cap==='lo'&&faAgeOf(66,'M').age===20&&faAgeOf(44.5,'F').cap==='lo'&&faAgeOf(56,'M').cap===''&&near(faAgeOf(56,'M').age,21.98,0.05)&&faAgeOf(30,'M').cap==='hi'&&faAgeOf(30,'M').age===75);
+    const mk=(P,ss,rh)=>{ const d=migrate({profile:Object.assign({username:'t'},P),split:{days:[]},sessions:ss||[]}); db=d; const dl={}; if(rh)for(let i=0;i<7;i++)dl[D(i)]={rhr:rh}; H().daily=dl; bumpIdx(); _faCache=null; return fitnessAge(); };
+    let o=mk({sex:'M',age:26,heightCm:175,weightKg:61.5,waistCm:78},[],50);
+    A('el caso del documento: hombre de 26, cintura 78, FC 50, sin actividad → VO2 56.0', o.variant==='waist'&&near(o.vo2,100.27-0.296*26-0.369*78-0.155*50,1e-9)&&near(o.vo2,56.04,0.02)&&o.pa.idx===0&&o.age===22&&o.cap==='');
+    db.profile.pa={set:true,f:3,i:10,d:1.5}; _faCache=null; o=fitnessAge(); A('…con el índice al máximo (45): 66.2 → menos de 20, y se dice así', o.pa.idx===45&&near(o.vo2,66.21,0.02)&&o.cap==='lo'&&faAgeTxt(o)==='<20'&&faDiffTxt(o)==='23 % sobre tu grupo'&&faDiffGood(o)===true&&Math.abs(faNormAt(26,'M')-53.87)<0.01);
+    A('singular, tope de la tabla y menores de 18 se dicen bien', faDiffTxt({age:25,cal:26,cap:'',vo2:50,sex:'M'})==='1 año menos'&&faDiffTxt({age:27,cal:26,cap:'',vo2:50,sex:'M'})==='1 año más'&&faDiffTxt({age:75,cal:80,cap:'hi',vo2:30,sex:'M'})==='15 % bajo tu grupo'&&!/-\d|\d\+/.test(faDiffTxt({age:75,cal:75,cap:'hi',vo2:35.3,sex:'M'}))&&(o2=>o2.age===null&&o2.na==='desde los 18 años'&&/desde los 18 años/.test(faTileHTML(false)))(mk({sex:'M',age:17,heightCm:175,weightKg:61.5,waistCm:78},[],50)));
+    o=mk({sex:'F',age:40,heightCm:165,weightKg:60,waistCm:80},[],64); A('mujeres con su ecuación', near(o.vo2,74.74-0.247*40-0.259*80-0.114*64,1e-9)&&o.cap===''&&o.age>=40&&o.age<=60);
+    o=mk({sex:'M',age:26,heightCm:175,weightKg:61.5},[],50); A('sin cintura usa la variante con IMC (menos precisa)', o.variant==='bmi'&&near(o.bmi,20.08,0.01)&&near(o.vo2,92.05-0.327*26-0.933*o.bmi-0.167*50,1e-9));
+    o=mk({sex:'M',age:26,heightCm:175,weightKg:61.5,waistCm:78},[],0); A('sin FC en reposo no hay número: se dice qué falta', o.age===null&&o.miss==='FC en reposo'&&faAgeTxt(o)==='—'&&/falta FC en reposo/.test(faTileHTML(false)));
+    const S=(k,min)=>({id:'s'+k,date:D(k),type:'training',durSec:min*60,exercises:[{name:'press',muscle:'chest',type:'free',sets:[{w:'80',r:'8',rir:'1',unit:'kg',done:true}]}]});
+    o=mk({sex:'M',age:26,heightCm:175,weightKg:61.5,waistCm:78},[1,3,5,8,10,12,15,17,19,22,24,26,2,9,16,23].map(k=>S(k,70)),50);
+    A('la actividad se ESTIMA de tus sesiones: 4 días por semana · 30 min o más · sudor (5) → 22.5, marcada como estimada', o.pa.est===true&&o.pa.q.f===3&&o.pa.q.i===5&&o.pa.q.d===1.5&&o.pa.idx===22.5&&near(o.vo2,56.04+0.226*22.5,0.02));
+    const L=faLevers(o), by=k=>L.find(x=>x.k===k);
+    A('palancas: FC reposo contra su percentil (50 lpm es más baja que el 90 %)', by('rhr').pct>90&&/más baja que ~9\d %/.test(by('rhr').txt)&&by('str').val===4&&by('str').pct===100&&by('hrv').off===true&&by('mvpa').off===true&&by('steps').off===true);
+    A('cintura contra tu estatura y el IMC con su banda de menor mortalidad', /0\.45 de tu estatura/.test(by('waist').u)&&by('waist').pct===100&&/en 20–25/.test(by('bmi').txt)&&by('bmi').pct===100);
+    A('HRV: referencia por edad (mediana 49, mitad central 34–71 a los 30)', faHrvRef('M',30).join()==='49,34,71'&&Math.round(faPctIn(49,[34,49,71],[25,50,75]))===50&&Math.round(faPctIn(71,[34,49,71],[25,50,75]))===75);
+    const arc=faArcHTML(o); A('el arco: 16 tramos, la marca en tu edad fitness y la raya en tu edad real', (arc.match(/<path/g)||[]).length===16&&(arc.match(/class="on"/g)||[]).length>=1&&/<circle/.test(arc)&&/<line/.test(arc)&&/FITNESS AGE/.test(arc));
+    state.screen='progress'; A('el recuadro vive en //PROGRESS y se puede quitar o hacer doble', PROG_KEYS.indexOf('age')>=0&&/data-act="openage"/.test(renderProgress())&&/VO2 ~/.test(faTileHTML(true)));
+    openAge(); let m=document.getElementById('modal');
+    A('la hoja: arco, edad real · VO2 · error, las palancas por grupo y cómo se calcula plegado', !!m.querySelector('.faarc')&&m.querySelectorAll('.fa3 > div').length===3&&/±15/.test(m.querySelector('.fa3').textContent)&&m.querySelectorAll('.falv').length===9&&['HEART','ACTIVITY','SLEEP','BODY'].every(g=>m.textContent.indexOf(g)>=0)&&document.getElementById('fahow').hidden===true&&!m.classList.contains('low'));
+    openFaActivity(); m=document.getElementById('modal'); const b=[...m.querySelectorAll('[data-act="fapaset"]')].find(x=>x.dataset.k==='i'&&x.dataset.v==='10'); b.click();
+    A('ajustar la actividad la guarda como tuya (deja de ser estimada)', db.profile.pa.set===true&&db.profile.pa.i===10&&fitnessAge().pa.est===false&&fitnessAge().pa.idx===45);
+    console.log('fitness age self-check OK');
+  } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } saveSoon=_ss; db=real; state.screen=sc0; _sbx=sb0; _faCache=null; bumpIdx(); } }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -9095,7 +9135,7 @@ function openHealthNumLog(key){ const C=HLOG[key]; if(!C)return; const h=H();
   document.getElementById('hl_save').onclick=()=>{ const v=parseFloat(val('hl_v')); const d=val('hl_date')||todayISO();
     if(!isFinite(v)||v<C.min||v>C.max){ toast('⚠ pon un número entre '+C.min+' y '+C.max,'err'); return; }
     const hh=H(); const day=hh.daily[d]||(hh.daily[d]={}); day.src=day.src||{}; C.set(day,v); day.src[C.fld]='manual';
-    savedToast('✓ '+C.t+' · guardado'); closeModal(); reRender(); };
+    const fa=(document.getElementById('hl_save')||{dataset:{}}).dataset.fa==='1'; savedToast('✓ '+C.t+' · guardado'); closeModal(); reRender(); if(fa&&state.screen==='progress')faBack(); };   // venías de la hoja de fitness age: regresas a ella, donde estabas
   load(todayISO());
 }
 // sleep compat + clock math (lazy migration): un día = array de bloques [{start,end,type,date,hours}].
@@ -9437,7 +9477,7 @@ function cmpChart(a,b,D,h,detail){ const ra=D.A.filter(v=>v!=null), rb=D.B.filte
     const base=ah===al?al-sa/2:al, N=v=>same?v:(bh===bl?base+sa/2:base+(v-bl)/sb*sa);   // con A plana, B se reparte alrededor de ella (A no queda pegada al borde)
     const mk=(ix,x)=>Object.assign({vals:ix.map(i=>N(D.B[i])),dates:ix.map(i=>D.dates[i]),labels:ix.map(L),dash:'5 4',stroke:'var(--o60)'},x);
     // una serie diaria no lleva un punto por día (era ruido): solo el último, como la sólida; un día suelto sí se marca
-    const runs=cmpRuns(D.B); o.more=CMP[b].join?[mk(idx(D.B))]:runs.map((r,j)=>mk(r,{noDots:true,endDot:j===runs.length-1,endW:j===runs.length-1?6:4})); }
+    const runs=cmpRuns(D.B); o.more=CMP[b].join?[mk(idx(D.B),detail?null:{noDots:true,endDot:true,endW:4})]:runs.map((r,j)=>mk(r,{noDots:true,endDot:j===runs.length-1,endW:j===runs.length-1?6:4})); }
   return lineChart(pa.vals,o); }
 function cmpSw(dash){ return '<svg class="lsw" viewBox="0 0 18 4" aria-hidden="true"><path d="M1,2 L17,2" fill="none" stroke="'+(dash?'var(--o60)':'var(--fill)')+'" stroke-width="1.4" class="sw-data" stroke-linecap="round"'+(dash?' stroke-dasharray="5 4"':'')+'/></svg>'; }
 function cmpOpts(cur){ return CMP_GROUPS.map(g=>'<optgroup label="'+g[1]+'">'+Object.keys(CMP).filter(k=>CMP[k].g===g[0]).map(k=>'<option value="'+k+'"'+(k===cur?' selected':'')+'>'+escTxt(CMP[k].l)+'</option>').join('')+'</optgroup>').join(''); }
@@ -9466,6 +9506,103 @@ function openCompare(){ if(!proCan('compare'))return; const c=cmpCfg(), D=cmpDat
     +'<div class="cmpsv">'+c.saved.map((s,i)=>'<button type="button" class="b" data-act="cmpload" data-i="'+i+'">'+escTxt(cmpName(s))+'</button>').join('')+'</div>'
     +'<div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div></div>','mdetail-wrap');
   ['a','b'].forEach(x=>{ const el=document.getElementById('cmp_'+x); if(el)el.onchange=()=>{ const cc=cmpCfg(), v=el.value, o=x==='a'?'b':'a'; if(!CMP[v])return; if(cc[o]===v)cc[o]=cc[x]; cc[x]=v; saveSoon(); openCompare(); }; }); }
+// ── v323 · FA1 · FITNESS AGE ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+// El dueño (8-oct), con capturas de la app Baro: "tu fitness age… pude ver cuáles son los parámetros que considera y qué puntaje le da a
+// cada cosa… me gustaría implementarlo también… ese estilo gráfico me llamó la atención" · (9-oct) "Arco como Baro".
+// Qué es: VO2 (mL/kg/min) estimado SIN prueba de esfuerzo con el modelo HUNT (Nes 2011: edad, cintura, FC en reposo e índice de actividad;
+// sin cintura, la variante con IMC, menos precisa y que castiga el músculo), llevado a "la edad en la que ese VO2 es el promedio" con la
+// tabla de la MISMA población (Loe 2013, HUNT 3). No se usa Shvartz ni FRIEND: quedan 7–14 mL/kg/min abajo y saldrías 20–30 años más joven
+// sin serlo. Error típico ±15 años (hombres) y ±18 (mujeres): se dice, y el número lleva ~. Límites 20–75: fuera se dice "menos de 20" o
+// "75 o más". Pasar de VO2 a edad es inferencia nuestra (CERG no publica su método). Los puntos del índice de actividad son provisionales.
+// Cada número con su fuente: contexto/fitness-age.md. No es edad biológica ni diagnóstico. No entra a σ, al ▲▼ % ni al readiness.
+const FA={vo2:{M:{k:100.27,age:-0.296,waist:-0.369,rhr:-0.155,pa:0.226,b:{k:92.05,age:-0.327,bmi:-0.933,rhr:-0.167,pa:0.257}},F:{k:74.74,age:-0.247,waist:-0.259,rhr:-0.114,pa:0.198,b:{k:70.77,age:-0.244,bmi:-0.749,rhr:-0.107,pa:0.213}}},
+  norms:{M:[[25,54.4],[35,49.1],[45,47.2],[55,42.6],[65,39.2],[75,35.3]],F:[[25,43.0],[35,40.0],[45,38.4],[55,34.4],[65,31.1],[75,28.3]]},lim:[20,75],err:{M:15,F:18},
+  rhr:{M:[[20,[55,61,69,76,84]],[40,[55,61,68,77,85]],[60,[54,60,67,75,84]],[80,[54,61,68,78,86]]],F:[[20,[60,66,74,82,89]],[40,[59,64,71,79,86]],[60,[59,64,70,78,86]],[80,[59,64,71,77,85]]]},
+  hrv:{M:[[20,66,45,96],[30,49,34,71],[40,38,27,54],[50,31,23,42],[60,27,20,37]],F:[[20,56,37,85],[30,45,31,67],[40,37,26,52],[50,31,22,42],[60,28,21,38]]},
+  bmiHr:[[15,18.5,1.51],[18.5,20,1.13],[20,25,1],[25,27.5,1.07],[27.5,30,1.2],[30,35,1.45],[35,40,1.94],[40,60,2.76]]};
+let _faCache=null;
+function faSex(){ return (db.profile&&db.profile.sex)==='F'?'F':'M'; }
+function faMedian(a){ const s=a.slice().sort((x,y)=>x-y); return s.length?(s.length%2?s[(s.length-1)/2]:(s[s.length/2-1]+s[s.length/2])/2):null; }
+// VO2 → edad: entre dos anclas de la tabla, en línea recta; el primer tramo se prolonga hasta los 20
+function faAgeOf(vo2,sex){ const T=FA.norms[sex], s0=(T[1][1]-T[0][1])/(T[1][0]-T[0][0]), v20=T[0][1]+s0*(FA.lim[0]-T[0][0]); if(vo2>=v20)return {age:FA.lim[0],cap:'lo'}; if(vo2<=T[T.length-1][1])return {age:FA.lim[1],cap:'hi'};
+  if(vo2>T[0][1])return {age:T[0][0]+(vo2-T[0][1])/s0,cap:''}; for(let i=0;i<T.length-1;i++){ if(vo2<=T[i][1]&&vo2>=T[i+1][1])return {age:T[i][0]+(T[i][1]-vo2)/(T[i][1]-T[i+1][1])*(T[i+1][0]-T[i][0]),cap:''}; } return {age:FA.lim[1],cap:'hi'}; }
+// índice de actividad (0–45) = frecuencia × intensidad × duración. Lo correcto es preguntarlo; sin respuesta se ESTIMA de tus sesiones
+// (días por semana de 4 semanas · su duración típica · intensidad 5, "sudor y respiración agitada"; 10 solo si tú lo dices).
+function faPA(){ const P=db.profile||{}, from=shiftDate(todayISO(),-27), ss=(db.sessions||[]).filter(s=>s&&s.type!=='rest'&&s.date>=from), days=new Set(ss.map(s=>s.date)).size/4, dur=faMedian(ss.map(s=>(+s.durSec||0)/60).filter(m=>m>0));
+  const est={f:days<0.5?0:days<1.5?1:days<=3.5?2:3,i:ss.length?5:0,d:dur!=null&&dur<30?1:1.5}, set=!!(P.pa&&P.pa.set), q=set?{f:+P.pa.f||0,i:+P.pa.i||0,d:+P.pa.d||1}:est;
+  return {q:Object.assign({},q),est:!set,idx:q.f*q.i*q.d,days:Math.round(days*10)/10,dur}; }
+function faRhr(){ const D=H().daily||{}, T=todayISO(), a=[]; for(let i=0;i<60&&a.length<7;i++){ const v=+((D[shiftDate(T,-i)]||{}).rhr); if(v>0)a.push(v); } return a.length?{v:faMedian(a),n:a.length}:null; }
+function fitnessAge(){ const P=db.profile||{}, sex=faSex(), age=+P.age||0, hc=+P.heightCm||0, kg=latestBodyweight()||+P.weightKg||0, waist=+P.waistCm||0, r=faRhr(), pa=faPA(), M=FA.vo2[sex];
+  const bmi=hc>0&&kg>0?kg/Math.pow(hc/100,2):0, o={sex,cal:age,bmi,waist,rhr:r,pa,vo2:null,age:null,cap:'',variant:'',miss:''};
+  if(!(age>0))o.miss='tu edad'; else if(age<18){ o.miss='edad'; o.na='desde los 18 años'; } else if(!r)o.miss='FC en reposo'; else if(!(waist>0)&&!(bmi>0))o.miss='cintura o peso y estatura';
+  if(!o.miss){ o.variant=waist>0?'waist':'bmi'; o.vo2=waist>0?M.k+M.age*age+M.waist*waist+M.rhr*r.v+M.pa*pa.idx:M.b.k+M.b.age*age+M.b.bmi*bmi+M.b.rhr*r.v+M.b.pa*pa.idx; const A=faAgeOf(o.vo2,sex); o.age=Math.round(A.age); o.cap=A.cap; }
+  _faCache={at:Date.now(),v:o}; return o; }
+function faAgeTxt(o){ return o.age==null?'—':o.cap==='lo'?'<'+FA.lim[0]:o.cap==='hi'?FA.lim[1]+'+':'~'+o.age; }
+function faNormAt(age,sex){ const T=FA.norms[sex==='F'?'F':'M']; if(age<=T[0][0])return T[0][1]; for(let i=1;i<T.length;i++){ if(age<=T[i][0])return T[i-1][1]+(age-T[i-1][0])/(T[i][0]-T[i-1][0])*(T[i][1]-T[i-1][1]); } return T[T.length-1][1]; }   // el VO2 promedio de tu edad y sexo (misma tabla)
+// fuera de la tabla (<20 o 75+) no hay edad que restar: se dice tu VO2 contra el promedio de tu grupo (documento §3)
+function faDiffTxt(o){ if(o.age==null||!o.cal)return ''; const yr=n=>n===1?'1 año':n+' años';
+  if(o.cap){ const p=Math.round((o.vo2/faNormAt(o.cal,o.sex)-1)*100); return p>0?p+' % sobre tu grupo':p<0?(-p)+' % bajo tu grupo':'en el promedio de tu grupo'; }
+  const d=o.cal-o.age; return d>0?yr(d)+' menos':d<0?yr(-d)+' más':'tu edad'; }
+function faDiffGood(o){ return o.age!=null&&!!o.cal&&(o.cap?o.vo2>faNormAt(o.cal,o.sex):o.cal>o.age); }
+// volver a la hoja de fitness age a la altura en la que estabas (tras capturar la cintura, ajustar la actividad o registrar la FC)
+function faHold(){ const sh=document.querySelector('#modal .sheet'); if(!sh||!sh.querySelector('.faarc'))return false; window._faTop=sh.scrollTop; return true; }
+function faBack(){ const t=window._faTop||0; window._faTop=0; openAge(); const sh=document.querySelector('#modal .sheet'); if(sh&&t>0){ scrollHold(sh,t); Promise.resolve().then(()=>{ try{ if(sh.isConnected)scrollHold(sh,t); }catch(_){} }); } }
+// ── palancas: tu valor contra una referencia publicada. pct = dónde cae la marca (0–100; a la derecha, mejor). En FC reposo y HRV es tu
+// percentil; en las demás la posición de la marca es criterio de diseño y lo publicado es el corte que dice el texto.
+function faPctIn(v,ps,qs){ if(v<=ps[0])return Math.max(2,qs[0]-(ps[0]-v)/Math.max(1,ps[1]-ps[0])*(qs[1]-qs[0])); for(let i=0;i<ps.length-1;i++){ if(v<=ps[i+1])return qs[i]+(v-ps[i])/(ps[i+1]-ps[i])*(qs[i+1]-qs[i]); } const n=ps.length-1; return Math.min(98,qs[n]+(v-ps[n])/Math.max(1,ps[n]-ps[n-1])*(qs[n]-qs[n-1])); }
+function faRow(T,age){ let r=T[0]; T.forEach(x=>{ if(age>=x[0])r=x; }); return r; }
+function faHrvRef(sex,age){ const T=FA.hrv[sex]; age=Math.max(T[0][0],Math.min(T[T.length-1][0],age||T[0][0])); let i=0; while(i<T.length-2&&age>T[i+1][0])i++; const a=T[i], b=T[i+1], t=(age-a[0])/(b[0]-a[0]); return [1,2,3].map(k=>a[k]+(b[k]-a[k])*t); }   // [mediana, p25, p75]
+function faLevers(o){ o=o||fitnessAge(); const P=db.profile||{}, T=todayISO(), D=H().daily||{}, L=[], sex=o.sex, age=o.cal||30, days=n=>{ const a=[]; for(let i=0;i<n;i++)a.push(shiftDate(T,-i)); return a; };
+  const lv=(g,k,n,val,u,pct,txt,x)=>L.push(Object.assign({g,k,n,val,u,pct,txt},x||{})), no=(g,k,n,txt,x)=>L.push(Object.assign({g,k,n,off:true,txt},x||{}));
+  if(o.rhr){ const ps=faRow(FA.rhr[sex],age)[1], pc=faPctIn(o.rhr.v,ps,[10,25,50,75,90]); lv('heart','rhr','resting HR',Math.round(o.rhr.v),'lpm',100-pc,'más baja que ~'+Math.round(100-pc)+' % de tu sexo y edad · más baja ayuda'); } else no('heart','rhr','resting HR','not yet · registra tu FC en reposo',{act:'logrhr'});
+  { const a=[]; let sd=0; days(7).forEach(d=>{ const x=D[d]; if(x&&x.hrv&&x.hrv.v>0){ if(hrvKindOf(x)==='rmssd')a.push(+x.hrv.v); else sd++; } });
+    if(a.length>=3){ const m=a.reduce((x,y)=>x+y,0)/a.length, R=faHrvRef(sex,age), pc=faPctIn(m,[R[1],R[0],R[2]],[25,50,75]); lv('heart','hrv','HRV',Math.round(m),'ms',pc,'~p'+Math.round(pc)+' de tu edad y sexo · más alta ayuda'); }
+    else no('heart','hrv','HRV',sd?'SDNN · sin referencia por edad':a.length?'not yet · '+a.length+' de 3 lecturas en 7 días':'not yet · HRV de tu reloj'); }
+  { const a=days(28).map(d=>+(db.steps&&db.steps[d])||0).filter(v=>v>0); if(a.length>=7){ const m=a.reduce((x,y)=>x+y,0)/a.length, lo=age>=60?6000:8000, hi=lo+2000; lv('act','steps','steps',Math.round(m).toLocaleString(),'al día',m<=lo?m/lo*90:Math.min(100,90+(m-lo)/(hi-lo)*10),'la curva se aplana en '+lo.toLocaleString()+'–'+hi.toLocaleString()+' · más ayuda hasta ahí'); } else no('act','steps','steps','not yet · pasos de 7 días'); }
+  { const dz=new Set((db.sessions||[]).filter(s=>s&&s.type!=='rest'&&s.date>=shiftDate(T,-27)&&(s.exercises||[]).some(e=>e&&e.type!=='cardio')).map(s=>s.date)).size/4; lv('act','str','strength',(Math.round(dz*10)/10),'días / sem',dz>=2?100:dz/2*100,'2 o más ya cuenta (lo cumple 31 % de adultos) · más no suma'); }
+  no('act','mvpa','active minutes','not yet · minutos de ejercicio de un reloj');
+  { const a=days(28).map(rdySleepH).filter(v=>v>0); if(a.length>=7){ const m=a.reduce((x,y)=>x+y,0)/a.length; lv('sleep','slp','hours of sleep',fmtH(m),'',rdyCurve(Math.min(m,RDY.need)),'piso de 7 h · banda de 7 a 9'); } else no('sleep','slp','hours of sleep','not yet · 7 noches registradas'); }
+  { const a=[]; days(7).forEach(d=>{ const b=sleepBlocks(db.sleep&&db.sleep[d])[0], m=b&&b.start?hm2min(b.start):NaN; if(isFinite(m))a.push((m-1080+1440)%1440); });
+    if(a.length>=4){ const mu=a.reduce((x,y)=>x+y,0)/a.length, sd=Math.sqrt(a.reduce((x,y)=>x+(y-mu)*(y-mu),0)/(a.length-1)); lv('sleep','reg','sleep regularity','±'+Math.round(sd),'min',Math.max(0,Math.min(100,100-(sd-30)/90*100)),'hora de dormir: hasta 30 min, bien · más de 90, riesgo'); } else no('sleep','reg','sleep regularity','not yet · 4 noches con hora de dormir'); }
+  if(o.waist>0&&+P.heightCm>0){ const q=o.waist/+P.heightCm; lv('body','waist','waist',Math.round(o.waist),'cm · '+q.toFixed(2)+' de tu estatura',Math.max(0,Math.min(100,100-(q-0.45)/0.2*100)),'menos de 0.5 = sano · 0.6 o más = riesgo alto',{act:'fawaist'}); } else no('body','waist','waist','not yet · mide tu cintura (mejora el estimado)',{act:'fawaist'});
+  if(o.bmi>0){ const b=o.bmi, hr=(FA.bmiHr.find(x=>b>=x[0]&&b<x[1])||[0,0,2.76])[2]; lv('body','bmi','body mass index',(Math.round(b*10)/10),'IMC',Math.max(0,Math.min(100,100-(hr-1)/1.76*100)),(b>=20&&b<25?'en 20–25: la banda de menor mortalidad':'20–25 = menor mortalidad')+' · no distingue músculo de grasa'); } else no('body','bmi','body mass index','not yet · peso y estatura');
+  return L; }
+// el arco: 16 tramos de 20 a 75; se encienden hasta tu edad fitness; la raya marca tu edad real
+function faArcHTML(o){ const cx=100, cy=100, R=84, A0=-120, SW=240, N=16, gap=2.4, pt=a=>{ const t=a*Math.PI/180; return (cx+R*Math.sin(t)).toFixed(1)+','+(cy-R*Math.cos(t)).toFixed(1); }, fr=v=>Math.max(0,Math.min(1,(v-FA.lim[0])/(FA.lim[1]-FA.lim[0])));
+  const p=o.age!=null?fr(o.age):null; let s='';
+  for(let i=0;i<N;i++){ const a=A0+SW*i/N+gap/2, b=A0+SW*(i+1)/N-gap/2; s+='<path'+(p!=null&&(i+0.5)/N<=Math.max(p,0.5/N)?' class="on"':'')+' d="M'+pt(a)+' A'+R+' '+R+' 0 0 1 '+pt(b)+'"/>'; }
+  if(p!=null){ const a=A0+SW*p, t=a*Math.PI/180; s+='<circle cx="'+(cx+R*Math.sin(t)).toFixed(1)+'" cy="'+(cy-R*Math.cos(t)).toFixed(1)+'" r="6"/>'; }
+  if(o.cal>=FA.lim[0]&&o.cal<=FA.lim[1]){ const t=(A0+SW*fr(o.cal))*Math.PI/180, x=r=>(cx+r*Math.sin(t)).toFixed(1), y=r=>(cy-r*Math.cos(t)).toFixed(1); s+='<line x1="'+x(R-9)+'" y1="'+y(R-9)+'" x2="'+x(R+9)+'" y2="'+y(R+9)+'"/>'; }
+  const d=faDiffTxt(o), younger=faDiffGood(o);
+  return '<div class="faarc" role="img" aria-label="fitness age '+escTxt(faAgeTxt(o))+(d?' · '+escTxt(d):'')+'"><svg viewBox="0 0 200 150" aria-hidden="true">'+s+'</svg><div class="fac"><div class="fan">'+escTxt(faAgeTxt(o))+'</div><div class="fal">FITNESS AGE</div>'+(d?'<div class="fad">'+(younger?escTxt(d).replace(/^([0-9+]+)/,'<b class="u-good">$1</b>'):escTxt(d))+'</div>':'')+'</div></div><div class="faends"><span>'+FA.lim[0]+'</span><span>'+FA.lim[1]+'</span></div>'; }
+function faTileHTML(wide){ const o=fitnessAge(), d=faDiffTxt(o), hd='<div class="ptlh"><div class="plbl">fitness age</div><span class="ptchev">›</span></div>';
+  const val='<div class="pval'+(o.age==null?' u-o30':'')+'">'+escTxt(faAgeTxt(o))+'<span>años</span></div>', st='<div class="pst flat">'+escTxt(o.age==null?(o.na||'falta '+o.miss):(d||'estimado'))+'</div>';
+  if(!wide)return '<div class="ptile tap" data-act="openage">'+hd+val+st+'</div>';
+  return '<div class="ptile tap" data-act="openage">'+hd+'<div class="ptw"><div>'+val+st+'</div><div class="ptwc">'+(o.vo2!=null?'<div class="pst">VO2 ~'+(Math.round(o.vo2*10)/10)+' · tu edad '+o.cal+'</div><div class="pst">'+(o.variant==='waist'?'con cintura':'con IMC · menos preciso')+'</div>':'<div class="pst">edad · FC en reposo · cintura</div>')+'</div></div></div>'; }
+function faAskWaist(){ faHold(); trkPrompt({title:'cintura',label:'CM · a la altura del ombligo, sin apretar',value:(db.profile&&db.profile.waistCm)||'',type:'number',inputmode:'decimal',ok:'guardar'},v=>{ const n=parseFloat(String(v).replace(',','.')); if(String(v).trim()===''){ delete db.profile.waistCm; } else if(!(n>=40&&n<=200)){ toast('⚠ entre 40 y 200 cm','err'); return false; } else db.profile.waistCm=Math.round(n*10)/10; _faCache=null; saveSoon(); savedToast('✓ cintura guardada'); setTimeout(()=>{ if(state.screen==='progress'){ reRender(); faBack(); } },0); }); }
+function openFaActivity(){ const pa=faPA(), q=pa.q, row=(k,opts)=>'<div class="toggles u-mb10">'+opts.map(x=>'<button type="button" class="t '+(q[k]===x[0]?'on':'')+'" data-act="fapaset" data-k="'+k+'" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div>';
+  openModal('<h3>actividad <span class="u-o40 u-w4">· índice '+(Math.round(pa.idx*10)/10)+' de 45'+(pa.est?' · estimado':'')+'</span></h3>'
+    +'<div class="grp-label sub">DAYS PER WEEK</div>'+row('f',[[0,'0'],[1,'1'],[2,'2–3'],[3,'4 o más']])
+    +'<div class="grp-label sub">HOW HARD</div>'+row('i',[[0,'sin sudar'],[5,'sudor y jadeo'],[10,'casi al agotamiento']])
+    +'<div class="grp-label sub">PER SESSION</div>'+row('d',[[1,'menos de 30 min'],[1.5,'30 min o más']])
+    +'<div class="sheetbtns"><button class="ok" data-act="openage">listo</button>'+(pa.est?'':'<button class="cancel" data-act="fapaauto">usar mis sesiones</button>')+'</div>'); }
+const FA_GROUPS=[['heart','HEART'],['act','ACTIVITY'],['sleep','SLEEP'],['body','BODY']];
+function openAge(){ _faCache=null; const o=fitnessAge(), L=faLevers(o), how=!!window._faHow, pa=o.pa;
+  const lever=x=>x.off?'<div class="falv off'+(x.act?' u-tap':'')+'"'+(x.act?' role="button" tabindex="0" data-act="'+x.act+'"':'')+'><div class="falh"><span class="faln">'+x.n+'</span><span class="falx">—</span></div><div class="falt">'+escTxt(x.txt)+(x.act?' ›':'')+'</div>'+'<div class="lvb" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>'
+    :'<div class="falv'+(x.act?' u-tap':'')+'"'+(x.act?' role="button" tabindex="0" data-act="'+x.act+'"':'')+'><div class="falh"><span class="faln">'+x.n+'</span><span class="falx">'+escTxt(String(x.val))+(x.u?'<span>'+escTxt(x.u)+'</span>':'')+'</span></div><div class="falt">'+escTxt(x.txt)+'</div>'+leverBarHTML(x.pct,x.n+' '+Math.round(x.pct)+' de 100')+'</div>';
+  const groups=FA_GROUPS.map(g=>'<div class="grp-label sub">'+g[1]+'</div>'+L.filter(x=>x.g===g[0]).map(lever).join('')).join('');
+  const src=o.age==null?(o.na||'falta '+o.miss):(o.variant==='waist'?'con cintura':'con IMC · menos preciso');
+  const paTxt=['0','1','2–3','4+'][pa.q.f]+' días · '+(pa.q.i>=10?'al tope':pa.q.i>=5?'sudor':'sin sudar')+' · '+(pa.q.d>1?'30+ min':'<30 min');
+  openModal('<div class="mdetail"><div class="mdhd"><h3>fitness age</h3></div>'+faArcHTML(o)
+    +'<div class="fa3"><div><b>'+(o.cal||'—')+'</b><span>CALENDAR AGE</span></div><div><b>'+(o.vo2!=null?'~'+(Math.round(o.vo2*10)/10):'—')+'</b><span>VO2 MAX</span></div><div><b>'+(o.age!=null?'±'+FA.err[o.sex]:'—')+'</b><span>YEARS · ERROR</span></div></div>'
+    +'<div class="line u-tap fapar" role="button" tabindex="0" data-act="fapa"><span class="k">actividad'+(pa.est?' <span class="u-o40">~</span>':'')+'</span><span class="dots"></span><span class="v">'+escTxt(paTxt)+' ›</span></div>'
+    +'<div class="line"><span class="k">estimado</span><span class="dots"></span><span class="v u-o60">'+escTxt(src)+'</span></div>'
+    +groups
+    +'<div class="mdfold"><button type="button" class="b" data-act="fahow" aria-expanded="'+(how?'true':'false')+'">cómo se calcula '+(how?'▾':'›')+'</button></div><div class="fahow" id="fahow"'+(how?'':' hidden')+'>'
+    +'<p><b>qué es</b> · un estimado de tu condición cardio: tu VO2 calculado sin prueba de esfuerzo (edad, cintura o IMC, FC en reposo y actividad) y la edad en la que ese VO2 es el promedio. no es edad biológica ni un diagnóstico.</p>'
+    +'<p><b>de dónde sale</b> · modelo HUNT (Nes 2011) y tabla de la misma población noruega (Loe 2013). pasar de VO2 a edad es inferencia nuestra: quienes hicieron el modelo no publican cómo lo calculan. el error típico es de ±'+FA.err[o.sex]+' años: ubica bien los extremos, no los puntos finos. fuera de 20–75 solo se dice "<20" o "75+".</p>'
+    +'<p><b>límites</b> · no sigue cambios de una semana a otra: míralo cada mes. sin cintura usa el IMC, que castiga el músculo. la actividad se estima de tus sesiones salvo que la ajustes, y los puntos de su índice son provisionales. el percentil de HRV sale de una tabla que falta cotejar. las palancas comparan contra poblaciones publicadas (riesgo a largo plazo), no predicen nada de ti.</p>'
+    +'</div><div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div></div>','mdetail-wrap'); }
 // (openMetricDetail vive junto al renderer de gráficas — v227)
 // hard sets per muscle for the 7-day window `offsetWeeks` weeks ago (offset 0 = last 7d).
 // Same RP counting as weeklySets (uni pair = max side, drop = 0.5); kept separate so weeklySets (home //VOLUME) is untouched.
@@ -9648,7 +9785,8 @@ function renderProgress(){
       +`<div class="pst flat">intake ${_td.avgK} · peso ${_td.dWk>0?'+':''}${_td.dWk}kg/${_td.spanDays}d</div>`
       +`<div class="pst flat" style="opacity:.65">${_td.loggedDays} días · conf ${_td.conf}${_diff!=null?' · vs meta '+(_diff>0?'+':'')+_diff:''}</div></div>`); } }
   if(cfg.recov)put('recov',recovTileHTML(emptyTile));   // E6 · recovery y readiness antes de cada sesión
-  if(cfg.compare&&proCan('compare'))put('compare',cmpTileHTML(false));   // v321 · GR6
+  if(cfg.compare&&proCan('compare'))put('compare',cmpTileHTML(false));
+  if(cfg.age)put('age',faTileHTML(false));   // v323 · FA1   // v321 · GR6
   out+=progGridHTML(T,_ed);
   if(_fresh&&!_ed)out+=`<div class="u-tc u-mt12"><span class="ehint">toca cualquier recuadro para registrar tu primer dato</span></div>`
     +`<button class="start u-mt12" data-act="logweight">+ registrar peso corporal</button>`;
@@ -9682,6 +9820,7 @@ function wideTileHTML(k){
       +'<div class="ptw"><div><div class="pval">'+val+'</div><div class="pst">prom '+escTxt(vf(avg))+'</div><div class="pst">'+escTxt(rng(vf(Math.min.apply(null,real)),vf(Math.max.apply(null,real))))+'</div></div>'
       +'<div class="ptwc">'+lineChart(raw,{h:80,dates:sp.dates})+'</div></div></div>'; }
   if(k==='compare')return cmpTileHTML(true);
+  if(k==='age')return faTileHTML(true);
   if(k==='volume'||k==='tension'){ const w=progWeekly(12), a=(k==='volume'?w.vols:(w.tens||[]))||[], pos=a.filter(v=>v>0); if(!pos.length)return null;
     const fm=k==='volume'?(n=>n>=10000?(n/1000).toFixed(1)+'k':Math.round(n).toLocaleString()):fmtSig, u=k==='volume'?'vol':'σ';
     return '<div class="ptile tap" data-act="volumedetail"><div class="ptlh"><div class="plbl">'+(k==='volume'?'volume':'σ')+' · 12 wk</div><span class="ptchev">›</span></div>'
@@ -9722,7 +9861,7 @@ function openProgAdd(){ const e=state.progEdit; if(!e)return; const hid=['consis
 // un registro… de cómo has estado y que se pueda ver qué sesión fue previa a eso… que haya dos markers". Una marca de cada
 // puntaje por sesión, en su hora real (sessionPre: la foto guardada, o lo ya registrado en las sesiones anteriores a la foto).
 // La tile se registra aquí, sin tocar la lista de arriba: entra visible al final de tu acomodo y se quita como las demás.
-PROG_KEYS.push('recov'); PROG_LBL.recov='recovery · readiness'; PROG_KEYS.push('compare'); PROG_LBL.compare='comparar';
+PROG_KEYS.push('recov'); PROG_LBL.recov='recovery · readiness'; PROG_KEYS.push('compare'); PROG_LBL.compare='comparar'; PROG_KEYS.push('age'); PROG_LBL.age='fitness age';
 const RV_LADDER=[30,90,180];
 // lo que se toca en E5/E6 (role="button") también responde a Enter / espacio con teclado
 const RV_KEYS='.ready.rec,.dmus,.rvr[role="button"],.ptile[data-act="recovdetail"]';
@@ -11634,7 +11773,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='logsleep'){ openSleepLog(); }
   else if(a==='editsleep'){ const d=el.dataset.d; const dt=document.getElementById('sl_date'); if(dt){ dt.value=d; dt.dispatchEvent(new Event('change')); } }
   else if(a==='delsleep'){ const d=el.dataset.d; trkAsk({title:'borrar el sueño del '+fmtShort(d),ok:'borrar',danger:true},()=>{ if(db.sleep)delete db.sleep[d]; save(); openSleepLog(); }); }
-  else if(a==='logrhr'||a==='loghrv'||a==='logkcalact'){ openHealthNumLog(a.slice(3)); }
+  else if(a==='logrhr'||a==='loghrv'||a==='logkcalact'){ const fb=faHold(); openHealthNumLog(a.slice(3)); if(fb){ const b=document.getElementById('hl_save'); if(b)b.dataset.fa='1'; } }
   else if(a==='edithlog'){ const dt=document.getElementById('hl_date'); if(dt){ dt.value=el.dataset.d; dt.dispatchEvent(new Event('change')); } }
   else if(a==='delhlog'){ const d=el.dataset.d, m=el.dataset.m, C=HLOG[m]; if(!C)return; trkAsk({title:'borrar '+C.t+' del '+fmtShort(d),ok:'borrar',danger:true},()=>{ const day=H().daily[d]; if(day){ delete day[C.fld]; if(day.src)delete day.src[C.fld]; } save(); openHealthNumLog(m); }); }
   else if(a==='healthimport'){ openHealthImport(); }
@@ -11937,6 +12076,12 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='progdel'){ const e=state.progEdit, k=el.dataset.k; if(e&&e.hidden.indexOf(k)<0){ e.hidden.push(k); progReflow(); } }
   else if(a==='progadd'){ openProgAdd(); }
   else if(a==='opencompare'){ openCompare(); }
+  else if(a==='openage'){ if(el.closest&&el.closest('#modal'))faBack(); else openAge(); }
+  else if(a==='fawaist'){ faAskWaist(); }
+  else if(a==='fapa'){ faHold(); openFaActivity(); }
+  else if(a==='fapaset'){ const p=db.profile.pa=Object.assign(faPA().q,{set:true}); p[el.dataset.k]=+el.dataset.v; saveSoon(); _faCache=null; openFaActivity(); }
+  else if(a==='fapaauto'){ delete db.profile.pa; saveSoon(); _faCache=null; faBack(); }
+  else if(a==='fahow'){ const bx=document.getElementById('fahow'); if(bx){ const op=bx.hidden; bx.hidden=!op; window._faHow=op; el.setAttribute('aria-expanded',op?'true':'false'); el.textContent='cómo se calcula '+(op?'▾':'›'); if(op)revealAnim(bx); } }
   else if(a==='cmprange'){ cmpCfg().days=+el.dataset.r||90; saveSoon(); openCompare(); }
   else if(a==='cmpavg'){ cmpCfg().avg=el.dataset.v==='1'; saveSoon(); openCompare(); }
   else if(a==='cmpload'){ const c=cmpCfg(), s=c.saved[+el.dataset.i]; if(s){ c.a=s.a; c.b=s.b; saveSoon(); openCompare(); } }
@@ -16149,7 +16294,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
