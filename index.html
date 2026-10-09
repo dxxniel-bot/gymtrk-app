@@ -1342,7 +1342,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v317';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v318';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -5138,11 +5138,11 @@ function _v292SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
   try{
     // 1 · el texto del atajo: completo, sin un dato, y cortado a medias
     const L=HP_EXAMPLE.split('\n').filter(l=>!/^ok /.test(l)), keyOf=l=>l.split(' ')[0], all=parseHealthPaste(HP_EXAMPLE);   // v294: sin las marcas `ok`
-    A('el ejemplo trae las 8 clases y HRV va al final', !!all&&all.kinds.length===8&&keyOf(L[L.length-1])==='hrv'&&L[0]==='trk2');
+    A('el ejemplo trae las 6 clases y HRV va al final', !!all&&all.kinds.length===6&&keyOf(L[L.length-1])==='hrv'&&L[0]==='trk2');
     A('lo confirmado va antes que lo que podría fallar: pasos primero', keyOf(L[1])==='steps');
     HP_KINDS.forEach(k=>{ const t=L.filter(l=>keyOf(l)!==k[0]).join('\n'), r=parseHealthPaste(t);
-      A('sin '+k[1]+' llegan las otras 7', !!r&&r.kinds.length===7&&r.kinds.indexOf(k[0])<0);
-      A('…y la lista lo marca con — sin tratarlo como error', bioKindsTxt(r.kinds).indexOf(k[1]+' —')>=0&&(bioKindsTxt(r.kinds).match(/✓/g)||[]).length===7); });
+      A('sin '+k[1]+' llegan las otras 5', !!r&&r.kinds.length===HP_KINDS.length-1&&r.kinds.indexOf(k[0])<0);
+      A('…y la lista lo marca con — sin tratarlo como error', bioKindsTxt(r.kinds).indexOf(k[1]+' —')>=0&&(bioKindsTxt(r.kinds).match(/✓/g)||[]).length===HP_KINDS.length-1); });
     { const cut=L.slice(0,L.findIndex(l=>keyOf(l)==='act')).join('\n'), r=parseHealthPaste(cut);
       A('si el atajo se detuviera tras el primer dato, lo copiado hasta ahí se lee', !!r&&r.kinds.join()==='steps'); }
     A('solo el encabezado (ningún dato en Salud) se reconoce como vacío, no como basura', hpEmpty('trk2')&&!parseHealthPaste('trk2'));
@@ -5218,36 +5218,38 @@ function _v294SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
   const sheet=()=>{ openBioResult(); const t=md().textContent, b=md(); return {t,ok:b.querySelectorAll('.ok').length,run:!!b.querySelector('.ok[data-act="biorun"]'),inst:!!b.querySelector('.ok[data-act="biosetup"]'),unskip:!!b.querySelector('[data-act="biounskip"]'),close:()=>closeModal()}; };
   _sbx=true;
   try{ try{ if(md()&&md().classList.contains('open'))closeModal(); }catch(_){}
-    A('el orden del atajo es el de la app, con las 8 clases', HP_ORDER.length===8&&HP_ORDER.slice().sort().join()===HP_KINDS.map(x=>x[0]).sort().join()&&HP_ORDER.every(k=>HP_HIST[k]>0));
-    A('el ejemplo del atajo trae las marcas: ok in · ok id · ok cfg · ok <dato> · ok end', HP_EXAMPLE.split('\n').slice(0,4).join('|')==='trk2|ok in|ok id demo|ok cfg'&&HP_ORDER.every(k=>HP_EXAMPLE.indexOf('\nok '+k+'\n')>0)&&/\nok end$/.test(HP_EXAMPLE)&&parseHealthPaste(HP_EXAMPLE).kinds.length===8);
+    A('el orden del atajo es el de la app: 6 datos, sin grasa ni energía en reposo', HP_ORDER.length===6&&HP_ORDER.slice().sort().join()===HP_KINDS.map(x=>x[0]).sort().join()&&HP_ORDER.every(k=>HP_HIST[k]>0)&&HP_ORDER.indexOf('fat')<0&&HP_ORDER.indexOf('bas')<0&&HP_OPT.join()==='rhr,hrv'&&HP_GONE.join()==='fat,bas');
+    A('el ejemplo del atajo trae las marcas: ok in · ok id · ok cfg · ok <dato> · ok end', HP_EXAMPLE.split('\n').slice(0,4).join('|')==='trk2|ok in|ok id demo|ok cfg'&&HP_ORDER.every(k=>HP_EXAMPLE.indexOf('\nok '+k+'\n')>0)&&/\nok end$/.test(HP_EXAMPLE)&&parseHealthPaste(HP_EXAMPLE).kinds.length===6&&!/\n(fat|bas) /.test(HP_EXAMPLE));
     db=migrate({profile:{username:'t',weightKg:61}}); bumpIdx(); isIOS=()=>true; isStandalone=()=>false; const went=[]; bioGo=u=>{ went.push(u); };
     // 1 · la primera vez: el historial, y la entrada (con su número de corrida) viaja en la URL
-    const p0=bioPlan(); A('la primera vez pide el historial (un año; sueño 30 noches)', HP_ORDER.every(k=>p0[k]===HP_HIST[k])&&p0.steps===365&&p0.sleep===30);
+    const p0=bioPlan(); A('la primera vez pide el historial de lo fijo y prueba UN opcional (FC reposo); HRV espera su turno; grasa y reposo, nunca', ['steps','act','weight','sleep'].every(k=>p0[k]===HP_HIST[k])&&p0.steps===365&&p0.sleep===30&&p0.rhr===365&&p0.hrv===0&&p0.fat===0&&p0.bas===0);
     bioMark(); bioRun(); { const m=/&input=text&text=(.*)$/.exec(went[0]||''), j=m&&JSON.parse(decodeURIComponent(m[1]));
       A('la URL lleva el plan como texto, con su número de corrida, y la app lo guarda', went.length===1&&went[0].indexOf('shortcuts://run-shortcut?name=TRK%20Salud&input=text&text=')===0&&!!j&&HP_ORDER.every(k=>j[k]===p0[k])&&!!j.id&&sc().plan&&sc().plan.id===j.id); }
-    // 2 · se detuvo en % grasa (su caso): lo anterior entra, grasa deja de pedirse por un mes, lo demás desde lo último que llegó
-    let r=healthPasteApply(out(['steps','act','weight','sleep','rhr']));
-    A('se detuvo en grasa: entra lo anterior y la app sabe dónde paró', !!r&&r.stop==='fat'&&r.kinds.length===5&&sc().skip.fat&&sc().skip.fat.n===1&&!sc().plan&&sc().learn.stop==='fat');
-    const g=sc().got; A('anota lo más reciente de cada dato', g.steps===D(1)&&g.act===D(1)&&g.weight===D(1)&&g.rhr===D(1)&&!!g.sleep&&!g.fat);
-    let p1=bioPlan(); A('el siguiente plan: grasa 0; pasos desde ayer (2 o 3 días); lo que nunca llegó, el historial', p1.fat===0&&p1.steps>=2&&p1.steps<=3&&p1.weight<=3&&p1.bas===365&&p1.hrv===60);
-    { const s=sheet(); A('la hoja dice dónde paró y ofrece correrlo otra vez (un solo primario)', s.t.indexOf('se detuvo en grasa: sin datos o sin permiso en Salud. ya no se pide.')>=0&&s.ok===1&&s.run&&!s.unskip&&s.t.indexOf('no se busca: grasa')<0); s.close(); }
-    // 3 · otra corrida: llega reposo, se detiene en HRV; los días de antes se quedan
-    went.length=0; bioRun(); r=healthPasteApply(out(['steps','act','weight','sleep','rhr','bas']));
-    A('segunda corrida: reposo llega, HRV deja de pedirse, grasa sigue fuera', !!r&&r.stop==='hrv'&&sc().skip.hrv.n===1&&sc().skip.fat&&!sc().skip.bas&&sc().got.bas===D(1));
-    went.length=0; bioRun(); r=healthPasteApply(out(['steps','act','weight','sleep','rhr','bas'],false,true));
-    A('tercera corrida: llega al final sin detenerse', !!r&&r.stop===null&&!sc().learn.noread&&bioPlan().fat===0&&bioPlan().hrv===0);
-    { const s=sheet(); A('sin detenerse: [buscar todo] y lo que no se busca, sin primario', s.unskip&&s.ok===0&&s.t.indexOf('no se busca: grasa · HRV')>=0); s.close(); }
+    // 2 · su caso (8-oct): un reloj que no escribe FC en reposo. Se probó, iOS detuvo el atajo ahí: lo fijo entra y FC reposo ya no se pide
+    let r=healthPasteApply(out(['steps','act','weight','sleep']));
+    A('se detuvo en FC reposo: entra lo fijo y la app sabe dónde paró', !!r&&r.stop==='rhr'&&r.kinds.length===4&&sc().skip.rhr&&sc().skip.rhr.n===1&&!sc().plan&&sc().learn.stop==='rhr');
+    const g=sc().got; A('anota lo más reciente de cada dato', g.steps===D(1)&&g.act===D(1)&&g.weight===D(1)&&!!g.sleep&&!g.rhr);
+    let p1=bioPlan(); A('el siguiente plan: FC reposo ya no; ahora toca probar HRV; pasos desde ayer (2 o 3 días)', p1.rhr===0&&p1.hrv===60&&p1.steps>=2&&p1.steps<=3&&p1.weight<=3&&p1.fat===0&&p1.bas===0);
+    { const s=sheet(); A('la hoja dice que tu Salud no la tiene, sin pedirte correr otra vez (lo demás ya llegó)', s.t.indexOf('tu Salud no tiene FC en reposo (o falta su permiso): ya no se pide.')>=0&&s.ok===0&&!s.run&&!s.unskip); s.close(); }
+    // 3 · otra corrida: ahora se prueba HRV y tampoco está; a la tercera ya no se prueba nada y llega al final
+    went.length=0; bioRun(); A('la segunda corrida pide HRV y ya no FC reposo', sc().plan.p.hrv===60&&sc().plan.p.rhr===0); r=healthPasteApply(out(['steps','act','weight','sleep']));
+    A('segunda corrida: HRV tampoco está y deja de pedirse; FC reposo sigue fuera', !!r&&r.stop==='hrv'&&sc().skip.hrv.n===1&&!!sc().skip.rhr&&bioPlan().hrv===0&&bioPlan().rhr===0);
+    went.length=0; bioRun(); r=healthPasteApply(out(['steps','act','weight','sleep'],false,true));
+    A('tercera corrida: llega al final sin detenerse', !!r&&r.stop===null&&!sc().learn.noread&&bioPlan().rhr===0&&bioPlan().hrv===0);
+    { const s=sheet(); A('sin detenerse: [buscar todo] y lo que no se busca, sin primario', s.unskip&&s.ok===0&&s.t.indexOf('no se busca: FC · HRV')>=0); s.close(); }
+    { openBioWhat(); const t=md().textContent; A('qué trae el atajo: los 6 datos y lo que ya no se pide', ['pasos','energía activa','peso','sueño con fases','FC en reposo','HRV'].every(x=>t.indexOf(x)>=0)&&t.indexOf('grasa')<0&&(t.match(/opcional/g)||[]).length===2&&md().querySelectorAll('.line').length===6&&md().classList.contains('low')); closeModal(); }
     A('[buscar todo] también está al traer datos y al pegar a mano', (()=>{ openBioFetch(); const a=!!md().querySelector('[data-act="biounskip"]'); closeModal(); return a&&hpLastHTML().indexOf('biounskip')>0; })());
     // 4 · pegar nunca borra ni pisa: el día más viejo de la ventana de pasos llega cortado aunque otro dato traiga días más viejos
     went.length=0; bioRun(); r=healthPasteApply(['trk2','ok in','ok id '+sc().plan.id,'ok cfg','steps '+T(2,'18:00')+' 4000','steps '+T(1,'12:14')+' 13393','ok steps','rhr '+T(5,'12:00')+' 57','ok rhr'].join('\n'));
     A('el día cortado (4000) no pisa el completo (16450), aunque FC traiga un día más viejo', db.steps[D(2)]===16450&&db.steps[D(1)]===13393&&!!(db.bodyweight&&db.bodyweight[D(1)]));
-    // 5 · dos niveles: si vuelve a faltar después del mes, ya no se pide (hasta [buscar todo])
-    sc().skip.fat={t:Date.now()-31*DAY,n:1}; A('pasado el mes, grasa se vuelve a pedir', bioPlan().fat===365);
-    went.length=0; bioRun(); r=healthPasteApply(out(['steps','act','weight','sleep','rhr']));
-    A('…y si vuelve a faltar, ya no se pide aunque pase el tiempo', r.stop==='fat'&&sc().skip.fat.n===2&&(()=>{ sc().skip.fat.t=Date.now()-400*DAY; return bioPlan().fat===0; })());
+    // 5 · un opcional que faltó no se vuelve a probar solo, pase el tiempo que pase (antes se reintentaba al mes)
+    sc().skip.hrv.t=Date.now()-400*DAY; sc().skip.rhr.t=Date.now()-400*DAY; A('pasado un año, FC reposo y HRV siguen sin pedirse', bioPlan().hrv===0&&bioPlan().rhr===0);
+    // …lo fijo conserva sus dos niveles: si nunca llegó, un mes; la segunda vez seguida, hasta [buscar todo]
+    { const g0=sc().got.sleep; delete sc().got.sleep; sc().skip.sleep={t:Date.now()-31*DAY,n:1}; A('un dato fijo que nunca llegó se vuelve a pedir al mes', bioPlan().sleep===30);
+      sc().skip.sleep={t:Date.now()-400*DAY,n:2}; A('…y a la segunda ya no, aunque pase el tiempo', bioPlan().sleep===0); delete sc().skip.sleep; sc().got.sleep=g0; }
     sc().skip.weight={t:Date.now(),n:1}; A('un dato que sí había llegado y no apareció: espera 3 días', bioPlan().weight===0);
     sc().skip.weight.t=Date.now()-4*DAY; A('…y luego se pide desde lo último que llegó', bioPlan().weight>=2&&bioPlan().weight<=3);
-    tap((()=>{ openBioFetch(); return md().querySelector('[data-act="biounskip"]'); })()); A('[buscar todo] vuelve a pedir todo', !Object.keys(sc().skip).length&&bioPlan().fat===365&&bioPlan().hrv===60);
+    tap((()=>{ openBioFetch(); return md().querySelector('[data-act="biounskip"]'); })()); A('[buscar todo] vuelve a probar los opcionales (de uno en uno); grasa y reposo, nunca', !Object.keys(sc().skip).length&&bioPlan().rhr===365&&bioPlan().hrv===0&&bioPlan().fat===0&&bioPlan().bas===0);
     // 6 · lo que NO enseña nada: un portapapeles viejo (otro número de corrida), un pegado sin marcas, una corrida sin la app
     went.length=0; bioRun(); const id1=sc().plan.id; r=healthPasteApply(out(['steps','act']).replace('ok id '+id1,'ok id otro'));
     A('un portapapeles de otra corrida no enseña nada', !!r&&r.stop===null&&!Object.keys(sc().skip).length);
@@ -5256,6 +5258,10 @@ function _v294SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     // 7 · la app mandó la lista y el atajo no la recibió / no la leyó / es el atajo viejo / se detuvo en el primer dato
     sc().skip={}; went.length=0; bioRun(); r=healthPasteApply(out(['steps','act','weight','sleep','rhr'],true));
     A('sin ok in: la app sabe que no recibió la lista', !!r&&sc().noInput===true&&(()=>{ const s=sheet(), x=s.t.indexOf('no recibió la lista')>=0; s.close(); return x; })());
+    A('sin la lista no se aprende nada de un opcional (el atajo de antes pudo detenerse en grasa, no en HRV)', sc().learn.stop===null&&!sc().skip.hrv&&!sc().skip.rhr);
+    sc().skip={}; sc().got=Object.assign({},sc().got,{rhr:D(1)}); sc().plan={t:Date.now()-3600000,id:'p317',p:{steps:3,act:3,weight:3,sleep:3,rhr:3,fat:365,bas:365,hrv:60}};
+    r=healthPasteApply(['trk2','ok in','ok id p317','ok cfg'].concat(part.steps,['ok steps'],part.act,['ok act'],part.weight,['ok weight'],part.sleep,['ok sleep'],part.rhr,['ok rhr']).join('\n'));
+    A('un plan de la versión anterior (pedía grasa) pegado ya con esta: se detuvo en grasa y NO se marca HRV como ausente', !!r&&r.stop===null&&!sc().skip.hrv&&sc().learn.stop===null); delete sc().got.rhr;
     sc().skip={}; went.length=0; bioRun(); r=healthPasteApply(out([],false,true));
     A('llegó al final sin buscar nada: no leyó la lista (no se aprende una parada)', r===null&&sc().learn.noread&&!Object.keys(sc().skip).length&&(()=>{ const s=sheet(), x=s.t.indexOf('no leyó la lista')>=0; s.close(); return x; })());
     went.length=0; bioRun(); r=healthPasteApply(out([]));
@@ -5284,7 +5290,7 @@ function _atajoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
     db.steps[D1]=7000; H().src.steps[D1]='manual'; db.bodyweight[D3]=60.8; H().src.weight[D3]='manual';
     H().daily[D2]={rhr:50,src:{rhr:'manual'}}; db.sleep[D2]=[{date:D2,type:'nocturno',hours:6}];
     const r=healthPasteApply(MX), h=H(), dy=d=>h.daily[d]||{};
-    A('el pegado de México se lee completo (8 clases de dato)', r&&r.kinds.length===8&&r.days===3);
+    A('el pegado de México se lee completo (trae 8 clases; la app anota las 6 que usa)', r&&r.kinds.length===6&&r.days===3);
     A('pasos por día, con decimales de sobra', db.steps[D2]===8214&&db.steps[D3]===3051&&dy(D1).steps===9120);
     A('pasos tecleados ganan', db.steps[D1]===7000);
     A('energía activa con tres decimales no se lee como miles', dy(D1).activeKcal===498&&dy(D2).activeKcal===512&&dy(D3).activeKcal===121);
@@ -5299,7 +5305,7 @@ function _atajoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
     A('y con sus fases (en cama fuera, despierto aparte)', n3[0].ph&&n3[0].ph.core===310&&n3[0].ph.deep===50&&n3[0].ph.rem===90&&n3[0].ph.awake===10);
     A('dormido = suma de fases; el detalle de sueño las ve', sleepMinOf(db.sleep[D3])===450&&sleepPhDay(D3).deep===50);
     A('una noche tecleada no se pisa (la de Salud queda aparte)', sleepHours(db.sleep[D2])===6&&h.sleep[D2].length===1&&Math.round(asleepMin(h.sleep[D2][0]))===420);
-    A('queda anotado qué llegó', h.shortcut.lastKinds.length===8&&h.shortcut.lastPaste>0);
+    A('queda anotado qué llegó', h.shortcut.lastKinds.length===6&&h.shortcut.lastPaste>0);
     // 2 · repetir el pegado no duplica nada
     const snap=()=>JSON.stringify([db.steps,db.bodyweight,db.sleep,h.daily,h.sleep,db.profile.weightKg]); const s1=snap(); healthPasteApply(MX);
     A('pegar otra vez deja todo igual', snap()===s1);
@@ -5314,7 +5320,7 @@ function _atajoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
       'act 9/22/26 1,204.5 Cal','bas 9/22/26 1,650 Cal','act 9/23/26 2092 kJ','sleep Sep 22, 2026 at 11:10 PM Sep 23, 2026 at 12:40 AM Core','sleep Sep 23, 2026 at 12:40 AM Sep 23, 2026 at 1:30 AM Deep',
       'sleep Sep 23, 2026 at 1:30 AM Sep 23, 2026 at 2:00 AM Awake','sleep Sep 23, 2026 at 2:00 AM Sep 23, 2026 at 6:40 AM REM','sleep Sep 22, 2026 at 11:00 PM Sep 23, 2026 at 6:45 AM In Bed'].join('\n');
     const e=healthPasteApply(EN), g=H(), de=d=>g.daily[d]||{};
-    A('inglés: mes/día/año y miles con coma', e&&e.kinds.length===8&&db.steps[D2]===10432&&db.steps[D3]===2100);
+    A('inglés: mes/día/año y miles con coma', e&&e.kinds.length===6&&db.steps[D2]===10432&&db.steps[D3]===2100);
     A('inglés: libras → kg y fracción de grasa → %', Math.abs(db.bodyweight[D3]-61.42)<0.01&&de(D3).fat===14.2);
     A('inglés: Cal con miles y kJ', de(D2).activeKcal===1205&&de(D2).basalKcal===1650&&de(D3).activeKcal===500);
     const ne=sleepBlocks(db.sleep[D3]);
@@ -5324,7 +5330,7 @@ function _atajoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
     const ES=[String.fromCharCode(0xfeff)+'TRK2','pasos 22/09/2026 8.214','pasos: 23/09/2026 3'+nn+'051','peso 23/09/2026 61,2'+nb+'kg','grasa 23/09/2026 14,2 %','fcr 23/09/2026 55','vfc 23/09/2026 48,25 ms',
       'activa 22/09/2026 512,482','reposo 22/09/2026 1.648,9','sueño 22 sept 2026, 23:10 23 sept 2026, 6:40 Principal','sueño 23 de septiembre de 2026 a las 6:40 23 de septiembre de 2026 a las 7:02 REM'].join('\r\n');
     const s=healthPasteApply(ES), k=H(), ds=d=>k.daily[d]||{};
-    A('España: día/mes/año, punto de miles y espacio fino', s&&s.kinds.length===8&&db.steps[D2]===8214&&db.steps[D3]===3051);
+    A('España: día/mes/año, punto de miles y espacio fino', s&&s.kinds.length===6&&db.steps[D2]===8214&&db.steps[D3]===3051);
     A('España: coma decimal', db.bodyweight[D3]===61.2&&ds(D3).fat===14.2&&ds(D3).hrv.v===48.3&&ds(D3).rhr===55);
     A('España: 512,482 es decimal y 1.648,9 lleva miles', ds(D2).activeKcal===512&&ds(D2).basalKcal===1649);
     A('España: fechas con el mes escrito', sleepMinOf(db.sleep[D3])===472&&sleepBlocks(db.sleep[D3])[0].ph.core===450);
@@ -5342,7 +5348,7 @@ function _atajoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
     A('hora con a. m. / p. m. como la escribe el iPhone en español', hpStamp('22 sep 2026, 11:10 p. m.').ms===new Date(2026,8,22,23,10).getTime()&&hpStamp('23 sep 2026 a la(s) 12:05 a.m. Esencial').ms===new Date(2026,8,23,0,5).getTime()&&hpStamp('23/09/2026 6:40').t===true);
     // 7 · el ejemplo es lo que copia el atajo que se descarga (tools/shortcut/build.cjs --check lo compara letra por letra)
     const ex=parseHealthPaste(HP_EXAMPLE);
-    A('el ejemplo del atajo trae las 8 clases', ex&&ex.kinds.length===8);
+    A('el ejemplo del atajo trae las 6 clases', ex&&ex.kinds.length===6);
     healthPasteApply('trk2\nsteps '+D2+' 4000\nrhr '+D2+' 55'); let html=''; openModal=x=>{ html=String(x); }; openHealthImport();
     A('la receta ya no está en la app; pegar a mano sigue y, en iPhone, ofrece instalar el atajo', typeof openShortcutSetup==='undefined'&&html.indexOf('id="hi_txt"')>0&&(html.indexOf('data-act="biosetup"')>0)===isIOS());
     A('y marca lo que llegó en el último pegado', html.indexOf('pasos ✓')>0&&html.indexOf('FC ✓')>0&&html.indexOf('HRV —')>0);
@@ -5413,9 +5419,9 @@ function _bioSyncSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHEC
     // 5 · traer: el pegado del atajo entra completo y dice qué llegó
     paste=HP_EXAMPLE; const y1=row().getBoundingClientRect().top; tap(sheet().querySelector('[data-act="biofetch"]'));
     const h=H(), night=Object.keys(h.sleep);
-    A('el pegado del atajo entra completo (8 clases de dato)', h.shortcut.lastKinds.length===8&&db.steps['2026-09-22']===8214&&db.steps['2026-09-23']===902&&db.bodyweight['2026-09-23']===61.2);
-    A('con energía, FC, HRV, grasa y la noche con sus fases', h.daily['2026-09-22'].activeKcal===512&&h.daily['2026-09-22'].basalKcal===1649&&h.daily['2026-09-23'].rhr===55&&h.daily['2026-09-23'].hrv.v===48.3&&h.daily['2026-09-23'].fat===14.2&&night.length===1&&Math.round(asleepMin(h.sleep[night[0]][0]))===452);
-    A('avisa y dice qué llegó, sin primario', said.some(x=>/^✓ Salud · \d+ días$/.test(x))&&has('pasos ✓')&&has('reposo ✓')&&sheet().textContent.indexOf('—')<0&&pri()===0&&!bioWaiting());
+    A('el pegado del atajo entra completo (6 clases de dato)', h.shortcut.lastKinds.length===6&&db.steps['2026-09-22']===8214&&db.steps['2026-09-23']===902&&db.bodyweight['2026-09-23']===61.2);
+    A('con energía, FC, HRV, grasa y la noche con sus fases', h.daily['2026-09-22'].activeKcal===512&&h.daily['2026-09-22'].basalKcal==null&&h.daily['2026-09-23'].rhr===55&&h.daily['2026-09-23'].hrv.v===48.3&&h.daily['2026-09-23'].fat==null&&night.length===1&&Math.round(asleepMin(h.sleep[night[0]][0]))===452);
+    A('avisa y dice qué llegó, sin primario', said.some(x=>/^✓ Salud · \d+ días$/.test(x))&&has('pasos ✓')&&has('activa ✓')&&sheet().textContent.indexOf('—')<0&&pri()===0&&!bioWaiting());
     A('traer los datos no mueve la fila', near(row().getBoundingClientRect().top,y1));
     // 6 · ya instalado: la fila corre el atajo directo; si llega lo mismo, solo el aviso
     closeModal(); went.length=0; said.length=0; const y2=row().getBoundingClientRect().top; tap(row());
@@ -8617,6 +8623,7 @@ function healthSettingsHTML(){ const h=H(); const nat=isNative();
   s+=L('último sync', agoTxt(h.sync.lastRun));
   if(srcs)s+=L('fuentes', srcs);
   s+=L('datos', Object.keys(h.daily).length+' días · '+Object.keys(h.sleep).length+' noches · '+Object.keys(h.workouts).length+' entrenos · FC en '+Object.keys(h.sessHR).length+' sesiones');
+  s+=`<div class="line lnav" role="button" tabindex="0" data-act="biowhat"><span class="k">qué trae el atajo</span><span class="dots"></span><span class="v">${HP_ORDER.length} datos ›</span></div>`;
   s+=`<div class="cta"><div class="secondary">${nat?(h.enabled?'<button class="b" data-act="healthnative">sincronizar ahora</button>':'<button class="b" data-act="healthconnect">conectar Salud</button>')+(h.platform==='android'?'<button class="b" data-act="healthhc">Health Connect</button>':''):''}<button class="b" data-act="biosync">sync biometrics</button><button class="b" data-act="healthimport">pegar a mano</button><button class="b" data-act="healthjson">importar JSON</button></div></div>`;
   if(h.log.length)s+=`<div class="submeta u-mt8 u-preline">${h.log.slice(-5).reverse().map(x=>escTxt(new Date(x.t).toLocaleString().slice(0,16)+' · '+(x.lvl==='err'?'⚠ ':'')+x.msg)).join('\n')}</div>`;
   return s; }
@@ -8688,11 +8695,17 @@ function hpStamp(s,us){ s=String(s||''); let m, y, mo, d, ms=null, hh=0, mi=0, s
   return {d:y+'-'+pad(mo)+'-'+pad(d),ms,t,n}; }
 // ¿mes/día/año? Los datos de Salud son recientes: gana la lectura cuyas fechas quedan más cerca de hoy (25/09 solo se puede leer de una forma)
 function hpUS(rests){ const sc=us=>rests.reduce((s,r)=>{ if(!/^\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}(?!\d)/.test(r))return s; const a=hpStamp(r,us); return s+(a?Math.min(1e5,Math.abs(a.ms-Date.now())/86400000):1e5); },0); return sc(true)<sc(false); }
-const HP_KINDS=[['steps','pasos'],['weight','peso'],['fat','grasa'],['sleep','sueño'],['rhr','FC'],['hrv','HRV'],['act','activa'],['bas','reposo']];
+const HP_KINDS=[['steps','pasos'],['weight','peso'],['sleep','sueño'],['rhr','FC'],['hrv','HRV'],['act','activa']];   // v318 · sin grasa ni energía en reposo (el pegado las sigue leyendo si llegan de un atajo de antes)
 // v294 · el orden en que el atajo lee (el mismo de tools/shortcut/build.cjs: lo compara --check) y cuántos días pide la primera vez (el historial):
 // un año de lo diario; del sueño, 30 noches (cada noche son ~35 tramos y el atajo los recorre uno por uno).
-const HP_ORDER=['steps','act','weight','sleep','rhr','fat','bas','hrv'];
-const HP_HIST={steps:365,act:365,weight:365,sleep:30,rhr:365,fat:365,bas:365,hrv:60};
+const HP_ORDER=['steps','act','weight','sleep','rhr','hrv'];
+// v318 · H4 · el dueño (8-oct): "no sé por qué está teniendo de input el porcentaje de grasa… ni siquiera están las tablas" · "hay que dejarlo
+// automático… puede que el apple watch de alguien sí". % de grasa y energía en reposo ya NO se piden (HP_GONE: van en 0 para el atajo de antes):
+// ningún número de la app los usaba y eran dos lugares más donde iOS detiene el atajo. FC en reposo y HRV son OPCIONALES (HP_OPT): si ya
+// llegaron alguna vez se piden siempre; si nunca, se PRUEBAN una sola vez, de uno en uno y al final (lo fijo ya quedó copiado); si tu Salud
+// no los tiene no se vuelven a pedir (antes se reintentaba al mes). Atajos no tiene "intentar y seguir": esa única prueba es el costo.
+const HP_OPT=['rhr','hrv'], HP_GONE=['fat','bas'];
+const HP_HIST={steps:365,act:365,weight:365,sleep:30,rhr:365,hrv:60};
 function parseHealthPaste(text){ const lines=String(text||'').replace(/[\u200b\u200e\u200f\u202a-\u202e\ufeff]/g,'').replace(/[\u00a0\u2007\u202f]/g,' ').split(/\r\n?|\n|\u2028|;/).map(l=>l.trim()).filter(Boolean); if(!lines.length)return null;
   const hdr=/^trk\s*2\b/i.test(lines[0]); const acc={steps:{},weight:{},rhr:{},hrv:{},act:{},bas:{},fat:{}}, sleep=[], rows=[], vals=[]; let n=0;
   lines.forEach(l=>{ const m=l.match(/^([a-zñáéíóúü]+)(?:\s*[:=]\s*|\s+)(.+)$/i); if(!m)return; const k=HP_KEY[m[1].toLowerCase()]; if(k)rows.push({k,rest:m[2]}); });
@@ -8754,20 +8767,22 @@ function hpLearn(t,r){ const ok=new Set(); let id=''; String(t||'').split(/\r\n?
   const sc=H().shortcut, now=Date.now(), sent=sc.plan&&now-(+sc.plan.t||0)<6*3600000?sc.plan:null, L=sc.learn={stop:null,old:false,noread:false};
   if(!ok.has('in')&&!ok.has('cfg')){ if(sent&&r&&/^\s*trk\s*2\b/i.test(String(t||'')))L.old=true; return L; }   // trajo datos sin marcas tras correrlo la app: un atajo de antes de v294, que no sabe leer la lista
   if(ok.has('in')&&(!sent||id!==String(sent.id)))return L;   // no es el resultado de la corrida que mandó la app (un portapapeles viejo): no se aprende
-  const plan=ok.has('in')?sent.p:HP_ORDER.reduce((o,k)=>(o[k]=7,o),{}); sc.noInput=!!sent&&!ok.has('in');   // sin `ok in`: corrió con 7 días de todo
+  const plan=ok.has('in')?sent.p:HP_ORDER.reduce((o,k)=>(o[k]=HP_OPT.indexOf(k)>=0?0:7,o),{}); sc.noInput=!!sent&&!ok.has('in');   /* v318 · sin la lista solo cuenta lo fijo: de un opcional no se aprende nada (el atajo de antes pudo detenerse en grasa) */   // sin `ok in`: corrió con 7 días de todo
   if(ok.has('end')&&HP_ORDER.some(k=>+plan[k]>0&&!ok.has(k))){ L.noread=true; sc.plan=null; return L; }   // llegó al final sin buscar lo pedido: no leyó la lista
   const got=sc.got=Object.assign({},sc.got), skip=sc.skip=Object.assign({},sc.skip), last=r?hpLatest(r.payload):{};
   HP_ORDER.forEach(k=>{ if(L.stop||!(+plan[k]>0))return; if(ok.has(k)){ delete skip[k]; if(last[k]&&(!got[k]||last[k]>got[k]))got[k]=last[k]; } else L.stop=k; });
+  if(L.stop&&HP_OPT.indexOf(L.stop)>=0&&HP_GONE.some(k=>+plan[k]>0))L.stop=null;   // v318 · un plan de antes (pedía grasa o reposo): el atajo pudo detenerse AHÍ, no en el opcional
   // dos niveles: si nunca había llegado, un mes sin pedirlo; la 2ª vez seguida, ya no (hasta [buscar todo]). Si sí había llegado, 3 días.
   // si no llegó NINGÚN dato no se aprende la parada: con el iPhone bloqueado Salud no deja leer y el atajo se detiene en el primero
   if(L.stop&&r)skip[L.stop]={t:now,n:((skip[L.stop]&&+skip[L.stop].n)||0)+1};
   sc.plan=null; return L; }
-function bioSkipped(k){ const sc=H().shortcut, s=sc.skip&&sc.skip[k]; if(!s)return false; const had=!!(sc.got&&sc.got[k]); if(!had&&(+s.n||0)>=2)return true; return Date.now()-(+s.t||0)<(had?3:30)*86400000; }
+function bioSkipped(k){ const sc=H().shortcut, s=sc.skip&&sc.skip[k]; if(!s)return false; const had=!!(sc.got&&sc.got[k]); if(!had&&(HP_OPT.indexOf(k)>=0||(+s.n||0)>=2))return true; return Date.now()-(+s.t||0)<(had?3:30)*86400000; }   // v318 · un opcional que faltó no se reintenta solo
 // cuántos días pedir de cada dato: 0 si no se busca; si ya llegó alguna vez, desde esa muestra (más uno); si nunca, el historial
-function bioPlan(){ const sc=H().shortcut, got=sc.got||{}, now=Date.now(), o={};
+function bioPlan(){ const sc=H().shortcut, got=sc.got||{}, now=Date.now(), o={}; let probe=false;
   HP_ORDER.forEach(k=>{ if(bioSkipped(k)){ o[k]=0; return; }
+    if(HP_OPT.indexOf(k)>=0&&!got[k]){ if(probe){ o[k]=0; return; } probe=true; }   // un opcional que nunca ha llegado: UNA prueba por corrida (si falta, iOS detiene el atajo ahí)
     o[k]=got[k]?Math.min(3650,Math.max(2,Math.ceil((now-new Date(got[k]+'T00:00:00').getTime())/86400000)+1)):HP_HIST[k]; });
-  return o; }
+  HP_GONE.forEach(k=>{ o[k]=0; }); return o; }
 function healthPasteApply(t){ const r=parseHealthPaste(t), L=hpLearn(t,r); if(!r)return null; ingestHealth(hpEdge(r.payload)); const h=H(); h.shortcut=Object.assign({},h.shortcut,{setup:true,lastPaste:Date.now(),lastSummary:r.summary,lastKinds:r.kinds}); r.stop=L.stop; return r; }
 function healthPasteNow(){ const done=t=>{ t=String(t||''); const k0=(H().shortcut.lastKinds||[]).join(), r=healthPasteApply(t); if(r){ bioDone(r,k0); return; }
     { const L=H().shortcut.learn; if(L&&L.noread){ H().shortcut.wait=0; saveSoon(); reRender(); openBioResult(); return; } }   // no leyó la lista: decirlo (sin datos por otra razón: el aviso de siempre)
@@ -8782,9 +8797,9 @@ function healthPasteNow(){ const done=t=>{ t=String(t||''); const k0=(H().shortc
 // v293 · se llamaba TRK Biometrics: con descargas viejas del mismo nombre, Safari numera la nueva ("… 2.shortcut") y el atajo entra con ese nombre.
 // v294 · TRK Sync → TRK Salud por lo mismo: el dueño ya tenía el TRK Sync de v293, que no sabe leer la lista de la app.
 const BIO_NAME='TRK Salud', BIO_FILE='TRK%20Salud.shortcut', BIO_WAIT=10*60000;
-const HP_EXAMPLE='trk2\nok in\nok id demo\nok cfg\nsteps 2026-09-22T00:00:00-06:00 8214\nsteps 2026-09-23T00:00:00-06:00 902\nok steps\nact 2026-09-22T00:00:00-06:00 512.4 kcal\nact 2026-09-23T00:00:00-06:00 41.5 kcal\nok act\nweight 2026-09-23T07:05:00-06:00 61.2 kg\nok weight\nsleep 2026-09-22T23:00:00-06:00 2026-09-23T07:00:00-06:00 En cama\nsleep 2026-09-22T23:10:00-06:00 2026-09-23T00:42:00-06:00 Esencial\nsleep 2026-09-23T00:42:00-06:00 2026-09-23T01:30:00-06:00 Profundo\nsleep 2026-09-23T01:30:00-06:00 2026-09-23T01:38:00-06:00 Despierto\nsleep 2026-09-23T01:38:00-06:00 2026-09-23T03:05:00-06:00 REM\nsleep 2026-09-23T03:05:00-06:00 2026-09-23T06:50:00-06:00 Esencial\nok sleep\nrhr 2026-09-22T23:50:00-06:00 56\nrhr 2026-09-23T06:10:00-06:00 55\nok rhr\nfat 2026-09-23T07:05:00-06:00 14.2\nok fat\nbas 2026-09-22T00:00:00-06:00 1648.9 kcal\nbas 2026-09-23T00:00:00-06:00 510 kcal\nok bas\nhrv 2026-09-23T02:10:00-06:00 41.3\nhrv 2026-09-23T03:12:00-06:00 48.3\nhrv 2026-09-23T05:40:00-06:00 60.1\nok hrv\nok end';
+const HP_EXAMPLE='trk2\nok in\nok id demo\nok cfg\nsteps 2026-09-22T00:00:00-06:00 8214\nsteps 2026-09-23T00:00:00-06:00 902\nok steps\nact 2026-09-22T00:00:00-06:00 512.4 kcal\nact 2026-09-23T00:00:00-06:00 41.5 kcal\nok act\nweight 2026-09-23T07:05:00-06:00 61.2 kg\nok weight\nsleep 2026-09-22T23:00:00-06:00 2026-09-23T07:00:00-06:00 En cama\nsleep 2026-09-22T23:10:00-06:00 2026-09-23T00:42:00-06:00 Esencial\nsleep 2026-09-23T00:42:00-06:00 2026-09-23T01:30:00-06:00 Profundo\nsleep 2026-09-23T01:30:00-06:00 2026-09-23T01:38:00-06:00 Despierto\nsleep 2026-09-23T01:38:00-06:00 2026-09-23T03:05:00-06:00 REM\nsleep 2026-09-23T03:05:00-06:00 2026-09-23T06:50:00-06:00 Esencial\nok sleep\nrhr 2026-09-22T23:50:00-06:00 56\nrhr 2026-09-23T06:10:00-06:00 55\nok rhr\nhrv 2026-09-23T02:10:00-06:00 41.3\nhrv 2026-09-23T03:12:00-06:00 48.3\nhrv 2026-09-23T05:40:00-06:00 60.1\nok hrv\nok end';
 function hpEmpty(t){ return /^[\s\ufeff]*trk\s*2\b/i.test(String(t||'')); }   // traía el encabezado del Atajo, pero ningún dato legible
-// qué llegó: cuál de las 8 clases de dato vino (✓) y cuál no (—)
+// qué llegó: cuál de las 6 clases de dato vino (✓) y cuál no (—)
 function bioKindsTxt(k){ k=Array.isArray(k)?k:[]; return HP_KINDS.map(x=>x[1]+' '+(k.indexOf(x[0])>=0?'✓':'—')).join(' · '); }
 function hpSkipHTML(){ const sk=HP_ORDER.filter(k=>bioSkipped(k)); return sk.length?'<div class="submeta u-mb10">no se busca: '+sk.map(k=>(HP_KINDS.find(x=>x[0]===k)||[k,k])[1]).join(' · ')+' <button type="button" class="b" data-act="biounskip">buscar todo</button></div>':''; }
 function hpLastHTML(){ const sc=H().shortcut||{}; if(!sc.lastPaste)return hpSkipHTML(); return '<div class="submeta u-mb10">último pegado · '+escTxt(agoTxt(sc.lastPaste))+(Array.isArray(sc.lastKinds)?'<br>'+bioKindsTxt(sc.lastKinds):'')+'</div>'+hpSkipHTML(); }
@@ -8850,13 +8865,18 @@ function renderAtajo(){ bioGate(); const g=SHORTCUT_URL?'ok':(_bioGate||'ok'), w
     ${db.profile.username?'<div class="u-mt32"><button type="button" class="b" data-act="atajoback">abrir gym//TRK</button></div>':''}</div>`; }
 function openBioFetch(){ H().shortcut.wait=0; saveSoon(); openModal('<h3>sync biometrics</h3>'+hpSkipHTML()+'<div class="sheetbtns"><button class="ok" data-act="biofetch">▶ traer datos</button><button class="cancel" data-act="healthimport">pegar a mano</button></div>'); }
 // v294 · si se detuvo en un dato: lo dice, ya no se busca, y ▶ correr otra vez trae lo que faltó. [buscar todo] vuelve a pedir lo que se dejó de buscar.
+// v318 · H4 · "te pedí que me analizaras de forma puntual realmente qué parámetros se van a estar extrayendo": qué trae el atajo y para qué
+const BIO_WHAT=[['steps','pasos','recuadro de pasos'],['act','energía activa','recuadro de energía activa'],['weight','peso','peso corporal · composición'],['sleep','sueño con fases','readiness · hoja de sueño'],['rhr','FC en reposo','readiness · opcional'],['hrv','HRV','readiness · opcional']];
+function openBioWhat(){ const got=(H().shortcut||{}).got||{};
+  openModal('<h3>qué trae el atajo</h3>'+BIO_WHAT.map(x=>'<div class="line"><span class="k">'+(got[x[0]]?'<b>✓</b> ':bioSkipped(x[0])?'<span class="u-o40">—</span> ':'')+x[1]+'</span><span class="dots"></span><span class="v u-o60">'+x[2]+'</span></div>').join('')
+    +'<div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div>'); }
 function openBioResult(){ const sc=H().shortcut, L=sc.learn||{}, stop=L.stop, N=k=>(HP_KINDS.find(x=>x[0]===k)||[k,k])[1], sk=HP_ORDER.filter(k=>k!==stop&&bioSkipped(k));
   openModal('<h3>sync biometrics</h3><div class="submeta u-o60 u-mb10">'+bioKindsTxt(sc.lastKinds)
     +(L.old?'<br/>tu atajo es de antes y no sabe qué buscar: instala '+BIO_NAME+' (y borra el anterior).':'')
-    +(stop?'<br/>se detuvo en '+N(stop)+': sin datos o sin permiso en Salud. ya no se pide.':'')
-    +(L.noread?'<br/>el atajo no leyó la lista de la app.':'')+(sc.noInput?'<br/>el atajo no recibió la lista de la app (buscó 7 días de todo).':'')
+    +(stop?(HP_OPT.indexOf(stop)>=0?'<br/>tu Salud no tiene '+(stop==='rhr'?'FC en reposo':N(stop))+' (o falta su permiso): ya no se pide. lo demás ya llegó.':'<br/>se detuvo en '+N(stop)+': sin datos o sin permiso en Salud. ya no se pide.'):'')
+    +(L.noread?'<br/>el atajo no leyó la lista de la app.':'')+(sc.noInput?'<br/>el atajo no recibió la lista de la app (buscó 7 días por omisión).':'')
     +(sk.length?'<br/>no se busca: '+sk.map(N).join(' · '):'')+'</div><div class="sheetbtns">'
-    +(L.old?'<button class="ok" data-act="biosetup">▶ instalar '+BIO_NAME+'</button>':stop?'<button class="ok" data-act="biorun">▶ correr otra vez</button>':'')
+    +(L.old?'<button class="ok" data-act="biosetup">▶ instalar '+BIO_NAME+'</button>':stop&&HP_OPT.indexOf(stop)<0?'<button class="ok" data-act="biorun">▶ correr otra vez</button>':'')
     +(sk.length&&!stop&&!L.old?'<button class="cancel" data-act="biounskip">buscar todo</button>':'')+'<button class="cancel" data-act="closemodal">cerrar</button></div>'); }
 // al volver de Atajos: si se mandó a correr, ofrece traer los datos. No se abre con algo encima (otra hoja, una confirmación, el tour, la tarjeta de
 // compartir, un menú, la portada) ni en plena sesión: ahí la espera sigue viva y la fila `sync biometrics` lo ofrece en el siguiente toque.
@@ -11622,6 +11642,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='biosync'){ bioSync(); }
   else if(a==='biorun'){ bioRun(); }
   else if(a==='biofetch'){ bioFetch(); }
+  else if(a==='biowhat'){ openBioWhat(); }
   else if(a==='biounskip'){ H().shortcut.skip={}; saveSoon(); closeModal(); toast('✓ se buscará todo otra vez'); }
   else if(a==='biosetup'){ openBioInstall(); }
   else if(a==='biocopy'){ const u=bioPageURL(), no=()=>{ const m=askLayer('<h3>copiar enlace</h3><div class="field"><input readonly value="'+escTxt(u)+'"/></div><div class="sheetbtns"><button class="cancel" data-ask="no">cerrar</button></div>'); m.addEventListener('click',ev=>{ if(ev.target.closest&&ev.target.closest('[data-ask]')){ ev.stopPropagation(); closeAsk(); } }); };   // encima de la hoja: instalar y [ya lo tengo] siguen ahí
