@@ -380,6 +380,11 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .cmpnone{position:relative;} .cmpgh{visibility:hidden;} .cmpnone>.empty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:0;}   /* el hueco de "sin datos" mide lo que la gráfica */
   .cmpsb{margin-top:var(--s3);} .cmpsv{display:flex; flex-wrap:wrap; gap:var(--s1) var(--s4);}
   @media (max-width:380px){ .cmprow{flex-wrap:wrap; gap:0 var(--s3);} .cmprow .cmpv{flex:1 0 100%; justify-content:flex-end;} }   /* angosta: el valor baja SIEMPRE a su renglón (no según quepa) */
+  /* v322 · barra segmentada con tu marca: 10 tramos que se aclaran hacia donde ayuda; el color solo en la marca */
+  .lvb{position:relative; display:grid; grid-template-columns:repeat(10,1fr); gap:var(--s1); height:var(--s1); margin:var(--s1) 0 var(--s5);}
+  .lvb i{background:var(--o12);} .lvb i:nth-child(n+4){background:var(--o20);} .lvb i:nth-child(n+7){background:var(--o40);} .lvb i:nth-child(n+9){background:var(--o60);}
+  .lvb b{position:absolute; top:var(--s1); transform:translateX(-50%); font-size:var(--t-label); font-weight:400; line-height:var(--lh-tight); color:var(--fg);}
+  .rdyd{font-size:var(--t-data); color:var(--o70); margin:0 0 var(--s3);} .rdyd b{color:var(--fg); font-weight:700;}
   .ptile.w2{grid-column:1 / -1;} .pgrid{grid-auto-flow:row dense; align-content:start;} .pgrid>.ptile{min-height:128px;} .ptile.ed>.pdel::after{inset:6px -30px -30px 6px;}   /* todos los recuadros miden lo mismo de alto (como los widgets de iOS): al cambiar de tamaño nada se mueve de renglón, y caben ⠿ y el asa (44 cada uno); el − toca 44 × 44 dentro del recuadro (la tile recorta lo que sale: medía 26 × 26) */   /* un individual que quedaría solo junto a un doble sube al hueco (como los widgets de iOS) */
   .ptw{display:grid; grid-template-columns:minmax(0,2fr) minmax(0,3fr); gap:var(--s4); align-items:end;} .ptwc{min-width:0;} .ptw .pst{font-weight:400; color:var(--o50);}
   .psz{position:absolute; right:0; bottom:0; z-index:1; width:44px; height:44px; padding:0; border:0; background:none; cursor:pointer;}
@@ -707,7 +712,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .rvr{display:grid; column-gap:2ch; align-items:center; min-height:44px; font-size:var(--t-data); letter-spacing:0; font-variant-numeric:tabular-nums;}
   .rvr.hd{min-height:0; padding-bottom:var(--s2); color:var(--o50);} .rvr .k{min-width:0; overflow-wrap:anywhere; color:var(--o70);} .rvr .n{text-align:right;} .rvr .q{color:var(--o50);}
   .rvr.m{grid-template-columns:minmax(0,1fr) 8ch 9ch 1ch;}
-  .rvr.y{grid-template-columns:10ch 4ch minmax(0,1fr) max-content; min-height:32px;} .rvr.y.hd{min-height:0;} .rvr.y.u-tap{min-height:44px;}
+  .rvr.y{grid-template-columns:12ch 4ch minmax(0,1fr) max-content; min-height:32px;} .rvr.y.hd{min-height:0;} .rvr.y.u-tap{min-height:44px;}
   .rvr.s{grid-template-columns:6ch minmax(0,1fr) 8ch 9ch 1ch;} .rvr.s{align-content:center; row-gap:var(--s1);} .rvr .rvb{grid-row:2; font-size:var(--t-label); line-height:var(--lh-ui); color:var(--o50); white-space:nowrap;} .rvr .rvb.a{grid-column:1;} .rvr .rvb.b{grid-column:2; white-space:normal; overflow-wrap:anywhere;} .rvr .rvb.c{grid-column:3; text-align:right;}   /* E6 · la sesión previa y cuánto subió: un renglón tenue bajo el nombre, a lo ancho de la fila (que sigue en 44) */
   .pfr{align-items:center; padding:0;} .pfr .v{flex:0 0 auto;} .pfr .t{text-align:right;}
 .tseln{font-size:var(--t-label); line-height:var(--lh-read); color:var(--o60); margin:0 var(--s1) var(--s3);}
@@ -1364,7 +1369,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v321';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v322';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -3296,7 +3301,7 @@ function stampSessionPre(w){ if(!w||w.pre||w.loggedAfter)return w;
     const rc=day?dayRecovery(day,at):recoveryOf(listMuscles(w.exercises,w),at);   // la misma cuenta que acabas de ver en gym
     const rd=readinessScore(w.date||todayISO()), muscles={}, parts={};
     rc.rows.forEach(x=>{ if(x.r)muscles[x.id]=x.r.p; }); Object.keys(rd.parts).forEach(k=>{ parts[k]=rd.parts[k].score; });
-    w.pre={at,recovery:rc.score,muscles,readiness:rd.score,parts}; }catch(_){}
+    w.pre={at,rv:2,recovery:rc.score,muscles,readiness:rd.score,parts}; }catch(_){}   /* rv 2 = readiness objetivo (v322) */
   return w; }
 // al guardar (o al continuar una sesión ya guardada) la foto viaja con la sesión: nunca se recalcula ni se pierde
 function carryPre(sess,w){ const p=(w&&w.pre)||(w&&w.resumeOf!=null?((db.sessions||[]).find(x=>x&&x.id===w.resumeOf)||{}).pre:null);
@@ -3307,7 +3312,7 @@ const preNum=v=>(typeof v==='number'&&isFinite(v))?Math.max(0,Math.min(100,Math.
 function sessionPre(s){ if(!s||s.type==='rest'||!s.exercises||!s.date)return null;
   const P=(s.pre&&typeof s.pre==='object')?s.pre:null, win=sessionWindow(s);
   const t=(P&&+P.at>0?+P.at:0)||(win&&win.startMs)||Date.parse(s.date+'T18:00:00');
-  const rec=P?preNum(P.recovery):recoveryOf(listMuscles(s.exercises,s),t).score; let rdy=P?preNum(P.readiness):null;
+  const rec=P?preNum(P.recovery):recoveryOf(listMuscles(s.exercises,s),t).score; let rdy=P&&P.rv===2?preNum(P.readiness):null;   // una foto de antes de v322 traía el readiness de la cuenta vieja (otra escala): se lee de lo registrado
   if(rdy==null)rdy=readinessScore(s.date).score;
   return {s,t,rec,rdy,snap:!!P}; }
 // la línea de contexto de la sesión viva dice la foto tal cual quedó (no un número que cambia mientras entrenas)
@@ -6000,6 +6005,29 @@ function _compareSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHEC
     cmpSaveToggle(); A('guardar esta comparación y quitarla', cmpCfg().saved.length===4&&cmpCfg().saved[3].a==='weight'&&(cmpSaveToggle(),cmpCfg().saved.length===3));
     console.log('comparar self-check OK');
   } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } saveSoon=_ss; db=real; state.screen=sc0; _sbx=sb0; bumpIdx(); } }
+// self-check de v322 (RD1): readiness objetivo. Los tres ejemplos del documento (contexto/readiness-objetivo.md §4). Base de juguete.
+function _readiness2SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK readiness objetivo: '+nm); }; const real=db, sb0=_sbx;
+  try{ _sbx=true; const T=todayISO(), D=k=>shiftDate(T,-k), MIN=m=>m/60;
+    A('la curva de sueño: 8.2 h = 100 · 7 h = 70 · 6 h = 35 · 4 h = 0, y no premia de más', rdyCurve(8.2)===100&&rdyCurve(10)===100&&Math.abs(rdyCurve(7)-70)<1e-9&&Math.abs(rdyCurve(6)-35)<1e-9&&rdyCurve(4)===0&&rdyCurve(2)===0&&Math.round(rdyCurve(6+50/60))===64);
+    A('HRV: referencia por edad y sexo, interpolada entre décadas', rdyHrvRef('M',30).join()==='34,71'&&rdyHrvRef('M',35).join()==='30.5,62.5'&&rdyHrvRef('F',20).join()==='37,85'&&rdyHrvRef('M',90).join()==='20,37');
+    const mk=(hours,lastH)=>{ const sl={}, dl={}; for(let i=6;i>=0;i--){ const hh=(i===0&&lastH!=null)?lastH:hours; const tm=Math.round(hh*60), rm=Math.round(tm*0.25), dp=Math.round(tm*0.2); sl[D(i)]=[{start:hh>9?'19:00':'22:00',end:'07:00',hours:Math.round(hh*10)/10,ph:{awake:20,rem:rm,core:tm-rm-dp,deep:dp}}]; dl[D(i)]={rhr:58,hrv:{v:49,kind:'rmssd'}}; }
+      const d=migrate({profile:{username:'t',sex:'M',age:30,weightKg:75,heightCm:178},split:{days:[]},sleep:sl,sessions:[{id:'s1',date:D(12),type:'training',exercises:[{name:'press',muscle:'chest',type:'free',sets:[{w:'80',r:'8',rir:'1',unit:'kg',done:true}]}]}]}); d.health=d.health||{}; db=d; H().daily=dl; bumpIdx(); return readinessScore(T); };
+    let r=mk(8.25); A('bien descansado (8 h 15 toda la semana): 91, recuperado, sin deuda', r.score===91&&r.band==='recuperado'&&r.debt===0&&r.parts.debt.score===100&&r.parts.sleep.score===100&&r.parts.cont.score===100&&r.parts.load.score===100&&r.parts.rhr.score===73&&r.parts.hrv.score===41);
+    r=mk(6+50/60); A('6 h 50 toda la semana: 72, a medias, debes 9.6 h (antes salía arriba de 80)', r.score===72&&r.band==='a medias'&&r.debt===9.6&&r.parts.debt.score===64&&r.parts.sleep.score===64);
+    r=mk(8.25,5); A('una mala noche tras una semana buena: 74 (la semana pesa más que una noche)', r.score===74&&r.parts.debt.score===89&&r.parts.sleep.score===18&&r.debt===3.2);
+    r=mk(4.5); A('dormir 4 h 30 toda la semana: falta descanso', r.score<60&&r.band==='falta descanso');
+    r=mk(5,10); A('una noche de 10 h tras seis de 5 h NO sale de "falta descanso": anoche cuenta a medias', r.score===56&&r.band==='falta descanso'&&r.parts.sleep.cap===true&&r.parts.sleep.raw===100&&r.parts.sleep.score===63&&r.parts.debt.score===26);
+    mk(7); [2,3].forEach(i=>{ delete db.sleep[D(i)]; }); bumpIdx(); A('con 5 de 7 noches la deuda se estima para la semana entera', readinessScore(T).debt===8.4);
+    mk(7); [2,3,4].forEach(i=>{ delete db.sleep[D(i)]; }); bumpIdx(); r=readinessScore(T); A('con menos de 5 noches en la semana no hay número: se dice cuántas van', r.score===null&&r.miss==='nights'&&r.why==='4 de 5 noches'&&/<b>—<\/b><span class="rw">4 de 5 noches/.test(readinessLineHTML(T)));
+    delete db.sleep[T]; bumpIdx(); r=readinessScore(T); A('sin el sueño de anoche no hay número', r.score===null&&r.miss==='sleep'&&r.why==='sin dato');
+    mk(6+50/60); H().daily={}; bumpIdx(); r=readinessScore(T); A('sin reloj: sale del sueño, la continuidad y la carga', r.score!=null&&!r.parts.rhr&&!r.parts.hrv&&r.score===Math.round((64.1667*0.4+64.1667*0.15+100*0.1+100*0.15)/0.8));
+    { const dl={}; for(let i=0;i<7;i++)dl[D(i)]={hrv:{v:60,kind:'sdnn'}}; H().daily=dl; bumpIdx(); r=readinessScore(T); A('HRV en SDNN (Salud de Apple) no se puntúa: se dice', !r.parts.hrv&&r.hrvNote==='SDNN · sin referencia'); dl[D(0)]={hrv:{v:60,kind:'sdnn'},src:{hrv:'manual'}}; bumpIdx(); A('lo tecleado a mano cuenta como RMSSD, y pide 3 lecturas', readinessScore(T).hrvNote==='1 de 3 lecturas');
+      for(let i=0;i<7;i++)dl[D(i)]={hrv:{v:60,kind:'rmssd'}}; const ag=db.profile.age; db.profile.age=0; bumpIdx(); A('con lecturas pero sin edad, lo que falta es la edad', readinessScore(T).hrvNote==='falta tu edad'&&!readinessScore(T).parts.hrv); db.profile.age=ag; bumpIdx(); }
+    mk(6+50/60); openReadiness(T); const sh=(document.getElementById('modal')||{}).innerHTML||''; closeModal();
+    A('la hoja: cada señal con su dato, su puntaje y su barra; la deuda arriba', /<b>a medias<\/b> · debes ~9 h 3[56] min de sueño esta semana/.test(sh)&&(sh.match(/class="lvb"/g)||[]).length===6&&/<span class="k">semana<\/span><span class="n">64<\/span><span class="q">6 h 50 min por noche</.test(sh)&&/58 lpm/.test(sh));
+    A('la cuenta vieja se queda para comparar y daba más', readinessScoreV1(T).score==null||readinessScoreV1(T).score>readinessScore(T).score);
+    console.log('readiness objetivo self-check OK');
+  } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } db=real; _sbx=sb0; bumpIdx(); } }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -8333,10 +8361,55 @@ const READY_ORDER=['sleep','rhr','hrv','load','food'];
 // de capacidad) y dayFlags la sigue leyendo de readinessFor. Sin el sueño de anoche NO hay número: se dice y no se rellena
 // con lo demás. Los músculos van aparte, en recovery (dayRecovery, junto a dayScoresHTML).
 const READY_KEYS=['sleep','load','rhr','hrv'];
-function readinessScore(date){ date=date||todayISO(); readinessFor(date); const all=(_readyCache[date]||{}).parts||{};
+function readinessScoreV1(date){ date=date||todayISO(); readinessFor(date); const all=(_readyCache[date]||{}).parts||{};   // la cuenta de v284–v321 (contra tu costumbre): se queda solo para comparar
   const parts={}; READY_KEYS.forEach(k=>{ if(all[k])parts[k]=all[k]; }); const ks=Object.keys(parts); let score=null;
   if(parts.sleep&&ks.length>=2){ let ws=0, s=0; ks.forEach(k=>{ ws+=READY_W[k]; s+=parts[k].score*READY_W[k]; }); score=Math.round(s/ws); }
   return {date,score,parts,miss:score!=null?'':(parts.sleep?'more':'sleep'),why:score!=null?'':'sin dato'}; }
+// ── v322 · RD1 · READINESS OBJETIVO ──────────────────────────────────────────────────────────────────────────────────────────────────
+// El dueño (9-oct): "el readiness tiene que ser objetivo a la recuperación real, no a lo normal. porque realmente siento que no estoy
+// descansando bien pero gym trk me está dando números altos" (la app le daba 78–83 con 6 h 50 por noche; Google, 32). La cuenta vieja partía
+// de 100 y solo restaba contra tu costumbre: con sueño corto crónico tu costumbre ya es mala. Esta mide contra anclas FIJAS:
+//   deuda de sueño (media de 7 noches, cada una con tope en la necesidad) 40 % · anoche 15 % · continuidad 10 % · carga de fuerza
+//   pendiente 15 % · FC en reposo (media de 7 días) 10 % · HRV RMSSD (media de 7 días) 10 %. Lo que falta reparte su peso.
+// Dato publicado: necesidad 8.2 h (Van Dongen 2003), piso 7 h (AASM 2015), 20 min despierto y 7 de 8 h en cama (NSF), rangos de FC con
+// reloj (Quer 2020), RMSSD por edad y sexo (Natarajan 2020, solo las décadas vistas en dos lecturas), mínimo 3 lecturas de HRV (Plews
+// 2014). Criterio de diseño, SIN fuente: los pesos, las bandas, los puntos 70 y 35 de la curva, el tope por noche y el mínimo de 5
+// noches. La carga usa el motor de recuperación por músculo de la app (su ventana por dosis, 48–96 h), no una tabla aparte.
+// Todo en contexto/readiness-objetivo.md. NO entra a σ ni al ▲▼ %; readinessFor (causas del ▼, "en ti") no cambia.
+const RDY={need:8.2,win:7,minN:5,curve:[[4,0],[6,35],[7,70],[8.2,100]],w:{debt:0.40,sleep:0.15,cont:0.10,load:0.15,rhr:0.10,hrv:0.10},awake:[20,60],eff:[0.875,0.70],loadH:96,
+  rhr:{M:[50,80],F:[53,82]},hrvMin:3,hrv:{M:{20:[45,96],30:[34,71],40:[27,54],50:[23,42],60:[20,37]},F:{20:[37,85],30:[31,67],40:[26,52],50:[22,42],60:[21,38]}},bands:[80,60]};
+const RDY_KEYS=['debt','sleep','cont','load','rhr','hrv'];
+function rdyCurve(hh){ const c=RDY.curve; if(!(hh>c[0][0]))return 0; for(let i=1;i<c.length;i++){ if(hh<=c[i][0])return c[i-1][1]+(hh-c[i-1][0])/(c[i][0]-c[i-1][0])*(c[i][1]-c[i-1][1]); } return 100; }
+function rdyLin(v,at100,at0){ return Math.max(0,Math.min(100,(v-at0)/(at100-at0)*100)); }
+function rdyHrvRef(sex,age){ const T=RDY.hrv[sex==='F'?'F':'M'], ks=Object.keys(T).map(Number).sort((a,b)=>a-b); age=Math.max(ks[0],Math.min(ks[ks.length-1],+age||ks[0])); let i=0; while(i<ks.length-2&&age>ks[i+1])i++;
+  const a=ks[i], b=ks[i+1], t=(age-a)/(b-a); return [T[a][0]+(T[b][0]-T[a][0])*t,T[a][1]+(T[b][1]-T[a][1])*t]; }
+function hrvKindOf(day){ return day&&day.hrv?((day.src&&day.src.hrv==='manual')?'rmssd':(day.hrv.kind||'sdnn')):''; }   // lo tecleado viene de la app del reloj (RMSSD); Salud de Apple manda SDNN
+function rdySleepH(d){ const v=db.sleep&&db.sleep[d], m=v!=null?sleepMinOf(v):0; return m>0?m/60:sleepOnDate(d); }   // al minuto (sleepHours redondea a 6 min)
+function rdyBand(s){ return s==null?'':s>=RDY.bands[0]?'recuperado':s>=RDY.bands[1]?'a medias':'falta descanso'; }
+function readinessV2(date){ date=date||todayISO(); const ck='2:'+date, c=_readyCache[ck]; if(c&&Date.now()-c.at<60000)return c.v;
+  const D=H().daily||{}, P=db.profile||{}, parts={}, N=[], part=(x,o)=>Object.assign({x,score:Math.round(x)},o);
+  for(let i=0;i<RDY.win;i++){ const v=rdySleepH(shiftDate(date,-i)); if(v>0)N.push(v); }
+  const last=rdySleepH(date);
+  if(N.length>=RDY.minN){ const m=N.reduce((a,v)=>a+Math.min(v,RDY.need),0)/N.length; parts.debt=part(rdyCurve(m),{v:m,n:N.length,debt:Math.round(N.reduce((a,v)=>a+Math.max(0,RDY.need-v),0)/N.length*RDY.win*10)/10})   /* si faltan noches, la deuda se estima para la semana entera (antes, 5 noches "debían" menos que 7) */; }
+  // una noche larga no borra la semana: anoche cuenta, como mucho, el promedio entre anoche y la semana. Criterio de diseño
+  // (verificador, 9-oct: 10 h tras seis noches de 5 h daba 62, "a medias"; con esto da 56).
+  if(last>0){ const raw=rdyCurve(Math.min(last,RDY.need)); parts.sleep=parts.debt&&raw>parts.debt.x+0.5?part((raw+parts.debt.x)/2,{v:last,raw:Math.round(raw),cap:true}):part(raw,{v:last}); }
+  { const ph=sleepPhDay(date); if(ph&&(ph.rem+ph.core+ph.deep)>0)parts.cont=part(rdyLin(ph.awake,RDY.awake[0],RDY.awake[1]),{v:ph.awake,kind:'awake'});
+    else { let as=0, ib=0; sleepBlocks(db.sleep&&db.sleep[date]).forEach(b=>{ if(b&&+b.inBed>0&&+b.hours>0){ as+=+b.hours; ib+=+b.inBed; } }); if(ib>0&&as<ib)parts.cont=part(rdyLin(as/ib,RDY.eff[0],RDY.eff[1]),{v:as/ib,kind:'eff'}); } }
+  { const at=date===todayISO()?Date.now():Date.parse(date+'T08:00:00'), ix=muscleExposureIndex(); let lo=null, who='';
+    Object.keys(ix).forEach(id=>{ const r=muscleRecAt(id,at); if(r&&r.h<=RDY.loadH&&(lo==null||r.p<lo)){ lo=r.p; who=id; } });
+    if(lo!=null)parts.load=part(lo,{v:lo,who}); else if(Object.keys(ix).some(id=>muscleRecAt(id,at)))parts.load=part(100,{v:100,who:''}); }
+  { const a=[]; for(let i=0;i<RDY.win;i++){ const v=+((D[shiftDate(date,-i)]||{}).rhr); if(v>0)a.push(v); } if(a.length){ const m=a.reduce((x,y)=>x+y,0)/a.length, R=RDY.rhr[P.sex==='F'?'F':'M']; parts.rhr=part(rdyLin(m,R[0],R[1]),{v:m,n:a.length}); } }
+  let hrvNote=''; { const a=[]; let sd=0; for(let i=0;i<RDY.win;i++){ const x=D[shiftDate(date,-i)]; if(x&&x.hrv&&x.hrv.v>0){ if(hrvKindOf(x)==='rmssd')a.push(+x.hrv.v); else sd++; } }
+    if(a.length>=RDY.hrvMin&&+P.age>0){ const m=a.reduce((x,y)=>x+y,0)/a.length, R=rdyHrvRef(P.sex,P.age); parts.hrv=part(rdyLin(m,R[1],R[0]),{v:m,n:a.length}); }
+    else if(a.length>=RDY.hrvMin)hrvNote='falta tu edad'; else if(a.length)hrvNote=a.length+' de '+RDY.hrvMin+' lecturas'; else if(sd)hrvNote='SDNN · sin referencia'; }
+  let score=null, why='', miss='';
+  if(!parts.sleep){ why='sin dato'; miss='sleep'; } else if(!parts.debt){ why=N.length+' de '+RDY.minN+' noches'; miss='nights'; }
+  else { let ws=0, s=0; RDY_KEYS.forEach(k=>{ if(parts[k]){ ws+=RDY.w[k]; s+=parts[k].x*RDY.w[k]; } }); score=Math.round(s/ws); }
+  const v={date,score,parts,miss,why,debt:parts.debt?parts.debt.debt:null,band:rdyBand(score),hrvNote};
+  _readyCache[ck]={at:Date.now(),v}; return v; }
+function readinessScore(date){ return readinessV2(date); }
+function leverBarHTML(pct,aria){ pct=Math.max(0,Math.min(100,+pct||0)); return '<div class="lvb" role="img" aria-label="'+escTxt(aria||(Math.round(pct)+' de 100'))+'"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><b style="left:'+Math.max(1.5,Math.min(98.5,pct)).toFixed(1)+'%">▲</b></div>'; }   /* la marca no se sale de la barra en los extremos */
 // una cuenta sin sueño ni entrenos registrados no ve la línea (silencio); con historial, la falta se dice: "readiness — sin dato"
 // (cuál falta lo dice su hoja, con [registrar] en la fila del sueño)
 function readinessLineHTML(date){ const r=readinessScore(date);
@@ -8418,16 +8491,18 @@ function etWhyHTML(n,title){ const W=etWhy(n); if(!W||(!W.head&&!W.lines.length)
   return '<div class="grp-label sub">'+title+'</div>'+(W.head?'<div class="submeta u-mb6">'+escTxt(W.head)+'</div>':'')
     +(W.lines.length?W.lines.map(x=>subLineHTML('·',x[0],x[1])).join(''):'<div class="submeta u-o40">nada fuera de lo tuyo ese día</div>'); }
 function etLastNight(){ const t=todayISO(), ks=Object.keys(db.sleep||{}).filter(k=>k<=t&&sleepBlocks(db.sleep[k]).length).sort(); return ks.length?ks[ks.length-1]:null; }
-function openReadiness(date){ date=date||todayISO(); const r=readinessScore(date), D=H().daily||{}; if(!_subProf)subProfiles().catch(()=>{});   // v298 · las fichas, para el porqué de la noche
-  const names={sleep:'sueño',load:'carga',rhr:'FC reposo',hrv:'HRV'};
-  // el dato de cada señal, uno por columna: lo que dormiste · la carga de 72 h contra tu promedio · tus lpm · tu HRV
-  const dato={sleep:p=>fmtH(p.v),load:p=>(+p.ratio||0).toFixed(1)+'×',rhr:p=>Math.round(p.v)+' lpm',hrv:p=>Math.round(p.v)+' ms'};
-  const src={sleep:true,load:true,rhr:Object.keys(D).some(d=>D[d]&&+D[d].rhr>0),hrv:Object.keys(D).some(d=>D[d]&&D[d].hrv)};   // sin reloj que las mande, esas filas no salen
-  const rows=READY_KEYS.filter(k=>r.parts[k]||src[k]).map(k=>{ const p=r.parts[k];
-    if(p)return `<div class="rvr y"><span class="k">${names[k]}</span><span class="n">${p.score}</span><span class="q">${escTxt(dato[k](p))}</span><span></span></div>`;
-    return k==='sleep'&&date===todayISO()?`<div class="rvr y u-tap" role="button" tabindex="0" data-act="logsleep"><span class="k">${names[k]}</span><span class="n q">—</span><span class="q">sin dato</span><span>registrar ›</span></div>`
-      :`<div class="rvr y"><span class="k">${names[k]}</span><span class="n q">—</span><span class="q">sin dato</span><span></span></div>`; }).join('');
+function openReadiness(date){ date=date||todayISO(); const r=readinessScore(date), D=H().daily||{}, p=r.parts; if(!_subProf)subProfiles().catch(()=>{});   // v298 · las fichas, para el porqué de la noche
+  // v322 · cada señal con su dato, su ancla y su puntaje, y la barra con tu marca; lo que falta se dice sin rellenarlo
+  const names={debt:'semana',sleep:'sueño',cont:'continuidad',load:'carga',rhr:'FC reposo',hrv:'HRV'};
+  const dato={debt:x=>fmtH(x.v)+' por noche'+(x.n<RDY.win?' · '+x.n+'/'+RDY.win:''),sleep:x=>fmtH(x.v)+(x.cap?' · la semana la frena':''),cont:x=>x.kind==='awake'?Math.round(x.v)+' min despierto':Math.round(x.v*100)+' % de la cama dormido',load:x=>x.who?muscleLabel(x.who)+' '+Math.round(x.v)+' %':'sin carga pendiente',rhr:x=>Math.round(x.v)+' lpm',hrv:x=>Math.round(x.v)+' ms'};
+  const src={debt:true,sleep:true,cont:false,load:false,rhr:Object.keys(D).some(d=>D[d]&&+D[d].rhr>0),hrv:Object.keys(D).some(d=>D[d]&&D[d].hrv)};   // sin fuente, esa fila no sale
+  const none=(k,t,log)=>log?`<div class="rvr y u-tap" role="button" tabindex="0" data-act="logsleep"><span class="k">${names[k]}</span><span class="n q">—</span><span class="q">${t}</span><span>registrar ›</span></div>`:`<div class="rvr y"><span class="k">${names[k]}</span><span class="n q">—</span><span class="q">${t}</span><span></span></div>`;
+  const rows=RDY_KEYS.filter(k=>p[k]||src[k]).map(k=>{ const x=p[k];
+    if(x)return `<div class="rvr y"><span class="k">${names[k]}</span><span class="n">${x.score}</span><span class="q">${escTxt(dato[k](x))}</span><span></span></div>`+leverBarHTML(x.score,names[k]+' '+x.score+' de 100');
+    if(k==='sleep')return none(k,'sin dato',date===todayISO()); if(k==='debt')return none(k,escTxt(r.miss==='nights'?r.why:'faltan noches'),false); if(k==='hrv'&&r.hrvNote)return none(k,escTxt(r.hrvNote),false); return none(k,'sin dato',false); }).join('');
+  const owe=r.debt!=null&&r.debt>=0.5?'debes ~'+fmtH(r.debt)+' de sueño esta semana':'';
   openModal(`<h3><span data-gloss="ready">readiness</span> ${r.score!=null?'~'+r.score:'—'}<span class="u-o40 u-w4"> · ${fmtShort(date)}</span></h3>
+    ${r.band||owe?`<div class="rdyd">${r.band?'<b>'+r.band+'</b>':''}${r.band&&owe?' · ':''}${owe}</div>`:''}
     <div class="rvr y hd"><span>señal</span><span class="n">/100</span><span>dato</span><span></span></div>${rows}
     ${etWhyHTML(date,date===todayISO()?'ANOCHE':'ESA NOCHE')}
     <div class="submeta u-mt10">estimado con lo que registraste · no es un diagnóstico</div>
@@ -9004,7 +9079,7 @@ function openWeightLog(){ const ks=Object.keys(db.bodyweight||{}).sort(); const 
 // Viven donde ya vivían (db.health.daily[fecha]) con marca de origen por campo, como los pasos: lo tecleado gana y
 // el sync no lo pisa; al borrar el día desde RECENT LOGS, el siguiente sync vuelve a llenarlo.
 const HLOG={ rhr:{t:'FC en reposo',u:'lpm',ph:'ej. 58',min:25,max:140,step:'1',fld:'rhr',get:x=>(x&&+x.rhr)||0,set:(x,v)=>{ x.rhr=Math.round(v); }},
-  hrv:{t:'HRV',u:'ms',ph:'ej. 42',min:1,max:400,step:'0.1',fld:'hrv',get:x=>(x&&x.hrv&&+x.hrv.v)||0,set:(x,v)=>{ x.hrv={v:Math.round(v*10)/10,kind:(x.hrv&&x.hrv.kind)||'sdnn'}; }},
+  hrv:{t:'HRV',u:'ms',ph:'ej. 42',min:1,max:400,step:'0.1',fld:'hrv',get:x=>(x&&x.hrv&&+x.hrv.v)||0,set:(x,v)=>{ x.hrv={v:Math.round(v*10)/10,kind:'rmssd'}; }},
   kcalact:{t:'energía activa',u:'kcal',ph:'ej. 420',min:1,max:8000,step:'1',fld:'activeKcal',get:x=>(x&&+x.activeKcal)||0,set:(x,v)=>{ x.activeKcal=Math.round(v); }} };
 function openHealthNumLog(key){ const C=HLOG[key]; if(!C)return; const h=H();
   const ks=Object.keys(h.daily||{}).filter(d=>C.get(h.daily[d])>0).sort(); const recent=ks.slice(-8).reverse();
@@ -9763,19 +9838,19 @@ function _recovScoreSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFC
     let r=readinessScore(today);
     A('sin el sueño de anoche no hay número y se dice', r.score===null&&r.why==='sin dato'&&r.miss==='sleep'&&!!r.parts.rhr&&/readiness<\/span><b>—<\/b><span class="rw">sin dato/.test(readinessLineHTML(today)));
     openReadiness(today); const shY=(document.getElementById('modal')||{}).innerHTML||''; closeModal();
-    A('su hoja dice qué falta sin rellenarlo y deja registrarlo; una señal sin fuente no sale', shY.indexOf('data-act="logsleep"><span class="k">sueño</span><span class="n q">—</span><span class="q">sin dato</span>')>0&&/<span class="k">FC reposo<\/span><span class="n">\d+<\/span><span class="q">64 lpm<\/span>/.test(shY)&&shY.indexOf('HRV')<0);
+    A('su hoja dice qué falta sin rellenarlo y deja registrarlo; una señal sin fuente no sale', shY.indexOf('data-act="logsleep"><span class="k">sueño</span><span class="n q">—</span><span class="q">sin dato</span>')>0&&/<span class="k">FC reposo<\/span><span class="n">\d+<\/span><span class="q">\d+ lpm<\/span>/.test(shY)&&shY.indexOf('HRV')<0);
     db.sleep[today]=[{date:today,type:'nocturno',hours:5}]; bumpIdx(); r=readinessScore(today);
-    A('con sueño y otra señal sale el puntaje', r.why===''&&r.score===Math.round((r.parts.sleep.score*READY_W.sleep+r.parts.rhr.score*READY_W.rhr)/(READY_W.sleep+READY_W.rhr)));
+    A('con el sueño de anoche sale el puntaje: la semana pesa más que una noche', r.why===''&&r.score!=null&&r.parts.debt.n>=5&&r.parts.debt.score>r.parts.sleep.score&&r.parts.sleep.score===Math.round(rdyCurve(5))&&r.band===rdyBand(r.score));
     const s0=r.score; db.meals[shiftDate(today,-1)]=[{name:'x',kcal:300,protein:5}]; bumpIdx();
     A('la comida de ayer no mueve el readiness (readinessFor la conserva para el diagnóstico)', !!readinessFor(today).parts.food&&readinessScore(today).score===s0&&!readinessScore(today).parts.food);
     delete H().daily[today]; bumpIdx(); r=readinessScore(today);
-    A('una sola señal no alcanza', r.score===null&&r.why==='sin dato'&&r.miss==='more');
+    A('sin la FC de hoy sigue habiendo número: cuenta la media de la semana y lo que falta reparte su peso', r.score!=null&&!r.parts.hrv&&r.miss==='');
     H().daily[today]={rhr:64}; bumpIdx();
     // la foto al iniciar
     const w=stampSessionPre(newWorkSession()), rc2=dayRecovery(day,w.pre&&w.pre.at), rd2=readinessScore(today);
     A('start guarda la foto con su hora', !!w.pre&&Math.abs(w.pre.at-Date.now())<5000);
     A('…el recovery que se veía en gym y cada músculo con dato', w.dayId==='d1'&&w.pre.recovery===rc2.score&&w.pre.muscles.quads===rc2.rows[0].r.p&&w.pre.muscles.biceps===100&&!('calves' in w.pre.muscles));
-    A('…y el readiness con sus partes', w.pre.readiness===rd2.score&&rd2.score!=null&&w.pre.parts.sleep===rd2.parts.sleep.score&&w.pre.parts.rhr===rd2.parts.rhr.score);
+    A('…y el readiness con sus partes', w.pre.readiness===rd2.score&&rd2.score!=null&&w.pre.rv===2&&w.pre.parts.sleep===rd2.parts.sleep.score&&w.pre.parts.rhr===rd2.parts.rhr.score&&w.pre.parts.debt===rd2.parts.debt.score);
     const p1=w.pre; stampSessionPre(w); A('la foto no se pisa', w.pre===p1);
     const la=newWorkSession(); la.loggedAfter=true; A('una sesión registrada después no lleva foto', !stampSessionPre(la).pre);
     A('al guardar, la foto viaja con la sesión', carryPre({},w).pre===p1&&carryPre({},{resumeOf:'sq'}).pre===db.sessions[1].pre&&!('pre' in carryPre({},{resumeOf:'sb'})));
@@ -9783,7 +9858,7 @@ function _recovScoreSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFC
     A('la sesión con foto se lee de su foto', pq.snap&&pq.rec===64&&pq.t===P0.at);
     A('el readiness que faltaba en la foto se completa con lo registrado', pq.rdy===readinessScore(db.sessions[1].date).score);
     A('una sesión vieja se lee sin escribirle nada', !!pb&&!pb.snap&&!('pre' in db.sessions[0]));
-    A('una foto con basura no se pinta', sessionPre({id:'x',date:today,exercises:[],pre:{at:'<i>',recovery:'<img>',readiness:1e9}}).rec===null&&sessionPre({id:'x',date:today,exercises:[],pre:{recovery:NaN,readiness:1e9}}).rdy===100);
+    A('una foto con basura no se pinta', sessionPre({id:'x',date:today,exercises:[],pre:{at:'<i>',recovery:'<img>',readiness:1e9}}).rec===null&&sessionPre({id:'x',date:today,exercises:[],pre:{rv:2,recovery:NaN,readiness:1e9}}).rdy===100);
     const ps=preSeries(30);
     A('la serie va por sesión, en orden', ps.length>=1&&ps[ps.length-1].s.id==='sq');
     const g=lineChart([50,100],{h:56,dom:[0,100],s2:[40,null],noFill:true}), g2=lineChart([50,100],{h:56,dom:[0,100],s2:[40,60],noFill:true});
@@ -15741,7 +15816,7 @@ const GLOSS={
   recm:'recovery de un músculo: las horas desde su última sesión contra su ventana de recuperación (estimada con lo que le hiciste, u observada con tu historial). 100% = ya pasó su ventana.',
   est:'estimado = ventana de la literatura ajustada a tu dosis (series, fallo, estiramiento) · observado = lo que muestra tu propio historial, desde 6 pares de sesiones.',
   recov:'recovery · qué tan recuperados están los músculos de la sesión que toca: las horas desde su última sesión contra su ventana de recuperación (estimada, u observada con tu historial). 100 = todos frescos; es el promedio por series. Se guarda al tocar start; en las sesiones de antes se lee de lo que quedó registrado.',
-  ready:'readiness · qué tan listo estás tú hoy: el sueño de anoche contra tu meta, la carga de las últimas 72 h contra tu promedio de 4 semanas y, si tu reloj los manda, FC en reposo y HRV. Sin el sueño de anoche no se calcula. No es un diagnóstico.',
+  ready:'readiness · qué tan descansado estás de verdad, contra anclas fijas y no contra tu costumbre: lo que dormiste en la semana (contra 8.2 h, lo que necesita en promedio un adulto; cada noche cuenta hasta ahí y una noche larga no borra la semana), anoche, cuánto estuviste despierto, la carga de fuerza que sigue pendiente y, si tu reloj los manda, FC en reposo y HRV. 80 o más = recuperado · 60 a 79 = a medias · menos = falta descanso. Pide el sueño de anoche y 5 noches de la semana. Estimado; no es un diagnóstico.',
   rirmed:'RIR medio de tus series duras con RIR registrado · "% a RIR ≤1" = qué parte fue al fallo o casi.',
   vzone:'zona por tu RIR · la regla que escuchaste: entre RIR 1 y RIR 0, de 5 a 10 series por músculo a la semana; entre RIR 3 y RIR 2, hasta 15. Se elige por tu RIR medio de la semana (sin él, el de costumbre). Es una referencia general y una estimación (~): la tuya sigue siendo "tu habitual".',
   rircal:'RIR anotado · tus series con RIR contra tus series al fallo del mismo ejercicio (mismo número de serie, peso a 5 % o menos, 21 días o menos): si al fallo haces 10 y con RIR 1 anotaste 9, coincide. Es una lectura: no cambia tu σ ni tu ▲▼.',
@@ -16074,7 +16149,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
