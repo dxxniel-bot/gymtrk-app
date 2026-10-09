@@ -1215,6 +1215,12 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .asklayer.low .sheet.glass-strong{border-width:var(--bw-chrome) 0 0;}
   .modal.asklayer.low.in .sheet{animation:askin var(--dur-3) var(--ease-out);} .modal.asklayer.low.out .sheet{animation:askout var(--dur-2) var(--ease-in) forwards;}
   @keyframes askin{from{transform:translateY(100%)}} @keyframes askout{to{transform:translateY(100%)}}
+  /* v316 · G8 tanda 4 · una HOJA sin teclado también abre abajo: mismo material y mismo contenido, otro borde; entra y sale por abajo */
+  .modal.low{align-items:flex-end;}
+  .modal.low:not(.asklayer) .sheet{padding:var(--sp-sheet) var(--sp-sheet) calc(var(--s6) + env(safe-area-inset-bottom)); border-radius:var(--r-sheet) var(--r-sheet) 0 0;}
+  .modal.low:not(.asklayer) .sheet.glass-strong{border-width:var(--bw-chrome) 0 0;}
+  .modal.low:not(.asklayer).in .sheet{animation:askin var(--dur-3) var(--ease-out);} .modal.low:not(.asklayer).out .sheet{animation:askout var(--dur-2) var(--ease-in) forwards;}
+  .modal.low:not(.asklayer) .sheetbtns:not(:has(> .ok)){justify-content:flex-end;} .modal.low:not(.asklayer) .sheetbtns:not(:has(> .ok)):has(> :nth-child(2)){justify-content:space-between;}   /* abajo sin principal, la salida a la derecha (como los avisos) */
   /* el principal a la derecha (donde cae el pulgar) y, en un aviso que borra, lo que borra a la izquierda y cancelar a la derecha */
   .sheetbtns:has(> .ok){flex-direction:row-reverse;} .sheetbtns:has(> .danger):not(:has(> .ok)){justify-content:space-between;}
   /* repaso estético de v303 · tres casos que la regla de arriba dejaba fuera de su propia intención (medidos en las hojas reales):
@@ -1328,7 +1334,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v315';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v316';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -1905,7 +1911,7 @@ function openStorage(){
     +`<div class="u-tr u-mt8"><a data-act="stdiag" class="vb">copiar diagnóstico</a></div>`
     +`<div class="sheetbtns u-mt12">${orph?`<button class="ok" data-act="stfree">liberar ${kb(orph)}</button>`:''}<button class="ok" data-act="bakshare">guardar respaldo</button><button class="cancel" data-act="closemodal">cerrar</button></div>`
     +`<div class="submeta u-mt8">"guardar respaldo" abre la hoja de iOS: elige Archivos y la carpeta que quieras. Último: ${daysSinceBackup()>=999?'nunca':'hace '+daysSinceBackup()+' d'}.</div>`
-    +(orph?`<div class="submeta u-mt8">las "fotos viejas" son copias que dejaron dos reparaciones ya aplicadas (2026-08 y 2026-09); nada las lee.</div>`:''));
+    +(orph?`<div class="submeta u-mt8">las "fotos viejas" son copias que dejaron dos reparaciones ya aplicadas (2026-08 y 2026-09); nada las lee.</div>`:''),'top');
   fillStorageAsync();
 }
 // v265 · //ESPACIO: el estado real de IndexedDB, las copias internas con [restaurar] y [lo que falta], y el diario
@@ -2367,10 +2373,23 @@ function machIdMap(){ if(_machIdCache)return _machIdCache; const m={}; const put
   if(db.activeWork)(db.activeWork.exercises||[]).forEach(e=>put(e.exId,e));
   return _machIdCache=m; }
 // resolved record {brand,setup,na} for an exercise at a given gym (falls back to split default)
+// C3 (v316) · la ficha del aparato vive con su máquina, por gym: db.machines[gym][clave].ap = {model, code, adj, stack, plate, plateU}
+// (aditivo; solo lo que escribiste). El dueño: "catálogo de máquinas por marca… código, qué se ajusta, pines, unidades".
+const AP_KEYS=['model','code','adj','stack','plate','plateU'];
+function apClean(ap){ if(!ap||typeof ap!=='object')return null; const o={}; AP_KEYS.forEach(k=>{ const v=String(ap[k]==null?'':ap[k]).trim(); if(v)o[k]=v; }); if(o.plateU&&!o.plate)delete o.plateU; return Object.keys(o).length?o:null; }
+function apHas(ap){ return !!apClean(ap); }
+// marcas para sugerir al escribir: las tuyas primero (las que ya guardaste o registraste), luego las comunes; brandKey solo compara
+const MACH_BRANDS=['Hammer Strength','Life Fitness','Technogym','Matrix','Cybex','Precor','Nautilus','Panatta','Gym80','Prime','Atlantis','Arsenal Strength','Hoist','Star Trac','Body-Solid','Rogue','Eleiko','Watson','Newtech','Strive'];
+function brandKey(b){ return String(b||'').toLowerCase().replace(/[^a-z0-9]+/g,''); }
+function machBrandList(){ const c={}, add=b=>{ b=String(b||'').trim(); const k=brandKey(b); if(!k)return; (c[k]=c[k]||{b,n:0}).n++; };
+  Object.keys(db.machines||{}).forEach(g=>{ const m=db.machines[g]||{}; Object.keys(m).forEach(k=>{ const r=m[k]; add(typeof r==='string'?r:(r&&r.brand)); }); });
+  (db.sessions||[]).forEach(s=>((s&&s.exercises)||[]).forEach(e=>add(e&&e.machine)));
+  const mine=Object.values(c).sort((a,b)=>b.n-a.n).map(x=>x.b), seen=new Set(mine.map(brandKey));
+  return mine.concat(MACH_BRANDS.filter(b=>!seen.has(brandKey(b)))).slice(0,40); }
 function machineRec(gym,ex){
   const m=gym&&db.machines&&db.machines[gym];
   if(m){
-    const rd=r=>(typeof r==='string')?{brand:r,setup:'',na:false}:{brand:r.brand||'',setup:r.setup||'',na:!!r.na};
+    const rd=r=>(typeof r==='string')?{brand:r,setup:'',na:false}:Object.assign({brand:r.brand||'',setup:r.setup||'',na:!!r.na},apHas(r.ap)?{ap:apClean(r.ap)}:{});
     const has=x=>Object.prototype.hasOwnProperty.call(m,x);
     // v279 · 1) por ejercicio (exacto); 2) por ejercicio con la marca en blanco de un lado
     const ik=machIdent(ex); if(ik&&has(ik)) return rd(m[ik]);
@@ -2392,7 +2411,9 @@ function machineRec(gym,ex){
   return {brand:(ex&&ex.machine)||'',setup:'',na:false};
 }
 function setMachine(gym,ex,rec){ if(!gym)return; db.machines=db.machines||{}; db.machines[gym]=db.machines[gym]||{};
-  db.machines[gym][machIdent(ex)||machKey(ex)]={brand:(rec.brand||'').trim(),setup:(rec.setup||'').trim(),na:!!rec.na}; save(); }
+  // C3 · guardar marca o setup no borra la ficha del aparato: si no viene en rec, se conserva la que ya tenía esa máquina
+  const mm=db.machines[gym], k=machIdent(ex)||machKey(ex), ap=rec.ap!==undefined?rec.ap:(machineRec(gym,ex).ap||null);
+  mm[k]={brand:(rec.brand||'').trim(),setup:(rec.setup||'').trim(),na:!!rec.na}; if(apHas(ap))mm[k].ap=apClean(ap); save(); }
 // v279 · la nota del ejercicio ("la pinche misma nota de mi setup") también es del ejercicio: db.exNotes[nombre§tipo]
 // guarda la última que escribiste (vacía = la borraste a propósito); sin ella, la de la última sesión de ese ejercicio.
 function noteKey(ex){ const n=exKey(ex); return n?(n+MACH_SEP+canonType(ex&&ex.type)):''; }
@@ -10117,7 +10138,7 @@ function openSubCard(it,idx){ const r=subOfItem(it); if(!r.items.length){ openSu
   const tabs=r.items.length>1?'<div class="mdtabs" data-tk="subcd">'+r.items.map((x,i)=>'<span role="tab" data-act="subcdtab" data-id="'+escTxt(it.id)+'" data-i="'+i+'"'+(i===k?' class="on"':'')+'>'+escTxt(x.s.name)+'</span>').join('')+'</div>':'';
   openModal('<div class="mdetail subcd"><div class="mdhd"><h3>'+escTxt(s.name)+' <span class="u-data u-o40 u-w4">'+escTxt(SUB_CAT[s.scat]||'')+(s.sub?' · '+escTxt(s.sub):'')+'</span></h3></div>'+tabs
     +'<div id="subcd_body">'+(_subProf?subCardBody(_subProf[s.id],s,it,m):trkSpinHTML('abriendo la ficha'))+'</div>'
-    +'<div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div></div>');
+    +'<div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div></div>','top');
   if(!_subProf) subProfiles().then(Pm=>{ const el=document.getElementById('subcd_body'); if(el)el.innerHTML=subCardBody(Pm[s.id],s,it,m); })
     .catch(e=>{ const el=document.getElementById('subcd_body'); if(el)el.innerHTML=/^http/.test(String(e&&e.message))?subCardBody(null,s,it,m):'<div class="empty">la ficha completa se baja con internet<br/><span class="ehint">la próxima vez que abras la app con red queda guardada</span></div>'+SUB_DISCLAIM; }); }
 // "?" en el stack: no se reconoció sola → eliges qué es (no cambia el nombre que escribiste)
@@ -10572,6 +10593,8 @@ function slideTabs(root,swap){ const red=reducedMotion();
     // (el "PM parpadea" del dueño). Ahora solo viaja cuando cambia la pestaña elegida; si no, aparece ya en su lugar.
     if(swap&&!red&&prev&&(prev.x!==x||prev.w!==w)){ ind.style.transition='none'; put(prev.x,prev.w); void ind.offsetWidth; ind.style.transition=''; put(x,w); }
     else { ind.style.transition='none'; put(x,w); void ind.offsetWidth; ind.style.transition=''; } }); }
+// AN1c · un bloque que se muestra en su lugar (sin repintar) entra igual que lo que entra al repintar
+function revealAnim(el){ if(!el||reducedMotion())return; el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); }
 function applyEnter(root){ const e=state._enter, p=state._pop; state._enter=null; state._pop=null;
   // v301 · AN1a · el ejercicio en curso cambia con un fundido (antes el nuevo se encendía y el anterior se apagaba de golpe): se compara
   // con el que estaba pintado; un repintado sin cambio de ejercicio no anima nada. Solo opacidad.
@@ -11256,6 +11279,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='backlanding'){ state.screen='landing'; render(); }
   else if(a==='loginfile'){ doImport(); }
   else if(a==='dologin'){ try{ const d=JSON.parse(val('li_txt')); if(!d.split||!d.profile||!d.profile.username) throw 0; const _go16=()=>{ db=migrate(d); save(); state.screen='home'; render(); }; return confirmReplace(d,_go16);}catch(e){ const m=document.getElementById('li_msg'); if(m)m.textContent='texto inválido · revisa que sea el backup completo'; } }
+  else if(a==='optflip'){ const _was=el.classList.contains('on'); el.parentElement.querySelectorAll('.t').forEach(x=>x.classList.remove('on')); if(!_was)el.classList.add('on'); }   // C3 · una opción que se puede quitar: tocar la elegida la apaga
   else if(a==='optpick'){ el.parentElement.querySelectorAll('.t').forEach(x=>{ x.classList.remove('on'); if(x.hasAttribute('aria-checked'))x.setAttribute('aria-checked','false'); }); el.classList.add('on'); if(el.hasAttribute('aria-checked'))el.setAttribute('aria-checked','true'); }
   // v277: el viejo onboardgo se fue; el alta paso a paso termina en onbFinish()
   else if(a==='changesplit'||a==='schedule'){ go('splitedit'); }
@@ -11370,11 +11394,11 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='sp_metric'){ db.split.metric=el.dataset.v==='rpe'?'rpe':'rir'; save(); reRender(); }
   else if(a==='sp_allowf'){ db.split.allowF=el.dataset.v==='1'; save(); reRender(); }
   else if(a==='sd_addday'){ const _nd={id:'d'+uid(),name:'new day',tag:'@ RIR · F',metric:'rir',allowFailure:true,exercises:[]}; db.split.days.push(_nd); (state._sdOpen=state._sdOpen||{})[_nd.id]=true; state._enter={sel:'.seday[data-id="'+_nd.id+'"]'}; save(); reRender(); }
-  else if(a==='sd_fold'){ const _d=db.split.days[+el.dataset.di]; if(_d){ (state._sdOpen=state._sdOpen||{})[_d.id]=!sdOpen(_d,db.split); reRender(); } }   // v285 · SP1
-  else if(a==='sd_cov'){ state._covOpen=!state._covOpen; reRender(); }   // v285 · SP2
+  else if(a==='sd_fold'){ const _d=db.split.days[+el.dataset.di]; if(_d){ const _op=!sdOpen(_d,db.split); (state._sdOpen=state._sdOpen||{})[_d.id]=_op; if(_op)state._enter={sel:'.seday[data-id="'+(window.CSS&&CSS.escape?CSS.escape(_d.id):_d.id)+'"] > :not(.sehead)'}; reRender(); } }   // v285 · SP1
+  else if(a==='sd_cov'){ state._covOpen=!state._covOpen; if(state._covOpen)state._enter={sel:'.sefoldh ~ .line'}; reRender(); }   // v285 · SP2
   else if(a==='exdirectory'){ window._mgSel=[]; openExerciseDirectory(); }
   else if(a==='muscledetail'){ openMuscleDetail(el.dataset.id); }
-  else if(a==='mdmore'){ const bx=document.getElementById('mdmore'); if(bx)keepUnder(el,()=>{ const op=bx.hidden; bx.hidden=!op; el.textContent=op?'menos':'más'; el.setAttribute('aria-expanded',op?'true':'false'); }); }   // estímulo · detalle de músculo: [más]/[menos]
+  else if(a==='mdmore'){ const bx=document.getElementById('mdmore'); if(bx)keepUnder(el,()=>{ const op=bx.hidden; bx.hidden=!op; el.textContent=op?'menos':'más'; el.setAttribute('aria-expanded',op?'true':'false'); }); if(bx&&bx.hidden===false)revealAnim(bx); }   // estímulo · detalle de músculo: [más]/[menos]
   else if(a==='musclemap'){ openMuscleMap(); }
   else if(a==='exprof'){ const run=()=>openExProfile(el.dataset.n,el.dataset.back||'');
     // R3: el nombre tocado viaja al título del perfil (View Transitions); sin soporte o con reduced-motion abre normal
@@ -11389,7 +11413,8 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='catfold'){ catFold(el); }
   else if(a==='catex'){ catMoveTap(el.dataset.k); }
   else if(a==='catopen'){ if(state._catSel)mgSelToggle(el.dataset.m); else openExEdit(null,-1,null,{mk:el.dataset.m,key:el.dataset.k}); }   // v289 · la hoja abre sus ajustes (la bitácora, en [historial])
-  else if(a==='xs_fold'){ const b=document.getElementById('xs_motor'); if(b){ const op=b.hidden; keepUnder(el,()=>{ b.hidden=!op; el.setAttribute('aria-expanded',op?'true':'false'); el.textContent=op?'motor ▾':'motor ›'; }); } }
+  else if(a==='xs_apfold'){ const b=document.getElementById('xs_ap'); if(b){ const op=b.hidden; keepUnder(el,()=>{ b.hidden=!op; el.setAttribute('aria-expanded',op?'true':'false'); el.textContent=op?'aparato ▾':'aparato ›'; }); (window._exEdit||{}).apOpen=op; if(op)revealAnim(b); } }
+  else if(a==='xs_fold'){ const b=document.getElementById('xs_motor'); if(b){ const op=b.hidden; keepUnder(el,()=>{ b.hidden=!op; el.setAttribute('aria-expanded',op?'true':'false'); el.textContent=op?'motor ▾':'motor ›'; }); if(op)revealAnim(b); } }
   else if(a==='xs_hist'){ const c=(window._exEdit||{}).cat; if(c)xsLeave(()=>{ closeModal(); openExHist(c.key); }); }
   else if(a==='xs_merge'){ const c=(window._exEdit||{}).cat; if(c)xsLeave(()=>{ closeModal(); catSelSet(true,c.mk); }); }
   else if(a==='xs_arch'){ xsArchive(); }
@@ -11522,7 +11547,7 @@ document.getElementById('app').addEventListener('click',e=>{
     exitThen(el,()=>{ const j=arr.indexOf(m); if(j<0)return; arr.splice(j,1); save(); reRender();   // v308 · AN1b
       toast('✓ agua quitada · '+Math.round((+m.water||0)*1000)+' ml','ok',{undo:()=>{ (db.meals[d]=db.meals[d]||[]).splice(Math.min(j,db.meals[d].length),0,m); }}); }); }
   else if(a==='share'){ trkMenu('compartir',[['el día · tus comidas',()=>{ state.shareType='food'; go('share'); }],['el panel de macros',()=>{ state.shareType='macros'; go('share'); }]]); }   // v276
-  else if(a==='radarfold'){ db.settings=db.settings||{}; db.settings.radarOpen=!db.settings.radarOpen; save(); reRender(); }   // v290 · el radar del panel de macros, plegable y recordado
+  else if(a==='radarfold'){ db.settings=db.settings||{}; db.settings.radarOpen=!db.settings.radarOpen; if(db.settings.radarOpen)state._enter={sel:'.kpanel .macro-rad'}; save(); reRender(); }   // v290 · el radar del panel de macros, plegable y recordado
   else if(a==='sharesession'){ state.shareType='session'; state.shareId=el.dataset.id; closeModal(); go('share'); }
   else if(a==='shcopy'){ const txt=shareTextFor(); if(!txt){ toast('⚠ nada que copiar','err'); return; }
     const done=()=>toast('✓ copiado como texto');
@@ -12201,7 +12226,7 @@ function sheetTitle(sh){ const h=sh&&sh.querySelector('h3'); return h?(h.textCon
 // una hoja ES su clase + su título: "steps" como detalle de métrica y "steps" como registro son hojas distintas
 function sheetKey(sh){ return sh?String(sh.className||'').replace(/\s+/g,' ').trim()+'|'+sheetTitle(sh):''; }
 function sheetSnap(m){ const sh=m&&m.querySelector&&m.querySelector('.sheet'); if(!sh)return null;
-  return {key:sheetKey(sh),title:sheetTitle(sh),top:sh.scrollTop,inner:Array.from(sh.querySelectorAll(SHEET_INNER)).map(x=>x.scrollTop),dirty:!!m._dirty,node:sh}; }
+  return {h:sh.offsetHeight,low:!!(m.classList&&m.classList.contains('low')),key:sheetKey(sh),title:sheetTitle(sh),top:sh.scrollTop,inner:Array.from(sh.querySelectorAll(SHEET_INNER)).map(x=>x.scrollTop),dirty:!!m._dirty,node:sh}; }
 // la firma de un control: su id + sus data-* (sin lo que cambia solo). Con ella se le vuelve a encontrar tras repintar.
 const SIG_SKIP={touched:1,nv:1,locked:1};
 function tapSig(el){ if(!el||!el.dataset)return ''; const d=el.dataset, ks=Object.keys(d).filter(k=>!SIG_SKIP[k]).sort(); if(!ks.length&&!el.id)return ''; return (el.id||'')+'|'+ks.map(k=>k+'='+d[k]).join('&'); }
@@ -12248,12 +12273,22 @@ function sheetRestore(m,old,back,live){ const sh=m.querySelector('.sheet'); if(!
   put(); if(base>0||tap||(inner&&inner.some(x=>x>0))){ _sheetPend=put; Promise.resolve().then(()=>{ if(_sheetPend===put){ _sheetPend=null; put(); } }); }
 }
 function sheetRestoreNow(){ const p=_sheetPend; _sheetPend=null; if(p)p(); }
+// v316 · G8 tanda 4 · una hoja SIN teclado abre abajo, junto al pulgar (el dueño: "todo lo cargaría a que te quedes cerca del lado
+// inferior derecho… lo estás utilizando con un solo dedo"). Teclado = una casilla de texto o número, un textarea o un selector
+// (la misma regla que los avisos, v303; fecha y hora también: abren su selector sobre la hoja); las casillas de marcar no
+// cuentan. Con casilla se queda arriba: el teclado la taparía. `top` en la clase la deja arriba.
+function sheetLow(html,cls){ if(/\btop\b/.test(cls||''))return false; html=String(html||'');
+  if(/<(textarea|select)\b/i.test(html)||/<input\b(?![^>]*\btype="(?:checkbox|radio|range|file|hidden)")/i.test(html))return false;
+  // con pestañas o pliegues el alto de la hoja cambia al tocarlos: anclada abajo crecería hacia ARRIBA y lo que tocas se movería
+  // (regla dura: nada se mueve bajo el dedo). Esas se quedan arriba, donde crecen hacia abajo.
+  return !/class="mdtabs|aria-expanded=|\shidden[\s>=]/.test(html); }
 function openModal(html,cls){ const cur=document.getElementById('modal'); const had=!!cur; const back=!!window._sheetBackGo;
   const g0=cur||(window._modalGhost&&window._modalGhost.isConnected?window._modalGhost:null), old=sheetSnap(g0);
   _sheetIn=true; try{ closeModal(); } finally { _sheetIn=false; }
   // DS-3: si había un sheet (abierto o saliendo) esto es un cambio de contenido → sin animación de entrada
   const g=window._modalGhost; const swap=had||!!(g&&g.isConnected); if(g){ try{g.remove();}catch(_){} window._modalGhost=null; }
-  const m=document.createElement('div'); m.className='modal'+(swap?'':' in'); m.id='modal'; m.innerHTML=`<div class="sheet glass-strong ${cls||''}">${html}</div>`; if(!/\bnodismiss\b/.test(cls||''))m.addEventListener('click',ev=>{if(ev.target===m){ closeModal(); reRender(); }}); document.getElementById('app').appendChild(m); try{ sheetRestore(m,old,back,had); }catch(_){} afterPaint(m,swap); }
+  const m=document.createElement('div'); m.className='modal'+(sheetLow(html,cls)?' low':'')+(swap?'':' in'); m.id='modal'; m.innerHTML=`<div class="sheet glass-strong ${cls||''}">${html}</div>`; if(!/\bnodismiss\b/.test(cls||''))m.addEventListener('click',ev=>{if(ev.target===m){ closeModal(); reRender(); }}); document.getElementById('app').appendChild(m); { const s1=m.querySelector('.sheet'); if(s1&&m.classList.contains('low')&&s1.scrollHeight>s1.clientHeight+1)m.classList.remove('low'); }   /* más alta que su tope: arriba, como antes (abajo el corte caía en el borde de la pantalla) */
+  { const s2=m.querySelector('.sheet'); if(s2&&old&&old.low&&old.h>0&&m.classList.contains('low')&&old.key===sheetKey(s2))s2.style.minHeight=old.h+'px'; } try{ sheetRestore(m,old,back,had); }catch(_){} afterPaint(m,swap); }
 function closeModal(){ const s=window._scanner; if(s){ try{ if(s.timer)clearTimeout(s.timer); }catch(_){} try{ if(s._q&&typeof Quagga!=='undefined'){ if(s._fn)Quagga.offDetected(s._fn); Quagga.stop(); } }catch(_){} try{ if(s.stream)s.stream.getTracks().forEach(t=>t.stop()); }catch(_){} window._scanner=null; } window._linkBarcode=''; if(!_sheetIn&&!window._sheetBackGo)_sheetMem=null; const m=document.getElementById('modal'); if(!m)return;
   // DS-3: el modal deja de existir YA para la lógica (sin id, sin clics); lo que queda es su fantasma saliendo 180 ms
   m.removeAttribute('id'); m.classList.remove('in'); m.classList.add('out'); window._modalGhost=m;
@@ -12538,7 +12573,7 @@ function catFilter(q){ state._catQ=String(q==null?'':q); const root=document.que
     const op=t?n>0:!!open[g.dataset.g]; b.hidden=!op; h.setAttribute('aria-expanded',op?'true':'false'); const x=h.querySelector('.catgx'); if(x)x.textContent=op?'▾':'›'; });
   const none=document.getElementById('catnone'); if(none)none.hidden=shown>0; }
 function catFold(h){ const g=h&&h.closest('.catg'), b=g&&g.querySelector('.catgb'); if(!b)return; const op=b.hidden;
-  keepUnder(h,()=>{ b.hidden=!op; h.setAttribute('aria-expanded',op?'true':'false'); const x=h.querySelector('.catgx'); if(x)x.textContent=op?'▾':'›'; });
+  keepUnder(h,()=>{ b.hidden=!op; h.setAttribute('aria-expanded',op?'true':'false'); const x=h.querySelector('.catgx'); if(x)x.textContent=op?'▾':'›'; }); if(op)revealAnim(b);
   if(!catNorm(state._catQ))(state._catOpen=state._catOpen||{})[g.dataset.g]=op; }
 // v285 · T1 · elegir para unir: el ▢/▣ y la franja cambian EN SU LUGAR ("le doy clic y se escala hasta arriba", el dueño, 1-oct).
 // v286 · en la pantalla: la franja ocupa el lugar de [‹ back] [unir] (mismo alto) y el ▢ tiene su hueco reservado en cada renglón.
@@ -12764,14 +12799,23 @@ function xsMachState(e,gym){ const X=window._exEdit||{}, D=X.mdraft=X.mdraft||{}
     else { const nk=nameKey(e.name), rows=exIndex().filter(q=>q.gym===gym&&q.ex&&!isCardio(q.ex)&&nameKey(q.ex.name)===nk), r=rows.find(q=>exHistKey(q.ex)===X.cat.key)||rows.find(q=>canonType(q.ex.type)===canonType(e.type)), rx=(r&&r.ex)||{};
       rec={brand:String(rx.machine||'').trim(),setup:String(rx.setup||'').trim(),na:false}; } }
   const b0=rec.brand||'', s0=rec.setup||'';
-  return (D[gym]={brand:b0,setup:s0,na:!!rec.na,b0,s0,n0:!!rec.na,rp:p.rp,rpSrc:p.rpSrc,rpT:false,unit:exUnitPref(e,gym)||(X.unitLive&&gym===X.gym0?X.unitLive:'')||exUnitShown(e,gym),unitT:false}); }
+  return (D[gym]={brand:b0,setup:s0,na:!!rec.na,b0,s0,n0:!!rec.na,ap:Object.assign({},apClean(rec.ap)||{}),ap0:JSON.stringify(apClean(rec.ap)||null),rp:p.rp,rpSrc:p.rpSrc,rpT:false,unit:exUnitPref(e,gym)||(X.unitLive&&gym===X.gym0?X.unitLive:'')||exUnitShown(e,gym),unitT:false}); }
 // cardio no lleva nada de esto; bodyweight no lleva unidad (su peso es el corporal, en kg); marca y setup solo en máquina/polea/smith
+// C3 · el pliegue `aparato ›` dentro del bloque de máquina de ESE gym: abierto si ya tiene ficha (o si lo abriste)
+function apBlockHTML(d){ const X=window._exEdit||{}, a=d.ap||{}, op=X.apOpen!=null?!!X.apOpen:apHas(a), t=(id,v,cur,lbl)=>'<button type="button" class="t '+(cur===v?'on':'')+'" data-act="optflip" data-v="'+v+'">'+lbl+'</button>';
+  return '<div><button type="button" class="b" data-act="xs_apfold" aria-expanded="'+(op?'true':'false')+'">aparato '+(op?'▾':'›')+'</button></div><div id="xs_ap"'+(op?'':' hidden')+'>'
+    +'<div class="field"><label>MODEL</label><input id="mc_model" value="'+escTxt(a.model||'')+'" placeholder="ej. MTS Row, Pure Strength" autocomplete="off"/></div>'
+    +'<div class="field"><label>CODE</label><input id="mc_code" value="'+escTxt(a.code||'')+'" placeholder="el de su etiqueta" autocomplete="off"/></div>'
+    +'<div class="field"><label>ADJUSTS</label><input id="mc_adj" value="'+escTxt(a.adj||'')+'" placeholder="asiento · respaldo · apoyo de pies" autocomplete="off"/></div>'
+    +'<div class="line pfr"><span class="k">carga</span><span class="dots"></span><span class="v toggles" id="mc_stack">'+t('mc_stack','pin',a.stack||'','pin')+t('mc_stack','discos',a.stack||'','discos')+'</span></div>'
+    +'<div class="field"><label>WEIGHT PER PLATE</label><input id="mc_plate" type="number" inputmode="decimal" step="0.5" min="0" value="'+escTxt(a.plate||'')+'" placeholder="—"/></div>'
+    +'<div class="line pfr"><span class="k">cada placa en</span><span class="dots"></span><span class="v toggles" id="mc_plateu">'+t('mc_plateu','kg',a.plateU||'','kg')+t('mc_plateu','lbs',a.plateU||'','lbs')+'</span></div></div>'; }
 function exMachBodyHTML(e,gym){ const ty=canonType(e.type); if(ty==='cardio')return '';
   const d=xsMachState(e,gym), mach=isMachType(ty);
   const un=XS_UNITS.map(u=>'<button type="button" class="t '+(d.unit===u?'on':'')+'" data-act="optpick" data-v="'+u+'">'+u+'</button>').join('');
-  return (mach?`<div class="field"><label>MACHINE · BRAND</label><input id="mc_brand" value="${escTxt(d.brand)}" placeholder="ej. Hammer Strength, Technogym" autocomplete="off"/></div>
+  return (mach?`<div class="field"><label>MACHINE · BRAND</label><input id="mc_brand" value="${escTxt(d.brand)}" placeholder="ej. Hammer Strength, Technogym" autocomplete="off" list="mc_brands"/><datalist id="mc_brands">${machBrandList().map(b=>'<option value="'+escTxt(b)+'"></option>').join('')}</datalist></div>
    <div class="field"><label>SETUP</label><textarea id="mc_setup" class="ta sm" placeholder="asiento 4 · respaldo 2 · pin 60">${escTxt(d.setup)}</textarea></div>
-   <label class="xsck"><input type="checkbox" id="xs_na" ${d.na?'checked':''}/> sin máquina en este gym</label>`:'')
+   <label class="xsck"><input type="checkbox" id="xs_na" ${d.na?'checked':''}/> sin máquina en este gym</label>${apBlockHTML(d)}`:'')
    +(ty==='bodyweight'?'':`<div class="field"><label>UNIT</label><div class="toggles" id="xs_unit"${d.unitT?' data-touched="1"':''}>${un}</div></div>`)
    +profRowHTML('mc_rp','rp',d.rp||'unk',d.rpT?'user':d.rpSrc,(profileFor(e,gym)||{}).why,d.rpT); }
 function xsType(){ const x=document.querySelector('#ee_type .t.on'); return x?x.dataset.v:'free'; }
@@ -12779,6 +12823,8 @@ function xsGym(){ const s=document.getElementById('xs_gym'); return (s&&s.value)
 // lo que hay escrito en el bloque de máquina vuelve a su borrador (antes de repintarlo o de guardar)
 function xsMachCapture(){ const X=window._exEdit||{}, g=X.gymCur, d=g!=null&&X.mdraft&&X.mdraft[g]; if(!d)return; const b=document.getElementById('mc_brand'), s=document.getElementById('mc_setup'), n=document.getElementById('xs_na'), rp=document.getElementById('mc_rp'), un=document.getElementById('xs_unit');
   if(b)d.brand=b.value; if(s)d.setup=s.value; if(n)d.na=!!n.checked;
+  { const bx=document.getElementById('xs_ap'); if(bx){ const g=id=>{ const x=document.getElementById(id); return x?String(x.value||'').trim():''; }, on=id=>{ const x=document.querySelector('#'+id+' .t.on'); return x?x.dataset.v:''; };
+      d.ap=apClean({model:g('mc_model'),code:g('mc_code'),adj:g('mc_adj'),stack:on('mc_stack'),plate:g('mc_plate'),plateU:on('mc_plateu')})||{}; X.apOpen=!bx.hidden; } }
   if(rp){ const on=rp.querySelector('.t.on'); if(rp.dataset.touched){ d.rpT=true; d.rp=on?on.dataset.v:''; } }
   if(un){ const on=un.querySelector('.t.on'); if(un.dataset.touched){ d.unitT=true; d.unit=on?on.dataset.v:''; } } }
 function xsMachPaint(){ const X=window._exEdit||{}, box=document.getElementById('xs_mach'); if(!box||!X.eForm)return; xsMachCapture(); const g=xsGym(); X.gymCur=g; box.innerHTML=exMachBodyHTML(Object.assign({},X.eForm,{type:xsType()}),g);
@@ -12839,7 +12885,7 @@ function exSheetExtraApply(e2,D,o){ o=o||{}; if(!D)return ()=>{}; const nk=nameK
   const U={nk,cat:(db.exCat&&db.exCat[nk])?JSON.stringify(db.exCat[nk]):null,mach:[],note:null,live:[]};
   if(ty!=='cardio'){ const mach=isMachType(ty), tch=ty!==canonType(D.type0);   // con el tipo cambiado, la marca y el setup que se ven se escriben en la clave del tipo nuevo
     Object.keys(D.drafts).forEach(g=>{ const d=D.drafts[g]; if(!g)return;
-      if(mach&&(d.brand!==d.b0||d.setup!==d.s0||d.na!==d.n0||(tch&&g===D.gymCur&&(d.brand||d.setup||d.na)))){ db.machines=db.machines||{}; const hadG=has(db.machines,g), mm=db.machines[g]=db.machines[g]||{}, k=machIdent(e2)||machKey(e2); U.mach.push([g,k,has(mm,k)?JSON.stringify(mm[k]):null,hadG]); mm[k]={brand:String(d.brand||'').trim(),setup:String(d.setup||'').trim(),na:!!d.na}; }
+      if(mach&&(d.brand!==d.b0||d.setup!==d.s0||d.na!==d.n0||JSON.stringify(apClean(d.ap)||null)!==(d.ap0===undefined?'null':d.ap0)||(tch&&g===D.gymCur&&(d.brand||d.setup||d.na)))){ db.machines=db.machines||{}; const hadG=has(db.machines,g), mm=db.machines[g]=db.machines[g]||{}, k=machIdent(e2)||machKey(e2); U.mach.push([g,k,has(mm,k)?JSON.stringify(mm[k]):null,hadG]); mm[k]={brand:String(d.brand||'').trim(),setup:String(d.setup||'').trim(),na:!!d.na}; if(apHas(d.ap))mm[k].ap=apClean(d.ap); }
       if(d.rpT&&mach)setRpForGym(e2.name,g,d.rp);
       if(d.unitT&&d.unit&&ty!=='bodyweight'){ const r=exCatRec(e2.name)||{}, ug=Object.assign({},r.unitGym||{}); ug[ty+'|'+g]=d.unit; setExCat(e2.name,{unitGym:ug}); if(o.liveEx&&g===D.gym0)pinUnitSoft(o.liveEx,d.unit); } });
     if(!mach){ const d0=D.drafts[D.gymCur], d=(d0&&d0.rpT)?d0:Object.keys(D.drafts).map(g=>D.drafts[g]).find(q=>q&&q.rpT); if(d)setExCat(e2.name,{rp:d.rp}); } }   // peso libre / corporal: una sola resistencia, la del bloque que tienes a la vista
@@ -15268,6 +15314,52 @@ document.addEventListener('click',scrimGuard,true);
 // v280 · self-check de la zona del pulgar (síncrono): el pie fuera de la franja del gesto, el velo que no cierra por un roce,
 // lo escrito que no se tira sin preguntar, [deshacer] al quitar un ejercicio del split o una serie con datos, [+ set] a la
 // derecha y los avisos por encima del descanso. Monta una base de juguete y al final repinta la real.
+// self-check de G8 tanda 4 + AN1c (v316): qué hoja abre abajo y cuál se queda arriba, que cierra por donde entró y que lo
+// desplegado entra. No toca datos.
+// self-check de C3 (v316) · la ficha del aparato: se guarda con su máquina y por gym, guardar marca o setup no la borra,
+// cambiar la marca se la lleva, y las marcas sugeridas no se repiten. Base de juguete; se restaura en finally.
+function _aparatoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK aparato: '+nm); }; const real=db, ed=window._exEdit;
+  try{ db=migrate({profile:{username:'t'},gyms:['G','H'],activeGym:'G',split:{days:[]},sessions:[{id:'s',date:todayISO(),gym:'G',exercises:[{name:'curl',type:'machine',machine:'panatta',sets:[{w:'10',r:'8',rir:'1',unit:'kg',done:true}]}]}]}); bumpIdx();
+    const ex={name:'row',type:'machine'}, exH=Object.assign({},ex,{machine:'Hammer'});
+    A('limpia lo vacío y lo que no es de la ficha', JSON.stringify(apClean({model:' x ',zzz:1,code:'',plateU:'kg'}))==='{"model":"x"}'&&apClean({})===null&&!apHas(null)&&apHas({code:'a'}));
+    setMachine('G',exH,{brand:'Hammer',setup:'a4',ap:{model:'MTS Row',code:'HS-123',adj:'asiento',stack:'discos'}});
+    let r=machineRec('G',exH); A('la ficha se guarda con su máquina', r.brand==='Hammer'&&!!r.ap&&r.ap.model==='MTS Row'&&r.ap.stack==='discos'&&!('plate' in r.ap));
+    setMachine('G',exH,{brand:'Hammer',setup:'a5'}); r=machineRec('G',exH); A('guardar el setup no borra la ficha', r.setup==='a5'&&!!r.ap&&r.ap.code==='HS-123');
+    setMachine('G',exH,{brand:'Hammer',setup:'a5',ap:null}); A('…y se puede quitar a propósito', !machineRec('G',exH).ap);
+    setMachine('G',exH,{brand:'Hammer',setup:'a5',ap:{model:'MTS Row'}});
+    A('otro gym no la hereda', !machineRec('H',exH).ap&&!machineRec('H',ex).ap);
+    window._exEdit={mdraft:{},cat:null}; const d=xsMachState(exH,'G');
+    A('la hoja arranca con la ficha de ESE gym y sin cambios pendientes', d.ap.model==='MTS Row'&&d.ap0===JSON.stringify({model:'MTS Row'})&&JSON.stringify(apClean(xsMachState(exH,'H').ap)||null)==='null');
+    A('el pliegue sale abierto si hay ficha y cerrado si no', /id="xs_ap">/.test(apBlockHTML(d))&&/id="xs_ap" hidden>/.test(apBlockHTML({ap:{}}))&&/value="MTS Row"/.test(apBlockHTML(d)));
+    const L=machBrandList(); A('marcas: las tuyas primero y ninguna repetida', brandKey(L[0])==='hammer'&&L.some(b=>brandKey(b)==='panatta')&&L.filter(b=>brandKey(b)==='panatta').length===1&&L.indexOf('Technogym')>0&&new Set(L.map(brandKey)).size===L.length);
+    try{ openModal('<h3>prueba</h3><div class="field"><input id="ap_x"/></div>'+apBlockHTML({ap:{stack:'pin'}})); const tb=document.querySelectorAll('#mc_stack .t'); A('la carga sale elegida', tb.length===2&&tb[0].classList.contains('on'));
+      tb[0].click(); const off=!document.querySelector('#mc_stack .t.on'); tb[1].click(); const sw=tb[1].classList.contains('on')&&!tb[0].classList.contains('on'); tb[1].click();
+      A('la carga se puede quitar: tocar la elegida la apaga, y la otra la cambia', off&&sw&&!document.querySelector('#mc_stack .t.on'));
+    } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } }
+    console.log('aparato self-check OK');
+  } finally { db=real; window._exEdit=ed; bumpIdx(); } }
+function _hojasSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK hojas: '+nm); };
+  A('sin casillas: abajo', sheetLow('<h3>x</h3><div class="line">dato</div><button class="cancel">cerrar</button>')===true);
+  A('con casilla de texto o número: arriba', sheetLow('<input id="a"/>')===false&&sheetLow('<input type="number" id="a"/>')===false&&sheetLow('<textarea></textarea>')===false);
+  A('con selector: arriba (como los avisos)', sheetLow('<select><option>a</option></select>')===false);
+  A('las casillas de marcar no cuentan como teclado; fecha y hora sí', sheetLow('<input type="checkbox" checked/>')===true&&sheetLow('<input type="date" id="d"/>')===false&&sheetLow('<input type="time"/>')===false);
+  A('una sola casilla de texto entre otras basta', sheetLow('<input type="checkbox"/><input type="text"/>')===false);
+  A('la clase top la deja arriba', sheetLow('<h3>x</h3>','top')===false&&sheetLow('<h3>x</h3>','mdetail-wrap')===true);
+  A('con pestañas o pliegues se queda arriba (abajo, lo que tocas se movería)', sheetLow('<h3>x</h3><div class="mdtabs"><span>30D</span></div>')===false&&sheetLow('<button aria-expanded="false">más</button>')===false&&sheetLow('<div id="m" hidden>x</div>')===false);
+  try{ closeModal(); }catch(_){} const g0=window._modalGhost; if(g0){ try{ g0.remove(); }catch(_){} window._modalGhost=null; }
+  try{ openModal('<h3>hoja de prueba</h3><div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div>'); let m=document.getElementById('modal'), sh=m.querySelector('.sheet'), fr=document.getElementById('app').getBoundingClientRect(); sh.style.animation='none';
+    A('la hoja sin teclado toca el borde de abajo y no el de arriba', m.classList.contains('low')&&Math.abs(sh.getBoundingClientRect().bottom-fr.bottom)<=1&&sh.getBoundingClientRect().top>fr.top+40);
+    openModal('<h3>hoja de prueba</h3><div class="line">a</div><div class="line">b</div><div class="line">c</div><div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div>'); m=document.getElementById('modal'); sh=m.querySelector('.sheet'); sh.style.animation='none'; const t1=sh.getBoundingClientRect().top;
+    openModal('<h3>hoja de prueba</h3><div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div>'); m=document.getElementById('modal'); sh=m.querySelector('.sheet'); sh.style.animation='none';
+    A('al repintarse más corta su borde no baja: lo de arriba no se mueve', m.classList.contains('low')&&Math.abs(sh.getBoundingClientRect().top-t1)<=1);
+    closeModal(); const g=window._modalGhost; A('al cerrar sale por donde entró', !!g&&g.classList.contains('low')&&g.classList.contains('out')&&!document.getElementById('modal')); if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; }
+    openModal('<h3>hoja con casilla</h3><div class="field"><input id="hj_x"/></div>'); m=document.getElementById('modal'); sh=m.querySelector('.sheet'); sh.style.animation='none';
+    A('la hoja con casilla se queda arriba', !m.classList.contains('low')&&Math.abs(sh.getBoundingClientRect().top-fr.top)<=1);
+    const alta='<h3>hoja alta</h3>'+new Array(90).join('<div class="line">fila</div>')+'<div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div>'; openModal(alta); m=document.getElementById('modal');
+    A('una hoja simple que no cabe se queda arriba (abajo sus botones quedarían cortados contra el borde)', sheetLow(alta)===true&&!m.classList.contains('low'));
+  } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } }
+  const el=document.createElement('div'); document.getElementById('app').appendChild(el); try{ revealAnim(el); A('lo desplegado entra (salvo con movimiento reducido)', reducedMotion()?!el.classList.contains('enter'):el.classList.contains('enter')); } finally { el.remove(); }
+  console.log('hojas self-check OK'); }
 function _pulgarSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK pulgar: '+nm); };
   const real=db, rs=state.screen, rw=state.work, c0=state._curEx, sab0=_sabT, sg=window._swipeGuard, H=window.innerHeight;
   const old=new Set(document.querySelectorAll('.toast')), rb=document.getElementById('resttimer'), rbOn=!!(rb&&rb.classList.contains('on'));
@@ -15691,7 +15783,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
