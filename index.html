@@ -1233,6 +1233,30 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   /* ===== agenda del día (24h) estilo calendario rimu — bloques rellenos + chips; posiciones inline (data-driven) ===== */
   .ag-head{position:sticky;top:0;z-index:8;background:var(--bg);padding-bottom:var(--s3);}
   /* stack: bloques de timing colapsables (details nativo) */
+  /* v327 · S-ADMIN · administrar suplementos con las piezas de //SUPPS. El dueño: "no siento que queda a la estética que ya estamos
+     manejando… muy revuelto, todo muy apretado" · "adaptarlo a la línea actual". Pestañas por momento y UN renglón de 44 por toma:
+     check, cuántas y nombre a la izquierda; a la derecha solo lo que pide atención; tocar el renglón abre su hoja. */
+  .sprcnt{margin-left:var(--s3); font-size:var(--t-data); font-weight:400; color:var(--o50); letter-spacing:var(--ls-num);}
+  .sprlist{margin-bottom:var(--s3);}
+  .sprow{display:grid; grid-template-columns:var(--s6) minmax(0,1fr) auto auto auto; align-items:stretch; min-height:44px; border-bottom:var(--bw-sep) solid var(--o10);}
+  .sprk{position:relative; display:flex; align-items:center; justify-content:flex-start; min-height:44px; margin:0; padding:0; border:0; background:none; color:var(--o40); font-family:inherit; font-size:var(--t-data); text-align:left;}
+  button.sprk{cursor:pointer;} button.sprk::after{content:''; position:absolute; inset:0 calc(-1 * var(--s2)) 0 calc(-1 * var(--s5));}   /* se ve en el margen; se toca de 44 (hacia el margen: no le quita el número al renglón) */
+  .sprow.on .sprk{color:var(--good);} .sprow.sk .sprk{color:var(--o60);}
+  .sprb{display:flex; align-items:center; gap:var(--s3); min-width:0; min-height:44px; margin:0; padding:var(--s2) 0; border:0; background:none; color:var(--fg); font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
+  .sprb:active{opacity:var(--op-press);}
+  .sprq{flex:0 0 auto; min-width:var(--s5); color:var(--o60); font-weight:700; letter-spacing:var(--ls-num); text-align:center;}
+  .sprn{flex:1; min-width:0; overflow-wrap:anywhere; line-height:var(--lh-ui);}
+  .sprv{flex:0 0 auto; max-width:50%; font-size:var(--t-label); color:var(--o50); text-align:right; line-height:var(--lh-ui);}
+  .sprc{grid-column:5; min-width:var(--s6); min-height:44px; margin:0; padding:0; border:0; background:none; color:var(--o40); font-family:inherit; font-size:var(--t-data); text-align:right; cursor:pointer;}   /* el › en su columna: alineado en todos los renglones, y abre la misma hoja */
+  .sprow.off .sprq,.sprow.off .sprn,.sprow.sprdz .sprn{color:var(--o50);} .sprow.on .sprn,.sprow.on .sprq,.sprow.sk .sprn,.sprow.sk .sprq{color:var(--o50);}
+  .sprt{grid-column:3; min-width:44px; min-height:44px; margin:0; padding:0 var(--s2); border:0; background:none; color:var(--o50); font-family:inherit; font-size:var(--t-label); letter-spacing:var(--ls-num); cursor:pointer;}
+  .sprow>.vb{grid-column:4; align-self:center; margin:0 0 0 var(--s2);}   /* sin los márgenes negativos de .vb: no pisa a sus vecinos */
+  .spradd{display:flex; justify-content:flex-end; align-items:center; min-height:44px;}
+  .empty.sprnone{padding:var(--s5) 0; text-align:left;}
+  /* un renglón que despliega (en pausa, archivados, y las secciones de la hoja de un suplemento) */
+  .sef{width:100%; border:0; border-bottom:var(--bw-sep) solid var(--o10); background:none; color:inherit; font-family:inherit; font-size:var(--t-data); text-align:left;}
+  .sef .k{font-weight:700;} .sef .v{font-size:var(--t-label); font-weight:400; color:var(--o50); max-width:60%; overflow-wrap:anywhere; text-align:right;} .sef .rchev{color:var(--o40);}
+  .sesec{padding:var(--s3) 0 var(--s2);}
   .stk-blk{border-top:var(--bw-rule) solid var(--line);}
   .stk-blk summary{list-style:none;cursor:pointer;padding:var(--s3) 0;font-size:var(--t-label);letter-spacing:var(--ls-caps);color:var(--o50);}
   .stk-blk summary::-webkit-details-marker{display:none;}
@@ -1420,7 +1444,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v326';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v327';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -6224,6 +6248,52 @@ function _extraSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
     db.stack.forEach(x=>{ x.status='archived'; x.archived=true; }); bumpIdx(); A('sin suplementos activos y sin extras, la invitación de siempre', /supempty/.test(suppSecHTML(TM)));
     console.log('extra self-check OK');
   } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } save=_sv; reRender=_rr; toast=_t; db=real; state.macroDate=md0; state.suppSeg=sg0; state.suppSegD=sd0; state._lfold=lf0; state._lfoldD=lfd0; _sbx=sb0; bumpIdx(); } }
+// self-check de v327 (S-ADMIN): administrar suplementos con las piezas de //SUPPS y la hoja en secciones. Base de juguete; no guarda nada.
+function _adminSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK administrar: '+nm); }; const real=db, sb0=_sbx, _sv=save, _rr=reRender, _t=toast, st0=window._stackTab, so0=state._stkOpen, sc0=state.screen; let msg='';
+  try{ _sbx=true; save=()=>true; reRender=()=>{}; toast=(m)=>{ msg=String(m); return null; };
+    const T=todayISO(), D=k=>shiftDate(T,-k), wd=new Date(T+'T12:00:00').getDay(), other=(wd+3)%7;
+    db=migrate({_idfix:true,_fsfix:true,_dataVer:3,_dataLog:{v3:{seen:true}},profile:{username:'t'},split:{name:'t',days:[]},sessions:[],adhoc:{[T]:[{id:'x1',name:'potasio',sid:'k1',qty:2,per:1,time:'14:32',ts:1}]},stack:[
+      {id:'k1',name:'creatina',category:'supp',dose:'5',unit:'g',when:['AM'],periodization:{type:'daily'},startDate:D(30),ticks:{},
+        products:[{id:'p1',brand:'X',form:'polvo',per:1,size:5,dose:'5',unit:'g'}],cur:'p1',containers:[{id:'c1',prod:'p1',opened:D(8),size:5}]},
+      {id:'k2',name:'zzqx raro',category:'supp',dose:'2',unit:'cap',when:['AM'],periodization:{type:'weekly',value:[other]},startDate:D(30),ticks:{}},
+      {id:'k3',name:'magnesio',category:'supp',dose:'400',unit:'mg',when:['PM'],periodization:{type:'daily'},startDate:D(30),ticks:{}},
+      {id:'k4',name:'melatonina',category:'supp',dose:'5',unit:'mg',when:[],periodization:{type:'occasional'},startDate:D(30),ticks:{}},
+      {id:'z1',name:'zinc',category:'supp',dose:'15',unit:'mg',when:['AM'],periodization:{type:'daily'},startDate:D(30),ticks:{},status:'paused',archived:true,statusLog:[{d:D(2),to:'paused',why:'pausa'}]},
+      {id:'a1',name:'viejo',category:'supp',dose:'1',unit:'g',when:['PM'],periodization:{type:'daily'},startDate:D(90),ticks:{},status:'archived',archived:true,statusLog:[{d:D(40),to:'archived',why:'se acabó'}]}]});
+    bumpIdx(); state.screen='stack'; state._stkOpen={}; window._stackTab='AM';
+    const box=document.createElement('div'), paint=()=>{ box.innerHTML=renderStack(); return box; }, q=s=>box.querySelector(s), qa=s=>[...box.querySelectorAll(s)];
+    let h=renderStack(); paint();
+    A('las mismas pestañas que //SUPPS (AM · PM · EXTRA), sin bloques plegables ni HOY / TODOS', qa('.mdtabs.lseg span[data-act="stackseg"]').map(x=>x.dataset.v).join()==='AM,PM,otros'&&h.indexOf('<details')<0&&h.indexOf('stackview')<0&&/>EXTRA</.test(h));
+    A('un renglón por toma: su check, un botón con cuántas y nombre que abre su hoja, y su › en la última columna', qa('.sprlist .sprow').length===2&&qa('.sprlist .sprow>.sprc[data-act="stackedit"]').length===2&&!q('.sprb .rchev')&&q('.sprow .sprk[data-act="stacktick"][data-id="k1"]').textContent==='○'&&q('.sprow .sprb[data-act="stackedit"][data-id="k1"] .sprq').textContent==='1'&&q('.sprow .sprb[data-id="k1"] .sprn').textContent==='creatina');
+    A('nada escrito a mano: sin corchetes tecleados, sin estilo en línea, sin ⓘ ni ✗', !/\[\s?\]|\[—\]|style="|ⓘ|✗/.test(box.querySelector('.sprlist').innerHTML));
+    A('a la derecha solo lo que pide atención: se acaba el frasco', /⚠<\/span> ~\d+ d/.test(q('.sprb[data-id="k1"] .sprv').innerHTML)&&suppStock(db.stack[0]).low);
+    A('lo que hoy no toca dice su periodo, no se puede marcar y se lee tenue', q('.sprow.off .sprb[data-id="k2"] .sprv').textContent.length>0&&!q('.sprk[data-id="k2"]')&&q('.sprow.off .sprq').textContent==='2');
+    A('lo que no se reconoce ofrece [?] para elegir qué es', !!q('.sprow button.vb[data-act="subpick"][data-id="k2"]')&&!q('button[data-act="subpick"][data-id="k1"]'));
+    A('un solo botón de alta: + supp (la categoría se elige en su hoja)', qa('[data-act="stackadd"]').length===1&&q('[data-act="stackadd"]').textContent==='+ supp');
+    stackToggleTick('k1',T,''); paint(); A('el check conserva tomado → tarde → saltado, con su hora al marcar', q('.sprow.on .sprk[data-id="k1"]').textContent==='✓'&&!!q('.sprt[data-act="supptime"][data-id="k1"]')&&/^1 \/ 2$/.test(q('.sprcnt').textContent));
+    stackToggleTick('k1',T,''); paint(); A('…tarde se dice con su palabra', takeState(takeOf(db.stack[0],''),T)==='late'&&/tarde/.test(q('.sprb[data-id="k1"] .sprv').textContent));
+    stackToggleTick('k1',T,''); paint(); A('…saltado también, con ✕', takeState(takeOf(db.stack[0],''),T)==='skipped'&&q('.sprow.sk .sprk[data-id="k1"]').textContent==='✕'&&/saltado/.test(q('.sprb[data-id="k1"] .sprv').textContent));
+    stackToggleTick('k1',T,''); A('…y vuelve a pendiente', !takeState(takeOf(db.stack[0],''),T));
+    window._stackTab='otros'; paint();
+    A('EXTRA: lo ocasional sin momento, los extras de hoy con su hora y + extra', q('.sprb[data-id="k4"] .sprv').textContent==='ocasional'&&!!q('.sprk[data-act="stacktick"][data-id="k4"]')&&q('.sprow.xt .sprb[data-act="extraedit"] .sprq').textContent==='2'&&/extra · 14:32/.test(q('.sprow.xt .sprv').textContent)&&!!q('.spradd [data-act="extraadd"]'));
+    A('en pausa y archivados: un renglón cada uno con cuántos, plegados', qa('button.sef[data-act="stkfold"]').map(b=>b.dataset.k+':'+b.querySelector('.v').textContent+':'+b.getAttribute('aria-expanded')).join()==='paused:1:false,archived:1:false'&&!q('.sprow.sprdz'));
+    state._stkOpen={archived:true}; paint(); A('…al desplegar salen los suyos con su motivo y [reactivar]', qa('.sprlist[data-sk="archived"] .sprow.sprdz').length===1&&/se acabó/.test(q('.sprow.sprdz .sprv').textContent)&&!!q('.sprow.sprdz button.vb[data-act="suppreact"][data-id="a1"]'));
+    // la hoja en secciones
+    openStackEdit('k1'); let m=document.getElementById('modal');
+    A('la hoja va en secciones: cuánto y cuándo abierta; qué es, producto y frasco (se acaba: abierta), nutrientes y notas', ['cuanto','que','prod','nutr','notas'].map(k=>k+':'+!m.querySelector('#se_sec_'+k).hidden).join()==='cuanto:true,que:false,prod:true,nutr:false,notas:false'&&m.querySelectorAll('button.sef[data-act="sefold"]').length===5);
+    A('todos sus campos siguen ahí con sus ids (el guardado no cambió)', ['se_name','se_dose','se_unit','se_per','se_start','se_when','se_pt','se_tk','se_cat','se_meds','se_chart','se_brand','se_pname','se_pform','se_size','se_opened','se_left','se_n_kcal','se_notes','se_save','se_more'].every(id=>!!m.querySelector('#'+id)));
+    A('una sección plegada dice su resumen; abierta, no lo repite', m.querySelector('#se_sum_que').textContent==='suplemento'&&m.querySelector('#se_sum_cuanto').textContent===''&&m.querySelector('#se_sum_notas').textContent==='—');
+    A('CUÁNTAS trae las de una toma y sin texto de instrucciones impreso', m.querySelector('#se_per').value==='1'&&!/· opcional|para avisarte|lo que aporta UNA dosis|PRODUCTO · FRASCO/.test(m.textContent));
+    closeModal();
+    openStackEdit('k3'); m=document.getElementById('modal'); m.querySelector('#se_per').value='2'; m.querySelector('#se_save').click();
+    A('poner cuántas sin marca ni frasco no inventa un producto: queda en el suplemento', db.stack[2].qty===2&&!(db.stack[2].products||[]).length&&takeUnits(takeOf(db.stack[2],''),T)===2&&!document.getElementById('modal'));
+    openStackEdit('k3'); m=document.getElementById('modal'); A('…y la hoja vuelve a abrir con ese número', m.querySelector('#se_per').value==='2'); m.querySelector('#se_per').value=''; m.querySelector('#se_save').click(); A('…vaciarlo lo quita', !('qty' in db.stack[2]));
+    // 2.ª vuelta (verificador) · los renglones plegables no heredan estilos de otra pieza, y el resumen sigue a lo que cambia
+    { state._stkOpen={paused:true,archived:true}; document.getElementById('app').appendChild(box); paint(); const r=q('.sprow.sprdz'), cs=getComputedStyle(r); A('un renglón de en pausa va en el flujo, bajo su pliegue (no fijo ni apilado)', cs.position==='static'&&!r.classList.contains('dz')&&qa('.sprlist[data-sk="paused"] .sprow.sprdz').length===1&&!/X ·/.test(q('.sprlist[data-sk="paused"] .sprv')?q('.sprlist[data-sk="paused"] .sprv').textContent:'')); box.remove(); state._stkOpen={}; }
+    { openStackEdit('k3'); const mm=document.getElementById('modal'), nt=mm.querySelector('#se_notes'); nt.value='con comida'; nt.dispatchEvent(new Event('input',{bubbles:true})); A('el resumen de una sección sigue a lo que cambia sin tocar su pliegue', mm.querySelector('#se_sum_notas').textContent==='1'); nt.value=''; nt.dispatchEvent(new Event('input',{bubbles:true}));
+      const cb=[...mm.querySelectorAll('#se_cat button')].find(b=>!b.classList.contains('on')); cb.click(); A('…y el de qué es dice la categoría elegida', mm.querySelector('#se_sum_notas').textContent==='—'&&mm.querySelector('#se_sum_que').textContent===cb.textContent.trim()); closeModal(); }
+    console.log('administrar self-check OK');
+  } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } delete window._seSum; save=_sv; reRender=_rr; toast=_t; db=real; window._stackTab=st0; state._stkOpen=so0; state.screen=sc0; _sbx=sb0; bumpIdx(); } }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -10559,86 +10629,45 @@ function renderAgenda(){
   if(!hasAxis && !chips) body+=`<div class="empty">sin registros este día<br/><span class="ehint">tus comidas, entrenos y sueño con hora aparecen en el calendario</span></div>`;
   return body;
 }
+// v327 · S-ADMIN · administrar suplementos con las piezas de //SUPPS: las pestañas por momento y un renglón de 44 por toma (check, cuántas y
+// nombre a la izquierda; a la derecha solo lo que pide atención: tarde / saltado, se acaba el frasco, hoy no toca); tocar el renglón abre su hoja.
+const TICK_GLY={taken:'✓',late:'✓',skipped:'✕'}, TICK_WORD={late:'tarde',skipped:'saltado'};
+function stackSeg(rowsOf){ const keys=SUPP_SEG.map(x=>x[0]), has=k=>k==='otros'||rowsOf(k).length>0; let k=window._stackTab;
+  if(!k||!has(k)){ k=new Date().getHours()<14?'AM':'PM'; if(!rowsOf(k).length)k=keys.find(x=>rowsOf(x).length>0)||'otros'; window._stackTab=k; } return k; }
+function stackRowHTML(t,iso){ const it=t.it, own=!t.id, st=takeState(t,iso), due=isDueToday(it,iso), oc=(it.periodization||{}).type==='occasional', can=due||oc;
+  const nm=escTxt(it.name||'supp'), q=qtyTxt(takeUnitsOn(t,iso)), sk=own?suppStock(it):null, A=`data-id="${escTxt(it.id)}" data-tk="${escTxt(t.id)}"`;
+  const att=[]; if(st&&TICK_WORD[st])att.push(TICK_WORD[st]); if(sk&&(sk.low||sk.out))att.push('<span class="u-warn">⚠</span> '+(sk.out?'se acabó':'~'+sk.d+' d')); if(!due)att.push(escTxt(oc?'ocasional':stackPeriodLabel(it)));
+  const tt=takeDone(t,iso)?takeTime(t,iso):null, unk=own&&!subOfItem(it).items.length;
+  return `<div class="sprow${st&&st!=='skipped'?' on':''}${st==='skipped'?' sk':''}${can?'':' off'}" data-rk="st:${escTxt(it.id)}:${escTxt(t.id)}">`
+    +(can?`<button type="button" class="sprk" data-act="stacktick" ${A} aria-label="${nm}: ${st?(st==='taken'?'tomado':TICK_WORD[st]):'pendiente'}" title="toca: tomado → tarde → saltado">${st?TICK_GLY[st]:'○'}</button>`:`<span class="sprk" aria-hidden="true">—</span>`)
+    +`<button type="button" class="sprb" data-act="stackedit" data-id="${escTxt(it.id)}" aria-label="editar ${nm}"><span class="sprq">${q}</span><span class="sprn">${nm}</span>${att.length?`<span class="sprv">${att.join(' · ')}</span>`:''}</button>`
+    +(tt!==null?`<button type="button" class="sprt" data-act="supptime" ${A} data-d="${iso}" aria-label="hora de ${nm}">${tt?escTxt(tt):'+ hora'}</button>`:'')
+    +(unk?`<button type="button" class="vb" data-act="subpick" data-id="${escTxt(it.id)}" aria-label="elegir qué sustancia es ${nm}">?</button>`:'')
+    +`<button type="button" class="sprc" data-act="stackedit" data-id="${escTxt(it.id)}" tabindex="-1" aria-hidden="true">›</button></div>`; }
 function renderStack(){
-  const iso=todayISO();
-  const all=db.stack||[];
-  const view=window._stackView||'today';
-  const pct=stackPct(iso);
+  const iso=todayISO(), all=(db.stack||[]).filter(Boolean), act=all.filter(x=>suppStatus(x)==='active'), xs=extrasOn(iso), pct=stackPct(iso);
   let out=statusBar(false)
-    +`<hr class="rule"/><div class="section"><div class="h"><span class="s">//</span>STACK</div><div class="meta">${pct?(pct.done+'/'+pct.total+' · '+pct.pct+'%'):'sin items'}</div></div>`;
-  const tab=(k,l)=>`<span data-act="stackview" data-v="${k}"${view===k?' class="on"':''}>${l}</span>`;
-  out+=`<div class="mdtabs" data-tk="stack">${tab('today','HOY')}${tab('all','TODOS')}</div>`;
+    +`<hr class="rule"/><div class="section"><div class="h"><span class="s">//</span>STACK${pct?`<span class="sprcnt">${pct.done} / ${pct.total}</span>`:''}</div><div class="meta vb" role="button" data-act="stackadd" data-c="supp">+ supp</div></div>`;
   { const L3=db._dataLog&&db._dataLog.v3; if(L3&&!L3.seen){ const n=subFixLines().length; if(n)out+=`<div class="sbfix u-tap" role="button" tabindex="0" data-act="subfixes"><span>acomodé tus sustancias · ${n} ${n===1?'cambio':'cambios'}</span><span class="u-o40">›</span></div>`; } }   // v295
   { const DG=suppDups(); if(DG.length){ const n=DG.reduce((a,g)=>a+g.items.length,0); out+=`<div class="sbfix u-tap" role="button" tabindex="0" data-act="suppdups"><span>${n} repetidas · únelas en una con varias tomas</span><span class="u-o40">›</span></div>`; } }   // v297
   { const IL=stackInterList(); if(IL===null){ if(!state._subProfAsk&&all.length){ state._subProfAsk=true; subProfiles().then(()=>{ if(state.screen==='stack')reRender(); }).catch(()=>{}); } }
     else { const S=IL.filter(x=>x.iv.sev==='grave'||x.iv.sev==='moderada'), g=S.filter(x=>x.iv.sev==='grave').length; if(S.length)out+=`<div class="sbfix u-tap" role="button" tabindex="0" data-act="stackinter"><span>${g?SUB_WARN+' ':''}${S.length} ${S.length===1?'interacción':'interacciones'} entre lo que tomas</span><span class="u-o40">›</span></div>`; } }   // v297
-  if(!all.length){
-    out+=`<div class="empty u-mt24 u-mb16 u-mx0">stack vacío<br/><span class="ehint">agrega tu primer suplemento, skincare o medicamento abajo</span></div>`;
-  } else {
-    // agrupado por TIMING (no por categoría): bloques colapsables AM/PM/ENTRENO/EXTRA
-    const BLOCKS=[{k:'AM',lbl:'AM'},{k:'PM',lbl:'PM'},{k:'entreno',lbl:'ENTRENO'},{k:'otros',lbl:'EXTRA'}];
-    const inBlock=(it,bk)=>{ const w=it.when||[]; return bk==='otros' ? !(w.indexOf('AM')>=0||w.indexOf('PM')>=0||w.indexOf('entreno')>=0) : w.indexOf(bk)>=0; };
-    // ponytail: 1 tick/día/item — un item multi-timing (AM+PM) aparece en ambos bloques y comparte el mismo check; si se requiere check por-horario, ticks[iso][block]
-    // v297 · una fila por TOMA: la primera es el item (lo de siempre); las demás, su dosis, su momento y su propio check
-    const li=t=>{ const it=t.it, own=!t.id;
-      const st=takeState(t,iso);
-      const isDue=isDueToday(it,iso);
-      const canTick=isDue||(it.periodization&&it.periodization.type==='occasional');
-      const _pr=suppProd(it), _sk=own?suppStock(it):null;   // v275 · su marca y cuántas quedan
-      const dose=(own&&_pr&&_pr.brand?' · '+escTxt(_pr.brand):'')+(takeDoseTxt(t)?' · '+escTxt(takeDoseTxt(t)):'');
-      const when=own?(it.when&&it.when.length?(' · '+escTxt(it.when.join('/'))):''):(t.when!=='otros'?' · '+escTxt(t.when):'');
-      const _tt=takeTime(t,iso); const timeChip=takeDone(t,iso)?` · <span data-act="supptime" data-id="${it.id}" data-tk="${escTxt(t.id)}" data-d="${iso}" class="u-tap u-ul u-o50">${_tt?escTxt(_tt):'+hora'}</span>`:'';
-      const period=own?escTxt(stackPeriodLabel(it)):'';
-      const cat=own?` <span class="u-o30 u-label u-ml4">[${escTxt(STACK_CAT_SHORT[it.category]||STACK_CAT_SHORT.supp)}]</span>`:'';
-      const _sr=own?subOfItem(it):null;   // v295 · ⓘ = su ficha (todas las sustancias del producto) · ? = no se reconoció: eliges qué es
-      const idMark=!own?'':(_sr.items.length?` <span data-act="suppinfo" data-id="${it.id}" class="u-tap u-o40 u-label sbi" role="button" aria-label="ficha de ${escTxt(_sr.items.map(x=>x.s.name).join(' + '))}">ⓘ</span>`:` <span data-act="subpick" data-id="${it.id}" class="u-tap u-o30 u-label sbi" role="button" aria-label="elegir qué sustancia es">?</span>`);
-      const tickDisp=canTick
-        ?`<span data-act="stacktick" data-id="${it.id}" data-tk="${escTxt(t.id)}" title="tap: tomado → tarde → saltado" style="cursor:pointer;font-family:'JetBrains Mono',monospace;color:${st?(st==='skipped'?'var(--bad)':'var(--fill)'):'var(--o40)'};padding-right:4px">[${st?TICK_SYM[st]:' '}]</span>`
-        :`<span class="u-o20 u-pr4">[—]</span>`;
-      return `<div class="line u-py6 u-px0 u-ais">`
-        +`<span class="k u-flex u-aic u-wrap">${tickDisp}<span data-act="stackedit" data-id="${it.id}" class="u-tap">${escTxt(it.name)}</span><span class="u-o40 u-label u-ml4">${dose}${when}${timeChip}</span>${cat}${idMark}</span>`
-        +`<span class="dots"></span>`
-        +`<span class="v u-label u-o40 u-tr">${period}${_sk?'<br/><span class="'+(_sk.low||_sk.out?'u-fg':'')+'">'+(_sk.low||_sk.out?'<span class="u-warn">⚠</span> ':'')+escTxt(suppStockTxt(_sk))+'</span>':''}</span>`
-        +`</div>`;
-    };
-    const visible=all.filter(x=>!x.archived && (view==='all'||isDueToday(x,iso)));
-    let anyShown=false, openedYet=false;
-    BLOCKS.forEach(b=>{
-      const rows=[]; visible.forEach(x=>takesOf(x,iso).forEach(t=>{ if(t.id?t.when===b.k:inBlock(x,b.k))rows.push(t); }));
-      if(!rows.length) return;
-      anyShown=true;
-      const due=rows.filter(t=>isDueToday(t.it,iso));
-      const doneN=due.filter(t=>takeState(t,iso)).length;
-      // v226: TODOS abiertos. Antes se abría "solo el primer bloque con algo pendiente" y en cada check el
-      // re-render cerraba ese bloque y abría el siguiente — el "se colapsan o se despliegan solos" del dueño.
-      const cnt=due.length?` <span class="u-o30">· ${doneN}/${due.length}</span>`:'';
-      out+=`<details class="stk-blk" data-sk="${b.k}"${stkOpen(b.k,true)}><summary>${b.lbl}${cnt}</summary>${rows.map(li).join('')}</details>`;
-    });
-    if(!anyShown){
-      out+=`<div class="empty u-mt24 u-mb16 u-mx0">${view==='today'?'no toca nada hoy ✓<br/>cambia a TODOS para ver tu lista completa':'sin items activos'}</div>`;
-    }
-    const ocasional=all.filter(x=>!x.archived&&x.periodization&&x.periodization.type==='occasional');
-    if(ocasional.length){
-      const doneN=ocasional.filter(x=>itemTaken(x,iso)).length;
-      out+=`<details class="stk-blk" data-sk="oc"${stkOpen('oc',false)}><summary>OCASIONAL · sin horario <span class="u-o30">· ${doneN}/${ocasional.length}</span></summary>${ocasional.map(x=>li(takesOf(x,iso)[0])).join('')}</details>`;
-    }
-    // v275 · en pausa y archivados: fuera de HOY, abajo de TODOS, con su motivo y [reactivar] (sus tomas se quedan)
-    if(view==='all'){ const dz=all.filter(x=>suppStatus(x)!=='active');
-      const dl=it=>{ const lg=(it.statusLog||[]).slice(-1)[0], p=suppProd(it); const why=[p&&p.brand,lg&&lg.why&&lg.why!=='pausa'?lg.why:'',lg&&lg.d?fmtShort(lg.d):''].filter(Boolean).join(' · ');
-        return `<div class="line u-py6 u-px0 u-aic"><span class="k"><span data-act="stackedit" data-id="${it.id}" class="u-tap">${escTxt(it.name)}</span>${why?' <span class="u-o40 u-label">· '+escTxt(why)+'</span>':''}</span><span class="dots"></span><span class="v"><button type="button" class="b" data-act="suppreact" data-id="${it.id}">reactivar</button></span></div>`; };
-      [['paused','EN PAUSA',' open'],['archived','ARCHIVADOS','']].forEach(([k,l,o])=>{ const g=dz.filter(x=>suppStatus(x)===k); if(g.length)out+=`<details class="stk-blk" data-sk="${k}"${stkOpen(k,!!o)}><summary>${l} <span class="u-o30">· ${g.length}</span></summary>${g.map(dl).join('')}</details>`; }); }
-    const adhocHoy=extrasOn(iso);
-    if(adhocHoy.length){
-      const rows=adhocHoy.map(a=>`<div class="line u-py6 u-px0 u-ais"><span class="k">${qtyTxt(extraQty(a))} ${escTxt(a.name||'')}${a.form?' ('+escTxt(a.form)+')':''}${a.time?' · '+escTxt(a.time):''}</span><span class="dots"></span><span class="v"><span data-act="deladhoc" data-id="${escTxt(a.id||'')}" data-d="${iso}" class="u-tap u-bad">✕</span></span></div>`).join('');
-      out+=`<details class="stk-blk" data-sk="adhoc"${stkOpen('adhoc',true)}><summary>EXTRA · hoy</summary>${rows}</details>`;
-    }
-  }
-  out+=`<hr class="rule"/><div class="u-flex u-gap8 u-mt12">`
-    +`<button class="b u-f1" data-act="stackadd" data-c="supp">+ supp</button>`
-    +`<button class="b u-f1" data-act="stackadd" data-c="skin">+ skin</button>`
-    +`<button class="b u-f1" data-act="stackadd" data-c="meds">+ meds</button>`
-    +`</div>`
-    +`<div class="u-mt8"><button class="b u-w100" data-act="extraadd">+ extra</button></div>`;
+  if(!all.length&&!xs.length){ out+=`<div class="empty u-mt24 u-mb16 u-mx0">stack vacío<br/><span class="ehint">agrega tu primer suplemento, skincare o medicamento con + supp</span></div>`; return out; }
+  // las mismas pestañas de //SUPPS; aquí salen TODOS los activos de ese momento (lo que hoy no toca dice su periodo a la derecha)
+  const takes=[]; act.forEach(x=>takesOf(x,iso).forEach(t=>takes.push(t)));
+  const rowsOf=k=>takes.filter(t=>t.when===k), seg=stackSeg(rowsOf);
+  const tabs=SUPP_SEG.filter(([k])=>k==='otros'||rowsOf(k).length).map(([k,l])=>{ const due=rowsOf(k).filter(t=>isDueToday(t.it,iso)), d=due.filter(t=>takeState(t,iso)).length, x=k==='otros'?xs.length:0;
+    return `<span class="${k===seg?'on':''}" role="tab" aria-selected="${k===seg}" data-act="stackseg" data-v="${k}">${l}${due.length||x?`<i>${due.length?d+'/'+due.length:''}${x?(due.length?' ':'')+'+'+x:''}</i>`:''}</span>`; }).join('');
+  const rows=rowsOf(seg).map(t=>stackRowHTML(t,iso)).join('');
+  const xrows=seg==='otros'?xs.map(a=>`<div class="sprow on xt" data-rk="xt:${escTxt(a.id)}"><span class="sprk" aria-hidden="true">✓</span><button type="button" class="sprb" data-act="extraedit" data-id="${escTxt(a.id)}" data-d="${iso}" aria-label="extra · ${escTxt(a.name||'')}"><span class="sprq">${qtyTxt(extraQty(a))}</span><span class="sprn">${escTxt(a.name||'extra')}</span><span class="sprv">extra${a.time?' · '+escTxt(a.time):''}</span></button><button type="button" class="sprc" data-act="extraedit" data-id="${escTxt(a.id)}" data-d="${iso}" tabindex="-1" aria-hidden="true">›</button></div>`).join(''):'';
+  out+=`<div class="mdtabs lseg tall" data-tk="stack" role="tablist">${tabs}</div><div class="sprlist" role="group">${rows}${xrows}${rows||xrows?'':'<div class="empty sprnone">sin nada aquí</div>'}</div>`
+    +(seg==='otros'?`<div class="spradd"><button type="button" class="vb" data-act="extraadd">+ extra</button></div>`:'');
+  // en pausa y archivados: un renglón por grupo que despliega los suyos, con su motivo y [reactivar] (sus tomas se quedan)
+  const dz=all.filter(x=>suppStatus(x)!=='active');
+  [['paused','en pausa'],['archived','archivados']].forEach(([k,l])=>{ const g=dz.filter(x=>suppStatus(x)===k); if(!g.length)return; const op=!!(state._stkOpen&&state._stkOpen[k]);
+    out+=`<button type="button" class="line lnav sef" data-act="stkfold" data-k="${k}" aria-expanded="${op}"><span class="k">${l}</span><span class="dots"></span><span class="v">${g.length}</span><span class="rchev" aria-hidden="true">${op?'▾':'›'}</span></button>`;
+    if(op)out+=`<div class="sprlist" data-sk="${k}">`+g.map(it=>{ const lg=(it.statusLog||[]).slice(-1)[0], why=[lg&&lg.why&&lg.why!=='pausa'?lg.why:'',lg&&lg.d?fmtShort(lg.d):''].filter(Boolean).join(' · ');
+      return `<div class="sprow sprdz"><span class="sprk" aria-hidden="true">—</span><button type="button" class="sprb" data-act="stackedit" data-id="${escTxt(it.id)}" aria-label="editar ${escTxt(it.name||'')}"><span class="sprn">${escTxt(it.name||'supp')}</span>${why?`<span class="sprv">${escTxt(why)}</span>`:''}</button><button type="button" class="vb" data-act="suppreact" data-id="${escTxt(it.id)}">reactivar</button></div>`; }).join('')+`</div>`; });
   return out;
 }
 function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volver con otra marca · opt.forceNew: crear aparte aunque el nombre ya exista
@@ -10664,34 +10693,35 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
   const _PB=suppProd(it), _PP=opt.newBrand?null:_PB, _C=opt.newBrand?null:suppCont(it), _L=opt.newBrand?null:suppLeft(it), _SK=opt.newBrand?null:suppStock(it);
   const _pf=(_PB&&_PB.form)||'cápsulas', _brands=[...new Set((it.products||[]).map(p=>p.brand).filter(Boolean))], _per=(+it.qty>0||(_PB&&+_PB.per>0))?qtyTxt(suppPer(it,_PB)):'';   // v325 · cuántas es una toma (lo que ves en la lista)
   const _formOpts=SUPP_FORMS.map(([f,u])=>`<option value="${f}"${_pf===f?' selected':''}>${f===u?f:f+' · '+u}</option>`).join('');
-  const _prodHTML=`<div class="grp-label sub">PRODUCTO · FRASCO <span class="u-o40 u-w4">· opcional · para avisarte antes de que se acabe</span></div>`
-    +(opt.newBrand?`<div class="submeta u-mb6">otra marca de ${escTxt(it.name)} · su historial sigue aquí</div>`:'')
+  const _prodHTML=(opt.newBrand?`<div class="submeta u-mb6">otra marca de ${escTxt(it.name)} · su historial sigue aquí</div>`:'')
     +`<div class="field row2"><div><label>MARCA</label><input id="se_brand" list="se_brands" value="${escTxt((_PP&&_PP.brand)||'')}" placeholder="ej. Nordic Naturals" autocomplete="off"/><datalist id="se_brands">${_brands.map(b=>`<option value="${escTxt(b)}"></option>`).join('')}</datalist></div><div><label>PRODUCTO</label><input id="se_pname" value="${escTxt((_PP&&_PP.name)||'')}" placeholder="opcional" autocomplete="off"/></div></div>`
-    +`<div class="field row2"><div><label>PRESENTACIÓN</label><select id="se_pform">${_formOpts}</select></div><div><label>POR TOMA · <span id="se_pu">${escTxt(suppPU({form:_pf}))}</span></label><input id="se_per" value="${_per}" placeholder="2" inputmode="decimal" autocomplete="off"/></div></div>`
-    +`<div class="field row2"><div><label>TRAE EL FRASCO</label><input id="se_size" value="${(_C&&_C.size)||((_PB&&_PB.size)||'')}" placeholder="120" inputmode="decimal" autocomplete="off"/></div><div><label>LO ABRISTE</label><input id="se_opened" type="date" value="${(_C&&_C.opened)||todayISO()}"/></div></div>`
-    +`<div class="field row2"><div><label>QUEDAN HOY</label><input id="se_left" value="${_L?Math.max(0,_L.left):''}" data-v0="${_L?Math.max(0,_L.left):''}" placeholder="${_L?'':'lo que trae'}" inputmode="decimal" autocomplete="off"/></div><div></div></div>`
+    +`<div class="field row2"><div><label>PRESENTACIÓN</label><select id="se_pform">${_formOpts}</select></div><div><label>TRAE EL FRASCO</label><input id="se_size" value="${(_C&&_C.size)||((_PB&&_PB.size)||'')}" placeholder="120" inputmode="decimal" autocomplete="off"/></div></div>`
+    +`<div class="field row2"><div><label>LO ABRISTE</label><input id="se_opened" type="date" value="${(_C&&_C.opened)||todayISO()}"/></div><div><label>QUEDAN HOY</label><input id="se_left" value="${_L?Math.max(0,_L.left):''}" data-v0="${_L?Math.max(0,_L.left):''}" placeholder="${_L?'':'lo que trae'}" inputmode="decimal" autocomplete="off"/></div></div>`
     +(_L?`<div class="submeta u-mt-n2 u-mb6">${_SK&&(_SK.low||_SK.out)?'<span class="u-warn">⚠</span> ':''}${escTxt(_SK?suppStockTxt(_SK):('quedan '+Math.max(0,_L.left)+' '+_L.pu))} · abierto el ${escTxt(fmtShort(_C.opened))}</div>`
       +`<div class="u-flex u-gap8 u-wrap u-mb8"><button type="button" class="b" id="se_bottle">abrí otro frasco</button>${_SK&&_SK.out?'<button type="button" class="b" id="se_finish">se acabó · archivar</button><button type="button" class="b" id="se_pause">pausar</button>':''}</div>`:'');
+  // v327 · la hoja de un suplemento en secciones que se despliegan (antes una pila de ~26 campos a la vista): arriba el nombre y `cuánto y
+  // cuándo`; lo demás, un renglón por sección con su resumen a la derecha. Los campos y sus ids son los de siempre: el guardado no cambió.
+  const _sec=(k,l,op,inner)=>`<button type="button" class="line lnav sef" data-act="sefold" data-k="${k}" aria-expanded="${op}"><span class="k">${l}</span><span class="dots"></span><span class="v" id="se_sum_${k}"></span><span class="rchev" aria-hidden="true">${op?'▾':'›'}</span></button><div class="sesec" id="se_sec_${k}"${op?'':' hidden'}>${inner}</div>`;
   openModal(`<h3>${isNew?'agregar a tu stack':'editar item'}</h3>
     <div class="field"><label>NOMBRE</label><input id="se_name" value="${escTxt(it.name||'')}" placeholder="ej. creatina monohidratada" autocomplete="off"/></div>
     <div class="field u-mt-n2"><div id="se_idstrip" style="min-height:14px"></div><div id="se_idcard"></div></div>
-    <div class="field"><label>CATEGORÍA</label><div class="toggles" id="se_cat">${STACK_CATS.map(([k,l])=>catBtn(k,l)).join('')}</div></div>
-    <div class="field row2"><div><label>DOSIS</label><input id="se_dose" value="${escTxt(it.dose||'')}" placeholder="${dosePh}" inputmode="decimal" autocomplete="off"/></div><div><label>UNIDAD</label><select id="se_unit">${unitOpts}</select></div></div>
-    ${_prodHTML}
-    <div class="field"><label>INICIO</label><input id="se_start" type="date" value="${it.startDate||todayISO()}"/></div>
-    <div class="field"><label>CUÁNDO</label><div class="toggles wrap" id="se_when">${whenOpts.map(whenBtn).join('')}</div></div>
-    <div class="field" id="se_tkbox"><label>OTRAS TOMAS EL MISMO DÍA <span class="u-o40 u-w4">· opcional</span></label><div id="se_tk"></div><button type="button" class="b" id="se_tkadd">+ toma</button></div>
-    <div class="field"><label>PERIODIZACIÓN</label>
-      <div class="toggles wrap" id="se_pt">${ptBtn('daily','diario')}${ptBtn('weekly','días sem')}${ptBtn('everyN','cada N')}${ptBtn('cycle','ciclo')}${ptBtn('range','rango')}${ptBtn('occasional','ocasional')}</div>
+    ${_sec('cuanto','cuánto y cuándo',true,`<div class="field row2"><div><label>DOSIS</label><input id="se_dose" value="${escTxt(it.dose||'')}" placeholder="${dosePh}" inputmode="decimal" autocomplete="off"/></div><div><label>UNIDAD</label><select id="se_unit">${unitOpts}</select></div></div>
+    <div class="field row2"><div><label>CUÁNTAS <span id="se_pu" class="u-o40 u-w4">${_PB?escTxt(suppPU(_PB)):''}</span></label><input id="se_per" value="${_per}" placeholder="${qtyTxt(suppDerive(it,_PB)||1)}" inputmode="decimal" autocomplete="off"/></div><div><label>INICIO</label><input id="se_start" type="date" value="${it.startDate||todayISO()}"/></div></div>
+    <div class="field"><label>CUÁNDO</label><div class="toggles" id="se_when">${whenOpts.map(whenBtn).join('')}</div></div>
+    <div class="field"><label>SE TOMA</label>
+      <div class="toggles" id="se_pt">${ptBtn('daily','diario')}${ptBtn('weekly','días sem')}${ptBtn('everyN','cada N')}${ptBtn('cycle','ciclo')}${ptBtn('range','rango')}${ptBtn('occasional','ocasional')}</div>
       <div id="se_pwk" style="display:${p.type==='weekly'?'block':'none'};margin-top:6px"><div class="toggles" id="se_dayrow">${[1,2,3,4,5,6,0].map(dayBtn).join('')}</div></div>
       <div id="se_pn" style="display:${p.type==='everyN'?'flex':'none'};margin-top:6px;gap:6px;align-items:center"><span class="u-o50 u-label">cada</span><input id="se_pnv" type="number" inputmode="numeric" style="width:60px" value="${p.type==='everyN'?(p.value||2):2}"/><span class="u-o50 u-label">días</span></div>
       <div id="se_pcy" style="display:${p.type==='cycle'?'flex':'none'};margin-top:6px;gap:6px;align-items:center;flex-wrap:wrap"><span class="u-o50 u-label">on</span><input id="se_pcon" type="number" inputmode="numeric" style="width:60px" value="${p.type==='cycle'&&p.value?(p.value.on||21):21}"/><span class="u-o50 u-label">/ off</span><input id="se_pcoff" type="number" inputmode="numeric" style="width:60px" value="${p.type==='cycle'&&p.value?(p.value.off||7):7}"/><span class="u-o50 u-label">días</span></div>
       <div id="se_prg" style="display:${p.type==='range'?'block':'none'};margin-top:6px"><label class="u-label u-o50">FECHA FIN (opcional)</label><input id="se_pend" type="date" value="${it.endDate||''}"/></div>
     </div>
-    <div class="field"><label>NOTAS</label><input id="se_notes" value="${escTxt(it.notes||'')}" placeholder="opcional · ej. con grasa, no mezclar con C" autocomplete="off"/></div>
-    ${(on=>`<div class="line pfr"><span class="k">en gráficas</span><span class="dots"></span><span class="v toggles" id="se_chart"><button type="button" class="t ${on?'on':''}" data-act="optpick" data-v="1">sí</button><button type="button" class="t ${on?'':'on'}" data-act="optpick" data-v="0">no</button></span></div>`)(it.chart===true||(it.chart!==false&&/^(hormone|peptide)$/.test(it.category||'')))}
-    <details class="field u-mt2"><summary class="u-label u-o50 u-tap u-lsui">VALORES NUTRICIONALES · por dosis (opcional)</summary><div class="submeta u-label u-my6 u-mx0">lo que aporta UNA dosis tomada · suma a tu total del día</div><div class="field row2"><div><label>KCAL</label><input id="se_n_kcal" type="number" inputmode="decimal" value="${nv('kcal')}"/></div><div><label>PROTEÍNA g</label><input id="se_n_protein" type="number" inputmode="decimal" value="${nv('protein')}"/></div></div><div class="field row2"><div><label>CARBOS g</label><input id="se_n_carbs" type="number" inputmode="decimal" value="${nv('carbs')}"/></div><div><label>GRASA g</label><input id="se_n_fat" type="number" inputmode="decimal" value="${nv('fat')}"/></div></div><div class="field row2"><div><label>AZÚCAR g</label><input id="se_n_sugar" type="number" inputmode="decimal" value="${nv('sugar')}"/></div><div><label>FIBRA g</label><input id="se_n_fiber" type="number" inputmode="decimal" value="${nv('fiber')}"/></div></div><div class="field row2"><div><label>SODIO mg</label><input id="se_n_sodium" type="number" inputmode="decimal" value="${nv('sodium')}"/></div><div><label>POTASIO mg</label><input id="se_n_potassium" type="number" inputmode="decimal" value="${nv('potassium')}"/></div></div><div class="field row2"><div><label>CAFEÍNA mg</label><input id="se_n_caffeine" type="number" inputmode="decimal" value="${nv('caffeine')}"/></div><div><label>ALCOHOL g</label><input id="se_n_alcohol" type="number" inputmode="decimal" value="${nv('alcohol')}"/></div></div><div class="grp-label sub">MICRONUTRIENTS</div><div class="field row2"><div><label>VIT A µg</label><input id="se_n_vitA" type="number" inputmode="decimal" value="${nv('vitA')}"/></div><div><label>VIT C mg</label><input id="se_n_vitC" type="number" inputmode="decimal" value="${nv('vitC')}"/></div></div><div class="field row2"><div><label>VIT D µg</label><input id="se_n_vitD" type="number" inputmode="decimal" value="${nv('vitD')}"/></div><div><label>VIT E mg</label><input id="se_n_vitE" type="number" inputmode="decimal" value="${nv('vitE')}"/></div></div><div class="field row2"><div><label>VIT K µg</label><input id="se_n_vitK" type="number" inputmode="decimal" value="${nv('vitK')}"/></div><div><label>VIT B6 mg</label><input id="se_n_vitB6" type="number" inputmode="decimal" value="${nv('vitB6')}"/></div></div><div class="field row2"><div><label>FOLATO µg</label><input id="se_n_folate" type="number" inputmode="decimal" value="${nv('folate')}"/></div><div><label>VIT B12 µg</label><input id="se_n_vitB12" type="number" inputmode="decimal" value="${nv('vitB12')}"/></div></div><div class="field row2"><div><label>CALCIO mg</label><input id="se_n_calcium" type="number" inputmode="decimal" value="${nv('calcium')}"/></div><div><label>HIERRO mg</label><input id="se_n_iron" type="number" inputmode="decimal" value="${nv('iron')}"/></div></div><div class="field row2"><div><label>MAGNESIO mg</label><input id="se_n_magnesium" type="number" inputmode="decimal" value="${nv('magnesium')}"/></div><div><label>ZINC mg</label><input id="se_n_zinc" type="number" inputmode="decimal" value="${nv('zinc')}"/></div></div></details>
+    <div class="field" id="se_tkbox"><label>OTRAS TOMAS EL MISMO DÍA</label><div id="se_tk"></div><button type="button" class="b" id="se_tkadd">+ toma</button></div>`)}
+    ${_sec('que','qué es',false,`<div class="field"><label>CATEGORÍA</label><div class="toggles" id="se_cat">${STACK_CATS.map(([k,l])=>catBtn(k,l)).join('')}</div></div>
     <div id="se_meds" style="display:${(it.category==='meds'||it.category==='hormone'||it.category==='peptide')?'block':'none'}"><div class="field row2"><div><label>RECETADO POR</label><input id="se_doc" value="${escTxt((it.med&&it.med.doctor)||'')}" autocomplete="off"/></div><div><label>DURACIÓN</label><input id="se_dur" value="${escTxt((it.med&&it.med.duration)||'')}" placeholder="ej. 8 sem · indef" autocomplete="off"/></div></div></div>
+    ${(on=>`<div class="line pfr"><span class="k">en gráficas</span><span class="dots"></span><span class="v toggles" id="se_chart"><button type="button" class="t ${on?'on':''}" data-act="optpick" data-v="1">sí</button><button type="button" class="t ${on?'':'on'}" data-act="optpick" data-v="0">no</button></span></div>`)(it.chart===true||(it.chart!==false&&/^(hormone|peptide)$/.test(it.category||'')))}`)}
+    ${_sec('prod','producto y frasco',!!(opt.newBrand||(_SK&&(_SK.low||_SK.out))),_prodHTML)}
+    ${_sec('nutr','nutrientes · por toma',false,`<div class="field row2"><div><label>KCAL</label><input id="se_n_kcal" type="number" inputmode="decimal" value="${nv('kcal')}"/></div><div><label>PROTEÍNA g</label><input id="se_n_protein" type="number" inputmode="decimal" value="${nv('protein')}"/></div></div><div class="field row2"><div><label>CARBOS g</label><input id="se_n_carbs" type="number" inputmode="decimal" value="${nv('carbs')}"/></div><div><label>GRASA g</label><input id="se_n_fat" type="number" inputmode="decimal" value="${nv('fat')}"/></div></div><div class="field row2"><div><label>AZÚCAR g</label><input id="se_n_sugar" type="number" inputmode="decimal" value="${nv('sugar')}"/></div><div><label>FIBRA g</label><input id="se_n_fiber" type="number" inputmode="decimal" value="${nv('fiber')}"/></div></div><div class="field row2"><div><label>SODIO mg</label><input id="se_n_sodium" type="number" inputmode="decimal" value="${nv('sodium')}"/></div><div><label>POTASIO mg</label><input id="se_n_potassium" type="number" inputmode="decimal" value="${nv('potassium')}"/></div></div><div class="field row2"><div><label>CAFEÍNA mg</label><input id="se_n_caffeine" type="number" inputmode="decimal" value="${nv('caffeine')}"/></div><div><label>ALCOHOL g</label><input id="se_n_alcohol" type="number" inputmode="decimal" value="${nv('alcohol')}"/></div></div><div class="grp-label sub">MICRONUTRIENTS</div><div class="field row2"><div><label>VIT A µg</label><input id="se_n_vitA" type="number" inputmode="decimal" value="${nv('vitA')}"/></div><div><label>VIT C mg</label><input id="se_n_vitC" type="number" inputmode="decimal" value="${nv('vitC')}"/></div></div><div class="field row2"><div><label>VIT D µg</label><input id="se_n_vitD" type="number" inputmode="decimal" value="${nv('vitD')}"/></div><div><label>VIT E mg</label><input id="se_n_vitE" type="number" inputmode="decimal" value="${nv('vitE')}"/></div></div><div class="field row2"><div><label>VIT K µg</label><input id="se_n_vitK" type="number" inputmode="decimal" value="${nv('vitK')}"/></div><div><label>VIT B6 mg</label><input id="se_n_vitB6" type="number" inputmode="decimal" value="${nv('vitB6')}"/></div></div><div class="field row2"><div><label>FOLATO µg</label><input id="se_n_folate" type="number" inputmode="decimal" value="${nv('folate')}"/></div><div><label>VIT B12 µg</label><input id="se_n_vitB12" type="number" inputmode="decimal" value="${nv('vitB12')}"/></div></div><div class="field row2"><div><label>CALCIO mg</label><input id="se_n_calcium" type="number" inputmode="decimal" value="${nv('calcium')}"/></div><div><label>HIERRO mg</label><input id="se_n_iron" type="number" inputmode="decimal" value="${nv('iron')}"/></div></div><div class="field row2"><div><label>MAGNESIO mg</label><input id="se_n_magnesium" type="number" inputmode="decimal" value="${nv('magnesium')}"/></div><div><label>ZINC mg</label><input id="se_n_zinc" type="number" inputmode="decimal" value="${nv('zinc')}"/></div></div>`)}
+    ${_sec('notas','notas',false,`<div class="field"><label>NOTAS</label><input id="se_notes" value="${escTxt(it.notes||'')}" placeholder="ej. con grasa, no mezclar con C" autocomplete="off"/></div>`)}
     <div class="sheetbtns"><button class="ok" id="se_save">guardar</button>${isNew?'':'<button class="cancel" id="se_more">más</button>'}<button class="cancel" data-act="closemodal">cancel</button></div>`);
   const root=document.getElementById('modal'); if(!root) return;
   const _catSync=c=>{ const rx=c==='meds'||c==='hormone'||c==='peptide'; root.querySelector('#se_meds').style.display=rx?'block':'none';
@@ -10768,6 +10798,15 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
   { const e=document.getElementById('se_unit'); if(e)e.addEventListener('change',_renderId); }
   root.querySelectorAll('[id^="se_n_"]').forEach(e=>e.addEventListener('input',()=>{ const np=document.getElementById('se_nprev'); if(np&&_labelTyped())np.textContent='al marcarlo suma lo de tu etiqueta (abajo)'; }));
   _renderId();
+  // v327 · el resumen de cada sección plegada (lo que dirías en una línea); una sección abierta no lo repite
+  window._seSum=()=>{ const S=(k,t)=>{ const e=document.getElementById('se_sum_'+k), b=document.getElementById('se_sec_'+k); if(e)e.textContent=b&&!b.hidden?'':t; };
+    const on=s=>Array.from(root.querySelectorAll(s)).map(b=>b.textContent.trim());
+    S('cuanto',[[val('se_dose'),val('se_unit')].filter(Boolean).join(' '),val('se_per')?'× '+val('se_per'):'',on('#se_when button.on').join('/'),on('#se_pt .on')[0]||''].filter(Boolean).join(' · '));
+    S('que',on('#se_cat .on')[0]||'');
+    S('prod',[val('se_brand'),val('se_size')?val('se_size')+' '+suppPU({form:val('se_pform')}):''].filter(Boolean).join(' · ')||'—');
+    S('nutr',_labelTyped()?'de tu etiqueta':(subOfItem(_tmp()).items.length?'del catálogo':'—'));
+    S('notas',val('se_notes')?'1':'—'); };
+  window._seSum(); ['input','change','click'].forEach(ev=>root.addEventListener(ev,()=>{ if(window._seSum)window._seSum(); }));   // al día con cada cambio, también cuando la app pone la categoría sola
   // v275 · el producto del formulario, y qué cambió contra la marca anterior (se confirma antes de guardar)
   const _prodForm=()=>{ const n=id=>{ const v=parseFloat(String(val(id)||'').replace(',','.')); return isFinite(v)?v:0; }, le=document.getElementById('se_left');
     return {brand:(val('se_brand')||'').trim(),pname:(val('se_pname')||'').trim(),form:val('se_pform')||'cápsulas',per:n('se_per'),size:n('se_size'),opened:val('se_opened')||todayISO(),
@@ -12071,7 +12110,9 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='suppmenu'){ trkMenu('suplementos',[['+ agregar suplemento',()=>openStackEdit(null,'supp')],['ignorar por ahora',()=>{ db.settings.suppHide=true; save(); reRender(); toast('supps ocultos · vuelven en ajustes','',{undo:()=>{ delete db.settings.suppHide; save(); reRender(); }}); }]]); }
   else if(a==='supphideoff'){ delete db.settings.suppHide; save(); reRender(); toast('✓ supps de vuelta en macros'); }
   else if(a==='deladhoc'){ const d=el.dataset.d||todayISO(), x=extraDel(d,el.dataset.id); if(x){ save(); reRender(); toast('✓ extra quitado','ok',{undo:()=>{ extraPut(d,x); }}); } }
-  else if(a==='stackview'){ window._stackView=el.dataset.v||'today'; render(); }
+  else if(a==='stackseg'){ window._stackTab=el.dataset.v; state._enter={sel:'.sprlist .sprow'}; reRender(); }   // v327 · las pestañas de administrar
+  else if(a==='stkfold'){ const k=el.dataset.k; state._stkOpen=state._stkOpen||{}; state._stkOpen[k]=!state._stkOpen[k]; state._enter={sel:'.sprlist[data-sk="'+k+'"] .sprow'}; reRender(); }
+  else if(a==='sefold'){ const b=document.getElementById('se_sec_'+el.dataset.k); if(b){ const op=b.hidden; keepUnder(el,()=>{ b.hidden=!op; el.setAttribute('aria-expanded',op?'true':'false'); const c=el.querySelector('.rchev'); if(c)c.textContent=op?'▾':'›'; if(window._seSum)window._seSum(); }); if(op)revealAnim(b); } }
   else if(a==='chartpt'){ try{ const pts=JSON.parse(el.dataset.pts||'[]'); if(pts.length){ const r=el.getBoundingClientRect(); const x=(e.clientX-r.left)/(r.width||1); let best=pts[0],bd=9; pts.forEach(p=>{ const d=Math.abs(p.f-x); if(d<bd){bd=d;best=p;} }); if(best&&best.l)toast(best.l); } }catch(_){} }
   else if(a==='editbw'){ const d=el.dataset.d; const dt=document.getElementById('bw_date'), kg=document.getElementById('bw_kg'); if(dt)dt.value=d; if(kg){ kg.value=(db.bodyweight&&db.bodyweight[d])||''; focusEl(kg); } }
   else if(a==='delbw'){ const d=el.dataset.d; trkAsk({title:'borrar el peso del '+fmtShort(d),ok:'borrar',danger:true},()=>{ if(db.bodyweight)delete db.bodyweight[d]; const allk=Object.keys(db.bodyweight||{}).sort(); if(db.profile)db.profile.weightKg=allk.length?db.bodyweight[allk[allk.length-1]]:db.profile.weightKg; save(); openWeightLog(); }); }
@@ -16566,7 +16607,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
