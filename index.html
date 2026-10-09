@@ -374,6 +374,12 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .ptile.lift{z-index:2; background:var(--card2); border-color:var(--fg); box-shadow:var(--shadow-float);}
   .pgrid.ped>.ptile.ed{transition:none!important;}
   /* v320 · P5 · recuadro doble: ocupa el renglón entero; a la izquierda la lectura (número, promedio, rango) y a la derecha la gráfica */
+  /* v321 · GR6 · comparar: dos selectores, la gráfica y una leyenda de dos filas (muestra del trazo · nombre ···· último · rango) */
+  .cmprow{display:flex; align-items:center; gap:var(--s3); min-height:44px; margin-top:var(--s2);} .cmpk{display:flex; align-items:center; gap:var(--s2); flex:0 0 auto; font-size:var(--t-label); color:var(--o50);} select.cmps{flex:1 1 0; min-width:0; width:auto;}   /* v321 · selector y leyenda en UN renglón de alto fijo: nada de abajo cambia de sitio al cambiar de métrica */
+  .cmpv{flex:0 0 auto; display:inline-flex; align-items:center; justify-content:flex-end; min-width:12ch; min-height:44px; padding:0; border:0; background:none; font-family:inherit; font-size:var(--t-label); color:var(--fg); white-space:nowrap;} button.cmpv{cursor:pointer;}
+  .cmpnone{position:relative;} .cmpgh{visibility:hidden;} .cmpnone>.empty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:0;}   /* el hueco de "sin datos" mide lo que la gráfica */
+  .cmpsb{margin-top:var(--s3);} .cmpsv{display:flex; flex-wrap:wrap; gap:var(--s1) var(--s4);}
+  @media (max-width:380px){ .cmprow{flex-wrap:wrap; gap:0 var(--s3);} .cmprow .cmpv{flex:1 0 100%; justify-content:flex-end;} }   /* angosta: el valor baja SIEMPRE a su renglón (no según quepa) */
   .ptile.w2{grid-column:1 / -1;} .pgrid{grid-auto-flow:row dense; align-content:start;} .pgrid>.ptile{min-height:128px;} .ptile.ed>.pdel::after{inset:6px -30px -30px 6px;}   /* todos los recuadros miden lo mismo de alto (como los widgets de iOS): al cambiar de tamaño nada se mueve de renglón, y caben ⠿ y el asa (44 cada uno); el − toca 44 × 44 dentro del recuadro (la tile recorta lo que sale: medía 26 × 26) */   /* un individual que quedaría solo junto a un doble sube al hueco (como los widgets de iOS) */
   .ptw{display:grid; grid-template-columns:minmax(0,2fr) minmax(0,3fr); gap:var(--s4); align-items:end;} .ptwc{min-width:0;} .ptw .pst{font-weight:400; color:var(--o50);}
   .psz{position:absolute; right:0; bottom:0; z-index:1; width:44px; height:44px; padding:0; border:0; background:none; cursor:pointer;}
@@ -1358,7 +1364,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v320';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v321';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -5962,6 +5968,38 @@ function _wideSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK d
     db.settings.progLayout.wide=['weight','nope']; A('una clave que no existe se descarta', progLayout().wide.join()==='weight');
     console.log('doble self-check OK');
   } finally { progReflow=_rf; savedToast=_st; reRender=_rr; renderNav=_rn; db=real; state.screen=sc0; state.progEdit=pe0; _sbx=sb0; bumpIdx(); } }
+// self-check de v321 (GR6): comparar dos métricas. Base de juguete; no guarda nada.
+function _compareSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK comparar: '+nm); }; const real=db, sc0=state.screen, sb0=_sbx, _ss=saveSoon;
+  try{ _sbx=true; saveSoon=()=>{}; const T=todayISO(), D=k=>shiftDate(T,-k), bw={}, meals={}, gh={}, sl={};
+    for(let i=29;i>=0;i--){ if(i%2===0)bw[D(i)]=60+i/10; if(i!==5)meals[D(i)]=[{id:'m'+i,tag:'lunch',name:'x',qty:1,kcal:2000+i*10,protein:150,carbs:200,fat:60,sugar:30+i,water:0}]; gh[D(i)]={kcal:2400}; sl[D(i)]=[{start:'23:00',end:'06:30',hours:7+(i%3)/2}]; }
+    db=migrate({profile:{username:'t',weightKg:61,heightCm:175,age:26,sex:'M',activity:1.55},split:{days:[]},bodyweight:bw,meals,goalHist:gh,sleep:sl,settings:{goals:{kcal:2400}}}); bumpIdx(); state.screen='progress';
+    A('premium: hoy abierto, con una sola compuerta', proCan('compare')===true&&(PRO_OPEN.compare=false,proCan('compare')===false)&&(PRO_OPEN.compare=true));
+    A('la lista va segmentada: cuerpo, energía, macros, micros, entreno, sueño, biométricos', CMP_GROUPS.length===7&&Object.keys(CMP).every(k=>CMP_GROUPS.some(g=>g[0]===CMP[k].g))&&['weight','kcal','defplan','defreal','sugar','sleep','sig'].every(k=>!!CMP[k]));
+    const c=cmpCfg(); A('arranca con kcal + peso y tres guardadas', c.a==='kcal'&&c.b==='weight'&&c.days===90&&c.saved.length===3&&cmpName(c.saved[1])==='horas de sueño + σ por sesión');
+    const n=dayNutr(D(3)); A('la nutrición de un día es la de sus comidas; un día sin comidas no tiene dato', n.kcal===2030&&n.sugar===33&&n._n===1&&dayNutr(D(5))._n===0);
+    const X=cmpData('kcal','weight',30,false); A('una serie por día del periodo, con huecos donde no hay dato', X.dates.length===30&&X.A.length===30&&X.A[29]===2000&&X.A[24]===null&&X.B[29]===60&&X.B[28]===null);
+    const Y=cmpData('defplan','defreal',30,false), td=(estimateTDEE(90)||{}).tdee||maintenanceKcal(); A('déficit programado = mantenimiento − meta; cumplido = mantenimiento − lo comido', td>0&&Y.A[29]===td-2400&&Y.B[29]===td-2000&&Y.B[24]===null&&cmpFmt('defplan')(100).charAt(0)==='~');
+    const Z=cmpData('kcal','weight',30,true); A('media de 7 días: pide 3 datos y suaviza', Z.dates.length===30&&Z.A[0]===null&&Z.A[1]===null&&Math.abs(Z.A[29]-(2000+2010+2020+2030+2040+2060)/6)<1e-6);
+    const Z2=cmpData('kcal','weight',10,true); A('…y mira los días anteriores al periodo: la misma fecha da lo mismo en dos periodos', Z2.dates.length===10&&Z2.dates[0]===D(9)&&Math.abs(Z2.A[0]-2120)<1e-6&&Math.abs(Z.A[20]-Z2.A[0])<1e-6);
+    const ch=cmpChart('kcal','weight',X,170,true); A('dos líneas, cada una en su escala, y la segunda punteada', /class="sw-data chmore"[^>]*stroke-dasharray="5 4"/.test(ch));
+    A('al deslizar, la etiqueta trae las DOS métricas de esa fecha con sus números de verdad', ch.indexOf(fmtShort(D(0))+' · A 2,000 kcal · B 60 kg')>0&&ch.indexOf(fmtShort(D(1))+' · A 2,010 kcal"')>0&&!/B 2,\d\d\d kg/.test(ch));
+    A('el eje va solo con el número (la unidad se encimaba con el trazo)', /class="chy"[^>]*>2,\d\d\d</.test(ch)&&!/class="chy"[^>]*>[^<]*kcal/.test(ch));
+    A('con la misma unidad comparten escala: el eje llega al máximo de las dos', (c3=>c3.indexOf('class="chy"')>0&&c3.indexOf('>'+cmpNum('defreal')(td-2000)+'<')>0)(cmpChart('defplan','defreal',Y,170,true)));
+    const ch2=cmpChart('weight','kcal',cmpData('weight','kcal',30,false),170,true);
+    A('el peso une sus días (va de A o de B) y las calorías cortan donde falta el día', (ch.match(/chmore/g)||[]).length===1&&(ch.match(/class="sw-data-lg"/g)||[]).length===2&&(ch2.match(/class="sw-data-lg"/g)||[]).length===1&&(ch2.match(/chmore/g)||[]).length===2);
+    A('sin datos de la primera se dibuja la segunda sola; sin nada, no hay gráfica', cmpChart('hrv','weight',cmpData('hrv','weight',30,false),170,true).indexOf('B 60 kg')>0&&cmpChart('hrv','rhr',cmpData('hrv','rhr',30,false),170,true)==='');
+    A('el recuadro existe y se puede quitar como los demás', PROG_KEYS.indexOf('compare')>=0&&/data-act="opencompare"/.test(renderProgress())&&/compare · 3m/.test(cmpTileHTML(true)));
+    openCompare(); let m=document.getElementById('modal'); const sa=m.querySelector('#cmp_a'), sbx=m.querySelector('#cmp_b');
+    A('la hoja: un renglón por métrica (trazo, selector con sus 7 grupos y último valor), periodos y la gráfica', !!sa&&!!sbx&&sa.querySelectorAll('optgroup').length===7&&sa.value==='kcal'&&sbx.value==='weight'&&m.querySelectorAll('.mdtabs [data-act="cmprange"]').length===4&&!!m.querySelector('.chwrap')&&m.querySelectorAll('.cmprow').length===2&&/2,000 kcal/.test(m.querySelector('.cmprow .cmpv').textContent)&&/^rango 2,000 – 2,290 kcal · promedio /.test(m.querySelector('.cmprow .cmpv').dataset.x)&&!m.querySelector('.cmplg'));
+    A('guardar va arriba de las guardadas: lo que cambia al tocarlo queda debajo', !!(m.querySelector('[data-act="cmpsave"]').compareDocumentPosition(m.querySelector('.cmpsv'))&4)&&m.querySelectorAll('.cmpsv [data-act="cmpload"]').length===3);
+    { const top=q=>m.querySelector(q).getBoundingClientRect().top-m.querySelector('.mdtabs').getBoundingClientRect().top /* contra las pestañas: la hoja puede venir entrando */, y0=top('[data-act="cmpsave"]'), r0=m.querySelector('.cmprow').getBoundingClientRect().height; cmpCfg().a='hrv'; cmpCfg().b='rhr'; openCompare(); m=document.getElementById('modal');
+      A('sin datos de ninguna, el hueco mide lo que la gráfica y los renglones no cambian de alto', !!m.querySelector('.cmpnone .empty')&&Math.abs(top('[data-act="cmpsave"]')-y0)<=1&&Math.abs(m.querySelector('.cmprow').getBoundingClientRect().height-r0)<=1&&/sin datos/.test(m.querySelector('.cmprow .cmpv').textContent));
+      cmpCfg().a='kcal'; cmpCfg().b='weight'; openCompare(); m=document.getElementById('modal'); }
+    { const el=document.getElementById('cmp_a'); el.value='sugar'; el.onchange(); A('cambiar un selector cambia la comparación (y se recuerda)', cmpCfg().a==='sugar'&&document.getElementById('cmp_a').value==='sugar'&&/ g$/.test(document.getElementById('modal').querySelector('.cmprow .cmpv').textContent)); }
+    { const el=document.getElementById('cmp_b'); el.value='sugar'; el.onchange(); A('elegir la misma en las dos las intercambia', cmpCfg().a==='weight'&&cmpCfg().b==='sugar'); }
+    cmpSaveToggle(); A('guardar esta comparación y quitarla', cmpCfg().saved.length===4&&cmpCfg().saved[3].a==='weight'&&(cmpSaveToggle(),cmpCfg().saved.length===3));
+    console.log('comparar self-check OK');
+  } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } saveSoon=_ss; db=real; state.screen=sc0; _sbx=sb0; bumpIdx(); } }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -7950,7 +7988,7 @@ function lineChart(vals,opt){ opt=opt||{};
   if(more.length){ const MX=d=>padX+((Date.parse(String(d).slice(0,10)+'T12:00:00')||0)-opt.tlo)/((opt.thi-opt.tlo)||1)*(W-2*padX); let ms='';
     more.forEach(x=>{ const col=x.m.stroke||'var(--o60)', P=[]; x.v.forEach((v,i)=>{ if(v!=null)P.push({x:MX(x.m.dates[i]),y:Math.max(3,Math.min(H-3,Y(v))),l:(x.m.labels||[])[i]||''}); });
       if(P.length>1)ms+='<path d="M'+P.map(p=>p.x.toFixed(1)+','+p.y).join(' L')+'" fill="none" stroke="'+col+'" stroke-width="1.4" class="sw-data chmore"'+(x.m.dash?' stroke-dasharray="'+x.m.dash+'"':'')+' stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
-      P.forEach((p,j)=>{ ms+='<path d="M'+p.x.toFixed(1)+','+p.y+' l0,0" stroke="'+col+'" stroke-width="'+(j===P.length-1?6:4)+'" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke"/>'; morePts.push({f:+(p.x/W).toFixed(4),y:+(p.y/H).toFixed(4),l:p.l}); }); });
+      P.forEach((p,j)=>{ const end=j===P.length-1; if(!x.m.noDots||P.length===1||(end&&x.m.endDot))ms+='<path d="M'+p.x.toFixed(1)+','+p.y+' l0,0" stroke="'+col+'" stroke-width="'+(end?(x.m.endW||6):4)+'" stroke-linecap="round" fill="none" vector-effect="non-scaling-stroke"/>'; morePts.push({f:+(p.x/W).toFixed(4),y:+(p.y/H).toFixed(4),l:p.l}); }); });
     line=ms+line; }
   const svg='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="width:100%;height:'+H+'px;display:block'+(opt.detail?'':';margin:'+(opt.margin!=null?opt.margin:'10px 0 2px'))+'"><defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--fill)" stop-opacity="'+(opt.detail?'.12':'.16')+'"/><stop offset="1" stop-color="var(--fill)" stop-opacity="0"/></linearGradient></defs>'+band+area+railV+goalL+avgL+line+dots+'</svg>';
   if(!opt.detail)return svg;
@@ -9259,6 +9297,100 @@ function compositionBlock(days){
     <div class="cpb">${seg('fat',sh(c.fatKg))}${seg('mus',sh(c.muscleKg))}${seg('wat',sh(c.waterKg))}</div>
     <div class="cpr">${cell('fat','grasa',c.fatKg)}${cell('mus','músculo',c.muscleKg)}${cell('wat','agua',c.waterKg)}</div>`;
 }
+// ── v321 · GR6 · comparar dos métricas ────────────────────────────────────────────────────────────────────────────────────────────
+// El dueño (8-oct): "una en especial para comparar diferentes métricas… full customizable… peso corporal con consumo de azúcar… las horas
+// de sueño con la tensión mecánica promedio por sesión… cualquier macronutriente… déficit programado o déficit cumplido… calorías totales y
+// peso corporal para ver la tendencia de ambas" · "de momento quiero que esté disponible, pero… solamente para usuarios premium".
+// Cada serie se dibuja en SU escala (la segunda se lleva al alto de la primera; sus números de verdad van en la leyenda y al deslizar).
+const PRO_OPEN={compare:true};   // premium: abierto para todos hasta que existan las cuentas de pago; la compuerta es una sola
+function proCan(f){ return PRO_OPEN[f]!==false; }
+const CMP_GROUPS=[['body','cuerpo'],['energy','energía'],['macros','macros'],['micros','micros'],['train','entreno'],['sleep','sueño'],['bio','biométricos']];
+function cmpSess(d){ return (db.sessions||[]).filter(s=>s.type!=='rest'&&s.date===d); }
+function cmpSets(d,fn){ let t=0, n=0; cmpSess(d).forEach(s=>(s.exercises||[]).forEach(e=>(e.sets||[]).forEach(x=>{ if(x&&x.done!==false&&(+x.r>0||+x.w>0)){ t+=fn(x,e); n++; } }))); return n?t:null; }
+// n = nutriente del día (comidas + lo que tomaste, como en macros; un día sin comidas no tiene dato) · get(fecha, X, i) = lo demás · est = estimado (~)
+const CMP={
+  weight:{g:'body',join:true,l:'peso',u:()=>bwU(),dec:1,get:d=>(db.bodyweight&&db.bodyweight[d]!=null)?bwShow(db.bodyweight[d]):null},
+  kcal:{g:'energy',l:'calorías',u:'kcal',n:'kcal'},
+  defplan:{g:'energy',l:'déficit programado',u:'kcal',est:true,get:(d,X,i)=>X.tdee&&X.goals[i]?X.tdee-X.goals[i]:null},
+  defreal:{g:'energy',l:'déficit cumplido',u:'kcal',est:true,get:(d,X)=>{ const t=X.nutr(d); return X.tdee&&t._n?X.tdee-t.kcal:null; }},
+  protein:{g:'macros',l:'proteína',u:'g',n:'protein'}, carbs:{g:'macros',l:'carbos',u:'g',n:'carbs'}, fat:{g:'macros',l:'grasa',u:'g',n:'fat'},
+  sugar:{g:'micros',l:'azúcar',u:'g',n:'sugar'}, fiber:{g:'micros',l:'fibra',u:'g',n:'fiber'}, sodium:{g:'micros',l:'sodio',u:'mg',n:'sodium'}, potassium:{g:'micros',l:'potasio',u:'mg',n:'potassium'},
+  caffeine:{g:'micros',l:'cafeína',u:'mg',n:'caffeine'}, alcohol:{g:'micros',l:'alcohol',u:'g',n:'alcohol'}, water:{g:'micros',l:'agua',u:'L',dec:1,n:'water'},
+  sig:{g:'train',join:true,l:'σ por sesión',u:'σ',dec:1,get:d=>{ const ss=cmpSess(d); return ss.length?ss.reduce((a,s)=>a+sessionTensionTotal(s),0)/ss.length:null; }},
+  hard:{g:'train',join:true,l:'series duras',u:'series',get:d=>cmpSets(d,x=>isHardSet(x)?(x.isDrop?0.5:1):0)},
+  vol:{g:'train',join:true,l:'volumen',u:'kg',get:d=>cmpSets(d,x=>kgLoad(x)*(+x.r||0))},
+  dur:{g:'train',join:true,l:'duración',u:'min',get:d=>{ const ss=cmpSess(d).filter(s=>+s.durSec>0); return ss.length?ss.reduce((a,s)=>a+s.durSec/60,0):null; }},
+  sleep:{g:'sleep',l:'horas de sueño',u:'h',dec:1,get:d=>{ const v=sleepHours(db.sleep&&db.sleep[d]); return v>0?v:null; }},
+  deep:{g:'sleep',l:'sueño profundo',u:'min',get:d=>{ const p=sleepPhDay(d); return p&&p.deep>0?p.deep:null; }},
+  rem:{g:'sleep',l:'sueño REM',u:'min',get:d=>{ const p=sleepPhDay(d); return p&&p.rem>0?p.rem:null; }},
+  steps:{g:'bio',l:'pasos',u:'pasos',get:d=>(db.steps&&+db.steps[d])||null},
+  rhr:{g:'bio',l:'FC en reposo',u:'lpm',get:d=>+((H().daily[d]||{}).rhr)||null},
+  hrv:{g:'bio',l:'HRV',u:'ms',get:d=>{ const x=(H().daily[d]||{}).hrv; return x&&x.v>0?x.v:null; }},
+  kcalact:{g:'bio',l:'energía activa',u:'kcal',get:d=>+((H().daily[d]||{}).activeKcal)||null},
+  ready:{g:'bio',l:'readiness',u:'',get:d=>{ const r=readinessScore(d); return r&&r.score!=null?r.score:null; }} };
+function dayNutr(d){ const t={kcal:0,protein:0,carbs:0,fat:0,sodium:0,potassium:0,sugar:0,fiber:0,water:0,caffeine:0,alcohol:0}; let n=0;
+  ((db.meals&&db.meals[d])||[]).forEach(m=>{ n++; for(const k in t)t[k]+=parseFloat(m[k])||0; });
+  if(n){ (db.stack||[]).forEach(x=>{ takesOf(x,d).forEach(tk=>{ const nn=takeDone(tk,d)?suppNutrOn(x,d,tk):null; if(nn){ for(const k in t)t[k]+=parseFloat(nn[k])||0; } }); });
+    ((db.adhoc&&db.adhoc[d])||[]).forEach(a=>{ if(a&&a.nutr){ for(const k in t)t[k]+=parseFloat(a.nutr[k])||0; } }); }
+  t._n=n; return t; }
+function cmpU(k){ const u=CMP[k].u; return typeof u==='function'?u():u; }
+function cmpFmt(k){ const M=CMP[k], u=cmpU(k), nf=cmpNum(k); return v=>(M.est?'~':'')+nf(v)+(u?' '+u:''); }
+function cmpNum(k){ const M=CMP[k]; return v=>(M.dec?(Math.round(v*10)/10).toLocaleString():Math.round(v).toLocaleString()).replace('-','−'); }   // el eje: solo el número (con la unidad no cabía en su canal y se encimaba con el final del trazo)
+function cmpAvg7(v){ return v.map((_,i)=>{ let s=0, n=0; for(let j=Math.max(0,i-6);j<=i;j++){ if(v[j]!=null){ s+=v[j]; n++; } } return n>=3?s/n:null; }); }
+function cmpCfg(){ const st=db.settings||(db.settings={}); let c=st.compare; if(!c||typeof c!=='object')c=st.compare={};
+  if(!CMP[c.a])c.a='kcal'; if(!CMP[c.b]||c.b===c.a)c.b=c.a==='weight'?'kcal':'weight'; if([30,90,180,365].indexOf(+c.days)<0)c.days=90; c.avg=!!c.avg;
+  if(!Array.isArray(c.saved))c.saved=[{a:'kcal',b:'weight'},{a:'sleep',b:'sig'},{a:'sugar',b:'weight'}]; c.saved=c.saved.filter(s=>s&&CMP[s.a]&&CMP[s.b]).slice(0,8); return c; }
+// la media de 7 días mira también los 6 días anteriores al periodo: la misma fecha da el mismo número en 30D y en 3M
+function cmpData(a,b,days,avg,end){ end=end||todayISO(); const ext=avg?6:0, all=daysEnding(days+ext,end), td=estimateTDEE(90), cur=+(((db.settings||{}).goals||{}).kcal)||0;
+  const X={tdee:(td&&td.tdee)||maintenanceKcal()||0,goals:mdGoals('kcal',all,cur)||[],_n:{},nutr:d=>X._n[d]||(X._n[d]=dayNutr(d))};
+  const S=k=>{ const M=CMP[k]; const v=all.map((d,i)=>{ let r; if(M.n){ const t=X.nutr(d); r=t._n?t[M.n]:null; } else r=M.get(d,X,i); return r==null||!isFinite(r)?null:+r; }); return (avg?cmpAvg7(v):v).slice(ext); };
+  return {dates:all.slice(ext),end,A:S(a),B:S(b)}; }
+function cmpRuns(v){ const R=[]; let c=null; v.forEach((x,i)=>{ if(x==null){ c=null; return; } if(!c){ c=[]; R.push(c); } c.push(i); }); return R; }
+// la gráfica: A manda la escala (sólida); B se lleva a ese alto (punteada), salvo que tengan la misma unidad: entonces comparten escala. Lo que dice al deslizar trae las DOS de esa fecha (A · B),
+// con sus números de verdad. Una serie de días sueltos por naturaleza (peso, lo de cada sesión: CMP.join) une sus puntos; una
+// diaria corta donde falta el día. Igual si va de A o de B.
+function cmpChart(a,b,D,h,detail){ const ra=D.A.filter(v=>v!=null), rb=D.B.filter(v=>v!=null); if(!ra.length&&!rb.length)return '';
+  const fa=cmpFmt(a), fb=cmpFmt(b), tlo=Date.parse(D.dates[0]+'T12:00:00'), thi=Date.parse(D.end+'T12:00:00');
+  const L=i=>{ const x=D.A[i], y=D.B[i]; return fmtShort(D.dates[i])+(x!=null?' · A '+fa(x):'')+(y!=null?' · B '+fb(y):''); };
+  const idx=V=>{ const ix=[]; V.forEach((v,i)=>{ if(v!=null)ix.push(i); }); return ix; };
+  const main=(V,k)=>CMP[k].join?(ix=>({vals:ix.map(i=>V[i]),dates:ix.map(i=>D.dates[i]),labels:ix.map(L)}))(idx(V)):{vals:V,dates:D.dates,labels:V.map((v,i)=>v==null?'':L(i))};
+  const o={h,tlo,thi,noFill:true}; if(detail){ o.detail=true; o.xtime=true; o.rail=phaseRail(D.dates[0],D.end); }
+  if(!ra.length){ const p=main(D.B,b); return lineChart(p.vals,Object.assign(o,{dates:p.dates,labels:p.labels,fmt:fb,tfmt:cmpNum(b),dash:'5 4',tone:'var(--o60)'})); }
+  const pa=main(D.A,a); o.dates=pa.dates; o.labels=pa.labels; o.fmt=fa; o.tfmt=cmpNum(a);
+  if(rb.length){ const al=Math.min.apply(null,ra), ah=Math.max.apply(null,ra), bl=Math.min.apply(null,rb), bh=Math.max.apply(null,rb), sa=(ah-al)||Math.max(1,Math.abs(al)*0.1), sb=(bh-bl)||1;
+    const same=!!cmpU(a)&&cmpU(a)===cmpU(b);   // misma unidad (dos déficits, proteína y carbos): comparten la escala, se comparan de verdad
+    const base=ah===al?al-sa/2:al, N=v=>same?v:(bh===bl?base+sa/2:base+(v-bl)/sb*sa);   // con A plana, B se reparte alrededor de ella (A no queda pegada al borde)
+    const mk=(ix,x)=>Object.assign({vals:ix.map(i=>N(D.B[i])),dates:ix.map(i=>D.dates[i]),labels:ix.map(L),dash:'5 4',stroke:'var(--o60)'},x);
+    // una serie diaria no lleva un punto por día (era ruido): solo el último, como la sólida; un día suelto sí se marca
+    const runs=cmpRuns(D.B); o.more=CMP[b].join?[mk(idx(D.B))]:runs.map((r,j)=>mk(r,{noDots:true,endDot:j===runs.length-1,endW:j===runs.length-1?6:4})); }
+  return lineChart(pa.vals,o); }
+function cmpSw(dash){ return '<svg class="lsw" viewBox="0 0 18 4" aria-hidden="true"><path d="M1,2 L17,2" fill="none" stroke="'+(dash?'var(--o60)':'var(--fill)')+'" stroke-width="1.4" class="sw-data" stroke-linecap="round"'+(dash?' stroke-dasharray="5 4"':'')+'/></svg>'; }
+function cmpOpts(cur){ return CMP_GROUPS.map(g=>'<optgroup label="'+g[1]+'">'+Object.keys(CMP).filter(k=>CMP[k].g===g[0]).map(k=>'<option value="'+k+'"'+(k===cur?' selected':'')+'>'+escTxt(CMP[k].l)+'</option>').join('')+'</optgroup>').join(''); }
+// selector y leyenda en UN renglón de alto fijo: trazo · letra · métrica ···· último valor (tocarlo da el rango y el promedio)
+function cmpRowHTML(x,k,vals,dash){ const r=vals.filter(v=>v!=null), fm=cmpFmt(k);
+  const more=r.length?'rango '+fm(Math.min.apply(null,r)).replace(/ [^ ]+$/,'')+' – '+fm(Math.max.apply(null,r))+' · promedio '+fm(r.reduce((s,v)=>s+v,0)/r.length)+' · '+r.length+' días con dato':'';
+  return '<div class="cmprow"><label class="cmpk" for="cmp_'+x+'">'+cmpSw(dash)+x.toUpperCase()+'</label><select id="cmp_'+x+'" class="pfsel cmps" aria-label="'+(x==='a'?'primera':'segunda')+' métrica">'+cmpOpts(k)+'</select>'
+    +(r.length?'<button type="button" class="cmpv" data-act="mdtrend" data-x="'+escTxt(more)+'"><span class="u-dash">'+escTxt(fm(r[r.length-1]))+'</span></button>':'<span class="cmpv u-o40">sin datos</span>')+'</div>'; }
+function cmpName(s){ return CMP[s.a].l+' + '+CMP[s.b].l; }
+function cmpSaveToggle(){ const c=cmpCfg(), i=c.saved.findIndex(s=>s.a===c.a&&s.b===c.b); if(i>=0)c.saved.splice(i,1); else if(c.saved.length<8)c.saved.push({a:c.a,b:c.b}); else { toast('⚠ ya hay 8 guardadas · quita una','err'); return; } saveSoon(); }
+function cmpTileHTML(wide){ const c=cmpCfg(), D=cmpData(c.a,c.b,wide?90:30,true), ch=cmpChart(c.a,c.b,D,wide?64:40,false);
+  const hd='<div class="ptlh"><div class="plbl">compare'+(wide?' · 3m':'')+'</div><span class="ptchev">›</span></div>';
+  if(wide)return '<div class="ptile tap" data-act="opencompare">'+hd+'<div class="ptw"><div><div class="pst">'+cmpSw(false)+' '+escTxt(CMP[c.a].l)+'</div><div class="pst">'+cmpSw(true)+' '+escTxt(CMP[c.b].l)+'</div></div><div class="ptwc">'+(ch||'<div class="pst flat">sin datos</div>')+'</div></div></div>';
+  return '<div class="ptile tap" data-act="opencompare">'+hd+'<div class="pst">'+escTxt(CMP[c.a].l)+'</div><div class="pst flat">'+escTxt(CMP[c.b].l)+'</div>'+ch+'</div>'; }
+// Nada se mueve bajo el dedo (verificador, 9-oct): los renglones de A y B miden siempre lo mismo, el hueco de "sin datos" mide lo
+// que la gráfica, y `guardar esta` va ARRIBA de las guardadas (lo que cambia al tocarlo queda debajo).
+function openCompare(){ if(!proCan('compare'))return; const c=cmpCfg(), D=cmpData(c.a,c.b,c.days,c.avg), LBL={30:'30D',90:'3M',180:'6M',365:'1A'};
+  const chart=cmpChart(c.a,c.b,D,170,true), isSaved=c.saved.some(s=>s.a===c.a&&s.b===c.b), tg=(v,l)=>'<button type="button" class="t '+((c.avg?'1':'0')===v?'on':'')+'" data-act="cmpavg" data-v="'+v+'">'+l+'</button>';
+  const none=()=>'<div class="cmpnone"><div class="cmpgh" aria-hidden="true">'+lineChart([0,1],{h:170,detail:true,xtime:true,noFill:true,dates:[D.dates[0],D.end],tlo:Date.parse(D.dates[0]+'T12:00:00'),thi:Date.parse(D.end+'T12:00:00'),rail:phaseRail(D.dates[0],D.end)})+'</div><div class="empty">sin datos de estas dos en este periodo</div></div>';
+  openModal('<div class="mdetail"><div class="mdhd"><h3>comparar</h3></div>'
+    +'<div class="mdtabs" data-tk="cmp">'+[30,90,180,365].map(d=>'<span data-act="cmprange" data-r="'+d+'" class="'+(c.days===d?'on':'')+'">'+LBL[d]+'</span>').join('')+'</div>'
+    +cmpRowHTML('a',c.a,D.A,false)+cmpRowHTML('b',c.b,D.B,true)
+    +'<div class="line pfr"><span class="k">puntos</span><span class="dots"></span><span class="v toggles">'+tg('0','diario')+tg('1','media 7 d')+'</span></div>'
+    +(chart||none())
+    +'<div class="cmpsb"><button type="button" class="b" data-act="cmpsave">'+(isSaved?'quitar de guardadas':'guardar esta')+'</button></div>'
+    +'<div class="cmpsv">'+c.saved.map((s,i)=>'<button type="button" class="b" data-act="cmpload" data-i="'+i+'">'+escTxt(cmpName(s))+'</button>').join('')+'</div>'
+    +'<div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div></div>','mdetail-wrap');
+  ['a','b'].forEach(x=>{ const el=document.getElementById('cmp_'+x); if(el)el.onchange=()=>{ const cc=cmpCfg(), v=el.value, o=x==='a'?'b':'a'; if(!CMP[v])return; if(cc[o]===v)cc[o]=cc[x]; cc[x]=v; saveSoon(); openCompare(); }; }); }
 // (openMetricDetail vive junto al renderer de gráficas — v227)
 // hard sets per muscle for the 7-day window `offsetWeeks` weeks ago (offset 0 = last 7d).
 // Same RP counting as weeklySets (uni pair = max side, drop = 0.5); kept separate so weeklySets (home //VOLUME) is untouched.
@@ -9441,6 +9573,7 @@ function renderProgress(){
       +`<div class="pst flat">intake ${_td.avgK} · peso ${_td.dWk>0?'+':''}${_td.dWk}kg/${_td.spanDays}d</div>`
       +`<div class="pst flat" style="opacity:.65">${_td.loggedDays} días · conf ${_td.conf}${_diff!=null?' · vs meta '+(_diff>0?'+':'')+_diff:''}</div></div>`); } }
   if(cfg.recov)put('recov',recovTileHTML(emptyTile));   // E6 · recovery y readiness antes de cada sesión
+  if(cfg.compare&&proCan('compare'))put('compare',cmpTileHTML(false));   // v321 · GR6
   out+=progGridHTML(T,_ed);
   if(_fresh&&!_ed)out+=`<div class="u-tc u-mt12"><span class="ehint">toca cualquier recuadro para registrar tu primer dato</span></div>`
     +`<button class="start u-mt12" data-act="logweight">+ registrar peso corporal</button>`;
@@ -9473,6 +9606,7 @@ function wideTileHTML(k){
     return '<div class="ptile tap" data-act="metricdetail" data-m="'+k+'"><div class="ptlh"><div class="plbl">'+WIDE_LBL[k]+' · 30d</div><span class="ptchev">›</span></div>'
       +'<div class="ptw"><div><div class="pval">'+val+'</div><div class="pst">prom '+escTxt(vf(avg))+'</div><div class="pst">'+escTxt(rng(vf(Math.min.apply(null,real)),vf(Math.max.apply(null,real))))+'</div></div>'
       +'<div class="ptwc">'+lineChart(raw,{h:80,dates:sp.dates})+'</div></div></div>'; }
+  if(k==='compare')return cmpTileHTML(true);
   if(k==='volume'||k==='tension'){ const w=progWeekly(12), a=(k==='volume'?w.vols:(w.tens||[]))||[], pos=a.filter(v=>v>0); if(!pos.length)return null;
     const fm=k==='volume'?(n=>n>=10000?(n/1000).toFixed(1)+'k':Math.round(n).toLocaleString()):fmtSig, u=k==='volume'?'vol':'σ';
     return '<div class="ptile tap" data-act="volumedetail"><div class="ptlh"><div class="plbl">'+(k==='volume'?'volume':'σ')+' · 12 wk</div><span class="ptchev">›</span></div>'
@@ -9513,7 +9647,7 @@ function openProgAdd(){ const e=state.progEdit; if(!e)return; const hid=['consis
 // un registro… de cómo has estado y que se pueda ver qué sesión fue previa a eso… que haya dos markers". Una marca de cada
 // puntaje por sesión, en su hora real (sessionPre: la foto guardada, o lo ya registrado en las sesiones anteriores a la foto).
 // La tile se registra aquí, sin tocar la lista de arriba: entra visible al final de tu acomodo y se quita como las demás.
-PROG_KEYS.push('recov'); PROG_LBL.recov='recovery · readiness';
+PROG_KEYS.push('recov'); PROG_LBL.recov='recovery · readiness'; PROG_KEYS.push('compare'); PROG_LBL.compare='comparar';
 const RV_LADDER=[30,90,180];
 // lo que se toca en E5/E6 (role="button") también responde a Enter / espacio con teclado
 const RV_KEYS='.ready.rec,.dmus,.rvr[role="button"],.ptile[data-act="recovdetail"]';
@@ -11727,6 +11861,11 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='perfinfo'){ openPerfInfo(); }
   else if(a==='progdel'){ const e=state.progEdit, k=el.dataset.k; if(e&&e.hidden.indexOf(k)<0){ e.hidden.push(k); progReflow(); } }
   else if(a==='progadd'){ openProgAdd(); }
+  else if(a==='opencompare'){ openCompare(); }
+  else if(a==='cmprange'){ cmpCfg().days=+el.dataset.r||90; saveSoon(); openCompare(); }
+  else if(a==='cmpavg'){ cmpCfg().avg=el.dataset.v==='1'; saveSoon(); openCompare(); }
+  else if(a==='cmpload'){ const c=cmpCfg(), s=c.saved[+el.dataset.i]; if(s){ c.a=s.a; c.b=s.b; saveSoon(); openCompare(); } }
+  else if(a==='cmpsave'){ cmpSaveToggle(); openCompare(); }
   else if(a==='progsize'){ if(!(Date.now()-(window._pszAt||0)<400&&window._pszK!==el.dataset.k))progSize(el.dataset.k); }
   else if(a==='progaddk'){ const e=state.progEdit, k=el.dataset.k; if(e){ e.hidden=e.hidden.filter(x=>x!==k); if(k!=='consistency'){ e.order=e.order.filter(x=>x!==k); e.order.push(k); } } closeModal(); reRender(); }
   else if(a==='progcancel'){ state.progEdit=null; reRender(); renderNav(); }
@@ -15935,7 +16074,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
