@@ -1448,7 +1448,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v328';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v329';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -6321,6 +6321,42 @@ function _qtyAllSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
     A('la página dice su idioma', document.documentElement.lang==='es');
     console.log('cuántas de cada uno self-check OK');
   } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } save=_sv; reRender=_rr; toast=_t; db=real; window._stackTab=st0; state.screen=sc0; _sbx=sb0; bumpIdx(); } }
+// self-check de v329: el export completo sobre una base de juguete (cada día con su meta, horas de sesión, comidas con hora, sueño, tomas, adherencia, estado). No guarda nada.
+function _exportSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK export: '+nm); }; const real=db, sb0=_sbx;
+  try{ _sbx=true; const T=todayISO(), D=k=>shiftDate(T,-k), I=(tag,name,kc)=>({id:name,tag,name,qty:'100 g',kcal:kc,protein:10,carbs:20,fat:5});
+    db=migrate({_idfix:true,_fsfix:true,_dataVer:3,profile:{username:'t',age:30,sex:'M'},settings:{goals:{kcal:2400,protein:180,carbs:250,fat:70}},split:{name:'t',days:[]},
+      goalHist:{[D(4)]:{kcal:2000,protein:150,carbs:200,fat:60},[D(1)]:{kcal:2400,protein:180,carbs:250,fat:70}},
+      meals:{[D(8)]:[I('lunch','viejo',500)],[D(4)]:[I('lunch','arroz',600),I('breakfast','avena',400)],[D(1)]:[I('dinner','pollo',700)]},mealMeta:{[D(4)]:{breakfast:{time:'08:30'}}},
+      sessions:[{id:'s1',date:D(1),dayName:'push A',gym:'AGON',startTime:'19:10',endTime:'20:36',durSec:5160,exercises:[{name:'press',muscle:'chest',sets:[{w:100,r:8,rir:1,unit:'kg',done:true}]}]},
+        {id:'s2',date:D(3),dayName:'legs',loggedAfter:true,exercises:[{name:'sentadilla',muscle:'quads',sets:[{w:120,r:5,rir:'F',unit:'kg',done:true}]}]},{id:'s3',date:D(2),type:'rest'}],
+      sleep:{[D(1)]:[{start:'23:10',end:'07:05',hours:7.4,inBed:7.9,ph:{awake:30,rem:95,core:240,deep:110}},{start:'15:00',end:'15:25',hours:0.4}]},
+      adhoc:{[D(1)]:[{id:'x1',name:'potasio',sid:'k1',qty:2,per:1,time:'14:32',ts:1}]},
+      stack:[{id:'k1',name:'creatina',category:'supp',dose:'5',unit:'g',when:['AM'],periodization:{type:'daily'},startDate:D(6),ticks:{[D(1)]:'taken',[D(2)]:'late',[D(3)]:'skipped'},tickTimes:{[D(1)]:'08:10'},tickQty:{[D(1)]:{q:3,b:1}}}]});
+    delete db.goalHist[D(8)];   // migrate le pone la meta de hoy a todo día con comida que no la traía: aquí se quita para probar el caso sin meta
+    bumpIdx(); const md=buildExportMd(db), has=s=>md.indexOf(s)>=0, sec=h=>{ const i=md.indexOf(h); if(i<0)return ''; const j=md.indexOf('\n## ',i+3); return md.slice(i,j<0?md.length:j); };
+    A('D0 · abre diciendo cómo leerse, con la versión', md.indexOf('## //CÓMO LEER ESTE ARCHIVO')<md.indexOf('## //PERFIL')&&has('app '+APP_V)&&/no se registra a propósito: energía, humor ni estrés/.test(md));
+    A('D9 · cada día con SU meta (y sin inventar la de antes de la primera)', has('### '+fmtDate(D(4))+' · meta 2000 kcal')&&has('### '+fmtDate(D(1))+' · meta 2400 kcal')&&has('### '+fmtDate(D(8))+' · sin meta guardada')&&!has('### '+fmtDate(D(4))+' · meta 2400'));
+    A('D9 · //METAS con cada cambio', (m=>/desde .*: 2000 kcal/.test(m)&&/desde .*: 2400 kcal/.test(m)&&/antes del .*: sin meta guardada/.test(m))(sec('## //METAS')));
+    A('D5 · cada sesión con su hora y duración; la que no la tiene lo dice', has('push A · AGON · 19:10–20:36 · 1 h 26 min')&&has('legs · sin hora · registrada después')&&has('### '+fmtDate(D(2))+' · descanso'));
+    A('D6 · la comida agrupada por comida con su hora, la que tiene hora primero', has('#### breakfast · 08:30')&&has('#### lunch · sin hora')&&md.indexOf('#### breakfast · 08:30')<md.indexOf('#### lunch · sin hora',md.indexOf('### '+fmtDate(D(4))))&&has('**día: 1000 kcal')&&has('50 % de su meta'));
+    A('D3 · el sueño en tabla: se durmió, despertó, dormido de noche, en cama, fases, siestas y el total', (m=>/\| 23:10 \| 07:05 \| 7 h 25 min \| 7 h 54 min \| 30 min \| 1 h 35 min \| 4 h \| 1 h 50 min \| 1 · 25 min \| 7 h 50 min \| a mano \|/.test(m))(sec('## //SUEÑO')));
+    A('D2 · las tomas día por día: hora, sustancia, cuántas y cómo quedó; el extra con su hora', (m=>has('- 08:10 · creatina · 3 · tomada')&&/· creatina · 1 · tarde/.test(m)&&/· creatina · 1 · saltada/.test(m)&&has('- 14:32 · potasio · 2 · extra')&&/sin registro/.test(m)&&/### .* · 1 de 1/.test(m))(sec('## //TOMAS')));
+    A('D8 · adherencia por sustancia y cuántas por toma', /- creatina · 5 g · 1 por toma · AM · .*\n  · adherencia: 30 d 2 de \d+ \(\d+ %\)/.test(md));
+    A('D7 · el estado es una sección calculada, sin nada subjetivo', has('## //ESTADO (calculado')&&!/humor:|estrés:|energía:/.test(md));
+    A('sin restos: ni undefined ni NaN ni la sección vieja de extras', !/undefined|NaN/.test(md)&&!has('## //EXTRAS'));
+    // los bordes que encontró el verificador (9-oct)
+    db=migrate({_idfix:true,_fsfix:true,_dataVer:3,profile:{username:'t'},settings:{goals:{kcal:2400,protein:180,carbs:250,fat:70}},split:{name:'t',days:[]},
+      meals:{[D(1)]:[{id:'a',tag:'constructor',name:'x',kcal:100},{id:'b',tag:'lunch',kcal:50,time:'14:10'},{id:'c',tag:'lunch',name:'con\nsalto',kcal:50,time:'14:40'}]},
+      sessions:[{id:'s9',date:D(1),dayName:'raro\n# x',exercises:[{sets:[null,{w:10,r:5,unit:'kg',done:true}]}]}],
+      stack:[{id:'u1',category:'supp',dose:'5',unit:'g',when:['AM'],periodization:{type:'daily'},startDate:D(9),ticks:{[D(1)]:'taken'}},
+        {id:'u2',name:'dos tomas',category:'supp',when:['AM'],periodization:{type:'daily'},startDate:D(9),ticks:{[D(1)]:'taken',[D(2)]:'taken',[D(3)]:'taken'},tickTimes:{[D(1)]:'08:00',[D(2)]:'08:00',[D(3)]:'08:10'},more:[{id:'m1',when:'PM',ticks:{[D(1)]:'taken',[D(2)]:'taken',[D(3)]:'taken'},tickTimes:{[D(1)]:'23:50',[D(2)]:'00:10',[D(3)]:'23:55'}}]}]});
+    bumpIdx(); let md2=''; try{ md2=buildExportMd(db); }catch(e){ md2='LANZÓ '+e; }
+    A('datos raros no lo tumban ni dejan undefined: una comida llamada constructor, nombres vacíos, una serie rota', !/^LANZÓ|undefined|NaN/.test(md2)&&md2.indexOf('#### constructor · sin hora')>=0&&md2.indexOf('- sin nombre — 10kg×5')>=0&&md2.indexOf('- sin nombre · 5 g · 1 por toma')>=0);
+    A('un salto de línea en un nombre no parte el renglón ni inventa un título', md2.indexOf('· raro # x ·')>=0&&md2.indexOf('con salto — 50kcal')>=0&&!/^# x/m.test(md2));
+    A('la hora de una comida sin hora es la de su primer alimento, y el que trae otra la dice', md2.indexOf('#### lunch · 14:10')>=0&&md2.indexOf('- sin nombre — 50kcal')>=0&&md2.indexOf('- 14:40 · con salto — 50kcal')>=0);
+    A('la hora típica es por toma y en reloj circular (23:50 · 00:10 · 23:55 no dan mediodía)', md2.indexOf('horas típicas 08:00 · 23:55')>=0);
+    console.log('export self-check OK');
+  } finally { db=real; _sbx=sb0; bumpIdx(); } }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -16512,12 +16548,32 @@ function nudgeBackup(why){
 function doExport(){ saveFileSafe('gymtrk-backup-'+todayISO()+'.json',JSON.stringify(db),'application/json',()=>{ markBackup(); toast('✓ respaldo guardado'); }); }
 // Markdown journal export (legible, para Obsidian/archivo). El JSON sigue siendo el backup máquina; esto es su contraparte humana.
 // ponytail: etiquetas del usuario van CRUDAS (sin escTxt) — regla dura "nunca renombrar" + Markdown es texto plano; la única tabla es numérica (//HÁBITOS) → cero riesgo de `|` en texto de usuario.
+// v329 · export completo (D0 · D2 · D3 · D5 · D6 · D7 · D8 · D9). Otra IA leyó su export y dijo qué faltaba o quedaba ambiguo; lo más grave era
+// un error: cada día salía con la meta de HOY. Ahora cada día lleva SU meta (la guardada ese día o la última anterior; antes de la primera
+// no se inventa), las sesiones dicen su hora, el sueño va en tabla con sus fases, la comida va agrupada con su hora, y hay tomas por día,
+// adherencia, el estado calculado y, al principio, cómo leer el archivo. Las etiquetas del usuario van crudas (regla: nunca renombrar).
 function buildExportMd(db){
-  const L=[]; const P=db.profile||{}; const G=(db.settings&&db.settings.goals)||{};
+  const L=[]; const P=db.profile||{}; const T=todayISO();
   const n=v=>{ v=Math.round((+v||0)*10)/10; return (v%1===0)?String(v):v.toFixed(1); }; // ponytail: 1 decimal sin lib
-  const fd=d=>d?fmtDate(d):'sin fecha';
-  const bw=db.bodyweight||{}; const bwk=Object.keys(bw).sort();
-  L.push('# gym//TRK · export · '+fd(todayISO()),'');
+  const fd=d=>d?fmtDate(d):'sin fecha', dm=x=>x>0?fmtDur(x):'—';
+  const cl=s=>String(s==null?'':s).replace(/\s*[\r\n]+\s*/g,' ').trim(), nz=s=>cl(s)||'sin nombre';   // un nombre con salto de línea no parte el renglón; uno vacío no sale como `undefined`
+  const hmK=x=>{ const m=hm2min(x); return isFinite(m)?m:1e9; };
+  const bw=db.bodyweight||{}, bwk=Object.keys(bw).sort(), meals=db.meals||{}, sleep=db.sleep||{}, steps=db.steps||{}, GH=db.goalHist||{}, ghk=Object.keys(GH).sort(), HD=(db.health&&db.health.daily)||{};
+  const goalOn=d=>{ if(GH[d])return GH[d]; let g=null; for(const k of ghk){ if(k<=d)g=GH[k]; else break; } return g; };   // D9 · la meta de ESE día
+  const gtxt=g=>g?Math.round(+g.kcal||0)+' kcal · P'+n(g.protein)+' C'+n(g.carbs)+' F'+n(g.fat):'';
+  const sess=(db.sessions||[]).filter(Boolean).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const allD=[].concat(Object.keys(meals),Object.keys(sleep),bwk,Object.keys(steps),sess.map(s=>s.date)).filter(Boolean).sort();
+  L.push('# gym//TRK · export · '+fd(T),'');
+  // D0 · cómo leer este archivo
+  L.push('## //CÓMO LEER ESTE ARCHIVO');
+  L.push('- app '+APP_V+' · generado el '+T+' a las '+nowHM()+(allD.length?' · datos del '+allD[0]+' al '+allD[allD.length-1]:''));
+  L.push('- unidades: peso corporal en kg · pesas en la unidad de cada serie (kg, lbs o placas) · energía en kcal · macros en g (P proteína, C carbos, F grasa) · agua en L · sueño en h y min');
+  L.push('- horas: la del teléfono, en 24 h. El sueño va en la fecha del día en que despertaste');
+  L.push('- lo calcula la app (no lo escribe el usuario): σ (estímulo de cada serie, de 0 a 1), volumen, la meta de cada día, readiness y sus partes, adherencia y cuánto queda de cada frasco');
+  L.push('- no se registra a propósito: energía, humor ni estrés. El estado del día sale de sueño, carga y biométricos (sección //ESTADO)');
+  L.push('- `—` = sin dato · `sin registro` = ese día no se marcó nada · `sin hora` = no se le puso hora');
+  L.push('- la hora de una comida es la que le pusiste; si no tiene, la del primer alimento que trae la suya (un alimento con otra hora la lleva delante). La adherencia cuenta días completos: hoy no entra');
+  L.push('- en las series: RIR = repeticiones en reserva · F = al fallo · ↓ = drop set · R / L = lado','');
   L.push('## //PERFIL');
   if(P.username)L.push('- usuario: '+P.username);
   if(P.since)L.push('- desde: '+P.since);
@@ -16525,49 +16581,95 @@ function buildExportMd(db){
   if(bwk.length)L.push('- peso actual: '+n(bw[bwk[bwk.length-1]])+' kg');
   if(P.age)L.push('- edad: '+P.age);
   if(P.heightCm)L.push('- altura: '+P.heightCm+' cm');
+  { const g=goalsFor(T); if(g&&+g.kcal>0)L.push('- meta de hoy: '+gtxt(g)+(+g.water>0?' · agua '+n(g.water)+' L':'')+(+g.sleep>0?' · sueño '+n(g.sleep)+' h':'')); }
   L.push('');
-  const sess=(db.sessions||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  L.push('## //GYM ('+sess.length+' sesiones)','');
+  // D9 · cada cambio de meta
+  L.push('## //METAS','');
+  if(ghk.length){ let prev=''; ghk.forEach(k=>{ const g=GH[k]||{}, sig=[g.kcal,g.protein,g.carbs,g.fat].join('|'); if(sig!==prev){ L.push('- desde '+fd(k)+': '+gtxt(g)); prev=sig; } }); L.push('- antes del '+fd(ghk[0])+': sin meta guardada',''); }
+  else L.push('// sin metas guardadas','');
+  L.push('## //GYM ('+sess.filter(s=>s.type!=='rest').length+' sesiones)','');
   sess.forEach(s=>{
-    L.push('### '+fd(s.date)+' · '+(s.dayName||'sesión')+(s.gym?' · '+s.gym:''));
-    let vol=0; const stT=sessionTension(s);
-    (s.exercises||[]).forEach((e,ei)=>{
-      const sets=(e.sets||[]).filter(x=>(x.w||x.r)&&!x._pf); // mismo filtro real que saveSession
+    if(s.type==='rest'){ L.push('### '+fd(s.date)+' · descanso',''); return; }
+    // D5 · la hora de la sesión
+    const hr=((db.health||{}).sessHR||{})[s.id], st=s.startTime||'', en=s.endTime||'', du=+s.durSec>0?fmtDur(s.durSec/60):'';
+    L.push('### '+fd(s.date)+' · '+(cl(s.dayName)||'sesión')+(cl(s.gym)?' · '+cl(s.gym):'')+' · '+(st&&en?st+'–'+en:(st||'sin hora'))+(du?' · '+du:'')+(s.loggedAfter?' · registrada después':'')+(hr&&hr.avg?' · FC media '+hr.avg+(hr.max?' · máx '+hr.max:''):''));
+    let vol=0, stT=[]; try{ stT=sessionTension(s)||[]; }catch(_){}
+    (s.exercises||[]).forEach((e,ei)=>{ if(!e)return;
+      const sets=(e.sets||[]).filter(x=>x&&(x.w||x.r)&&!x._pf); // mismo filtro real que saveSession (y una serie rota no tumba el archivo)
       if(!sets.length)return;
       const parts=sets.map(x=>{ const w=effW(x),r=+x.r||0; if(w&&r)vol+=kgLoad(x)*r; const f=String(x.rir==null?'':x.rir).trim().toUpperCase(); return n(w)+(x.unit||'')+'×'+(r||0)+(x.side?' '+x.side:'')+(x.isDrop?' ↓':'')+(f==='F'?' · F':(f!==''?(s.metric==='rpe'?' · RPE'+rirShow(f,'rpe'):' · RIR'+f):'')); });
       const tx=stT[ei]&&stT[ei].total>0?' · σ '+fmtSig(stT[ei].total):'';
-      L.push('- '+e.name+(e.muscle?' ('+e.muscle+')':'')+' — '+parts.join(' · ')+tx);
+      L.push('- '+nz(e.name)+(e.muscle?' ('+cl(e.muscle)+')':'')+' — '+parts.join(' · ')+tx);
     });
     if(vol>0)L.push('  · volumen: '+n(Math.round(vol))+' kg (Σ kg×reps; lbs→kg, placas excluidas)');
-    { const t=sessionTensionTotal(s); if(t>0)L.push('  · estímulo: σ '+fmtSig(t)); }
+    { let t=0; try{ t=sessionTensionTotal(s); }catch(_){} if(t>0)L.push('  · estímulo: σ '+fmtSig(t)); }
     L.push('');
   });
-  const meals=db.meals||{}; const mdates=Object.keys(meals).filter(d=>(meals[d]||[]).length).sort().reverse();
+  // D6 · la comida agrupada por comida con su hora · D9 · cada día con su meta
+  const mdates=Object.keys(meals).filter(d=>(meals[d]||[]).length).sort().reverse();
   L.push('## //NUTRICIÓN ('+mdates.length+' días)','');
-  mdates.forEach(d=>{
-    L.push('### '+fd(d));
-    const t={kcal:0,protein:0,carbs:0,fat:0};
-    (meals[d]||[]).forEach(m=>{
-      t.kcal+=+m.kcal||0; t.protein+=+m.protein||0; t.carbs+=+m.carbs||0; t.fat+=+m.fat||0;
-      L.push('- '+(m.time?m.time+' · ':'')+(m.tag?m.tag+' · ':'')+m.name+(m.qty?' '+m.qty:'')+' — '+Math.round(+m.kcal||0)+'kcal P'+n(m.protein)+' C'+n(m.carbs)+' F'+n(m.fat));
-    });
-    L.push('**día: '+Math.round(t.kcal)+' kcal · P'+n(t.protein)+' C'+n(t.carbs)+' F'+n(t.fat)+(G.kcal?' · meta '+G.kcal:'')+'**','');
+  mdates.forEach(d=>{ const g=goalOn(d);
+    L.push('### '+fd(d)+(g?' · meta '+gtxt(g):' · sin meta guardada'));
+    const t={kcal:0,protein:0,carbs:0,fat:0}, by=Object.create(null), ord=[];   /* sin prototipo: una comida llamada `constructor` es una comida más */ (meals[d]||[]).forEach(m=>{ if(!m)return; const k=m.tag||'sin comida'; if(!by[k]){ by[k]=[]; ord.push(k); } by[k].push(m); });
+    // la hora de una comida: la que le pusiste o, si no, la del primer alimento que trae la suya (la app lee esa hora: última comida, antes de entrenar)
+    const hOf=k=>mealTime(d,k)||(by[k].map(m=>m.time).filter(x=>isFinite(hm2min(x))).sort((a,b)=>hm2min(a)-hm2min(b))[0]||''); ord.sort((a,b)=>hmK(hOf(a))-hmK(hOf(b)));   // con hora primero, en su orden; sin hora, como se registraron
+    ord.forEach(k=>{ const mt={kcal:0,protein:0,carbs:0,fat:0}, hm=hOf(k); L.push('#### '+cl(k)+' · '+(hm||'sin hora'));
+      by[k].forEach(m=>{ ['kcal','protein','carbs','fat'].forEach(x=>{ mt[x]+=+m[x]||0; t[x]+=+m[x]||0; }); L.push('- '+(m.time&&m.time!==hm&&isFinite(hm2min(m.time))?m.time+' · ':'')+nz(m.name)+(m.qty?' '+cl(m.qty):'')+' — '+Math.round(+m.kcal||0)+'kcal P'+n(m.protein)+' C'+n(m.carbs)+' F'+n(m.fat)+(+m.water>0?' · agua '+n(m.water)+'L':'')); });
+      L.push('  · comida: '+Math.round(mt.kcal)+' kcal · P'+n(mt.protein)+' C'+n(mt.carbs)+' F'+n(mt.fat)); });
+    L.push('**día: '+Math.round(t.kcal)+' kcal · P'+n(t.protein)+' C'+n(t.carbs)+' F'+n(t.fat)+(g&&+g.kcal>0?' · '+Math.round(t.kcal/g.kcal*100)+' % de su meta':'')+'**','');
   });
-  const sleep=db.sleep||{}, steps=db.steps||{};
-  const waterFor=d=>(meals[d]||[]).reduce((a,m)=>a+(+m.water||0),0);
-  const hdates=Array.from(new Set([].concat(Object.keys(sleep),Object.keys(bw),Object.keys(steps),Object.keys(meals)))).filter(Boolean).sort().reverse();
-  const hrows=hdates.map(d=>{ const w=waterFor(d); return {d,sl:sleep[d]!=null?(fmtSleep(sleep[d])||'—'):'—',pe:bw[d]!=null?n(bw[d])+'kg':'—',pa:steps[d]!=null?Math.round(steps[d]):'—',ag:w>0?n(w)+'L':'—',any:(sleep[d]!=null||bw[d]!=null||steps[d]!=null||w>0)}; }).filter(r=>r.any);
+  // D3 · el sueño, noche por noche
+  const sdates=Object.keys(sleep).filter(d=>sleepBlocks(sleep[d]).filter(Boolean).length&&sleepMinOf(sleep[d])>0).sort().reverse();
+  L.push('## //SUEÑO ('+sdates.length+' noches)','');
+  if(sdates.length){ L.push('| despertó el | se durmió | despertó | dormido de noche | en cama | despierto | REM | core | profundo | siestas | total del día | fuente |','| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |');
+    sdates.forEach(d=>{ const B=sleepBlocks(sleep[d]).filter(Boolean); let night=B.filter(b=>!b.start||isNocturnal(b.start)), naps=B.filter(b=>b.start&&!isNocturnal(b.start)); if(!night.length){ night=B; naps=[]; }   // un día solo con bloques de día: van como su noche (no se esconde nada)
+      const kS=x=>{ const m=hm2min(x); return isFinite(m)?(m>=720?m-1440:m):null; }, kE=x=>{ const m=hm2min(x); return isFinite(m)?(m>=1080?m-1440:m):null; };   // la noche empieza donde empieza su primer bloque y acaba donde acaba el último
+      const b0=night.filter(b=>kS(b.start)!=null).sort((a,b)=>kS(a.start)-kS(b.start))[0], b1=night.filter(b=>kE(b.end)!=null).sort((a,b)=>kE(b.end)-kE(a.end))[0], main={start:b0&&b0.start,end:b1&&b1.end}, nm=night.reduce((a,b)=>a+sleepMinOf(b),0), zm=naps.reduce((a,b)=>a+sleepMinOf(b),0);
+      const ph={awake:0,rem:0,core:0,deep:0}; let any=false, bed=0; night.forEach(b=>{ const p=phaseMin(b); if(p){ any=true; for(const k in ph)ph[k]+=p[k]; } bed+=+b.inBed>0?Math.round(+b.inBed*60):winMin(b); });
+      const src=[...new Set(B.map(b=>b.src||'a mano'))].join(' + ');
+      L.push('| '+fd(d)+' | '+((main&&main.start)||'—')+' | '+((main&&main.end)||'—')+' | '+dm(nm)+' | '+dm(bed)+' | '+(any?fmtDur(ph.awake):'—')+' | '+(any?fmtDur(ph.rem):'—')+' | '+(any?fmtDur(ph.core):'—')+' | '+(any?fmtDur(ph.deep):'—')+' | '+(naps.length?naps.length+' · '+fmtDur(zm):'—')+' | '+dm(nm+zm)+' | '+src+' |'); });
+    L.push(''); } else L.push('// sin datos','');
+  const waterFor=d=>(meals[d]||[]).reduce((a,m)=>a+(+(m&&m.water)||0),0);
+  const hdates=Array.from(new Set([].concat(bwk,Object.keys(steps),Object.keys(meals),Object.keys(HD)))).filter(Boolean).sort().reverse();
+  const hrows=hdates.map(d=>{ const w=waterFor(d), h=HD[d]||{}; return {d,pe:bw[d]!=null?n(bw[d])+'kg':'—',pa:steps[d]!=null?Math.round(steps[d]):'—',ag:w>0?n(w)+'L':'—',rh:+h.rhr>0?Math.round(h.rhr):'—',hv:h.hrv&&+h.hrv.v>0?Math.round(h.hrv.v)+' '+(hrvKindOf(h)==='rmssd'?'RMSSD':'SDNN'):'—',any:(bw[d]!=null||steps[d]!=null||w>0||+h.rhr>0||!!(h.hrv&&+h.hrv.v>0))}; }).filter(r=>r.any);
   L.push('## //HÁBITOS','');
-  if(hrows.length){ L.push('| fecha | sueño | peso | pasos | agua |','| --- | --- | --- | --- | --- |'); hrows.forEach(r=>L.push('| '+fd(r.d)+' | '+r.sl+' | '+r.pe+' | '+r.pa+' | '+r.ag+' |')); L.push(''); }
+  if(hrows.length){ L.push('| fecha | peso | pasos | agua | FC reposo | HRV |','| --- | --- | --- | --- | --- | --- |'); hrows.forEach(r=>L.push('| '+fd(r.d)+' | '+r.pe+' | '+r.pa+' | '+r.ag+' | '+r.rh+' | '+r.hv+' |')); L.push(''); }
   else { L.push('// sin datos',''); }
-  const stack=(db.stack||[]).filter(x=>!x.archived);
+  // D7 · el estado del día, calculado (nada subjetivo a mano)
+  { const rows=[]; for(let i=0;i<90;i++){ const d=shiftDate(T,-i); let r=null; try{ r=readinessV2(d); }catch(_){} if(!r||r.score==null)continue; const p=r.parts||{}, sc=k=>p[k]?String(p[k].score):'—';
+      rows.push('| '+fd(d)+' | '+r.score+' · '+(r.band||'')+' | '+sc('debt')+' | '+sc('sleep')+' | '+sc('cont')+' | '+sc('load')+' | '+sc('rhr')+' | '+sc('hrv')+' | '+(r.debt!=null?n(r.debt)+' h':'—')+' |'); }
+    L.push('## //ESTADO (calculado · readiness de 0 a 100 · últimos 90 días)','');
+    if(rows.length){ L.push('| fecha | readiness | semana | anoche | continuidad | carga | FC reposo | HRV | sueño que debe |','| --- | --- | --- | --- | --- | --- | --- | --- | --- |'); rows.forEach(r=>L.push(r)); L.push(''); }
+    else L.push('// sin datos suficientes (hace falta el sueño de anoche y 5 noches de la semana)',''); }
+  // regímenes con cuántas por toma, su periodo, su estado y (D8) su adherencia
+  const stack=(db.stack||[]).filter(Boolean);
   if(stack.length){
     L.push('## //REGÍMENES ('+stack.length+')','');
-    stack.forEach(it=>{ const p=suppProd(it), k=suppStock(it); L.push('- '+it.name+(p&&p.brand?' ('+p.brand+')':'')+(it.dose?' · '+it.dose+(it.unit?' '+it.unit:''):'')+(p&&p.per?' · '+p.per+' '+suppPU(p)+' por toma':'')+(it.when&&it.when.length?' · '+it.when.join('/'):'')+takesOf(it).slice(1).map(x=>' + '+[takeDoseTxt(x),x.when!=='otros'?x.when:''].filter(Boolean).join(' ')).join('')+(it.category?' ['+it.category+']':'')+(k?' · '+suppStockTxt(k):'')); });
+    stack.forEach(it=>{ const p=suppProd(it), k=suppStock(it), stt=suppStatus(it), oc=(it.periodization||{}).type==='occasional';
+      L.push('- '+nz(it.name)+(p&&p.brand?' ('+cl(p.brand)+')':'')+(it.dose?' · '+it.dose+(it.unit?' '+it.unit:''):'')+' · '+qtyTxt(suppPer(it,p))+' por toma'+(it.when&&it.when.length?' · '+it.when.join('/'):'')+' · '+stackPeriodLabel(it)+takesOf(it).slice(1).map(x=>' + '+[takeDoseTxt(x),x.when!=='otros'?x.when:''].filter(Boolean).join(' ')).join('')+(it.category?' ['+it.category+']':'')+(stt!=='active'?' · '+(stt==='paused'?'en pausa':'archivado'):'')+(it.startDate?' · desde '+it.startDate:'')+(k?' · '+suppStockTxt(k):''));
+      if(stt!=='active')return;
+      // la hora típica es POR TOMA (dos tomas al día no se promedian entre sí) y en reloj circular (23:50 y 00:10 dan medianoche, no mediodía)
+      const hrs=Object.create(null); let n90=0; for(let i=0;i<90;i++){ const d=shiftDate(T,-i); takesOf(it,d).forEach(t=>{ if(takeDone(t,d)){ n90++; const m=hm2min(takeTime(t,d)), k=t.id||'_'; if(isFinite(m))(hrs[k]=hrs[k]||[]).push(m); } }); }
+      const cmed=a=>{ const z=a.slice().sort((x,y)=>x-y); let gi=0, g=-1; z.forEach((v,i)=>{ const q=(z[(i+1)%z.length]-v+1440)%1440; if(q>g){ g=q; gi=i; } }); const st=(gi+1)%z.length, b=z[st]; return minToHM(median(z.map((_,i)=>{ const v=z[(st+i)%z.length]; return v<b?v+1440:v; }))); };
+      const ht=Object.keys(hrs).filter(k=>hrs[k].length>=3).map(k=>cmed(hrs[k])).sort(), s0=it.startDate||Object.keys(it.ticks||{}).sort()[0]||'';
+      const ad=w=>{ let due=0, done=0; for(let i=1;i<=w;i++){ const d=shiftDate(T,-i); if(!s0||d<s0)break;   /* días completos: hoy no entra (a media tarde casi todo "faltaría") */ if(!isDueToday(it,d))continue; takesOf(it,d).forEach(t=>{ due++; if(takeDone(t,d))done++; }); } return due?done+' de '+due+' ('+Math.round(done/due*100)+' %)':'—'; };
+      L.push('  · '+(oc?n90+(n90===1?' toma':' tomas')+' en 90 d':'adherencia: 30 d '+ad(30)+' · 90 d '+ad(90))+(ht.length?' · '+(ht.length>1?'horas típicas ':'hora típica ')+ht.join(' · '):'')); });
     L.push('');
   }
-  { const xd=Object.keys(db.adhoc||{}).filter(d=>(db.adhoc[d]||[]).length).sort().reverse(), n=xd.reduce((s,d)=>s+db.adhoc[d].length,0);   // v326 · lo que tomaste fuera de plan
-    if(n){ L.push('## //EXTRAS ('+n+')',''); xd.forEach(d=>db.adhoc[d].forEach(a=>{ if(a)L.push('- '+fd(d)+(a.time?' '+a.time:'')+' · '+qtyTxt(extraQty(a))+' '+(a.name||'')); })); L.push(''); } }
+  // D2 · las tomas, día por día: hora · sustancia · cuántas · tomada / tarde / saltada / extra
+  { const days=new Set(); stack.forEach(it=>[it].concat(it.more||[]).forEach(o=>Object.keys((o&&o.ticks)||{}).forEach(d=>days.add(d)))); Object.keys(db.adhoc||{}).forEach(d=>{ if((db.adhoc[d]||[]).length)days.add(d); });
+    const dk=[...days].filter(d=>/^\d{4}-\d\d-\d\d$/.test(d)&&d<=T).sort();
+    if(dk.length){ L.push('## //TOMAS (desde '+fd(dk[0])+')','');
+      let gap=[]; const flush=()=>{ if(!gap.length)return; if(gap.length===1)L.push('### '+fd(gap[0][0])+' · 0 de '+gap[0][1],'sin registro',''); else L.push('### del '+fd(gap[gap.length-1][0])+' al '+fd(gap[0][0])+' · sin registro ('+gap.length+' días)',''); gap=[]; };   // los días seguidos sin marcar van en un renglón
+      for(let d=T, g=0; d>=dk[0]&&g<4000; d=shiftDate(d,-1), g++){ const rows=[]; let due=0, done=0;
+        stack.forEach(it=>{ const dd=isDueToday(it,d); takesOf(it,d).forEach(t=>{ const s=takeState(t,d); if(dd||s)due++; if(!s)return; if(s!=='skipped')done++; const hm=takeTime(t,d);
+            rows.push([hmK(hm),'- '+(hm||'sin hora')+' · '+nz(it.name)+' · '+qtyTxt(takeUnitsOn(t,d))+' · '+(s==='taken'?'tomada':s==='late'?'tarde':'saltada')]); }); });
+        ((db.adhoc&&db.adhoc[d])||[]).forEach(a=>{ if(a)rows.push([hmK(a.time),'- '+(a.time||'sin hora')+' · '+nz(a.name)+' · '+qtyTxt(extraQty(a))+' · extra']); });
+        if(!due&&!rows.length)continue;
+        if(!rows.length){ gap.push([d,due]); continue; }
+        flush(); L.push('### '+fd(d)+(due?' · '+done+' de '+due:''));
+        rows.sort((a,b)=>a[0]-b[0]); rows.forEach(r=>L.push(r[1])); L.push(''); }
+      flush(); } }
   return L.join('\n');
 }
 function exportMarkdown(db){ saveFileSafe('gymtrk-export-'+todayISO()+'.md',buildExportMd(db),'text/markdown'); }
@@ -16649,7 +16751,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
