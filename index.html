@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.openfoodfacts.org https://cdn.jsdelivr.net https://tessdata.projectnaptha.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'" />
@@ -94,7 +94,7 @@
   .status{display:grid; grid-template-columns:1fr auto 1fr; align-items:start; font-size:var(--t-label); color:var(--o50);}   /* v256: grid, la fecha queda centrada de verdad */
   .status .sright{justify-self:end; display:flex; flex-direction:column; align-items:flex-end; text-align:right;}
   .sgoal{position:relative; margin-top:var(--s2); padding:0; background:none; border:0; font-family:inherit; font-size:var(--t-label); line-height:var(--lh-ui); color:var(--o40); cursor:pointer;}
-  .sgoal b{font-weight:400; color:var(--o70);} .sgoal .cv{color:var(--o30); margin-left:var(--s1);} .sgoal:active{opacity:var(--op-press);}
+  .sgoal b{font-weight:400; color:var(--o70);} .sgoal .cv{color:var(--o40); margin-left:var(--s1);} .sgoal:active{opacity:var(--op-press);}
   .sgoal::after{content:''; position:absolute; left:-12px; right:-8px; top:-4px; height:44px;}
   .status .uname{font-weight:800; font-size:var(--t-data); color:var(--fg);}
   .status .back{position:relative; display:inline-block; margin-top:var(--s2); font-size:var(--t-data); color:var(--o60); padding:var(--s3) 0; cursor:pointer;}   /* v267 · [‹ back] como acción de texto (antes caja) */
@@ -235,25 +235,25 @@
   .savebar a{flex:0 0 auto; font-size:var(--t-label); color:var(--o60); cursor:pointer; padding:var(--s3) 0;}
   .stline{display:flex; align-items:baseline; gap:var(--s3); font-size:var(--t-data); padding:var(--s3) 0; border-bottom:var(--bw-sep) solid var(--o10);}
   .stline .stk{flex:1; min-width:0; color:var(--o60); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .stline .stv{color:var(--fg); font-weight:700; white-space:nowrap;} .stline.gone .stk,.stline.gone .stv{color:var(--o35); text-decoration:line-through;}
+  .stline .stv{color:var(--fg); font-weight:700; white-space:nowrap;} .stline.gone .stk,.stline.gone .stv{color:var(--o40); text-decoration:line-through;}
   .supps{margin:0 0 var(--s5);}
   .supps .sph{display:flex; align-items:center; gap:var(--s3); width:100%; height:36px; padding:0; background:none; border:0; color:inherit; font:inherit; cursor:pointer; text-align:left;}
   .supps .sph .h{font-size:var(--t-section); font-weight:800; letter-spacing:var(--ls-title);}
-  .supps .spdots{font-size:var(--t-data); letter-spacing:.14em; color:var(--o30); white-space:nowrap;}
+  .supps .spdots{font-size:var(--t-data); letter-spacing:.14em; color:var(--o40); white-space:nowrap;}
   .supps .spdots b{color:var(--fg); font-weight:400;}
   .supps .spn{font-size:var(--t-label); color:var(--o40); margin-left:auto;}
-  .supps .sphx{font-size:var(--t-label); color:var(--o30); width:12px; text-align:center;}
+  .supps .sphx{font-size:var(--t-label); color:var(--o40); width:12px; text-align:center;}
   .sprail{display:flex; align-items:center; gap:var(--s2); overflow-x:auto; padding:var(--s2) 0 var(--s1); scrollbar-width:none; -webkit-overflow-scrolling:touch;}
   .sprail::-webkit-scrollbar{display:none;}
-  .spl{flex:0 0 auto; font-size:var(--t-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--o35); padding:0 var(--s1);}
+  .spl{flex:0 0 auto; font-size:var(--t-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--o40); padding:0 var(--s1);}
   .spc{display:inline-flex; flex:0 0 auto; align-items:center; height:36px; font-size:var(--t-data); padding:0 var(--s4); border:var(--bw-box) solid var(--o20); border-radius:var(--r-ctl); cursor:pointer; color:var(--fg); white-space:nowrap; -webkit-user-select:none; user-select:none; background:none; font-family:inherit;}
   .spc .k{color:var(--o40); margin-right:var(--s2);}
-  .spc.on{color:var(--o35); border-color:var(--o10);} .spc.on .k{color:var(--good);}
+  .spc.on{color:var(--o40); border-color:var(--o10);} .spc.on .k{color:var(--good);}
   .spc.all{color:var(--o60); border-style:dashed;}
   /* U1 · el log es un diario: la acción vive dentro de la comida (MyFitnessPal), no en un botón flotante */
   .ghead .gnm{font-size:var(--t-section); font-weight:800; color:var(--fg); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .gnmin{font-family:inherit; font-size:var(--t-field); font-weight:800; color:var(--fg); background:transparent; border:0; border-bottom:var(--bw-field) solid var(--o40); padding:0 0 1px; max-width:160px; outline:none;}
-  .gmore{grid-column:4; justify-self:end; width:30px; height:30px; margin:-6px 0; background:none; border:0; color:var(--o30); font-size:var(--t-section); line-height:var(--lh-tight); cursor:pointer; font-family:inherit;}
+  .gmore{grid-column:4; justify-self:end; width:30px; height:30px; margin:-6px 0; background:none; border:0; color:var(--o40); font-size:var(--t-section); line-height:var(--lh-tight); cursor:pointer; font-family:inherit;}
   .gmore:active{color:var(--fg);}
   .gadd{padding:0 0 10px 24px;} .gadd a{display:inline-block; padding:var(--s3) 0; font-size:var(--t-label); color:var(--o50); cursor:pointer;}
   .newmeal{margin:0 0 var(--sp-gap);} .newmeal a{display:inline-block; padding:var(--s3) var(--s1); font-size:var(--t-label); color:var(--o60); cursor:pointer;}
@@ -268,7 +268,7 @@
   .whl-list{height:200px; overflow-y:auto; scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
   .whl-list::-webkit-scrollbar{display:none;}
   .whl-pad{height:80px;}
-  .whl-o{display:block; width:100%; height:40px; scroll-snap-align:center; background:none; border:0; font-family:inherit; font-size:var(--t-section); color:var(--o35); text-align:center; cursor:pointer;}
+  .whl-o{display:block; width:100%; height:40px; scroll-snap-align:center; background:none; border:0; font-family:inherit; font-size:var(--t-section); color:var(--o40); text-align:center; cursor:pointer;}
   .whl-o.on{color:var(--fg); font-weight:800;}
   .whl-sel{position:absolute; left:0; right:0; top:80px; height:40px; border-top:var(--bw-sep) solid var(--o20); border-bottom:var(--bw-sep) solid var(--o20); pointer-events:none;}
   /* v226 · racha (comida O gym) + calendario de dos meses, estilo "last 30 days" de Bevel en monocromo */
@@ -279,15 +279,15 @@
   .cal2{display:grid; grid-template-columns:1fr 1fr; gap:var(--s4); margin-top:var(--s4);}
   .strk{display:block; width:100%; margin:0 0 var(--s4); padding:var(--s3) 0; background:none; border:0; font-family:inherit; color:inherit; text-align:left; cursor:pointer;} .strk:active{opacity:var(--op-press);}
   .strk-h{display:flex; justify-content:space-between; align-items:baseline; font-size:var(--t-label); line-height:var(--lh-ui); color:var(--o40); margin-bottom:6px;}
-  .strk-k{text-transform:uppercase; letter-spacing:var(--ls-caps);} .strk-b b{font-weight:400; color:var(--fg);} .strk-h .rchev{color:var(--o30); margin-left:var(--s2);}
+  .strk-k{text-transform:uppercase; letter-spacing:var(--ls-caps);} .strk-b b{font-weight:400; color:var(--fg);} .strk-h .rchev{color:var(--o40); margin-left:var(--s2);}
   .strk-row{display:grid; grid-template-columns:repeat(28,minmax(0,1fr)); gap:var(--s1);} .strk-row .cd{border-radius:var(--r-sm);}
   .strk-row .cd.t{box-shadow:0 0 0 1px var(--o40);} .strk-row .cd.t.l0::after{content:''; position:absolute; left:50%; top:50%; width:3px; height:3px; margin:-1.5px 0 0 -1.5px/*ds:exempt*/; border-radius:50%; background:var(--fg);}
   .line .v .u{font-weight:400; color:var(--o40);}
   .tselo.hs{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--s1); line-height:1.1;} .tselo .tsub{font-size:var(--t-label); font-weight:400; color:var(--o50);} .tselo.on .tsub{color:inherit; opacity:.7;}
-  .line.lnav{min-height:44px; align-items:center; padding:0; cursor:pointer;} .line.lnav .v{font-weight:700;} .line .rchev{color:var(--o30); margin-left:var(--s2);} .line.lnav:active{opacity:var(--op-press);}
+  .line.lnav{min-height:44px; align-items:center; padding:0; cursor:pointer;} .line.lnav .v{font-weight:700;} .line .rchev{color:var(--o40); margin-left:var(--s2);} .line.lnav:active{opacity:var(--op-press);}
   .cm .cmh{font-size:var(--t-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--o50); margin-bottom:6px;}
   .cm .cmw,.cm .cmg{display:grid; grid-template-columns:repeat(7,1fr); gap:var(--s2);}
-  .cm .cmw{margin-bottom:var(--s2);} .cm .cmw b{font-size:var(--t-label); font-weight:400; color:var(--o35); text-align:center;}
+  .cm .cmw{margin-bottom:var(--s2);} .cm .cmw b{font-size:var(--t-label); font-weight:400; color:var(--o40); text-align:center;}
   /* U5 (E16): celda CUADRADA y escala de opacidad de un solo blanco — el gris + verde era la pareja rechazada */
   .cd{display:block; aspect-ratio:1; border-radius:var(--r-mark); background:var(--track); position:relative;}
   .cm .cd{cursor:pointer;} .cm .cd.e{background:none; cursor:default;} .cm .cd.f{background:none; box-shadow:inset 0 0 0 .5px var(--o10); cursor:default;}
@@ -337,13 +337,13 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .pgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:var(--s4);}
   .ptile.tap{cursor:pointer; transition:transform var(--dur-1) var(--ease-out), opacity var(--dur-1) var(--ease-out);}
   .ptile.tap:active{transform:scale(.98); opacity:.85;}
-  .ptchev{font-size:var(--t-data); color:var(--o30); margin-left:6px; line-height:var(--lh-tight);}
+  .ptchev{font-size:var(--t-data); color:var(--o40); margin-left:6px; line-height:var(--lh-tight);}
   .pthrow{background:var(--card); border:var(--bw-card) solid var(--border); border-radius:var(--radius); padding:var(--sp-card); margin-top:var(--s4);}
-  .pthl{font-size:var(--t-label); color:var(--o40); letter-spacing:var(--ls-caps); text-transform:uppercase; margin-bottom:10px;} .pthl span{color:var(--o30); letter-spacing:var(--ls-ui);}
+  .pthl{font-size:var(--t-label); color:var(--o40); letter-spacing:var(--ls-caps); text-transform:uppercase; margin-bottom:10px;} .pthl span{color:var(--o40); letter-spacing:var(--ls-ui);}
   .tbrow{display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding:var(--s2) 0; font-size:var(--t-data);}
   .tbk{color:var(--o50); font-size:var(--t-data); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .tbv{font-weight:700; white-space:nowrap;} .tbv i{font-style:normal; color:var(--o40); font-size:var(--t-label); font-weight:400; margin-left:var(--s1);} .tbv b{font-weight:700; margin-left:6px;}
-  .tba{color:var(--o35); margin:0 var(--s1);}
+  .tba{color:var(--o40); margin:0 var(--s1);}
   /* R6 · TRKBar en el detalle de músculo (D16): una barra por lectura, track + fill; el color va solo en el texto de estado */
   .mdbar{display:flex; align-items:center; gap:var(--s3); margin:var(--s1) 0 var(--s2);} .mdbar .vbar{flex:1;} .mdbar .mdbc{font-size:var(--t-label); color:var(--o40); white-space:nowrap;}
   .sheet.mdetail-wrap{max-height:88vh; overflow-y:auto;}
@@ -354,7 +354,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .mdlog:active{color:var(--fg);}
   /* R3 · TRKTabs (§7.18): etiquetas --o50, activa --fg, indicador de 2 px --fill que viaja en posición y ancho */
   .mdtabs{position:relative; display:flex; gap:0; border-bottom:var(--bw-sep) solid var(--o10); margin-bottom:var(--s5);}
-  .mdtabs span{position:relative; z-index:1; flex:1; text-align:center; padding:var(--s3) 0 10px; font-size:var(--t-data); color:var(--o50); cursor:pointer; letter-spacing:var(--ls-ui); font-weight:700;}
+  .mdtabs span{position:relative; z-index:1; flex:1; display:flex; align-items:center; justify-content:center; min-height:44px; padding:0; text-align:center; font-size:var(--t-data); color:var(--o50); cursor:pointer; letter-spacing:var(--ls-ui); font-weight:700;}
   .mdtabs span.on{color:var(--fg);} .mdtabs span.on::after{content:''; position:absolute; left:25%; right:25%; bottom:-.5px; height:2px; background:var(--fill);}
   .mdval{font-size:var(--t-hero); font-weight:800; letter-spacing:var(--ls-num); margin-bottom:var(--s2); line-height:1.05;} .mdval span{font-size:var(--t-data); font-weight:400; color:var(--o50); margin:0 var(--s1); letter-spacing:0;}   /* v271 · 5 h 42 min: la unidad chica */
   .mdmeta{font-size:var(--t-label); color:var(--o50); margin-bottom:6px;}
@@ -425,7 +425,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .ghead .gkc{color:var(--fg); font-size:var(--t-section); font-weight:800; text-align:right;}
   .item{padding:var(--sp-row) 0 var(--sp-row) var(--s6); font-size:var(--t-data); cursor:pointer;}
   .item .nm{color:var(--o60); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .item .nm .q{color:var(--fg); font-weight:700; margin-right:6px;} .item .nm .br{color:var(--o35); font-size:var(--t-label); margin-left:var(--s2);}
+  .item .nm .q{color:var(--fg); font-weight:700; margin-right:6px;} .item .nm .br{color:var(--o40); font-size:var(--t-label); margin-left:var(--s2);}
   .item .macq{color:var(--o40); font-size:var(--t-label); text-align:right; white-space:nowrap;}
   .item .kc{color:var(--o50); font-size:var(--t-data); font-weight:400; text-align:right;}
   .item.exp{background:var(--o10);}
@@ -441,7 +441,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .hrow .hR{display:flex; align-items:center; gap:var(--s3); flex:0 0 auto;}
   .hrow .hday{font-size:var(--t-label); color:var(--o50); white-space:nowrap;}
   .hrow .hagg{font-size:var(--t-data); white-space:nowrap;}
-  .hrow .hchev{color:var(--o30); font-size:var(--t-data); line-height:var(--lh-tight); transition:transform var(--dur-2) var(--ease-out);}
+  .hrow .hchev{color:var(--o40); font-size:var(--t-data); line-height:var(--lh-tight); transition:transform var(--dur-2) var(--ease-out);}
   /* R5 · historial (D12): rail por mes (línea --o12 + punto --o40 por sesión), la fila se abre con sus series, mini-calendario (TRKCal) */
   .hitem.open .hchev{transform:rotate(90deg);}
   .hist-rail{--hdot:20px;}
@@ -456,7 +456,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .hcalh{display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--s2);}
   .hcalh .hct{font-size:var(--t-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--o50);} .hcalh .hct b{color:var(--fg); font-weight:700;}
   .hcnav{position:relative; min-width:44px; height:32px; background:none; border:0; color:var(--o60); font:inherit; font-size:var(--t-section); cursor:pointer;} .hcnav::after{content:''; position:absolute; left:0; right:0; top:-6px; bottom:-6px;} .hcnav.off{visibility:hidden;}
-  .hcal .cd{height:24px; display:flex; align-items:center; justify-content:center; font-size:var(--t-label); font-style:normal; color:var(--o35); cursor:default;}
+  .hcal .cd{height:24px; display:flex; align-items:center; justify-content:center; font-size:var(--t-label); font-style:normal; color:var(--o40); cursor:default;}
   .hcal .cd.l1{color:var(--bg); font-weight:700; cursor:pointer;} .hcal .cd.t.l0::after{display:none;}
   /* inline meal detail under a tapped log item */
   .mdmeal{padding:var(--s2) var(--mcol,0px) var(--s2) var(--s5); margin-bottom:var(--s1); background:var(--o10);}   /* G2 · X1-02: entra solo al abrirse (state._enter); antes re-animaba en cada toque cercano */ .mdmeal .mdm{font-size:var(--t-label); color:var(--o50); padding-top:var(--s2);}
@@ -479,15 +479,15 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .lt>span+span{margin-left:var(--s3);}
   .lt .h{font-size:var(--t-section); font-weight:800; color:var(--fg);} .lt .h .s{color:var(--o50);}
   .lt .lv{font-size:var(--t-data); color:var(--o40);} .lt .lv b{font-weight:700; color:var(--fg);}
-  .lt .lx{display:inline-block; font-size:var(--t-section); color:var(--o30); transition:transform var(--dur-2) var(--ease-out);} .lt[aria-expanded="true"] .lx{transform:rotate(90deg);}
+  .lt .lx{display:inline-block; font-size:var(--t-section); color:var(--o40); transition:transform var(--dur-2) var(--ease-out);} .lt[aria-expanded="true"] .lx{transform:rotate(90deg);}
   .lact{position:relative; flex:0 0 auto; min-width:96px; height:32px; padding:0 var(--s4); border:var(--bw-ctl) solid var(--border); border-radius:var(--r-ctl); background:none; color:var(--fg); font-family:inherit; font-size:var(--t-data); font-weight:700; letter-spacing:var(--ls-ui); cursor:pointer;}
-  .lact::after{content:''; position:absolute; left:0; right:0; top:-6px; bottom:-6px;}
+  .lact::after{content:''; position:absolute; left:0; right:0; top:-7px; bottom:-7px;}   /* v328 · 44 de toque (con -6 daba 42: parte del borde interior) */
   .lact:active{background:var(--o10);} .lact[aria-disabled="true"]{color:var(--o30); border-color:var(--o10);}
   .lbody{padding-bottom:var(--s2);}
   .lcg{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:var(--s3);}
   .lc{display:flex; align-items:center; gap:var(--s3); min-width:0; min-height:36px; padding:0 var(--s2) 0 0; border:0; border-bottom:var(--bw-sep) solid var(--o10); background:none; color:var(--fg); font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
   .lc .k{flex:0 0 auto; color:var(--o40);} .lc .t{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .lc .m{flex:0 0 auto; font-size:var(--t-label); color:var(--o40);} .lc .x{flex:0 0 auto; color:var(--o30);}
+  .lc .m{flex:0 0 auto; font-size:var(--t-label); color:var(--o40);} .lc .x{flex:0 0 auto; color:var(--o40);}
   .lc.on{color:var(--o40);} .lc.on .k{color:var(--good);} .lc:active{background:var(--o10);}   /* v325 · tomado va en --o40 (antes --o35: bajo el piso de texto de B-11) */
   /* v325 · S-UNI · el dueño (9-oct): "los supples debe de venir la unidad/cantidad antes del nombre del supp. que pueda ser editable pero
      siempre regrese al siguiente día a la dosis gestionada" · "solo el número de cantidad de pastilla, 2, 3 etc, no los mg". La celda es
@@ -503,11 +503,11 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .lcg>.empty{grid-column:1 / -1; padding:var(--s3) 0; text-align:left;}
   .lseg span{white-space:nowrap;}   /* `EXTRA 0/3+1` no se parte en dos renglones (a 320 la fila crecía 16 px al registrar el primer extra) */
   /* 2.ª vuelta · un aviso con [deshacer] nunca lo esconde: el texto baja de renglón y el botón conserva su sitio (con más de 29 letras quedaba fuera de la caja) */
-  .toast:has(.tundo){display:flex; align-items:center; white-space:normal; text-align:left;} .toast:has(.tundo) .tm{flex:1 1 auto; min-width:0; overflow-wrap:anywhere; line-height:var(--lh-ui);} .toast .tundo{flex:0 0 auto;}
+  .toast:has(.tundo){display:flex; align-items:center; min-height:calc(44px + 2 * var(--bw-chrome)); white-space:normal; text-align:left;} .toast:has(.tundo) .tm{flex:1 1 auto; min-width:0; overflow-wrap:anywhere; line-height:var(--lh-ui);} .toast .tundo{flex:0 0 auto;}
   .sheetbtns.spl{justify-content:space-between;}   /* dos salidas sin principal: una a cada orilla (cerrar, a la derecha) */
   .modal.hold,.modal.hold *{pointer-events:none;}   /* la hoja que acaba de cambiar de contenido no recibe el segundo toque de un doble toque */
   .lc.sp .t{white-space:normal; overflow:visible; text-overflow:clip; overflow-wrap:anywhere; line-height:var(--lh-ui);}   /* con el número delante el nombre tiene menos ancho: baja de renglón, nunca se corta (B-12) */
-  @media (max-width:380px){ .lsec[data-k="supps"] .lcg{grid-template-columns:minmax(0,1fr);} }   /* angosta: una columna */
+  @media (max-width:430px){ .lsec[data-k="supps"] .lcg{grid-template-columns:minmax(0,1fr);} }   /* v328 · en teléfono, una columna: un renglón por suplemento, como en administrar (en dos, el nombre se partía a media palabra) */
   #modal .sheet h3{overflow-wrap:anywhere;}   /* un nombre de una sola palabra larguísima no desborda el título de la hoja */
   .lseg{margin-bottom:var(--s2);} .lseg span i{margin-left:var(--s2); font-style:normal; font-size:var(--t-label); font-weight:400; color:var(--o50);}
   /* comidas plegables: el total (16/800) manda sobre sus alimentos (12/400) — queja 9 */
@@ -518,7 +518,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
      macros; ya no hay un tercer renglón solo para ellos). Tocar nombre o macros pliega la comida. */
   .mhd{display:grid; grid-template-columns:minmax(0,1fr) var(--mcol); align-items:end;}
   .mtg{grid-column:1 / -1; grid-row:1; display:grid; grid-template-columns:var(--s5) minmax(0,1fr) auto; align-content:center; row-gap:var(--s1); min-width:0; min-height:44px; padding:var(--mpad) 0; border:0; background:none; color:inherit; font-family:inherit; text-align:left; line-height:var(--lh-ui); cursor:pointer;}
-  .mchev{display:inline-block; grid-column:1; grid-row:1; align-self:start; width:var(--s5); font-size:var(--t-section); color:var(--o30); transform-origin:.3em 50%; transition:transform var(--dur-2) var(--ease-out);} .mrec.open .mchev{transform:rotate(90deg);}   /* gira sobre el centro del glifo (medio avance de la mono), no de su caja: abierto queda en su sitio */
+  .mchev{display:inline-block; grid-column:1; grid-row:1; align-self:start; width:var(--s5); font-size:var(--t-section); color:var(--o40); transform-origin:.3em 50%; transition:transform var(--dur-2) var(--ease-out);} .mrec.open .mchev{transform:rotate(90deg);}   /* gira sobre el centro del glifo (medio avance de la mono), no de su caja: abierto queda en su sitio */
   .mnm{grid-column:2; grid-row:1; font-size:var(--t-section); font-weight:800; color:var(--fg); overflow-wrap:anywhere;}   /* un nombre largo baja de renglón, no se corta (B-12) */
   .mtm{display:inline-block; margin-left:.6em; font-size:var(--t-label); font-weight:400; color:var(--o50); letter-spacing:0; white-space:nowrap;}
   .mkc{grid-column:3; grid-row:1; align-self:start; padding-left:var(--s3); color:var(--o70); font-size:var(--t-section); font-weight:700; letter-spacing:var(--ls-num); text-align:right; white-space:nowrap;}
@@ -571,9 +571,9 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .mlbody{margin-left:calc(var(--s5) + var(--s2)); padding-bottom:var(--s2); border-left:var(--bw-rule) solid var(--o20);}   /* v324 · M10 · "no se diferencia entre los alimentos de la meal y el título": los alimentos van con sangría y una guía, como hijos de su comida */
   .mlbody .mdmeal{padding-left:var(--s4);}
   .mit{display:flex; align-items:center; gap:var(--s3); width:100%; min-height:36px; padding:0 0 0 var(--s4); border:0; background:none; color:inherit; font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
-  .mit .nm{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--o70);} .mit .q{font-weight:700; color:var(--o70);} .mit .kc{flex:0 0 auto; color:var(--o50);}
+  .mit .nm{flex:1; min-width:0; overflow-wrap:anywhere; color:var(--o70);} .mit .q{font-weight:700; color:var(--o70);} .mit .kc{flex:0 0 auto; color:var(--o50);}
   .mit:active,.mit.exp{background:var(--o10);}
-  .mit .nm1{display:block; overflow:hidden; text-overflow:ellipsis;} .mit .mmac{display:block; font-size:var(--t-label); color:var(--o50); line-height:var(--lh-tight); margin-top:1px;} .mit .mmac b{color:var(--fg); font-weight:700;}   /* v271 · macros por alimento, el principal en blanco */
+  .mit .nm1{display:block;} .mit .mmac{display:block; font-size:var(--t-label); color:var(--o50); line-height:var(--lh-tight); margin-top:1px;} .mit .mmac b{color:var(--fg); font-weight:700;}   /* v271 · macros por alimento, el principal en blanco */
   .mit:has(.mmac){padding-top:var(--s1); padding-bottom:var(--s1);}
   .lsv{align-items:center; min-height:44px; margin-top:var(--s2);} .lsv .toggles{flex:0 0 auto;}
   .mit.st{padding:0; cursor:default;} .mit.st:active{background:none;}
@@ -584,7 +584,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .msum-tot b{font-size:var(--t-display); font-weight:800; letter-spacing:var(--ls-num); line-height:var(--lh-tight); color:var(--fg);} .msum-tot .u{font-size:var(--t-data); color:var(--o40);}
   .msum-items{margin-top:var(--s4); border-top:var(--bw-sep) solid var(--o10);}
   .toast .tundo{position:relative; margin-left:var(--s4); padding:0; border:0; background:none; color:var(--fg); font-family:inherit; font-size:var(--t-data); font-weight:700; cursor:pointer;}
-  .toast .tundo::after{content:''; position:absolute; left:calc(-1 * var(--s3)); right:calc(-1 * var(--s3)); top:calc(-1 * var(--s4)); bottom:calc(-1 * var(--s4));}
+  .toast .tundo::after{content:''; position:absolute; left:calc(-1 * var(--s3)); right:calc(-1 * var(--s3)); top:calc(-1 * var(--s5)); bottom:calc(-1 * var(--s5));}
   /* DS-5 · §10: entra lo que se AGREGÓ (serie, drop, ejercicio) — nunca un re-render; el ✓ confirma con el único
      overshoot permitido; las pestañas de periodo mueven un indicador en vez de saltar */
   @keyframes rowin{from{opacity:0; transform:translateY(calc(-1 * var(--mv-1)))}} .enter{animation:rowin var(--dur-2) var(--ease-out);}
@@ -621,7 +621,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   /* v256 · modo enfoque: solo el ejercicio en curso se lee; lo demás queda tenue (tocarlo lo vuelve el actual) */
   .wline{position:relative; display:flex; align-items:center; gap:var(--s3); width:100%; height:32px; margin:var(--s3) 0 var(--s4); padding:0; border:0; background:none; color:var(--fg); font-family:inherit; text-align:left; cursor:pointer;}
   .wline .wtn{font-size:var(--t-section); font-weight:800; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .wline .wtm{margin-left:auto; font-size:var(--t-label); color:var(--o50); white-space:nowrap;} .wline .wtx{font-size:var(--t-label); color:var(--o30);} .wline .wtx.up{display:inline-block; transform:rotate(180deg);}
+  .wline .wtm{margin-left:auto; font-size:var(--t-label); color:var(--o50); white-space:nowrap;} .wline .wtx{font-size:var(--t-label); color:var(--o40);} .wline .wtx.up{display:inline-block; transform:rotate(180deg);}
   .wline .wtb{position:absolute; left:0; right:0; bottom:0; margin:0;}
   .wfocus .mbody{border-left:0; padding-left:0; margin-left:0;}
   .wfocus .ex:not(.current){opacity:var(--op-dim); cursor:pointer;} .wfocus .ex:not(.current) *{pointer-events:none;}
@@ -649,7 +649,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   /* v285 · T1 · el colchón de scrollHold (lo tocado no sube aunque el contenido se acorte) y sin anclaje propio del navegador */
   .vpad{flex:0 0 auto; pointer-events:none; transition:none; animation:none;} #view,.sheet,#exsh,.fa-listwrap{overflow-anchor:none;}
   .exrow{display:flex; align-items:center; gap:var(--s3); padding:6px 0; border-bottom:var(--bw-sep) solid var(--o10); cursor:pointer;}
-  .exrow.on{background:var(--o10);} .exrow .mgbox{flex:0 0 auto; font-size:var(--t-data); color:var(--o35);} .exrow.on .mgbox{color:var(--fg);}
+  .exrow.on{background:var(--o10);} .exrow .mgbox{flex:0 0 auto; font-size:var(--t-data); color:var(--o40);} .exrow.on .mgbox{color:var(--fg);}
   .exrow .exn{flex:1; font-size:var(--t-data);} .exrow .exc{font-size:var(--t-label); color:var(--o50); white-space:nowrap;}
   /* v286 · //CATALOG en árbol (el dueño eligió "árbol con líneas"): las líneas son bordes, no caracteres; cada renglón mide ≥ 44
      de toque y la línea no se corta. .catm = un ejercicio (su línea baja por todas sus hojas) · .catl = una hoja (una llave de
@@ -676,12 +676,12 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .catll{align-self:center; min-width:0; overflow-wrap:anywhere; line-height:var(--lh-ui); padding:var(--s2) 0; color:var(--o60);} .catlc{line-height:44px; text-align:right; color:var(--o70);} .catld{line-height:44px; text-align:right; white-space:nowrap; color:var(--o50);}
   span.catlt,span.catlr{cursor:default;}
   .exsub{display:flex; align-items:baseline; flex-wrap:wrap; gap:var(--s3); margin:calc(-1 * var(--s2)) 0 10px;}
-  .exsub .note{font-size:var(--t-label); color:var(--o50);} .exsub .note.add{color:var(--o30);}
+  .exsub .note{font-size:var(--t-label); color:var(--o50);} .exsub .note.add{color:var(--o40);}
   .exsub .mch{font-size:var(--t-label); color:var(--o60); cursor:pointer; border-bottom:var(--bw-dash) dashed var(--o20);}
   .exsub .mch.none{color:var(--o40); border-bottom:none;} .exsub .mset{font-size:var(--t-label); color:var(--o40); cursor:pointer;}
-  .exhead{display:flex; align-items:baseline; flex-wrap:wrap; gap:var(--s3); margin-bottom:10px;} .exhead .n{font-size:var(--t-section); font-weight:800;} .exhead .mch{font-size:var(--t-label); color:var(--o50); cursor:pointer; border-bottom:var(--bw-dash) dashed var(--o20);} .exhead .mch.none{color:var(--o35); border-bottom:none;} .exhead .mch:active{color:var(--fg);} .exhead .mset{font-size:var(--t-label); color:var(--o40); cursor:pointer;} .exhead .note{font-size:var(--t-label); color:var(--o35);}
+  .exhead{display:flex; align-items:baseline; flex-wrap:wrap; gap:var(--s3); margin-bottom:10px;} .exhead .n{font-size:var(--t-section); font-weight:800;} .exhead .mch{font-size:var(--t-label); color:var(--o50); cursor:pointer; border-bottom:var(--bw-dash) dashed var(--o20);} .exhead .mch.none{color:var(--o40); border-bottom:none;} .exhead .mch:active{color:var(--fg);} .exhead .mset{font-size:var(--t-label); color:var(--o40); cursor:pointer;} .exhead .note{font-size:var(--t-label); color:var(--o40);}
   /* hold & drag — reorder exercises within a muscle, and whole muscle blocks */
-  .dgrip{display:inline-block; align-self:center; cursor:grab; color:var(--o30); font-size:var(--t-data); line-height:var(--lh-tight); padding:var(--s2) var(--s3) var(--s2) 0; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;}
+  .dgrip{display:inline-block; align-self:center; cursor:grab; color:var(--o40); font-size:var(--t-data); line-height:var(--lh-tight); padding:var(--s2) var(--s3) var(--s2) 0; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;}
   .dgrip:active{color:var(--o60); cursor:grabbing;}
   .exhd{display:grid; grid-template-columns:minmax(0,1fr);} .exhd.hasgrip{grid-template-columns:14px minmax(0,1fr); column-gap:var(--s2);}
   .exhd>.dgrip{align-self:start; padding:var(--s2) 0 0; margin-top:1px;} .exhdc{min-width:0;}
@@ -706,14 +706,14 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .setn.done{color:var(--fill); font-weight:700;}
   /* v226 (dueño): el ✓ vive en la ÚLTIMA columna, donde antes estaba la ✕ de borrar. Borrar es ahora
      deslizar la fila a la derecha, así que el toque de confirmar ya no comparte sitio con el de borrar. */
-  .dchk{display:flex; align-items:center; justify-content:center; width:100%; height:36px; font-size:var(--t-section); line-height:var(--lh-tight); color:var(--o30); cursor:pointer; -webkit-user-select:none; user-select:none;}
+  .dchk{display:flex; align-items:center; justify-content:center; width:100%; height:36px; font-size:var(--t-section); line-height:var(--lh-tight); color:var(--o40); cursor:pointer; -webkit-user-select:none; user-select:none;}
   .dchk.done{color:var(--fill);}
-  .pairdone{flex:0 0 28px; align-self:stretch; display:flex; align-items:center; justify-content:center; font-size:var(--t-section); color:var(--o30); cursor:pointer; -webkit-user-select:none; user-select:none;}
+  .pairdone{flex:0 0 28px; align-self:stretch; display:flex; align-items:center; justify-content:center; font-size:var(--t-section); color:var(--o40); cursor:pointer; -webkit-user-select:none; user-select:none;}
   .pairdone.done{color:var(--fill);}
   /* v282 · unilateral en vivo: cada lado es su serie y lleva su ✓ en la última columna (ya no hay un ✓ por par). El ✓ se ve igual y se toca a 48×44 */
   .gc-uni.ps,.gc-uni-bw.ps{grid-template-columns:20px 1fr 38px 44px 40px 30px;}
   .dchk{position:relative;} .dchk::after{content:''; position:absolute; left:-4px; right:-14px; top:-4px; bottom:-4px;}
-  .swipehint{font-size:var(--t-label); color:var(--o30); text-align:right; margin:calc(-1 * var(--s1)) 0 var(--s2);}
+  .swipehint{font-size:var(--t-label); color:var(--o40); text-align:right; margin:calc(-1 * var(--s1)) 0 var(--s2);}
   /* isdrop: visual only (opacity) — never changes grid/columns/width vs a normal row */
   .srow.isdrop{opacity:var(--op-drop);} .pair.isdrop{opacity:var(--op-drop);}
   .setend{display:flex;justify-content:center;} .setend .del{width:18px;flex:0 0 18px;}
@@ -746,11 +746,11 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .tself{display:flex; align-items:center; justify-content:space-between; margin-top:var(--s1);} .tself .b:only-child{margin-left:auto;}
   .tselx{display:block; margin:var(--s2) 0 0 auto; background:none; border:0; color:var(--o50); font-size:var(--t-label); padding:var(--s2) var(--s1); cursor:pointer;}
   .fs{height:36px; padding:0; border:var(--bw-box) solid var(--o20); border-radius:var(--r-ctl); background:transparent; color:var(--o40); font-size:var(--t-label); font-weight:700; cursor:pointer;} .fs.on{background:var(--fill); border-color:var(--fill); color:var(--on-fill);} .fs.ds{display:flex; align-items:center; justify-content:center; border:0; background:none; color:var(--o50); cursor:default;}
-  .droppct{float:left; font-size:var(--t-label); font-weight:400; color:var(--o35);}
+  .droppct{float:left; font-size:var(--t-label); font-weight:400; color:var(--o40);}
   .settens{font-size:var(--t-label); font-weight:400; color:var(--o40); margin-left:6px;}
   .sethr{float:left; font-size:var(--t-label); font-weight:400; color:var(--o40); margin-left:var(--s3);}
   .hrblk{margin:var(--s2) 0 10px;}
-  .ready{text-align:left; font-size:var(--t-label); color:var(--o50); margin:6px 0 0; cursor:pointer; letter-spacing:var(--ls-ui);} .ready b{color:var(--fg); font-weight:700;} .ready .rk{letter-spacing:var(--ls-caps);} .ready .rl{color:var(--o35);}
+  .ready{text-align:left; font-size:var(--t-label); color:var(--o50); margin:6px 0 0; cursor:pointer; letter-spacing:var(--ls-ui);} .ready b{color:var(--fg); font-weight:700;} .ready .rk{letter-spacing:var(--ls-caps);} .ready .rl{color:var(--o40);}
   .ready.rec{display:flex; align-items:center; min-height:44px; margin-top:0; font-size:var(--t-label);} .ready.rec .rk{font-weight:800; letter-spacing:var(--ls-ui); color:var(--o50);} .ready.rec b{font-weight:800; margin-left:1ch;} .ready.rec .rl{color:var(--o40); margin-left:1ch;} .hrsvg{display:block; width:100%; height:56px; color:var(--o60); margin-bottom:var(--s2);}
   /* E5 · recovery (los músculos de la sesión) y readiness (tú) en una fila; debajo, los músculos de hoy: una fila por músculo
      en columnas alineadas (músculo · medidor · estado · falta). Monocromo y con jerarquía por FILA entera: lo que falta (.no) va
@@ -869,8 +869,8 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .toggles.wrap{display:grid; grid-template-columns:1fr 1fr; justify-items:start; gap:0 var(--s4);}
   .chips{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s3);} .chip{font-size:var(--t-data);color:var(--o50);border:var(--bw-box) solid var(--border);border-radius:var(--r-ctl);padding:var(--s4);cursor:pointer;} .chip:active{background:var(--o12);}
   .seday{border-left:var(--bw-rule) solid var(--border);padding-left:var(--s4);margin:0 0 var(--s5) var(--s1);} .sehead{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s3);} .senm{flex:1;background:transparent;border:none;border-bottom:var(--bw-sep) solid var(--border);color:var(--fg);font:inherit;font-size:var(--t-field);font-weight:800;padding:var(--s1) 0;}
-  .seex{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3);padding:var(--s2) 0;} .seexn{flex:1;font-size:var(--t-data);color:var(--o60);cursor:pointer;} .seexn .seexm{font-size:var(--t-label);color:var(--o40);} .sedel{color:var(--o30);cursor:pointer;font-size:var(--t-section);padding:0 var(--s2);}
-  .semv{display:inline-flex;gap:1px;flex:0 0 auto;} .semv span{color:var(--o30);cursor:pointer;font-size:var(--t-data);padding:var(--s1) var(--s2);line-height:var(--lh-tight);} .semv span:active{color:var(--fg);}
+  .seex{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3);padding:var(--s2) 0;} .seexn{flex:1;font-size:var(--t-data);color:var(--o60);cursor:pointer;} .seexn .seexm{font-size:var(--t-label);color:var(--o40);} .sedel{color:var(--o40);cursor:pointer;font-size:var(--t-section);padding:0 var(--s2);}
+  .semv{display:inline-flex;gap:1px;flex:0 0 auto;} .semv span{color:var(--o40);cursor:pointer;font-size:var(--t-data);padding:var(--s1) var(--s2);line-height:var(--lh-tight);} .semv span:active{color:var(--fg);}
   .seadd{font-size:var(--t-label);color:var(--o50);cursor:pointer;padding:var(--s3) 0;}
   /* v285 · SP1 · día plegado: una fila de 44 (nombre · ejercicios · sets ›); abierto, un ▾ al frente lo vuelve a plegar */
   .seday.shut{margin-bottom:var(--s1);} .sefold{display:flex; align-items:center; gap:var(--s3); min-height:44px; cursor:pointer;} .sefold:active{opacity:var(--op-press);}
@@ -899,7 +899,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .pickitem{padding:var(--s4) 6px; min-height:44px; font-size:var(--t-data); border-bottom:var(--bw-sep) solid var(--o10); cursor:pointer;} .pickitem:hover{color:var(--fg);} .pickitem:active{background:var(--o10);}
 
   .empty{font-size:var(--t-label); color:var(--o50); text-align:center; padding:var(--s7) 0; line-height:1.8;}
-  .empty::before{content:"// "; color:var(--o30);}
+  .empty::before{content:"// "; color:var(--o40);}
   .empty .ehint{color:var(--o40);}
   .empty-cta{margin-top:var(--s5);}
   .bltips{margin-top:var(--s3);} .bltip{font-size:var(--t-label); color:var(--o50); padding:var(--s1) 0; line-height:var(--lh-read);} .bltip:first-child{color:var(--o60);}
@@ -913,7 +913,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .grp .item{padding:var(--sp-row) var(--s1);} .grp .item:not(:last-child){border-bottom:var(--bw-rule) solid var(--border);}
   .item:active{background:var(--card2);}
   /* rounded controls (base rules consolidated above) */
-  .field input::placeholder{color:var(--o30);}
+  .field input::placeholder{color:var(--o40);}
   /* v268 · perfil en filas de terminal (el dueño: el formulario "tosco, todo muy gordo"): etiqueta en minúsculas a la izquierda,
      control a la derecha; la fila con foco lleva > (el mismo "aquí" de la barra de abajo). */
   .ob{padding-top:var(--s5);}
@@ -924,7 +924,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .obr:focus-within .obk{color:var(--fg);} .obr:focus-within .obk::before{visibility:visible;}
   .obv{display:flex; align-items:center; gap:var(--s2); min-width:0;}
   .obi{height:36px; width:100%; min-width:0; padding:0 var(--s3); border:var(--bw-field) solid var(--o40); border-radius:var(--r-ctl); background:transparent; color:var(--fg); font-size:var(--t-field);}
-  .obi:focus{border-color:var(--fg);} .obi:focus-visible{outline:none;} .obi::placeholder{color:var(--o30);}
+  .obi:focus{border-color:var(--fg);} .obi:focus-visible{outline:none;} .obi::placeholder{color:var(--o40);}
   .obi.sm{flex:0 0 auto; width:7ch; text-align:right;}
   .obu{color:var(--o40);}
   .obr .toggles{gap:0 var(--s1);}
@@ -1008,13 +1008,13 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .srw{display:grid; grid-template-columns:64px minmax(0,1fr); column-gap:var(--s3); align-items:baseline; font-size:var(--t-data); line-height:var(--lh-share);}
   .srw + .srw{margin-top:var(--s5);}
   .srm{font-size:var(--t-label); color:var(--o40); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .srn{font-weight:800; color:var(--fg);} .srs1{color:var(--o50); white-space:nowrap;} .srs1.dr{color:var(--o40);} .srsep{color:var(--o30);}
+  .srn{font-weight:800; color:var(--fg);} .srs1{color:var(--o50); white-space:nowrap;} .srs1.dr{color:var(--o40);} .srsep{color:var(--o40);}
   /* comida: la primera versión (1-jun) — rótulo centrado, anillo + P/C/F, y cada comida con TODOS sus alimentos */
   .shcap{margin:var(--s2) 0 6px; text-align:center; font-size:var(--t-label); color:var(--o40); letter-spacing:var(--ls-caps); text-transform:uppercase;}
   .shbanner{display:flex; align-items:center; gap:var(--s4); padding:var(--s5) var(--s2); border-bottom:var(--bw-rule) solid var(--border);}
   .shr-ring .ring.lg{width:104px; height:104px;} .shr-ring .ring.lg .num{font-size:var(--t-display); font-weight:800; letter-spacing:var(--ls-num);} .shr-ring .ring.lg .of{font-size:var(--t-label); color:var(--o40); margin-top:var(--s1); letter-spacing:var(--ls-title);}
   .shr-macros{flex:1; display:flex; justify-content:space-around;}
-  .shm{text-align:center; flex:1;} .shm-g{font-size:var(--t-display); font-weight:800; letter-spacing:var(--ls-num); line-height:var(--lh-tight);} .shm-g span{font-size:var(--t-label); color:var(--o40); font-weight:400; margin-left:1px;} .shm-l{font-size:var(--t-label); color:var(--o50); margin-top:var(--s2); letter-spacing:var(--ls-ui);} .shm-p{font-size:var(--t-label); color:var(--o35); margin-top:var(--s1);}
+  .shm{text-align:center; flex:1;} .shm-g{font-size:var(--t-display); font-weight:800; letter-spacing:var(--ls-num); line-height:var(--lh-tight);} .shm-g span{font-size:var(--t-label); color:var(--o40); font-weight:400; margin-left:1px;} .shm-l{font-size:var(--t-label); color:var(--o50); margin-top:var(--s2); letter-spacing:var(--ls-ui);} .shm-p{font-size:var(--t-label); color:var(--o40); margin-top:var(--s1);}
   .shlog{margin-top:var(--s5);}
   .sgrp{margin-bottom:var(--s5);} .sgrp:last-child{margin-bottom:0;}
   .sgh{display:flex; justify-content:space-between; align-items:baseline; gap:var(--s3); margin-bottom:var(--s3); font-size:var(--t-label); color:var(--o50); letter-spacing:var(--ls-title);}
@@ -1072,7 +1072,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .shbanner.shwt{justify-content:space-around; gap:var(--s3);}
   .shstat{text-align:center; flex:1;} .shstat-n{font-size:var(--t-display); font-weight:800; letter-spacing:var(--ls-num);} .shstat-l{font-size:var(--t-label); color:var(--o50); margin-top:6px; letter-spacing:var(--ls-caps); text-transform:uppercase;}
   .shr-ring.good .ring-fill{stroke:var(--good);} .shr-ring.over .ring-fill{stroke:var(--bad);}
-  .macro-rad{max-width:228px; margin:0 auto var(--s4);} .macro-rad svg{width:100%; height:auto; display:block;} .macro-rad svg text{font-family:'JetBrains Mono',ui-monospace,monospace; letter-spacing:0;} .msum-top{display:grid; grid-template-columns:132px minmax(0,1fr); column-gap:var(--s5); align-items:start;} .msum-rad{width:132px;} .msum-rad svg{display:block; width:132px; height:132px;} .msum-rad svg text{font-family:'JetBrains Mono',ui-monospace,monospace; letter-spacing:0;} .msum-list{min-width:0;} .nl-row{display:flex; justify-content:space-between; align-items:baseline; gap:6px; padding:var(--s1) 0; border-bottom:var(--bw-rule) solid var(--line); font-size:var(--t-data);} .nl-row:last-child{border-bottom:none;} .nl-k{color:var(--o50);} .nl-r{display:flex; gap:var(--s3); align-items:baseline; white-space:nowrap;} .nl-g{color:var(--o40); font-size:var(--t-data);} .nl-g b{font-weight:700; color:var(--fg);} .nl-pct{color:var(--o50); min-width:28px; text-align:right;} .nl-hd{display:flex; justify-content:space-between; align-items:baseline; font-size:var(--t-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--o35); padding:6px 0 var(--s1);} .nl-hd .nl-hi{color:var(--o50); letter-spacing:var(--ls-ui);}
+  .macro-rad{max-width:228px; margin:0 auto var(--s4);} .macro-rad svg{width:100%; height:auto; display:block;} .macro-rad svg text{font-family:'JetBrains Mono',ui-monospace,monospace; letter-spacing:0;} .msum-top{display:grid; grid-template-columns:132px minmax(0,1fr); column-gap:var(--s5); align-items:start;} .msum-rad{width:132px;} .msum-rad svg{display:block; width:132px; height:132px;} .msum-rad svg text{font-family:'JetBrains Mono',ui-monospace,monospace; letter-spacing:0;} .msum-list{min-width:0;} .nl-row{display:flex; justify-content:space-between; align-items:baseline; gap:6px; padding:var(--s1) 0; border-bottom:var(--bw-rule) solid var(--line); font-size:var(--t-data);} .nl-row:last-child{border-bottom:none;} .nl-k{color:var(--o50);} .nl-r{display:flex; gap:var(--s3); align-items:baseline; white-space:nowrap;} .nl-g{color:var(--o40); font-size:var(--t-data);} .nl-g b{font-weight:700; color:var(--fg);} .nl-pct{color:var(--o50); min-width:28px; text-align:right;} .nl-hd{display:flex; justify-content:space-between; align-items:baseline; font-size:var(--t-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--o40); padding:6px 0 var(--s1);} .nl-hd .nl-hi{color:var(--o50); letter-spacing:var(--ls-ui);}
   .rad-fill{fill-opacity:.12;}
   /* ===== green / white / red status (margins & over) ===== */
   .hero.good .ring-fill{stroke:var(--good);} .hero.over .ring-fill{stroke:var(--bad);}   /* v262 · sin brillo */
@@ -1100,9 +1100,9 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .fa-empty .fa-em-step .ic svg{width:auto; height:22px; display:block;}
   .fa-empty .fa-em-step .lb{font-size:var(--t-label); color:var(--o60); letter-spacing:var(--ls-ui); line-height:1.25;}
   .fa-empty .fa-em-step:nth-child(1){animation-delay:0s} .fa-empty .fa-em-step:nth-child(3){animation-delay:.25s} .fa-empty .fa-em-step:nth-child(5){animation-delay:.5s}
-  .fa-empty .fa-em-arr{align-self:center; color:var(--o30); font-size:var(--t-data); opacity:0; animation:faFade var(--dur-3) var(--ease-out) forwards;}
+  .fa-empty .fa-em-arr{align-self:center; color:var(--o40); font-size:var(--t-data); opacity:0; animation:faFade var(--dur-3) var(--ease-out) forwards;}
   .fa-empty .fa-em-arr:nth-of-type(1){animation-delay:.15s} .fa-empty .fa-em-arr:nth-of-type(2){animation-delay:.4s}
-  .fa-empty .fa-em-foot{margin-top:var(--s4); text-align:center; color:var(--o35); font-size:var(--t-label);}
+  .fa-empty .fa-em-foot{margin-top:var(--s4); text-align:center; color:var(--o40); font-size:var(--t-label);}
   @keyframes faPop{to{opacity:1; transform:translateY(0)}}
   @keyframes faFade{to{opacity:.5}}
   .fa-listwrap{flex:1; overflow-y:auto; min-height:0; -webkit-overflow-scrolling:touch; margin-top:var(--s4);}
@@ -1143,9 +1143,9 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .dz input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:16px; height:16px; border-radius:50%; background:var(--fg);}
   .dz input[type=range]::-moz-range-thumb{width:16px; height:16px; border-radius:50%; background:var(--fg); border:none;}
   .dz-f{display:flex; gap:var(--s3); margin-top:var(--s3);} .dz-f button{flex:1; font-family:inherit; font-size:var(--t-data); padding:10px 0; border:var(--bw-ctl) solid var(--border); border-radius:var(--r-ctl); background:transparent; color:var(--fg); cursor:pointer;}
-  .umcaret{color:var(--o30); font-size:var(--t-label); margin-left:1px;}
+  .umcaret{color:var(--o40); font-size:var(--t-label); margin-left:1px;}
   .nvm-list{margin-top:6px;}
-  .nvm{display:flex; justify-content:space-between; align-items:center; padding:var(--s5) var(--s1); font-size:var(--t-data); cursor:pointer; border-bottom:var(--bw-sep) solid var(--o10);} .nvm:last-child{border-bottom:none;} .nvm:active{color:var(--o60);} .nvm-x{color:var(--o30); font-size:var(--t-data);}
+  .nvm{display:flex; justify-content:space-between; align-items:center; padding:var(--s5) var(--s1); font-size:var(--t-data); cursor:pointer; border-bottom:var(--bw-sep) solid var(--o10);} .nvm:last-child{border-bottom:none;} .nvm:active{color:var(--o60);} .nvm-x{color:var(--o40); font-size:var(--t-data);}
   /* screen-change fade (applied by render() only when go() switches screens) */
   @keyframes viewin{from{opacity:.4; transform:translateY(var(--mv-1))}}
   .fadein{animation:viewin var(--dur-screen) var(--ease-out);}
@@ -1257,6 +1257,10 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .sef{width:100%; border:0; border-bottom:var(--bw-sep) solid var(--o10); background:none; color:inherit; font-family:inherit; font-size:var(--t-data); text-align:left;}
   .sef .k{font-weight:700;} .sef .v{font-size:var(--t-label); font-weight:400; color:var(--o50); max-width:60%; overflow-wrap:anywhere; text-align:right;} .sef .rchev{color:var(--o40);}
   .sesec{padding:var(--s3) 0 var(--s2);}
+  /* v328 · S-QTY · cuántas de cada uno, de una pasada: un renglón por suplemento con su casilla (el renglón entero la enfoca) */
+  .qar{min-height:44px; align-items:center; padding:0; cursor:text;} .qar .k{overflow-wrap:anywhere;}
+  .qai{flex:0 0 auto; width:calc(var(--s8) + var(--s4)); height:36px; margin:0; padding:0 var(--s3); border:var(--bw-field) solid var(--o40); border-radius:var(--r-ctl); background:transparent; color:var(--fg); font-family:inherit; font-size:var(--t-field); text-align:center;}
+  .qai:focus{border-color:var(--fg); outline:none;}
   .stk-blk{border-top:var(--bw-rule) solid var(--line);}
   .stk-blk summary{list-style:none;cursor:pointer;padding:var(--s3) 0;font-size:var(--t-label);letter-spacing:var(--ls-caps);color:var(--o50);}
   .stk-blk summary::-webkit-details-marker{display:none;}
@@ -1269,7 +1273,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .sbl .sbg{flex:none; min-width:2ch; color:var(--o40);} .sbl .sbt{min-width:0; overflow-wrap:anywhere;} .sbl .sbs{display:block; font-size:var(--t-label); color:var(--o40);}
   .sbres{display:flex; flex-direction:column;} .sbrow{display:flex; justify-content:space-between; align-items:center; gap:var(--s3); min-height:44px; padding:0; background:none; border:0; border-bottom:var(--bw-sep) solid var(--line); color:var(--fg); font:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
   .sbmini{margin-top:var(--s3); padding-top:var(--s3); border-top:var(--bw-sep) solid var(--line);} .sbmini .sbmh{font-size:var(--t-data); font-weight:700; color:var(--fg); margin:var(--s3) 0 var(--s1);}
-  .stk-blk summary::before{content:'› ';color:var(--o30);}
+  .stk-blk summary::before{content:'› ';color:var(--o40);}
   .stk-blk[open] summary::before{content:'▾ ';}
   .toggles.agf{margin-bottom:var(--s4);}
   .agm{font-weight:700;} .agm.g{color:var(--good);} .agm.w{color:var(--warn);} .agm.b{color:var(--bad);} .agm.o{color:var(--o40); font-weight:400;}
@@ -1279,7 +1283,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .ag-chip.supp{cursor:pointer;} .ag-chip.supp:active{background:var(--card);}
   .ag-axis{position:relative; margin-top:var(--s4);}
   .ag-hr{position:absolute; left:0; right:0; height:0;}
-  .ag-hr .ag-hl{position:absolute; left:0; top:-7px; width:20px; text-align:right; font-size:var(--t-label); color:var(--o30); font-variant-numeric:tabular-nums;}
+  .ag-hr .ag-hl{position:absolute; left:0; top:-7px; width:20px; text-align:right; font-size:var(--t-label); color:var(--o40); font-variant-numeric:tabular-nums;}
   .ag-hr i{display:block; margin-left:30px/*ds:exempt*/; border-top:var(--bw-rule) solid var(--line);}
   .ag-now{position:absolute; left:30px; right:0; height:0; border-top:var(--bw-rule) solid var(--fg); z-index:5;}
   .ag-now::before{content:''; position:absolute; left:-3px; top:-3px; width:5px; height:5px; border-radius:50%; background:var(--fg);}
@@ -1444,7 +1448,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v327';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v328';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2893,7 +2897,7 @@ function openExProfile(name,back,gymSel){
   openModal(`<h3>perfil · ${latTxt(ex)}${escTxt(ex.name)}</h3>
    <div class="submeta u-mb8">${escTxt(ex.type||'free')}${p.mach&&gym?` · en <b>${escTxt(gym)}</b>`:''}</div>${(()=>{ const k=exKeyByName(ex.name,ex); return k&&exHistRows(k).length?`<div class="u-mb8"><button type="button" class="b" data-act="exhist" data-k="${escTxt(k)}">historial ›</button></div>`:''; })()}
    ${p.mach&&gyms.length>1?`<div class="field"><label>GYM (la máquina de cada gym puede ser distinta)</label><select id="pf_gym">${gyms.map(g=>`<option value="${escTxt(g)}"${g===gym?' selected':''}>${escTxt(g)}</option>`).join('')}</select></div>`:''}
-   <div class="grp-label first">PRIME MOVERS <span class="u-o35 u-w4">· ${tSrc}</span></div>
+   <div class="grp-label first">PRIME MOVERS <span class="u-o40 u-w4">· ${tSrc}</span></div>
    <div class="submeta u-mb6">tus etiquetas no cambian · esto es a qué músculo real cuenta el volumen, la recuperación y las sugerencias</div>
    <div class="field"><label>PRIMARIO</label><select id="pf_prim" class="pfsel"><option value="">— sin resolver —</option>${mOpt(tg[0]&&tg[0].id)}</select></div>
    <div class="field"><label>SECUNDARIOS · cuánto cuenta la serie (0–1)</label><div id="pf_secs">${sec}</div><button class="addbtn u-mt4" data-act="pf_addsec">+ secundario</button></div>
@@ -6171,7 +6175,7 @@ function _doseDaySelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHEC
     A('escribir las de siempre quita el cambio (y no deja restos)', takeQtySet(t,T,2)===false&&!('tickQty' in it)&&takeUnitsOn(t,T)===2);
     // la hoja: con número ya dicho abre en `solo hoy`
     takeMark(t,T,null); openQtyDay('m1',T,''); let m=document.getElementById('modal');
-    A('la hoja trae cuántas tomas hoy, con su presentación y tu dosis como dato', !!m&&m.querySelector('#dd_v').value==='2'&&/^CUÁNTAS · cáps$/.test(m.querySelector('.field label').textContent)&&!!m.querySelector('#dd_when .t.on[data-v="day"]')&&/10 mg/.test(m.querySelector('.submeta').textContent)&&!m.querySelector('#dd_back'));
+    A('la hoja trae cuántas tomas hoy, con su presentación y tu dosis como dato', !!m&&m.querySelector('#dd_v').value==='2'&&/^CUÁNTAS · cáps$/.test(m.querySelector('.field label').textContent)&&!!m.querySelector('#dd_when .t.on[data-v="day"]')&&!m.querySelector('.submeta')&&!m.querySelector('#dd_back'));
     m.querySelector('#dd_v').value='3'; m.querySelector('#dd_ok').click();
     A('guardar solo hoy: vale hoy, deja la toma tomada y avisa con deshacer', it.tickQty[T].q===3&&takeDone(t,T)&&msg==='✓ melatonina · 3 · solo hoy'&&typeof undo==='function'&&!document.getElementById('modal')&&it.products[0].per===2);
     undo(); A('…y el deshacer regresa la toma a como estaba', !takeDone(t,T)&&takeDayQty(t,T)===null);
@@ -6294,6 +6298,29 @@ function _adminSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
       const cb=[...mm.querySelectorAll('#se_cat button')].find(b=>!b.classList.contains('on')); cb.click(); A('…y el de qué es dice la categoría elegida', mm.querySelector('#se_sum_notas').textContent==='—'&&mm.querySelector('#se_sum_que').textContent===cb.textContent.trim()); closeModal(); }
     console.log('administrar self-check OK');
   } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } delete window._seSum; save=_sv; reRender=_rr; toast=_t; db=real; window._stackTab=st0; state._stkOpen=so0; state.screen=sc0; _sbx=sb0; bumpIdx(); } }
+// self-check de v328 (S-QTY · ACC1): cuántas de cada uno de una pasada, y lo medido de accesibilidad que se puede afirmar sin pantalla. Base de juguete; no guarda nada.
+function _qtyAllSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK cuántas de cada uno: '+nm); }; const real=db, sb0=_sbx, _sv=save, _rr=reRender, _t=toast, st0=window._stackTab, sc0=state.screen; let undo=null, msg='';
+  try{ _sbx=true; save=()=>true; reRender=()=>{}; toast=(m,t,o)=>{ msg=String(m); undo=(o&&o.undo)||null; return null; };
+    const T=todayISO(), D=k=>shiftDate(T,-k), mk=(id,name,o)=>Object.assign({id,name,category:'supp',dose:'5',unit:'g',when:['AM'],periodization:{type:'daily'},startDate:D(30),ticks:{}},o||{});
+    db=migrate({_idfix:true,_fsfix:true,_dataVer:3,_dataLog:{v3:{seen:true}},profile:{username:'t'},split:{name:'t',days:[]},sessions:[],stack:[mk('a','creatina'),mk('b','omega',{dose:'2 caps',unit:''}),mk('c','magnesio'),mk('d','ya tiene',{qty:3}),
+      mk('e','con producto',{products:[{id:'p',brand:'X',form:'cápsulas',per:2}],cur:'p'}),mk('f','en pausa',{status:'paused',archived:true}),mk('g','magnesio',{when:['PM'],products:[{id:'p2',brand:'X',form:'cápsulas'}],cur:'p2'})]});
+    bumpIdx(); state.screen='stack'; window._stackTab='AM';
+    A('sin número: solo los activos que no tienen el suyo ni el de su producto', suppNoQty().map(x=>x.id).join()==='a,b,c,g');
+    A('administrar lo avisa arriba, con cuántos faltan', /data-act="qtyall"><span>cuántas tomas de cada uno · 4 sin número</.test(renderStack()));
+    openQtyAll(); let m=document.getElementById('modal'), ins=[...m.querySelectorAll('.qai')];
+    A('la hoja trae un renglón por cada uno con su casilla (lo escrito en pastillas ya viene puesto)', ins.map(i=>i.dataset.id+':'+i.value).join()==='a:1,b:2,c:1,g:1'&&!!m.querySelector('.sheetbtns.xsave #qa_ok')&&ins[0].getAttribute('inputmode')==='decimal');
+    { const K=[...m.querySelectorAll('.qar .k')].map(e=>e.textContent); A('un nombre repetido dice su momento; los demás, solo su nombre', K.join('|')==='creatina|omega|magnesio · AM|magnesio · PM'); }
+    const j0=JSON.stringify(db.stack);
+    ins[2].value='abc'; m.querySelector('#qa_ok').click(); A('con una casilla mal no guarda nada ni cierra', !!document.getElementById('modal')&&/^⚠/.test(msg)&&!('qty' in db.stack[0]));
+    ins[0].value='1'; ins[1].value='3'; ins[2].value='2'; ins[3].value='4'; m.querySelector('#qa_ok').click(); m.querySelector('#qa_ok').click();
+    A('guardar los deja de siempre (también el 1, que ya es tuyo) y avisa con deshacer', db.stack[0].qty===1&&db.stack[1].qty===3&&db.stack[2].qty===2&&!document.getElementById('modal')&&db.stack[6].qty===4&&db.stack[6].products[0].per===4&&msg==='✓ cuántas guardadas · 4'&&typeof undo==='function');
+    A('…el aviso desaparece y las celdas dicen su número', suppNoQty().length===0&&renderStack().indexOf('data-act="qtyall"')<0&&takeUnits(takeOf(db.stack[1],''),T)===3);
+    undo(); A('…y el deshacer los regresa como estaban', !('qty' in db.stack[0])&&!('qty' in db.stack[1])&&suppNoQty().length===4&&JSON.stringify(db.stack)===j0);   // idéntico: también el «por toma» del producto que no lo traía
+    openQtyDay('a',T,''); m=document.getElementById('modal'); A('la hoja del número ya no imprime la dosis en mg ni en g, y ofrece ponerlos todos', !m.querySelector('.submeta')&&!/\d\s?(mg|g)\b/.test(m.textContent)&&!!m.querySelector('#dd_all')); m.querySelector('#dd_all').click();
+    A('…que abre la hoja de todos', !!document.getElementById('modal').querySelector('.qai')); closeModal();
+    A('la página dice su idioma', document.documentElement.lang==='es');
+    console.log('cuántas de cada uno self-check OK');
+  } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } save=_sv; reRender=_rr; toast=_t; db=real; window._stackTab=st0; state.screen=sc0; _sbx=sb0; bumpIdx(); } }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -7015,7 +7042,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
   if(_bl.sess){ if(!state._fatCache[_bl.sess.id])state._fatCache[_bl.sess.id]=sessionFatigueContext(_bl.sess); baseFatCtx=(state._fatCache[_bl.sess.id][_bl.ei])||[]; }
   state._align=state._align||{}; state._align[exi]={prevSets,align,curFatCtx,baseFatCtx,level:_bl.level}; let _dnAny=false;   // v302 · ¿alguna serie YA hecha sale ▼? (para decir por qué, una vez por ejercicio)
   // honest about missing history: no equivalent prior occurrence found for this exact instance/variant
-  const noBaseline=!prevSets?`<span class="exprog u-o30 u-label u-ml6" title="sin sesión previa equivalente para comparar">sin baseline</span>`:'';
+  const noBaseline=!prevSets?`<span class="exprog u-o40 u-label u-ml6" title="sin sesión previa equivalente para comparar">sin baseline</span>`:'';
   // línea 1: [bi] nombre + badges · línea 2: tipo · marca · setup · nota (o [+ nota] si aún no hay)
   const noteHTML=`<span class="note${ex.note?'':' add'} u-tap" data-act="editexnote" data-exi="${exi}" title="${ex.note?'editar nota':'agregar nota'}">${ex.note?escTxt(ex.note):'[+ nota]'}</span>`;
   // v256 (B3): el asa vive en SU columna y las dos líneas comparten borde — [bi] sobre [cable]. Antes el asa y el
@@ -7040,7 +7067,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
       // prior values as a muted hint under the row (cardio has no e1RM %)
       const prevS=(prevSets&&align[si]!=null)?prevSets[align[si]]:null;
       let hint='';
-      if(prevS){ const bits=fields.filter(f=>f!=='intensity'&&prevS[f]).map(f=>(CARDIO_FL[f]||f)+' '+prevS[f]); if(bits.length) hint=`<div class="setprogline u-label u-o35">${escTxt(bits.join(' · '))}</div>`; }
+      if(prevS){ const bits=fields.filter(f=>f!=='intensity'&&prevS[f]).map(f=>(CARDIO_FL[f]||f)+' '+prevS[f]); if(bits.length) hint=`<div class="setprogline u-label u-o40">${escTxt(bits.join(' · '))}</div>`; }
       body+=`<div class="srow gc-cardio" style="grid-template-columns:${colTpl}" data-swipe="delset" data-exi="${exi}" data-si="${si}" data-rk="${rk(s)}">${setnHTML(labels[si],s.done,'done',exi,si,'')}${cells}<div class="setend">${doneCellHTML(s.done,'done',exi,si)}</div></div>${hint}`;
     });
     const add=`<div class="addrow afree"><span class="aleft"><button class="addbtn" data-act="addset" data-exi="${exi}">+ set</button></span><button class="addbtn aex" data-act="addex" data-exi="${exi}">+ exercise</button></div>`;
@@ -7549,6 +7576,19 @@ function openExtraEdit(iso,id){ const a=extrasOn(iso).find(x=>x&&x.id===id); if(
     toast('✓ extra · '+qtyTxt(extraQty(a))+' '+(a.name||''),'ok',{undo:back}); };
   document.getElementById('ex_ok2').onclick=go; ['ex_q2','ex_t2'].forEach(k=>{ const e=document.getElementById(k); if(e)e.addEventListener('keydown',ev=>{ if(ev.key==='Enter')go(); }); });
   document.getElementById('ex_del').onclick=()=>{ const x=extraDel(iso,id); if(!x)return; rkAnchor('ls:supps'); save(); closeModal(); reRender(); _lastTap=null; toast('✓ extra quitado','ok',{undo:()=>{ extraPut(iso,x); }}); }; }
+// v328 · S-QTY · el dueño (9-oct): "solo el número de cantidad de pastilla, 2, 3 etc… y así con todo". En su respaldo ninguno traía cuántas
+// por toma (todos decían 1): los activos sin número propio (ni tuyo ni de su producto) se ponen de una pasada desde administrar.
+function suppNoQty(){ return (db.stack||[]).filter(x=>x&&suppStatus(x)==='active'&&!(+x.qty>0)&&!(+((suppProd(x)||{}).per)>0)); }
+function openQtyAll(){ const L=suppNoQty(); if(!L.length){ toast('✓ todos tienen su número'); return; }
+  const nk=x=>String(x.name||'').trim().toLowerCase(), rp={}; L.forEach(x=>{ rp[nk(x)]=(rp[nk(x)]||0)+1; });   // un nombre repetido (la misma sustancia en dos momentos) dice su momento: si no, no se sabe cuál es cuál
+  const mo=x=>rp[nk(x)]>1?(x.when&&x.when.length?x.when.join('/'):'sin momento'):'';
+  openModal('<h3>cuántas de cada uno</h3><div class="qal">'+L.map(x=>'<label class="line qar"><span class="k">'+escTxt(x.name||'supp')+(mo(x)?' <span class="u-o40">· '+escTxt(mo(x))+'</span>':'')+'</span><span class="dots"></span><input class="qai" data-id="'+escTxt(x.id)+'" type="text" inputmode="decimal" autocomplete="off" value="'+qtyTxt(suppPer(x))+'" aria-label="cuántas de '+escTxt((x.name||'supp')+(mo(x)?' · '+mo(x):''))+'"/></label>').join('')+'</div>'
+    +'<div class="sheetbtns xsave"><button class="ok" id="qa_ok">guardar</button><button class="cancel" data-act="closemodal">cancelar</button></div>');
+  const m=document.getElementById('modal'); let busy=false;
+  const go=()=>{ if(busy)return; const ins=[...m.querySelectorAll('.qai')], bad=ins.find(i=>!qtyParse(i.value)); if(bad){ toast('⚠ pon cuántas','err'); try{ focusEl(bad); }catch(_){} return; } busy=true;
+    const snap=[]; ins.forEach(i=>{ const it=(db.stack||[]).find(x=>x&&x.id===i.dataset.id); if(!it)return; const p=suppProd(it); snap.push([it,it.qty,p,p?p.per:undefined]); suppPerSet(it,qtyParse(i.value)); });   // suppPerSet escribe también el «por toma» del producto: el deshacer lo regresa (verificador)
+    save(); closeModal(); reRender(); toast('✓ cuántas guardadas · '+snap.length,'ok',{undo:()=>{ snap.forEach(([it,q,p,pp])=>{ if(q===undefined)delete it.qty; else it.qty=q; if(p){ if(pp===undefined)delete p.per; else p.per=pp; } }); }}); };
+  document.getElementById('qa_ok').onclick=go; m.querySelectorAll('.qai').forEach(i=>i.addEventListener('keydown',e=>{ if(e.key==='Enter')go(); })); }
 function openQtyDay(id,iso,tk){ iso=iso||todayISO(); const it=(db.stack||[]).find(x=>x.id===id), t=it&&takeOf(it,tk,iso); if(!t)return;
   const p=suppProd(it), base=takeUnits(t,iso), day=takeDayQty(t,iso), cur=day!=null?day:base, known=!!(+it.qty>0||(p&&+p.per>0)||day!=null), main=!t.id, pu=p?suppPU(p):'', dz=takeDoseTxt(t), sn=takeSnap(t,iso), q0=it.qty, p0=p?p.per:undefined;
   const done=(msg)=>{ rkAnchor('sp:'+it.id+':'+t.id); save(); closeModal(); reRender(); _lastTap=null; toast(msg,'ok',{undo:()=>{ takeRestore(t,iso,sn); if(q0===undefined)delete it.qty; else it.qty=q0; if(p)p.per=p0; }}); };
@@ -7556,14 +7596,14 @@ function openQtyDay(id,iso,tk){ iso=iso||todayISO(); const it=(db.stack||[]).fin
   openModal('<h3>'+escTxt(it.name||'supp')+' <span class="u-o40 u-w4">· '+(today?'hoy':escTxt(fmtShort(iso)))+'</span></h3>'
     +'<div class="field"><label>CUÁNTAS'+(pu&&pu!=='u'?' · '+escTxt(pu):'')+'</label><input id="dd_v" type="text" inputmode="decimal" autocomplete="off" value="'+qtyTxt(cur)+'"/></div>'
     +(main?'<div class="line lsv"><span class="k">aplica</span><span class="dots"></span><span class="toggles" id="dd_when">'+opt('day',today?'solo hoy':'solo ese día',known)+opt('all','siempre',!known)+'</span></div>':'')
-    +(dz?'<div class="submeta">tu dosis de siempre: '+escTxt(dz)+'</div>':'')
-    +'<div class="sheetbtns"><button class="ok" id="dd_ok">guardar</button>'+(day!=null?'<button class="cancel" id="dd_back">volver a '+qtyTxt(base)+'</button>':'')+'<button class="cancel" data-act="closemodal">cancelar</button></div>');
+    +'<div class="sheetbtns"><button class="ok" id="dd_ok">guardar</button>'+(day!=null?'<button class="cancel" id="dd_back">volver a '+qtyTxt(base)+'</button>':'')+(!known&&suppNoQty().length>1?'<button class="cancel" id="dd_all">todos…</button>':'')+'<button class="cancel" data-act="closemodal">cancelar</button></div>');
   const i=document.getElementById('dd_v'), nmz=it.name||'supp', go=()=>{ const n=qtyParse(i.value); if(!n){ toast('⚠ pon cuántas','err'); return; }
     const all=main&&!!document.querySelector('#dd_when .t.on[data-v="all"]');
     if(all){ suppPerSet(it,n); takeQtySet(t,iso,0); done('✓ '+nmz+' · '+qtyTxt(n)+' por toma'); return; }
     const ch=takeQtySet(t,iso,n); if(!takeState(t,iso))takeMark(t,iso,'taken',today); done('✓ '+nmz+' · '+qtyTxt(n)+(ch?(today?' · solo hoy':' · solo ese día'):'')); };
   document.getElementById('dd_ok').onclick=go; i.addEventListener('keydown',e=>{ if(e.key==='Enter')go(); });
-  const bk=document.getElementById('dd_back'); if(bk)bk.onclick=()=>{ takeQtySet(t,iso,0); done('✓ '+nmz+' · '+qtyTxt(base)); }; }
+  const bk=document.getElementById('dd_back'); if(bk)bk.onclick=()=>{ takeQtySet(t,iso,0); done('✓ '+nmz+' · '+qtyTxt(base)); };
+  { const ba=document.getElementById('dd_all'); if(ba)ba.onclick=()=>openQtyAll(); } }   // v328 · varios sin número: se ponen todos de una pasada
 // un toque: pendiente → tomado (con su hora real, que nunca se pisa) · tomado/tarde → sin marcar
 function suppQuickTick(id,iso,tk){
   const it=(db.stack||[]).find(x=>x.id===id), t=it&&takeOf(it,tk); if(!t)return;
@@ -7598,7 +7638,7 @@ function renderMacros(){
     +(goalSecHidden('electro')?'':intakeRow('sodium',t.sodium,g.sodium,'mg')+intakeRow('potassium',t.potassium,g.potassium,'mg'))
     +(goalSecHidden('sugarfiber')?'':intakeRow('sugar',t.sugar,g.sugar,'g')+intakeRow('fiber',t.fiber,g.fiber,'g'))
     +(goalSecHidden('minor')?'':intakeRow('caffeine',t.caffeine,g.caffeine,'mg')+intakeRow('alcohol',t.alcohol,g.alcohol||0,'g')+intakeRow('liquids',t.water,g.water,'L',null,1))
-    +(function(){ const r=MICROS.map(mi=>{ const v=(micros&&micros[mi.k])||0; return v>0?intakeRow(mi.l,v,mi.rda,mi.u):''; }).join(''); return r?'<hr class="rule"/><div class="grp-label">MICRONUTRIENTS <span class="u-o35 u-w4">· de suplementos</span></div>'+r:''; })()
+    +(function(){ const r=MICROS.map(mi=>{ const v=(micros&&micros[mi.k])||0; return v>0?intakeRow(mi.l,v,mi.rda,mi.u):''; }).join(''); return r?'<hr class="rule"/><div class="grp-label">MICRONUTRIENTS <span class="u-o40 u-w4">· de suplementos</span></div>'+r:''; })()
     // v262 · retención (look "1", opción B): una línea de diagnóstico SOLO si se sale de rango — el número en rojo y el
     // Na:K del día; tocarla abre sus consejos. En rango no ocupa renglón (BRAND §4).
     +(bl.label==='high'?`<hr class="rule"/><div class="mrow mret" role="button" tabindex="0" data-act="rettips"><span class="ml">${items.some(m=>m&&m.approx)?'~ ':''}retention</span><span class="mv"><span class="u-bad">${bl.sc}</span>${t.potassium>0?` <span class="u-o50">· Na:K ${Math.round(t.sodium/t.potassium*10)/10}</span>`:''} <span class="u-o50">${state._retTips?'▾':'→'}</span></span></div>`
@@ -8533,7 +8573,7 @@ function openMetricDetail(key){
   openModal(`<div class="mdetail">
     <div class="mdhd"><h3>${sp.title}</h3>${headBtn}</div>
     <div class="mdtabs" data-tk="md-${key}">${segs}</div>${custBox}
-    ${!real.length?`<div class="mdtop2"><div><div class="mdval u-o30">—</div><div class="mdmeta">${fmtShort(win[0])} – ${fmtShort(end)}</div></div><div class="mdsr">${nav}</div></div><div class="empty u-py32 u-px0">sin registros en este rango</div>`:`
+    ${!real.length?`<div class="mdtop2"><div><div class="mdval u-o40">—</div><div class="mdmeta">${fmtShort(win[0])} – ${fmtShort(end)}</div></div><div class="mdsr">${nav}</div></div><div class="empty u-py32 u-px0">sin registros en este rango</div>`:`
       <div class="mdtop2"><div><div class="mdval">${sp.valHTML?sp.valHTML(mdRound(lastV)):escTxt(vf(lastV))}</div><div class="mdmeta">${li>=0?fmtShort(sp.dates[li]):''}${yz!==1?` · zoom ${Math.round(yz*10)/10}×`:''}</div></div>
         <div class="mdsr">${stBtn}${nav}</div></div>
       ${chart}
@@ -9909,7 +9949,7 @@ function faArcHTML(o){ const cx=100, cy=100, R=84, A0=-120, SW=240, N=16, gap=2.
   const d=faDiffTxt(o), younger=faDiffGood(o);
   return '<div class="faarc" role="img" aria-label="fitness age '+escTxt(faAgeTxt(o))+(d?' · '+escTxt(d):'')+'"><svg viewBox="0 0 200 150" aria-hidden="true">'+s+'</svg><div class="fac"><div class="fan">'+escTxt(faAgeTxt(o))+'</div><div class="fal">FITNESS AGE</div>'+(d?'<div class="fad">'+(younger?escTxt(d).replace(/^([0-9+]+)/,'<b class="u-good">$1</b>'):escTxt(d))+'</div>':'')+'</div></div><div class="faends"><span>'+FA.lim[0]+'</span><span>'+FA.lim[1]+'</span></div>'; }
 function faTileHTML(wide){ const o=fitnessAge(), d=faDiffTxt(o), hd='<div class="ptlh"><div class="plbl">fitness age</div><span class="ptchev">›</span></div>';
-  const val='<div class="pval'+(o.age==null?' u-o30':'')+'">'+escTxt(faAgeTxt(o))+'<span>años</span></div>', st='<div class="pst flat">'+escTxt(o.age==null?(o.na||'falta '+o.miss):(d||'estimado'))+'</div>';
+  const val='<div class="pval'+(o.age==null?' u-o40':'')+'">'+escTxt(faAgeTxt(o))+'<span>años</span></div>', st='<div class="pst flat">'+escTxt(o.age==null?(o.na||'falta '+o.miss):(d||'estimado'))+'</div>';
   if(!wide)return '<div class="ptile tap" data-act="openage">'+hd+val+st+'</div>';
   return '<div class="ptile tap" data-act="openage">'+hd+'<div class="ptw"><div>'+val+st+'</div><div class="ptwc">'+(o.vo2!=null?'<div class="pst">VO2 ~'+(Math.round(o.vo2*10)/10)+' · tu edad '+o.cal+'</div><div class="pst">'+(o.variant==='waist'?'con cintura':'con IMC · menos preciso')+'</div>':'<div class="pst">edad · FC en reposo · cintura</div>')+'</div></div></div>'; }
 function faAskWaist(){ faHold(); trkPrompt({title:'cintura',label:'CM · a la altura del ombligo, sin apretar',value:(db.profile&&db.profile.waistCm)||'',type:'number',inputmode:'decimal',ok:'guardar'},v=>{ const n=parseFloat(String(v).replace(',','.')); if(String(v).trim()===''){ delete db.profile.waistCm; } else if(!(n>=40&&n<=200)){ toast('⚠ entre 40 y 200 cm','err'); return false; } else db.profile.waistCm=Math.round(n*10)/10; _faCache=null; saveSoon(); savedToast('✓ cintura guardada'); setTimeout(()=>{ if(state.screen==='progress'){ reRender(); faBack(); } },0); }); }
@@ -10043,7 +10083,7 @@ function renderProgress(){
   // v256 · una métrica ACTIVA de registro manual nunca desaparece por no tener datos: sin tile no había por dónde
   // registrarla (la config decía "on" y el sueño no salía en ningún lado). Sin dato, la tile entera abre su hoja.
   const emptyTile=(lbl,unit,act)=>`<div class="ptile tap" data-act="${act}"><div class="ptlh"><div class="plbl">${lbl}</div><span class="ptchev">›</span></div>`
-    +`<div class="pval u-o30">—<span>${unit}</span></div><div class="pst flat">sin registro</div></div>`;
+    +`<div class="pval u-o40">—<span>${unit}</span></div><div class="pst flat">sin registro</div></div>`;
   // peso
   if(cfg.weight&&!bwVals.length)put('weight',emptyTile('weight',bwU(),'logweight'));
   if(bwVals.length && cfg.weight){ let st=''; let chartHtml='';
@@ -10652,6 +10692,7 @@ function renderStack(){
   { const DG=suppDups(); if(DG.length){ const n=DG.reduce((a,g)=>a+g.items.length,0); out+=`<div class="sbfix u-tap" role="button" tabindex="0" data-act="suppdups"><span>${n} repetidas · únelas en una con varias tomas</span><span class="u-o40">›</span></div>`; } }   // v297
   { const IL=stackInterList(); if(IL===null){ if(!state._subProfAsk&&all.length){ state._subProfAsk=true; subProfiles().then(()=>{ if(state.screen==='stack')reRender(); }).catch(()=>{}); } }
     else { const S=IL.filter(x=>x.iv.sev==='grave'||x.iv.sev==='moderada'), g=S.filter(x=>x.iv.sev==='grave').length; if(S.length)out+=`<div class="sbfix u-tap" role="button" tabindex="0" data-act="stackinter"><span>${g?SUB_WARN+' ':''}${S.length} ${S.length===1?'interacción':'interacciones'} entre lo que tomas</span><span class="u-o40">›</span></div>`; } }   // v297
+  { const NQ=suppNoQty(); if(NQ.length)out+=`<div class="sbfix u-tap" role="button" tabindex="0" data-act="qtyall"><span>cuántas tomas de cada uno · ${NQ.length} sin número</span><span class="u-o40">›</span></div>`; }   // v328 · S-QTY
   if(!all.length&&!xs.length){ out+=`<div class="empty u-mt24 u-mb16 u-mx0">stack vacío<br/><span class="ehint">agrega tu primer suplemento, skincare o medicamento con + supp</span></div>`; return out; }
   // las mismas pestañas de //SUPPS; aquí salen TODOS los activos de ese momento (lo que hoy no toca dice su periodo a la derecha)
   const takes=[]; act.forEach(x=>takesOf(x,iso).forEach(t=>takes.push(t)));
@@ -10775,7 +10816,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
             box.querySelectorAll('.sbrow').forEach(b=>b.onclick=()=>{ _pick=b.dataset.sb; _findQ=''; _renderId(); }); }; q.addEventListener('input',paint); paint(); } }
       return; }
     if(!_catTouched&&!r.amb.length){ const to=r.items[0].s.cat, b=root.querySelector('#se_cat [data-cat="'+to+'"]'); if(b&&!b.classList.contains('on')){ root.querySelectorAll('#se_cat button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); _catSync(to); } }
-    strip.innerHTML='<span class="u-good u-label">✓</span> <span class="u-label">'+r.items.map(m=>escTxt(m.s.name)+(m.dose?' <span class="u-o40">'+subR1(m.dose.n)+' '+escTxt(m.dose.u)+'</span>':'')).join(' <span class="u-o30">+</span> ')+'</span>'
+    strip.innerHTML='<span class="u-good u-label">✓</span> <span class="u-label">'+r.items.map(m=>escTxt(m.s.name)+(m.dose?' <span class="u-o40">'+subR1(m.dose.n)+' '+escTxt(m.dose.u)+'</span>':'')).join(' <span class="u-o40">+</span> ')+'</span>'
       +' <span class="u-o40 u-label">· '+escTxt(SUB_CAT[r.items[0].s.scat]||'')+'</span>'
       +(r.amb.length>1?' '+r.amb.filter(s=>s!==r.items[0].s).slice(0,3).map(s=>'<button type="button" class="b sbpk" data-sb="'+s.id+'">'+escTxt(s.name)+'</button>').join(''):'')
       +(_pick?' <button type="button" class="b" id="se_unpick">no es esta</button>':'')
@@ -10894,7 +10935,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
 const SUB_EV={A:'varios ensayos o metaanálisis en humanos',B:'algunos ensayos en humanos',C:'datos humanos pequeños o preliminares',D:'solo animales o laboratorio'};
 const SUB_SLEEP={mejora:'mejora',empeora:'empeora',mixto:'mixto',ninguno:'sin efecto',desconocido:'sin datos'};
 const SUB_KIND={rda:'ingesta recomendada',estudiado:'estudiado',ficha:'ficha oficial',ul:'límite superior',suprafisiologico:'suprafisiológico (estudio)',toxico:'toxicidad reportada'};
-const SUB_DISCLAIM='<div class="u-mt8 u-o35 u-label u-lsui">lo que reporta la literatura · no es consejo médico</div>';
+const SUB_DISCLAIM='<div class="u-mt8 u-o40 u-label u-lsui">lo que reporta la literatura · no es consejo médico</div>';
 // buscar en el catálogo: lo que se reconoce primero, luego lo que empieza igual, luego lo que lo contiene
 function subSearch(q,n){ n=n||8; const out=[], add=s=>{ if(s&&out.indexOf(s)<0)out.push(s); }; const r=subIdentify(q); r.items.forEach(m=>add(m.s)); r.amb.forEach(add);
   const cp=subToks(q).join(''); if(cp.length>=2){ for(const [k,v] of SUB_CP){ if(out.length>=n)break; if(k.startsWith(cp))v.forEach(id=>add(SUB_BY_ID[id])); }
@@ -12110,6 +12151,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='suppmenu'){ trkMenu('suplementos',[['+ agregar suplemento',()=>openStackEdit(null,'supp')],['ignorar por ahora',()=>{ db.settings.suppHide=true; save(); reRender(); toast('supps ocultos · vuelven en ajustes','',{undo:()=>{ delete db.settings.suppHide; save(); reRender(); }}); }]]); }
   else if(a==='supphideoff'){ delete db.settings.suppHide; save(); reRender(); toast('✓ supps de vuelta en macros'); }
   else if(a==='deladhoc'){ const d=el.dataset.d||todayISO(), x=extraDel(d,el.dataset.id); if(x){ save(); reRender(); toast('✓ extra quitado','ok',{undo:()=>{ extraPut(d,x); }}); } }
+  else if(a==='qtyall'){ openQtyAll(); }
   else if(a==='stackseg'){ window._stackTab=el.dataset.v; state._enter={sel:'.sprlist .sprow'}; reRender(); }   // v327 · las pestañas de administrar
   else if(a==='stkfold'){ const k=el.dataset.k; state._stkOpen=state._stkOpen||{}; state._stkOpen[k]=!state._stkOpen[k]; state._enter={sel:'.sprlist[data-sk="'+k+'"] .sprow'}; reRender(); }
   else if(a==='sefold'){ const b=document.getElementById('se_sec_'+el.dataset.k); if(b){ const op=b.hidden; keepUnder(el,()=>{ b.hidden=!op; el.setAttribute('aria-expanded',op?'true':'false'); const c=el.querySelector('.rchev'); if(c)c.textContent=op?'▾':'›'; if(window._seSum)window._seSum(); }); if(op)revealAnim(b); } }
@@ -14274,7 +14316,7 @@ function openAddExStep2(afterExi,muscle,replaceExi){
     if(canonType(x.type)!==top.type){ const r=exHistRows(top.key)[0]; x.type=top.type; x.machine=(r&&r.ex&&r.ex.machine)||''; }   // otro tipo: su marca es la de ESA hoja
     setLat(x,top.lat); x.assisted=top.assisted; x.weighted=top.weighted; x._from=leafRedirectApply(x); });
   window._axList=all; window._axCtx={afterExi,muscle:key,replaceExi};
-  const row=(x,i,other)=>`<div class="pickitem" data-act="axpick" data-i="${i}"${other===true?' hidden data-rest="1"':''} data-q="${escTxt([x.name,x.machine||'',x.type||'',x._m||key].concat(exMuscles(x).map(mm=>(mm&&mm.name)||'')).join(' ').toLowerCase())}">${!isCardio(x)?`<span>[${(x._lats&&x._lats.length?x._lats:[latOf(x)]).join('·')}]</span> `:''}${escTxt(x.name)}${x.machine?` <span class="u-o40 u-label">${escTxt(x.machine)}</span>`:''}${x.type&&x.type!=='free'?` <span class="u-o35 u-label">${escTxt(x.type)}</span>`:''}${x._m?` <span class="u-o35 u-label">#${escTxt(x._m)}</span>`:''}<span class="u-fr u-o40 u-label">${x._here?'':'· otro gym '}${x._sess||0}×</span></div>`;
+  const row=(x,i,other)=>`<div class="pickitem" data-act="axpick" data-i="${i}"${other===true?' hidden data-rest="1"':''} data-q="${escTxt([x.name,x.machine||'',x.type||'',x._m||key].concat(exMuscles(x).map(mm=>(mm&&mm.name)||'')).join(' ').toLowerCase())}">${!isCardio(x)?`<span>[${(x._lats&&x._lats.length?x._lats:[latOf(x)]).join('·')}]</span> `:''}${escTxt(x.name)}${x.machine?` <span class="u-o40 u-label">${escTxt(x.machine)}</span>`:''}${x.type&&x.type!=='free'?` <span class="u-o40 u-label">${escTxt(x.type)}</span>`:''}${x._m?` <span class="u-o40 u-label">#${escTxt(x._m)}</span>`:''}<span class="u-fr u-o40 u-label">${x._here?'':'· otro gym '}${x._sess||0}×</span></div>`;
   // v288 · el dueño: "en cambiar ejercicio solamente deben de salir los ejercicios del músculo… agregar cambiar músculo". Los de otros músculos
   // siguen en la hoja pero ocultos: solo aparecen al escribir en el buscador ("buscar en todo tu catálogo").
   openModal(`<h3>${escTxt(muscle)} · ${replaceExi!=null?'cambiar ejercicio':'elige ejercicio'}</h3>
@@ -15421,7 +15463,7 @@ function snapshotFaCtx(){ try{ const qel=document.getElementById('fa_q')||docume
 // re-render the cached OpenFoodFacts ("EN LÍNEA") rows for a restored search (no re-fetch). No-op if rows already present.
 function renderOFFRows(term){ const list=document.getElementById('fa_list'); const res=window._ofRes; if(!list||!res||!res.length)return false;
   if(list.querySelector('[data-act="ofpick"]'))return true;
-  const html=res.slice(0,15).map((f,i)=>`<div class="pickitem" data-act="ofpick" data-i="${i}">${escTxt(f.name)}${srcMark(f)}${f.brand?' <span class="u-o35 u-label">'+escTxt(f.brand)+'</span>':''} <span class="u-fr u-o50">${Math.round((f.per100&&f.per100.kcal)||foodKcal100(f)||0)} /100${f.base==='ml'?'ml':'g'}</span></div>`).join('');
+  const html=res.slice(0,15).map((f,i)=>`<div class="pickitem" data-act="ofpick" data-i="${i}">${escTxt(f.name)}${srcMark(f)}${f.brand?' <span class="u-o40 u-label">'+escTxt(f.brand)+'</span>':''} <span class="u-fr u-o50">${Math.round((f.per100&&f.per100.kcal)||foodKcal100(f)||0)} /100${f.base==='ml'?'ml':'g'}</span></div>`).join('');
   const head='<div class="grp-label sub">ONLINE · '+escTxt(term)+'</div>';
   list.insertAdjacentHTML('beforeend',head+html); return true; }
 // last-used cache: per-food (unit, qty) snapshot so re-logging the same food prefills the previous portion.
@@ -15463,13 +15505,13 @@ function openFoodAdd(preset, lockTag){
      <div class="fa-listwrap"><div class="fa-lblrow" id="fa_lblrow"><div class="grp-label first" id="fa_lbl">RECIENTES</div><button type="button" class="b" id="fa_clean">limpiar</button></div><div id="fa_list"></div></div>
    </div>`,'tall');
   const q=document.getElementById('fa_q');
-  const foodRow=(f,act)=>`<div class="pickitem" data-act="${act}" data-id="${f.id}">${escTxt(f.name)}${srcMark(f)}${f.brand?' <span class="u-o35 u-label">'+escTxt(f.brand)+'</span>':''} <span class="u-fr u-o50">${Math.round(foodKcal100(f))} /100${f.base==='ml'?'ml':'g'}</span></div>`;
+  const foodRow=(f,act)=>`<div class="pickitem" data-act="${act}" data-id="${f.id}">${escTxt(f.name)}${srcMark(f)}${f.brand?' <span class="u-o40 u-label">'+escTxt(f.brand)+'</span>':''} <span class="u-fr u-o50">${Math.round(foodKcal100(f))} /100${f.base==='ml'?'ml':'g'}</span></div>`;
   // el vacío deja de ser un diagrama de 3 tarjetas con 5 tamaños: una línea, y los atajos ya están arriba
   const emptyHTML=`<div class="fa-empty">sin resultados todavía · también se busca en línea</div>`;
   let _offT=0, _offSeq=0;
   // v280 · [limpiar]: tus alimentos guardados que estorban se quitan aquí — ✕ en cada fila (foodForget, con [deshacer]) y [listo]
   let _clean=false;
-  const delRow=f=>`<div class="pickitem" role="button" tabindex="0" data-del="${escTxt(f.id)}" aria-label="quitar ${escTxt(f.name)}">${escTxt(f.name)}${srcMark(f)}${f.brand?' <span class="u-o35 u-label">'+escTxt(f.brand)+'</span>':''} <span class="u-fr u-o50" aria-hidden="true">✕</span></div>`;
+  const delRow=f=>`<div class="pickitem" role="button" tabindex="0" data-del="${escTxt(f.id)}" aria-label="quitar ${escTxt(f.name)}">${escTxt(f.name)}${srcMark(f)}${f.brand?' <span class="u-o40 u-label">'+escTxt(f.brand)+'</span>':''} <span class="u-fr u-o50" aria-hidden="true">✕</span></div>`;
   const renderList=()=>{ const s=(q.value||'').toLowerCase().trim();
     const mine=(db.foods||[]).slice().filter(f=>!s||searchScore(s,f)>0).map(f=>({f,sc:s?searchScore(s,f):0,lu:f.lastUsed||0}))
       .sort((a,b)=>s?(b.sc-a.sc)||(b.lu-a.lu):(b.lu-a.lu)).slice(0,_clean?1e4:40).map(x=>x.f);   // v280 · al limpiar salen todos, no solo los 40 recientes
@@ -15490,7 +15532,7 @@ function openFoodAdd(preset, lockTag){
     const old=document.getElementById('fa_offhint'); if(old)old.remove(); list.appendChild(hint);
     try{ const res=await searchFoods(term); window._faLast=term; if(seq!==_offSeq||q.value.trim()!==term)return;
       const oldh=document.getElementById('fa_offhint'); if(oldh)oldh.remove();
-      if(res && res.length){ window._ofRes=res; const html=res.slice(0,15).map((f,i)=>`<div class="pickitem" data-act="ofpick" data-i="${i}">${escTxt(f.name)}${srcMark(f)}${f.brand?' <span class="u-o35 u-label">'+escTxt(f.brand)+'</span>':''} <span class="u-fr u-o50">${Math.round((f.per100&&f.per100.kcal)||foodKcal100(f)||0)} /100${f.base==='ml'?'ml':'g'}</span></div>`).join('');
+      if(res && res.length){ window._ofRes=res; const html=res.slice(0,15).map((f,i)=>`<div class="pickitem" data-act="ofpick" data-i="${i}">${escTxt(f.name)}${srcMark(f)}${f.brand?' <span class="u-o40 u-label">'+escTxt(f.brand)+'</span>':''} <span class="u-fr u-o50">${Math.round((f.per100&&f.per100.kcal)||foodKcal100(f)||0)} /100${f.base==='ml'?'ml':'g'}</span></div>`).join('');
         const head='<div class="grp-label sub">ONLINE · '+escTxt(term)+'</div>';
         list.insertAdjacentHTML('beforeend',head+html);
       }
@@ -16607,7 +16649,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
