@@ -504,6 +504,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .lseg span{white-space:nowrap;}   /* `EXTRA 0/3+1` no se parte en dos renglones (a 320 la fila crecía 16 px al registrar el primer extra) */
   /* 2.ª vuelta · un aviso con [deshacer] nunca lo esconde: el texto baja de renglón y el botón conserva su sitio (con más de 29 letras quedaba fuera de la caja) */
   .toast:has(.tundo){display:flex; align-items:center; min-height:calc(44px + 2 * var(--bw-chrome)); white-space:normal; text-align:left;} .toast:has(.tundo) .tm{flex:1 1 auto; min-width:0; overflow-wrap:anywhere; line-height:var(--lh-ui);} .toast .tundo{flex:0 0 auto;}
+  .modal.low:not(.asklayer) .sheetbtns.xsave{box-shadow:0 calc(var(--s6) + env(safe-area-inset-bottom)) 0 var(--sheet-bg);}   /* v330 · HO1 */
   .sheetbtns.spl{justify-content:space-between;}   /* dos salidas sin principal: una a cada orilla (cerrar, a la derecha) */
   .modal.hold,.modal.hold *{pointer-events:none;}   /* la hoja que acaba de cambiar de contenido no recibe el segundo toque de un doble toque */
   .lc.sp .t{white-space:normal; overflow:visible; text-overflow:clip; overflow-wrap:anywhere; line-height:var(--lh-ui);}   /* con el número delante el nombre tiene menos ancho: baja de renglón, nunca se corta (B-12) */
@@ -1448,7 +1449,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v329';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v330';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2023,9 +2024,9 @@ function openStorage(){
     +`<div class="grp-label sub">COPIES</div><div id="st_copies"><div class="submeta">${trkSpinHTML('cargando')}</div></div>`
     +`<div class="grp-label sub">BOOT LOG</div><div id="st_boot"><div class="submeta">${trkSpinHTML('cargando')}</div></div>`
     +`<div class="u-tr u-mt8"><a data-act="stdiag" class="vb">copiar diagnóstico</a></div>`
-    +`<div class="sheetbtns u-mt12">${orph?`<button class="ok" data-act="stfree">liberar ${kb(orph)}</button>`:''}<button class="ok" data-act="bakshare">guardar respaldo</button><button class="cancel" data-act="closemodal">cerrar</button></div>`
     +`<div class="submeta u-mt8">"guardar respaldo" abre la hoja de iOS: elige Archivos y la carpeta que quieras. Último: ${daysSinceBackup()>=999?'nunca':'hace '+daysSinceBackup()+' d'}.</div>`
-    +(orph?`<div class="submeta u-mt8">las "fotos viejas" son copias que dejaron dos reparaciones ya aplicadas (2026-08 y 2026-09); nada las lee.</div>`:''),'top');
+    +(orph?`<div class="submeta u-mt8">las "fotos viejas" son copias que dejaron dos reparaciones ya aplicadas (2026-08 y 2026-09); nada las lee.</div>`:'')
+    +`<div class="sheetbtns u-mt12">${orph?`<button class="ok" data-act="stfree">liberar ${kb(orph)}</button>`:''}<button class="ok" data-act="bakshare">guardar respaldo</button><button class="cancel" data-act="closemodal">cerrar</button></div>`,'top');
   fillStorageAsync();
 }
 // v265 · //ESPACIO: el estado real de IndexedDB, las copias internas con [restaurar] y [lo que falta], y el diario
@@ -6357,6 +6358,34 @@ function _exportSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
     A('la hora típica es por toma y en reloj circular (23:50 · 00:10 · 23:55 no dan mediodía)', md2.indexOf('horas típicas 08:00 · 23:55')>=0);
     console.log('export self-check OK');
   } finally { db=real; _sbx=sb0; bumpIdx(); } }
+// self-check de v330 (HO1 · G11): la fila de salida pegada abajo en las hojas que no caben, y el plan del deslizamiento al cambiar de ejercicio. No guarda nada.
+function _v330SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v330: '+nm); }; const real=db, sb0=_sbx, sc0=state.screen, wb0=state._wbar, eh0=state._exHold, ps0=window._progScroll, f0=_fingers;
+  const rows=n=>{ let s=''; for(let i=0;i<n;i++)s+='<div class="line"><span class="k">fila '+i+'</span></div>'; return s; }, out='<div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div>';
+  const open=h=>{ openModal(h); const m=document.getElementById('modal'), sh=m.querySelector('.sheet'); sh.style.animation='none'; return {m,sh,b:[...m.querySelectorAll('.sheetbtns')]}; };
+  try{ _sbx=true; try{ closeModal(); }catch(_){} { const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } }
+    let o=open('<h3>hoja larga</h3>'+rows(90)+out), r=o.b[0].getBoundingClientRect(), s=o.sh.getBoundingClientRect();
+    A('HO1 · en una hoja que no cabe, cerrar queda pegado abajo y a la vista sin bajar', o.b[0].classList.contains('xsave')&&getComputedStyle(o.b[0]).position==='sticky'&&o.sh.scrollTop===0&&r.bottom<=s.bottom+1&&r.top>=s.top&&r.height>=44);
+    { const K=[...o.sh.querySelectorAll('.line')], under=K.find(e=>{ const x=e.getBoundingClientRect(); return x.top<r.top&&x.bottom>r.top-10; }), sT=o.sh.scrollTo; let got=null; o.sh.scrollTo=q=>{ got=q.top; };
+      try{ showEl(K[1]); A('HO1 · lo que ya se ve arriba de la fila no mueve la hoja', got===null); showEl(under); A('HO1 · lo que quedaría detrás de la fila se sube hasta verse', !!under&&got>o.sh.scrollTop); } finally { o.sh.scrollTo=sT; } }
+    o=open('<h3>hoja corta</h3>'+rows(3)+out); A('HO1 · una hoja que cabe no cambia', !o.b[0].classList.contains('xsave'));
+    o=open('<h3>con casilla</h3><div class="field"><input id="v330_x"/></div>'+rows(90)+out); A('HO1 · con casillas no se pega (el teclado la subiría)', !o.b[0].classList.contains('xsave'));
+    o=open('<h3>con borrar</h3>'+rows(90)+'<div class="sheetbtns"><button class="cancel danger">borrar</button><button class="cancel" data-act="closemodal">cerrar</button></div>'); A('HO1 · una fila con [borrar] nunca queda pegada', !o.b[0].classList.contains('xsave'));
+    o=open('<h3>con nota</h3>'+rows(90)+out+'<div class="submeta u-mt8">una nota después de cerrar</div>'); A('HO1 · con algo a la vista después de la fila no se pega (lo taparía)', !o.b[0].classList.contains('xsave'));
+    openStorage(); { const m=document.getElementById('modal'), bt=m.querySelector('.sheetbtns'), last=[...m.querySelectorAll('.sheet > *')].filter(e=>e.offsetParent!==null).pop(); A('HO1 · en almacenamiento las notas van antes y los botones son lo último', !!bt&&bt===last&&!!bt.querySelector('[data-act="closemodal"]')&&/guardar respaldo. abre la hoja de iOS/.test(m.textContent)); }
+    o=open('<h3>con más</h3>'+rows(90)+'<div class="sheetbtns"><button type="button" class="b" data-act="mdmore" aria-expanded="false" aria-controls="v330_m">más</button><button class="cancel" data-act="closemodal">cerrar</button></div><div id="v330_m" hidden>'+rows(30)+out+'</div>');
+    A('HO1 · la fila con [más] se queda en su lugar (lo que abre va debajo)', !o.b[0].classList.contains('xsave')&&!o.b[1].classList.contains('xsave'));
+    o.m.querySelector('#v330_m').hidden=false; sheetFootSync(o.m); A('HO1 · …y al abrirlo, el cerrar del final es el que queda pegado', !o.b[0].classList.contains('xsave')&&o.b[1].classList.contains('xsave'));
+    closeModal(); { const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } }
+    A('G11 · la serie que sigue baja hasta media pantalla', glidePlan(0,600,500,40,1000)===220);
+    A('G11 · nunca sube: si ya está arriba del centro no se mueve', glidePlan(0,600,100,40,1000)===0&&glidePlan(0,600,280,40,1000)===0);
+    A('G11 · no pasa del contenido real', glidePlan(0,600,500,40,50)===50&&glidePlan(0,600,500,40,-30)===0);
+    { const ev=(k,n)=>{ const e=new Event(k); Object.defineProperty(e,'touches',{value:new Array(n)}); document.dispatchEvent(e); };
+      ev('touchstart',1); const dn=fingerDown(); ev('touchend',0); A('G11 · sabe si hay un dedo en la pantalla', dn===true&&fingerDown()===false); }
+    db={settings:{},activeWork:{restEnd:Date.now()+60000,restKind:'',exercises:[]}}; state.screen='workout'; state._wbar=false; state._exHold=null; clearTimeout(_rfT); _rfT=0;
+    window._progScroll=Date.now()+5000; document.dispatchEvent(new Event('scroll')); A('G11 · el deslizamiento de la app no reinicia el reloj del descanso en grande', _rfT===0);
+    window._progScroll=0; document.dispatchEvent(new Event('scroll')); A('G11 · …y tu scroll sí', _rfT!==0);
+    console.log('v330 self-check OK');
+  } finally { clearTimeout(_rfT); _rfT=0; window._progScroll=ps0; _fingers=f0; try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } db=real; state.screen=sc0; state._wbar=wb0; state._exHold=eh0; _sbx=sb0; } }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -7275,6 +7304,30 @@ function sessionContextNote(w){
 // fue el rendimiento de esa última serie". Con la última ✓ el enfoque se QUEDA en ese ejercicio EX_HOLD_MS y luego pasa solo;
 // tocar la línea "sigue …" (o el siguiente ejercicio) lo adelanta. Mientras tecleas o hay una hoja abierta, espera.
 const EX_HOLD_MS=4000;
+// v330 · G11 · el dueño (8-oct): "esa transición de ejercicio a ejercicio venga acompañada con ese scroll a que se acomode a mitad de la
+// pantalla, de forma suave". Tras la pausa de fin de ejercicio, el cambio y el deslizamiento son un solo movimiento (mismo tiempo y misma
+// curva que el cambio: --dur-calm, --ease-out) y la serie que sigue queda a media pantalla. Reglas: solo hacia abajo (el scroll nunca
+// sube), nunca más allá del contenido real, nunca con el dedo en la pantalla (cualquier toque, rueda o tecla lo suelta) y sin
+// deslizamiento con movimiento reducido. Un deslizamiento que hizo la app no reinicia el reloj del descanso en grande (_progScroll).
+let _fingers=0, _mouseDn=false, _glideRaf=0;
+function fingerDown(){ return _fingers>0||_mouseDn; }
+function glideStop(){ if(_glideRaf){ try{ cancelAnimationFrame(_glideRaf); }catch(_){} _glideRaf=0; } }
+// cuánto bajar para que quede al centro: 0 si habría que subir o si no hay contenido debajo
+function glidePlan(vTop,vH,elTop,elH,room){ const d=Math.round(Math.min((elTop+elH/2)-(vTop+vH/2),room)); return d>=2?d:0; }
+// dónde QUEDARÁ `el` respecto al borde de arriba de la pantalla: por su lugar en la página (offsetTop), no por lo que se ve en este instante
+// (durante el cambio de ejercicio cada bloque viene deslizándose desde donde estaba y getBoundingClientRect daría el punto de salida)
+function layTop(el,v){ const y=e=>{ let s=0; for(;e;e=e.offsetParent)s+=e.offsetTop; return s; }; return y(el)-y(v)-v.scrollTop; }
+function glideTo(el){ glideStop(); const v=document.getElementById('view'); if(!v||!el||!v.contains(el))return 0;
+  const p=v.querySelector(':scope > .vpad');
+  const d=glidePlan(0,v.clientHeight,layTop(el,v),el.offsetHeight,v.scrollHeight-(p?p.offsetHeight:0)-v.clientHeight-v.scrollTop); if(!d)return 0;
+  const D=durMs('--dur-calm',420), y0=v.scrollTop, t0=performance.now(); window._progScroll=Date.now()+D+200;
+  const step=now=>{ const t=Math.max(0,Math.min(1,(now-t0)/D)); v.scrollTop=y0+d*(1-Math.pow(1-t,5)); _glideRaf=t<1?requestAnimationFrame(step):0; };   // 1-(1-t)^5 es --ease-out (cubic-bezier(.22,1,.36,1))
+  _glideRaf=requestAnimationFrame(step); return d; }
+try{ ['touchstart','touchend','touchcancel'].forEach(k=>document.addEventListener(k,e=>{ _fingers=(e.touches&&e.touches.length)||0; if(k==='touchstart')glideStop(); },{capture:true,passive:true}));
+  document.addEventListener('pointerdown',e=>{ if(e.pointerType==='mouse')_mouseDn=true; glideStop(); },{capture:true,passive:true});
+  ['pointerup','pointercancel'].forEach(k=>document.addEventListener(k,e=>{ if(e.pointerType==='mouse')_mouseDn=false; },{capture:true,passive:true}));
+  ['wheel','keydown'].forEach(k=>document.addEventListener(k,glideStop,{capture:true,passive:true}));
+  window.addEventListener('blur',()=>{ _fingers=0; _mouseDn=false; }); }catch(_){}
 function exHoldClear(){ const h=state._exHold; if(h){ clearTimeout(h.t); state._exHold=null; } }
 // v305 · "la transición al terminar un ejercicio y pasar al siguiente está muy tosca, no es smooth". Antes todo pasaba en el mismo
 // cuadro: las filas del que termina desaparecían de golpe, el hueco se cerraba en 180 ms y el fundido duraba 280. Ahora van en dos
@@ -7288,8 +7341,10 @@ function exSwap(apply){ const v=document.getElementById('view'), old=v&&v.queryS
 function exHoldGo(){ const h=state._exHold; if(!h)return; exHoldClear(); const w=db.activeWork; if(!w||!w.exercises)return;
   const hi=w.exercises.indexOf(h.ex); if(state._curEx===hi)exSwap(()=>exHoldApply(hi)); }
 function exHoldApply(hi){ const w=db.activeWork; if(!w||!w.exercises)return;
-  if(state._curEx===hi){ state._curEx=null; const nt=currentSetTarget(); if(nt)state._focusSet={exi:nt.exi,si:nt.si};
-    if(state.screen==='workout'){ try{ const v=document.getElementById('view'), b=nt&&v.querySelector('.ex[data-exi="'+nt.exi+'"]'); if(b&&b.dataset.rk)_lastTap={sig:'',sel:'',el:null,sheet:null,view:true,off:0,rk:b.dataset.rk,rkOff:b.getBoundingClientRect().top-v.getBoundingClientRect().top}; }catch(_){} reRender(); _lastTap=null; } } }
+  if(state._curEx===hi){ state._curEx=null; const nt=currentSetTarget(), gl=!!nt&&state.screen==='workout'&&!_sbx&&!reducedMotion()&&!fingerDown();   // v330 · G11 · con deslizamiento, la serie que sigue llega al centro; sin él, como antes (solo se enseña si no se ve)
+    if(nt&&!gl)state._focusSet={exi:nt.exi,si:nt.si};
+    if(state.screen==='workout'){ try{ const v=document.getElementById('view'), b=nt&&v.querySelector('.ex[data-exi="'+nt.exi+'"]'); if(b&&b.dataset.rk)_lastTap={sig:'',sel:'',el:null,sheet:null,view:true,off:0,rk:b.dataset.rk,rkOff:b.getBoundingClientRect().top-v.getBoundingClientRect().top}; }catch(_){} reRender(); _lastTap=null;
+      if(gl){ const v=document.getElementById('view'), fe=v&&v.querySelector('.setn[data-exi="'+nt.exi+'"][data-si="'+nt.si+'"]'); if(fe&&!glideTo(fe))showEl(fe); } } } }
 function exHoldStart(ex){ exHoldClear();
   const fire=()=>{ const h=state._exHold; if(!h||h.ex!==ex)return; const ae=document.activeElement;
     if(state._wbar||bioCovered()||(ae&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName))){ h.t=setTimeout(fire,1500); return; }   // v301 · también espera con un aviso, un menú o el selector de RIR abiertos
@@ -7436,6 +7491,19 @@ function extrasOn(iso){ return (db.adhoc&&db.adhoc[iso])||[]; }
 // guardar desde una hoja no deja toque que anclar: se ancla el bloque (como mealAnchor) para que, si lo de arriba crece (el panel de
 // macros gana un renglón), lo que mirabas no se mueva
 function rkAnchor(rk){ try{ const v=document.getElementById('view'), b=v&&rkFind(v,rk); if(b)_lastTap={sig:'',sel:'',el:null,sheet:null,view:true,off:0,rk,rkOff:b.getBoundingClientRect().top-v.getBoundingClientRect().top}; }catch(_){} }
+// v330 · HO1 · el dueño (8-oct): "el cerrar lo pondría fijo en la parte de abajo… que te deje scrollear para ver más data, pero que siempre
+// esté ahí accesible sin tener que scrollear. Todos estos formatos". En una hoja de consulta que NO CABE, su última fila de salida queda
+// pegada abajo (la misma pieza que `save` en ajustes: .sheetbtns.xsave) y el contenido pasa por detrás. Una hoja que cabe no cambia en nada.
+// No aplica: hojas con casillas (el teclado subiría la fila sobre lo que escribes), filas con [borrar] y filas con un [más] que abre lo de
+// abajo (pegada, lo que abre quedaría fuera de la vista). Solo se pone, nunca se quita: una fila no cambia de alto dos veces.
+function sheetFoot(sh){ if(!sh||sh.querySelector('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="button"]),textarea,select,[contenteditable="true"]'))return null;
+  const R=sh.querySelectorAll('.sheetbtns'); for(let i=R.length-1;i>=0;i--){ const b=R[i]; if(b.offsetParent===null)continue;   // la última que se ve
+    if(!b.querySelector('[data-act="closemodal"]')||b.querySelector('.danger,[aria-expanded]'))return null;
+    // con algo a la vista DESPUÉS de ella no se pega: la fila pegada lo taparía con su sombra (verificador: la nota bajo `cerrar` en almacenamiento)
+    for(let e=b; e&&e!==sh; e=e.parentElement){ for(let s=e.nextElementSibling; s; s=s.nextElementSibling){ if(!s.classList.contains('vpad')&&s.offsetParent!==null&&s.getBoundingClientRect().height>0)return null; } }
+    return b; } return null; }
+function sheetFootSync(m){ try{ const sh=m&&m.querySelector('.sheet'); if(!sh||sh.scrollHeight<=sh.clientHeight+1)return; const b=sheetFoot(sh); if(b&&!b.classList.contains('xsave'))b.classList.add('xsave'); }catch(_){} }
+function sheetFootWatch(m){ sheetFootSync(m); try{ const sh=m.querySelector('.sheet'); if(sh&&window.MutationObserver)new MutationObserver(()=>sheetFootSync(m)).observe(sh,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']}); }catch(_){} }   // lo que llega después (una ficha que se baja, un [más] que se abre) también cuenta
 function sheetHold(){ if(_sbx)return; const m=document.getElementById('modal'); if(!m)return; m.classList.add('hold'); setTimeout(()=>{ try{ m.classList.remove('hold'); }catch(_){} },350); }
 function extraQty(a){ const q=+(a&&a.qty); return q>0?q:1; }
 function extraAdd(iso,o){ const e=Object.assign({id:'ad_'+Date.now()+Math.random().toString(36).slice(2,7),ts:Date.now()},o); db.adhoc=db.adhoc||{}; (db.adhoc[iso]=db.adhoc[iso]||[]).push(e); return e; }
@@ -11318,7 +11386,8 @@ function goBack(screen){ const y=(state._viewScroll||{})[viewKey(screen)]; state
 // focusEl: foco sin que el navegador brinque, y a la vista. R-SCROLL marca cualquier scrollIntoView o focus() fuera de aquí.
 function scrollerOf(el){ return (el&&el.closest&&(el.closest('.sheet')||el.closest('#exsh')))||document.getElementById('view'); }
 function showEl(el,pad){ try{ const sc=scrollerOf(el); if(!el||!sc||!sc.contains(el))return; const a=sc.getBoundingClientRect(), b=el.getBoundingClientRect(); pad=pad==null?12:pad; let d=0;
-    if(b.top<a.top+pad)d=b.top-a.top-pad; else if(b.bottom>a.bottom-pad)d=Math.min(b.top-a.top-pad,b.bottom-a.bottom+pad);
+    const ft=sc.classList&&sc.classList.contains('sheet')?[...sc.querySelectorAll('.sheetbtns.xsave')].pop():null, bot=(ft&&(ft.compareDocumentPosition(el)&2))?Math.min(a.bottom,ft.getBoundingClientRect().top):a.bottom;   // v330 · HO1 · la fila pegada abajo tapa: para lo que va antes de ella, el fondo útil acaba donde empieza (2 = el elemento la precede)
+    if(b.top<a.top+pad)d=b.top-a.top-pad; else if(b.bottom>bot-pad)d=Math.min(b.top-a.top-pad,b.bottom-bot+pad);
     if(Math.abs(d)>=1){ _lastTap=null; if(sc.scrollTo)sc.scrollTo({top:sc.scrollTop+d,behavior:reducedMotion()?'auto':'smooth'}); else sc.scrollTop+=d; } }catch(_){} }
 function centerEl(el,block,now){ try{ _lastTap=null; if(el&&el.scrollIntoView)el.scrollIntoView({block:block||'center',behavior:(now||reducedMotion())?'auto':'smooth'}); }catch(_){} }
 function focusEl(el){ if(!el||!el.focus)return; try{ el.focus({preventScroll:true}); }catch(_){ try{ el.focus(); }catch(__){} } showEl(el); }
@@ -11583,6 +11652,7 @@ function rfPaint(){ if(!rfActive())return; const w=db&&db.activeWork, el=rfEl();
 // cualquier toque, scroll o tecla: si está en grande, baja (y ese toque no dispara nada); si no, el reloj de 5 s vuelve a empezar
 try{ ['pointerdown','wheel','keydown','scroll'].forEach(k=>document.addEventListener(k,e=>{ const w=db&&db.activeWork;
     if(rfActive()){ const t=e.target; if(t&&t.closest&&t.closest('#restfocus .rfb'))return; if(k==='scroll')return; window._swipeGuard=Date.now(); rfDock(!_rfFinAt&&!!(w&&w.restEnd)); return; }
+    if(k==='scroll'&&Date.now()<(window._progScroll||0))return;   // v330 · G11 · un deslizamiento que hizo la app no es tuyo: el reloj no vuelve a empezar
     if(w&&w.restEnd&&state.screen==='workout'&&rfOn())rfArm(5000); },{capture:true,passive:true})); }catch(_){}
 function _restFocusSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK restfocus: '+nm); }; const real=db, sc0=state.screen, wb0=state._wbar, eh0=state._exHold, rf0=_restFinT, app=document.getElementById('app'), v=document.getElementById('view');
   try{ const fresh=()=>{ db.activeWork.restEnd=Date.now()+60000; _restFinT=0; };
@@ -13154,7 +13224,7 @@ function openModal(html,cls){ const cur=document.getElementById('modal'); const 
   // DS-3: si había un sheet (abierto o saliendo) esto es un cambio de contenido → sin animación de entrada
   const g=window._modalGhost; const swap=had||!!(g&&g.isConnected); if(g){ try{g.remove();}catch(_){} window._modalGhost=null; }
   const m=document.createElement('div'); m.className='modal'+(sheetLow(html,cls)?' low':'')+(swap?'':' in'); m.id='modal'; m.innerHTML=`<div class="sheet glass-strong ${cls||''}">${html}</div>`; if(!/\bnodismiss\b/.test(cls||''))m.addEventListener('click',ev=>{if(ev.target===m){ closeModal(); reRender(); }}); document.getElementById('app').appendChild(m); { const s1=m.querySelector('.sheet'); if(s1&&m.classList.contains('low')&&s1.scrollHeight>s1.clientHeight+1)m.classList.remove('low'); }   /* más alta que su tope: arriba, como antes (abajo el corte caía en el borde de la pantalla) */
-  { const s2=m.querySelector('.sheet'); if(s2&&old&&old.low&&old.h>0&&m.classList.contains('low')&&old.key===sheetKey(s2))s2.style.minHeight=old.h+'px'; } try{ sheetRestore(m,old,back,had); }catch(_){} afterPaint(m,swap); }
+  { const s2=m.querySelector('.sheet'); if(s2&&old&&old.low&&old.h>0&&m.classList.contains('low')&&old.key===sheetKey(s2))s2.style.minHeight=old.h+'px'; } try{ sheetRestore(m,old,back,had); }catch(_){} sheetFootWatch(m); afterPaint(m,swap); }
 function closeModal(){ const s=window._scanner; if(s){ try{ if(s.timer)clearTimeout(s.timer); }catch(_){} try{ if(s._q&&typeof Quagga!=='undefined'){ if(s._fn)Quagga.offDetected(s._fn); Quagga.stop(); } }catch(_){} try{ if(s.stream)s.stream.getTracks().forEach(t=>t.stop()); }catch(_){} window._scanner=null; } window._linkBarcode=''; if(!_sheetIn&&!window._sheetBackGo)_sheetMem=null; const m=document.getElementById('modal'); if(!m)return;
   // DS-3: el modal deja de existir YA para la lógica (sin id, sin clics); lo que queda es su fantasma saliendo 180 ms
   m.removeAttribute('id'); m.classList.remove('in'); m.classList.add('out'); window._modalGhost=m;
@@ -16751,7 +16821,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
