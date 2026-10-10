@@ -417,7 +417,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .pst{font-size:var(--t-label); font-weight:700; margin-top:6px;} .pst.good{color:var(--o50);} .pst.bad{color:var(--bad);} .pst.flat{color:var(--o40); font-weight:400;}
   .ptile svg{margin:var(--s3) 0 0 !important;}
   .mrow{display:grid; grid-template-columns:78px 1fr auto; align-items:center; column-gap:var(--s4); margin-top:var(--s5); font-size:var(--t-data);}
-  .mrow:first-of-type{margin-top:0;} .mrow .ml{color:var(--o50);} .mrow .mv{color:var(--o60); font-size:var(--t-data); white-space:nowrap;} .mrow .mv .g{color:var(--o40);}
+  .mrow:first-of-type{margin-top:0;} .mrow .ml{color:var(--o50);} .mrow .mv{color:var(--o60); font-size:var(--t-data); white-space:nowrap;} .mrow .mv .g{color:var(--o40);} .mrow .mv .mlq{display:flex; justify-content:flex-end; width:0; min-width:100%; white-space:nowrap; font-size:var(--t-label);}   /* v334 · su renglón no ensancha la columna del valor (ancho 0 + mínimo 100 %): la barra de esta fila mide lo que mediría sin él */
   .bar{height:3px; background:var(--track);} .bar>i{display:block; height:100%; background:var(--fill);}
   .pill{font-size:var(--t-label); color:var(--o50); margin-left:6px;}
   .pill.good{color:var(--o50);} .pill.over{color:var(--bad);}
@@ -1271,7 +1271,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .stk-blk summary::-webkit-details-marker{display:none;}
   .sbi{display:inline-flex; align-items:center; justify-content:center; min-width:44px; min-height:44px; margin:-14px -12px -14px -8px;}   /* v295 · ⓘ / ? del stack: se ven chicos, se tocan a 44 */
   .sbfix{display:flex; align-items:center; justify-content:space-between; min-height:44px; font-size:var(--t-data); color:var(--o70); border-bottom:var(--bw-sep) solid var(--line);}
-  .tkrow{display:grid; grid-template-columns:1.25fr 1fr 1fr auto; gap:var(--s3); align-items:center; margin-bottom:var(--s3);}   /* v297 · otra toma del día: momento · dosis · unidad · [quitar] */
+  .tkrow{display:grid; grid-template-columns:1.25fr 1fr 1fr auto; gap:var(--s3); align-items:center; margin-bottom:var(--s3);} .tkrow .tkp{grid-column:1 / -1;} .tkrow + .tkrow{margin-top:var(--s5);}   /* cada toma (sus casillas + su cada cuánto) es un grupo: más aire entre tomas que dentro de una */   /* v297 · otra toma del día: momento · dosis · unidad · [quitar] */
   .subcd .sbfacts{display:grid; grid-template-columns:max-content minmax(0,1fr); column-gap:var(--s4); row-gap:var(--s3); align-items:baseline; margin:var(--s3) 0 var(--s4); font-size:var(--t-data);} .sbfacts .sbk{color:var(--o50);} .sbfacts .sbv{color:var(--fg); min-width:0; overflow-wrap:anywhere;} .sbfacts .sbs{display:block; font-size:var(--t-label); color:var(--o40); line-height:var(--lh-read);}
   .subcd .sbp{margin:0 0 var(--s3); font-size:var(--t-data); line-height:var(--lh-read); color:var(--o70);}
   .subcd .sbl, .sbmini .sbl, .sheet .sbl{display:flex; gap:var(--s3); align-items:baseline; padding:var(--s2) 0; font-size:var(--t-data); line-height:var(--lh-read); color:var(--o70);}
@@ -1453,7 +1453,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v333';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v334';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -5978,7 +5978,7 @@ function _tomasSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
     const before=C(db.stack);
     A('sin "more", una toma por item (como antes)', db.stack.every(x=>takesOf(x).length===1)&&dayTakes(T).length===suppDue(T).all.length);
     const G=suppDups();
-    A('se ofrece unir la cafeína ×2; el minoxidil con otra periodización no', G.length===1&&G[0].items.length===2&&G[0].s.key==='cafeina');
+    A('se ofrece unir la cafeína ×2 y, desde v334, también el minoxidil aunque sus tomas vayan a otro ritmo', G.length===2&&G.every(g=>g.items.length===2)&&G[0].s.key==='cafeina'&&G[1].items.some(i=>i.id==='m2'));
     state.macroDate=D(1); const k1=macroTotals().t.caffeine;
     A('antes de unir: 300 mg de cafeína ese día', k1===300);
     const r=suppMerge(G[0]), it=r.into;
@@ -5986,7 +5986,7 @@ function _tomasSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
     A('cada toma con su dosis, su momento, su historial y su hora', takesOf(it)[1].dose==='200'&&takesOf(it)[1].when==='entreno'&&takeDone(takesOf(it)[1],D(3))&&!takeDone(takesOf(it)[0],D(3))&&takeTime(takesOf(it)[1],D(1))==='17:30');
     A('la nutrición del día no cambia al unir', macroTotals().t.caffeine===300);
     state.macroDate=D(3); A('…y un día con una sola toma marcada suma solo esa', macroTotals().t.caffeine===200);
-    A('ya no se ofrece unir', suppDups().length===0);
+    A('la cafeína ya no se ofrece unir (queda el minoxidil)', (g=>g.length===1&&g[0].items.some(i=>i.id==='m1'))(suppDups()));
     const t2=takesOf(it)[1], sn2=takeSnap(t2,T); takeMark(t2,T,'taken',true);
     A('marcar una toma no marca la otra', takeDone(takeOf(it,t2.id),T)&&!takeDone(takeOf(it,''),T)&&itemTaken(it,T)&&stackPct(T).done===1);
     A('macros: una celda por toma', suppDue(T).all.filter(t=>t.it===it).length===2&&/data-tk="/.test(suppSecHTML(T)));
@@ -6366,7 +6366,7 @@ function _exportSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
       meals:{[D(8)]:[I('lunch','viejo',500)],[D(4)]:[I('lunch','arroz',600),I('breakfast','avena',400)],[D(1)]:[I('dinner','pollo',700)]},mealMeta:{[D(4)]:{breakfast:{time:'08:30'}}},
       sessions:[{id:'s1',date:D(1),dayName:'push A',gym:'AGON',startTime:'19:10',endTime:'20:36',durSec:5160,exercises:[{name:'press',muscle:'chest',sets:[{w:100,r:8,rir:1,unit:'kg',done:true}]}]},
         {id:'s2',date:D(3),dayName:'legs',loggedAfter:true,exercises:[{name:'sentadilla',muscle:'quads',sets:[{w:120,r:5,rir:'F',unit:'kg',done:true}]}]},{id:'s3',date:D(2),type:'rest'}],
-      sleep:{[D(1)]:[{start:'23:10',end:'07:05',hours:7.4,inBed:7.9,ph:{awake:30,rem:95,core:240,deep:110}},{start:'15:00',end:'15:25',hours:0.4}]},
+      sleep:{[D(1)]:[{start:'23:10',end:'07:05',hours:7.4,inBed:7.9,wk:2,ph:{awake:30,rem:95,core:240,deep:110}},{start:'15:00',end:'15:25',hours:0.4}]},
       adhoc:{[D(1)]:[{id:'x1',name:'potasio',sid:'k1',qty:2,per:1,time:'14:32',ts:1}]},
       stack:[{id:'k1',name:'creatina',category:'supp',dose:'5',unit:'g',when:['AM'],periodization:{type:'daily'},startDate:D(6),ticks:{[D(1)]:'taken',[D(2)]:'late',[D(3)]:'skipped'},tickTimes:{[D(1)]:'08:10'},tickQty:{[D(1)]:{q:3,b:1}}}]});
     delete db.goalHist[D(8)];   // migrate le pone la meta de hoy a todo día con comida que no la traía: aquí se quita para probar el caso sin meta
@@ -6376,7 +6376,7 @@ function _exportSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
     A('D9 · //METAS con cada cambio', (m=>/desde .*: 2000 kcal/.test(m)&&/desde .*: 2400 kcal/.test(m)&&/antes del .*: sin meta guardada/.test(m))(sec('## //METAS')));
     A('D5 · cada sesión con su hora y duración; la que no la tiene lo dice', has('push A · AGON · 19:10–20:36 · 1 h 26 min')&&has('legs · sin hora · registrada después')&&has('### '+fmtDate(D(2))+' · descanso'));
     A('D6 · la comida agrupada por comida con su hora, la que tiene hora primero', has('#### breakfast · 08:30')&&has('#### lunch · sin hora')&&md.indexOf('#### breakfast · 08:30')<md.indexOf('#### lunch · sin hora',md.indexOf('### '+fmtDate(D(4))))&&has('**día: 1000 kcal')&&has('50 % de su meta'));
-    A('D3 · el sueño en tabla: se durmió, despertó, dormido de noche, en cama, fases, siestas y el total', (m=>/\| 23:10 \| 07:05 \| 7 h 25 min \| 7 h 54 min \| 30 min \| 1 h 35 min \| 4 h \| 1 h 50 min \| 1 · 25 min \| 7 h 50 min \| a mano \|/.test(m))(sec('## //SUEÑO')));
+    A('D3 · el sueño en tabla: se durmió, despertó, dormido de noche, en cama, fases, siestas y el total', (m=>/\| 23:10 \| 07:05 \| 7 h 25 min \| 7 h 54 min \| 30 min \| 2 \| 1 h 35 min \| 4 h \| 1 h 50 min \| 1 · 25 min \| 7 h 50 min \| a mano \|/.test(m))(sec('## //SUEÑO')));
     A('D2 · las tomas día por día: hora, sustancia, cuántas y cómo quedó; el extra con su hora', (m=>has('- 08:10 · creatina · 3 · tomada')&&/· creatina · 1 · tarde/.test(m)&&/· creatina · 1 · saltada/.test(m)&&has('- 14:32 · potasio · 2 · extra')&&/sin registro/.test(m)&&/### .* · 1 de 1/.test(m))(sec('## //TOMAS')));
     A('D8 · adherencia por sustancia y cuántas por toma', /- creatina · 5 g · 1 por toma · AM · .*\n  · adherencia: 30 d 2 de \d+ \(\d+ %\)/.test(md));
     A('D7 · el estado es una sección calculada, sin nada subjetivo', has('## //ESTADO (calculado')&&!/humor:|estrés:|energía:/.test(md));
@@ -6518,6 +6518,45 @@ function _v333SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
       } finally { delete PANK.zz; closeModal(); ghost(); } }
     console.log('v333 self-check OK');
   } finally { try{ closeModal(); }catch(_){} ghost(); window._volWeeks=vw0; db=real; _sbx=sb0; bumpIdx(); } }
+// self-check de v334 (D4 · D4b · S-DOSIS b): agua contra líquidos, despertares, la hora que propone el reloj y una toma con su propio periodo. Base de juguete; no guarda nada.
+function _v334SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v334: '+nm); }; const real=db, sb0=_sbx, _sv=save, _rr=reRender, _t=toast, K=['screen','macroDate','macroOpen','_lfold','_lfoldD','_mealOpen'], st0={}, tab0=window._stackTab; K.forEach(k=>{ st0[k]=state[k]; });
+  const ghost=()=>{ const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } };
+  try{ _sbx=true; save=()=>true; reRender=()=>{}; toast=()=>null; try{ closeModal(); }catch(_){} ghost(); const T=todayISO(), D=k=>shiftDate(T,-k);
+    db=migrate({_idfix:true,_fsfix:true,_dataVer:3,profile:{username:'t'},settings:{goals:{kcal:2400,protein:180,carbs:250,fat:70,water:3}},split:{name:'t',days:[]},sessions:[],
+      meals:{[T]:[{id:'w1',tag:'drink',name:'agua',kcal:0,water:0.5},{id:'l1',tag:'breakfast',name:'leche',kcal:120,protein:8,carbs:12,fat:5,water:0.2}]},
+      sleep:{[D(1)]:[{start:'23:10',end:'07:05',hours:7.4,inBed:7.9,wk:3,src:'shortcut',ph:{awake:30,rem:95,core:240,deep:110}}],[D(2)]:[{start:'23:30',end:'07:00',hours:7.5}]},
+      stack:[{id:'mx',name:'minoxidil',category:'supp',dose:'1',unit:'ml',when:['AM'],periodization:{type:'daily'},startDate:D(10),ticks:{},more:[{id:'pm',when:'PM',from:D(4),periodization:{type:'everyN',value:2},ticks:{},tickTimes:{},tickEdited:{}}]}]});
+    bumpIdx(); const it=db.stack[0], tk=d=>dayTakes(d).map(t=>t.id||'am').join('+');
+    A('S-DOSIS b · una toma con su propio periodo toca en SUS días: la PM, un día sí y uno no desde que empezó', tk(T)==='am+pm'&&tk(D(1))==='am'&&tk(D(2))==='am+pm'&&tk(D(3))==='am'&&tk(D(4))==='am+pm'&&tk(D(5))==='am');
+    A('S-DOSIS b · sin periodo propio sigue el de la principal (como hasta hoy)', (delete it.more[0].periodization, tk(D(1))==='am+pm')&&(it.more[0].periodization={type:'everyN',value:2}, tk(D(1))==='am'));
+    A('S-DOSIS b · las opciones se guardan y se leen', takePerKey({})===''&&takePerKey({periodization:{type:'everyN',value:2}})==='everyN:2'&&takePerKey({periodization:{type:'weekly',value:[1]}})==='keep'&&(m=>(takePerSet(m,'everyN:3'),m.periodization.value===3&&(takePerSet(m,''),!('periodization' in m))))({}));
+    state.screen='stack'; window._stackTab='PM'; A('S-DOSIS b · en administrar, la toma que hoy no toca dice su periodo', (h=>/cada 2 días/.test(h))((db.stack[0].more[0].from=D(5),renderStack()))); db.stack[0].more[0].from=D(4);
+    openStackEdit('mx'); let m=document.getElementById('modal'), sel=m.querySelector('#se_tk .tkrow select.tkp');
+    A('S-DOSIS b · la hoja deja elegir cada cuánto va esa toma', !!sel&&sel.value==='everyN:2'&&sel.options.length===TAKE_PER.length&&sel.options[0].textContent==='igual que la principal');
+    sel.value=''; sel.dispatchEvent(new Event('change',{bubbles:true})); m.querySelector('#se_save').click(); A('S-DOSIS b · …y guardar "igual que la principal" le quita el suyo sin tocar sus marcas', !('periodization' in db.stack[0].more[0])&&db.stack[0].more[0].id==='pm'&&db.stack[0].more[0].from===D(4));
+    ghost();
+    { const J=o=>JSON.stringify(o), mkS=()=>[{id:'m1',name:'minoxidil 5%',category:'meds',dose:'1',unit:'ml',when:['AM'],periodization:{type:'daily'},startDate:D(12),ticks:{[D(1)]:'taken',[D(2)]:'taken'},tickTimes:{[D(1)]:'08:00'}},
+        {id:'m2',name:'minoxidil 5%',category:'meds',dose:'1',unit:'ml',when:['PM'],periodization:{type:'cycle',value:{on:1,off:1}},startDate:D(9),ticks:{[D(1)]:'taken',[D(3)]:'late'},tickTimes:{[D(1)]:'22:10'}}];
+      db.stack=mkS(); bumpIdx(); const sig=()=>{ const o=[]; for(let i=-3;i<=14;i++){ const d=D(i); o.push(dayTakes(d).map(t=>t.when+(takeState(t,d)||'')+(takeTime(t,d)||'')).sort().join('+')); } return o.join('|'); }, s0=sig(), j0=J(db.stack), g=suppDups();
+      A('S-DOSIS b · tu caso: el mismo suplemento a dos ritmos ahora se ofrece unir', g.length===1&&g[0].items.length===2);
+      const r=suppMerge(g[0]), tk2=takesOf(r.into)[1];
+      A('S-DOSIS b · unidos: una sola sustancia, y la toma PM conserva su ritmo, su inicio y sus marcas', db.stack.length===1&&r.into.id==='m1'&&!!tk2&&tk2.o.periodization.type==='cycle'&&tk2.o.from===D(9)&&takeState(tk2,D(3))==='late'&&takeTime(tk2,D(1))==='22:10');
+      A('S-DOSIS b · unir no cambia qué toca cada día ni lo ya marcado (18 días, pasados y futuros)', sig()===s0);
+      suppSplitTake(r.into,tk2.id); bumpIdx(); A('S-DOSIS b · separar los deja como estaban', sig()===s0&&db.stack.length===2&&db.stack.some(x=>x.id==='m2'&&x.periodization.type==='cycle'&&x.ticks[D(3)]==='late')); }
+    { const mkT=w=>({id:'zz1',name:'zz',category:'supp',dose:'1',unit:'cap',when:['AM'],periodization:{type:'daily'},notes:'',startDate:D(30),ticks:{},more:[Object.assign({id:'tk1',when:'PM',dose:'1',unit:'cap',from:D(20),ticks:{[D(2)]:'taken'},tickTimes:{},tickEdited:{},periodization:{type:'everyN',value:2}},w?{was:{id:'zzW',name:'zz',category:'supp',dose:'1',unit:'cap',when:['PM'],periodization:{type:'daily'},notes:'',startDate:D(20),_pos:1}}:{})]});
+      db.stack=[mkT(true)]; bumpIdx(); const b1=suppSplitTake(db.stack[0],'tk1'); db.stack=[mkT(false)]; bumpIdx(); const b2=suppSplitTake(db.stack[0],'tk1');
+      A('S-DOSIS b · separar una toma con periodo propio se lo lleva (venga o no de unir), con sus marcas', JSON.stringify(b1.periodization)==='{"type":"everyN","value":2}'&&b1.id==='zzW'&&b1.ticks[D(2)]==='taken'&&JSON.stringify(b2.periodization)==='{"type":"everyN","value":2}'&&b2.startDate===D(20)); }
+    A('D4b · despertares: solo los de en medio de la noche', segWk({stages:[[0,600000,'awake'],[600000,3600000,'core'],[3600000,3900000,'awake'],[3900000,7200000,'rem'],[7200000,7230000,'awake'],[7230000,9000000,'deep'],[9000000,9600000,'awake']]})===1&&segWk({stages:[]})===null&&segWk({})===null&&segWk({stages:[[0,3600000,'core'],[3600000,3780000,'awake'],[3780000,3960000,'awake'],[3960000,7200000,'rem']]})===1);
+    const md=buildExportMd(db);
+    A('D4b · el export trae los despertares de la noche que los tiene y raya en la que no', /\| despierto \| despertares \| REM \|/.test(md)&&/\| 30 min \| 3 \| 1 h 35 min \|/.test(md)&&/\| — \| — \| — \| — \| — \| — \| 7 h 30 min \| a mano \|/.test(md));
+    A('D4 · el export separa agua (contra la meta) de líquidos (agua + bebidas)', /\| fecha \| peso \| pasos \| agua \| líquidos \| FC reposo \| HRV \|/.test(md)&&/\| — \| — \| 0\.5L \| 0\.7L \| — \| — \|/.test(md)&&/agua = solo agua/.test(md)&&/- leche — 120kcal .* · líquido 0\.2L/.test(md)&&/- agua — 0kcal .* · agua 0\.5L/.test(md));
+    state.screen='macros'; state.macroDate=T; state.macroOpen=true; const h=renderMacros();
+    A('D4 · en macros la fila es `water` (solo agua, contra su meta) y los líquidos van aparte', /<span class="ml">water<\/span>/.test(h)&&/<span class="g mlq">liquids 0\.7 L<\/span>/.test(h)&&!/<span class="ml">liquids<\/span>/.test(h)&&/>0\.5 <span class="g">\/ \d/.test(h));
+    db.meals[T]=[{id:'w1',tag:'drink',name:'agua',kcal:0,water:0.75},{id:'l1',tag:'breakfast',name:'té',kcal:5,water:0.04}]; bumpIdx(); A('D4 · si agua y líquidos se leen igual (0.8 y 0.8), no se repite', renderMacros().indexOf('mlq')<0);
+    { const el=document.createElement('input'); el.type='time'; el.dataset.mt='breakfast'; const n0=nowHM(); mealClockArm(el,true); const n1=nowHM(); A('D4b · el reloj de una comida de hoy propone la hora de este momento (desde v317)', el.value===n0||el.value===n1);
+      state.macroDate=D(1); const e2=document.createElement('input'); e2.type='time'; e2.dataset.mt='breakfast'; mealClockArm(e2,true); A('D4b · …y en otro día nace vacío: no se inventa', e2.value===''); }
+    console.log('v334 self-check OK');
+  } finally { try{ closeModal(); }catch(_){} ghost(); save=_sv; reRender=_rr; toast=_t; db=real; window._stackTab=tab0; K.forEach(k=>{ state[k]=st0[k]; }); _sbx=sb0; bumpIdx(); } }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -7862,6 +7901,7 @@ function renderMacros(){
   };
   const intakeRow=(lbl,val,goal,unit,extra,dec)=>{const p=goal?val/goal*100:0;const ov=goal&&val>goal*1.05;const disp=dec?(+val).toFixed(dec):Math.round(val);return `<div class="mrow"><span class="ml">${lbl}</span><div class="bar">${trkBarI('in:'+lbl,Math.min(100,p),ov?'over':'')}</div><span class="mv ${ov?'ovr':''}">${disp} <span class="g">/ ${goal} ${unit}</span>${extra||''}</span></div>`;};
   const bl=bloating(t,g);
+  const _wo=items.filter(isWaterItem).reduce((a,m)=>a+(+m.water||0),0);   // v334 · D4 · agua = solo agua (lo que cuenta contra su meta, igual que //WATER); los líquidos (agua + lo que traen bebidas y alimentos) van aparte
   // v290 · el panel abierto ("lo único que me sigue gustando son los aros… que se pudiera colapsar esta gráfica heptagonal"):
   // regla a sangre → aros P · C · F → [ver gramos | ver %] → fila `radar` que despliega la gráfica de 7 ejes → INTAKE
   const _ro=radarOpen();
@@ -7873,7 +7913,7 @@ function renderMacros(){
     +`<hr class="rule"/><div class="grp-label">INTAKE</div>`
     +(goalSecHidden('electro')?'':intakeRow('sodium',t.sodium,g.sodium,'mg')+intakeRow('potassium',t.potassium,g.potassium,'mg'))
     +(goalSecHidden('sugarfiber')?'':intakeRow('sugar',t.sugar,g.sugar,'g')+intakeRow('fiber',t.fiber,g.fiber,'g'))
-    +(goalSecHidden('minor')?'':intakeRow('caffeine',t.caffeine,g.caffeine,'mg')+intakeRow('alcohol',t.alcohol,g.alcohol||0,'g')+intakeRow('liquids',t.water,g.water,'L',null,1))
+    +(goalSecHidden('minor')?'':intakeRow('caffeine',t.caffeine,g.caffeine,'mg')+intakeRow('alcohol',t.alcohol,g.alcohol||0,'g')+intakeRow('water',_wo,g.water,'L',(+t.water).toFixed(1)!==(+_wo).toFixed(1)?'<span class="g mlq">liquids '+(+t.water).toFixed(1)+' L</span>':'',1))
     +(function(){ const r=MICROS.map(mi=>{ const v=(micros&&micros[mi.k])||0; return v>0?intakeRow(mi.l,v,mi.rda,mi.u):''; }).join(''); return r?'<hr class="rule"/><div class="grp-label">MICRONUTRIENTS <span class="u-o40 u-w4">· de suplementos</span></div>'+r:''; })()
     // v262 · retención (look "1", opción B): una línea de diagnóstico SOLO si se sale de rango — el número en rojo y el
     // Na:K del día; tocarla abre sus consejos. En rango no ocupa renglón (BRAND §4).
@@ -9326,6 +9366,11 @@ const SLEEP_ASLEEP={deep:1,rem:1,light:1,core:1,asleep:1};
 function asleepMin(seg){ const st=seg.stages||[]; if(!st.length)return (seg.endMs-seg.startMs)/60000; return st.reduce((a,x)=>a+(SLEEP_ASLEEP[x[2]]?(x[1]-x[0])/60000:0),0); }
 // v285 · las fases de una noche sincronizada, en minutos y con la misma forma que las tecleadas (ph:{awake,rem,core,deep}; 'light' de
 // Android cuenta como core): así el detalle de sueño y su bloque PHASES las muestran. Sin REM, core ni profundo no hay fases que mostrar.
+// v334 · D4b · despertares de una noche sincronizada: los tramos `awake` de 1 min o más que caen ENTRE el primer y el último tramo dormido
+// (lo que tardas en dormirte y el rato antes de levantarte no cuentan). null si la noche no trae tramos. Se guarda en el bloque como `wk`.
+// Dos tramos despierto pegados (Salud a veces parte uno en fragmentos) son UN despertar.
+function segWk(seg){ const st=(seg&&seg.stages||[]).slice().sort((a,b)=>a[0]-b[0]), as=st.filter(x=>SLEEP_ASLEEP[x[2]]); if(!as.length)return null; const a0=as[0][0], a1=as[as.length-1][1], R=[];
+  st.forEach(x=>{ if(x[2]!=='awake'||x[0]<a0||x[1]>a1)return; const L=R[R.length-1]; if(L&&x[0]-L[1]<60000)L[1]=Math.max(L[1],x[1]); else R.push([x[0],x[1]]); }); return R.filter(r=>r[1]-r[0]>=60000).length; }
 function segPh(seg){ const o={awake:0,rem:0,core:0,deep:0}; let any=false; (seg.stages||[]).forEach(x=>{ const k=x[2]==='light'?'core':x[2]; if(o[k]==null)return; o[k]+=(x[1]-x[0])/60000; if(k!=='awake')any=true; });
   if(!any)return null; const ph={}; Object.keys(o).forEach(k=>{ const v=Math.round(o[k]); if(v>0)ph[k]=v; }); return ph; }
 // absolute window (ms) of a saved session / the live workout. Sessions saved before v220 derive it from date + HH:MM;
@@ -9399,7 +9444,7 @@ function ingestHealth(p,opts){ opts=opts||{}; const h=H(); const out={daily:0,sl
     h.sleep[day]=segs;
     const cur=sleepBlocks(db.sleep&&db.sleep[day]); const auto=!cur.length||cur.every(b=>b&&typeof b==='object'&&b.src);
     if(auto){ db.sleep=db.sleep||{};
-      db.sleep[day]=segs.map(sg=>{ const st=hmOfMs(sg.startMs), ph=segPh(sg); return Object.assign({start:st,end:hmOfMs(sg.endMs),date:day,type:isNocturnal(st)?'nocturno':'siesta',hours:Math.round(asleepMin(sg)/6)/10,src:sg.src},ph?{ph,inBed:Math.round((sg.endMs-sg.startMs)/360000)/10}:{}); }).filter(b=>b.hours>0);
+      db.sleep[day]=segs.map(sg=>{ const st=hmOfMs(sg.startMs), ph=segPh(sg); return Object.assign({start:st,end:hmOfMs(sg.endMs),date:day,type:isNocturnal(st)?'nocturno':'siesta',hours:Math.round(asleepMin(sg)/6)/10,src:sg.src},ph?Object.assign({ph,inBed:Math.round((sg.endMs-sg.startMs)/360000)/10},segWk(sg)!=null?{wk:segWk(sg)}:{}):{}); }).filter(b=>b.hours>0);
       h.src.sleep[day]=plat; }
     out.sleep++; });
   (p.workouts||[]).forEach(r=>{ if(!r||!r.id||!(r.endMs>r.startMs))return; const o=h.workouts[r.id]||{};
@@ -10729,7 +10774,16 @@ function takeSnap(t,iso){ const o=t.o; return [(o.ticks||{})[iso],(o.tickTimes||
 function takeRestore(t,iso,sn){ const o=t.o; ['ticks','tickTimes','tickEdited'].forEach((k,i)=>{ o[k]=o[k]||{}; if(sn[i]===undefined)delete o[k][iso]; else o[k][iso]=sn[i]; });
   if(sn[3]===undefined){ if(o.tickQty){ delete o.tickQty[iso]; if(!Object.keys(o.tickQty).length)delete o.tickQty; } } else { o.tickQty=o.tickQty||{}; o.tickQty[iso]=sn[3]; } }   // v325 · cuántas tomaste ese día (el mapa solo existe si hay alguna)
 function itemTaken(it,iso){ return takesOf(it,iso).some(t=>takeDone(t,iso)); }   // ¿tomó algo de esto ese día?
-function dayTakes(iso){ const out=[]; (db.stack||[]).forEach(x=>{ if(x&&!x.archived&&isDueToday(x,iso))takesOf(x,iso).forEach(t=>out.push(t)); }); return out; }
+// v334 · S-DOSIS b · una toma adicional puede tener su propio periodo (el dueño: su minoxidil es AM diario + PM un día sí y uno no, y no se
+// podían unir). Aditivo: `it.more[i].periodization` con la misma forma que la del suplemento; sin él, la toma sigue el periodo de la
+// principal (como hasta hoy). El "un día sí y uno no" se cuenta desde que esa toma empezó (`from`).
+const TAKE_PER=[['','igual que la principal'],['daily','diario'],['everyN:2','un día sí y uno no'],['everyN:3','cada 3 días'],['everyN:7','cada 7 días']];
+function takePerKey(m){ const p=m&&m.periodization; if(!p)return ''; if(p.type==='daily')return 'daily'; if(p.type==='everyN'&&[2,3,7].indexOf(+p.value)>=0)return 'everyN:'+(+p.value); return 'keep'; }
+function takePerSet(m,k){ if(!m||k==='keep')return; if(!k){ delete m.periodization; return; } if(k==='daily'){ m.periodization={type:'daily'}; return; } const n=+String(k).split(':')[1]; if(n>=2)m.periodization={type:'everyN',value:n}; }
+// Una toma que vino de UNIR dos suplementos (`was`) conserva además su propio inicio: así unir nunca cambia qué tocó ni qué toca cada día
+// (medido con su respaldo: sin esto, la toma unida perdía el día en que ese suplemento empezó antes que el otro).
+function takeDue(t,iso){ const it=t&&t.it; if(!it)return false; const o=t.id&&t.o, own=o&&(o.periodization||(o.was&&o.from)); return isDueToday(own?Object.assign({},it,{periodization:o.periodization||it.periodization,startDate:o.from||it.startDate}):it,iso); }
+function dayTakes(iso){ const out=[]; (db.stack||[]).forEach(x=>{ if(x&&!x.archived)takesOf(x,iso).forEach(t=>{ if(takeDue(t,iso))out.push(t); }); }); return out; }
 // la dosis de una toma contra la del item (escala lo de tu etiqueta y lo que gasta del frasco); 1 si no se pueden comparar
 function takeFactor(t){ if(!t||!t.id)return 1; const a=subItemDose({dose:t.dose,unit:t.unit}), b=subItemDose(t.it); if(!a||!b)return 1;
   const x=subAmount(a.n,a.u,{unit:b.u}); return x>0&&b.n>0?x/b.n:1; }
@@ -10782,9 +10836,8 @@ function suppLeft(it,iso){ const c=suppCont(it); if(!c)return null; const p=supp
   return {left:Math.round((size-used*per+(+c.adj||0))*100)/100, per, pu:suppPU(p), size, used}; }
 // días que alcanzan: las tomas que quedan entre las que te tocan por día según su periodización (próximas 4 semanas)
 function suppDaysLeft(it){ const L=suppLeft(it); if(!L||((it.periodization||{}).type==='occasional'))return null;
-  const tmp=Object.assign({},it,{archived:false}), t=todayISO(); let due=0; for(let k=0;k<28;k++){ if(isDueToday(tmp,shiftDate(t,k)))due++; }
-  const perDay=takesOf(it,t).reduce((a,x)=>a+takeFactor(x),0)||1;   // v297 · tomas al día
-  return due?Math.floor(Math.floor(Math.max(0,L.left)/L.per+1e-9)/(due*perDay/28)):null; }
+  const tmp=Object.assign({},it,{archived:false}), t=todayISO(); let use=0; for(let k=0;k<28;k++){ const d=shiftDate(t,k); takesOf(it,d).forEach(x=>{ if(takeDue({id:x.id,it:tmp,o:x.o},d))use+=takeFactor(x); }); }   // v334 · cada toma según SU periodo (v297: las tomas al día)
+  return use?Math.floor(Math.floor(Math.max(0,L.left)/L.per+1e-9)/(use/28)):null; }
 function suppStock(it){ if(suppStatus(it)!=='active')return null; const L=suppLeft(it); if(!L)return null; const d=suppDaysLeft(it), out=L.left<L.per-1e-9;
   return {L,d,out,low:!out&&d!=null&&d<=SUPP_WARN_D}; }
 function suppStockTxt(k){ if(!k)return ''; if(k.out)return 'se acabó'; return 'quedan '+Math.max(0,Math.round(k.L.left*10)/10)+' '+k.L.pu+(k.d!=null?' · ~'+k.d+' d':''); }
@@ -10808,7 +10861,7 @@ function suppWarnMaybe(){ const t=todayISO(); db.settings=db.settings||{}; if(db
 // Solo se ofrece (nada se une solo): misma sustancia reconocida (una sola, sin parecidos), misma categoría y misma
 // periodización. `dejar separadas` se recuerda mientras el grupo no cambie (db.settings.dupSkip, aditivo).
 function suppDups(){ const G={}; (db.stack||[]).forEach(x=>{ if(!x||suppStatus(x)!=='active')return; const r=subOfItem(x); if(r.items.length!==1)return;
-    const k=r.items[0].s.id+'|'+(x.category||'supp')+'|'+JSON.stringify(x.periodization||{type:'daily'}); (G[k]=G[k]||[]).push(x); });
+    const k=r.items[0].s.id+'|'+(x.category||'supp'); (G[k]=G[k]||[]).push(x); });   // v334 · con otro periodo también: su toma se lo lleva
   const skip=(db.settings&&db.settings.dupSkip)||{};
   return Object.keys(G).filter(k=>G[k].length>1).map(k=>({k,s:subGet(k.split('|')[0]),items:G[k],sig:G[k].map(x=>x.id).sort().join()})).filter(g=>skip[g.k]!==g.sig); }
 // la primera toma = la del momento más temprano (AM · PM · entreno · sin momento) y, si empatan, la que más historial tiene
@@ -10816,6 +10869,7 @@ function suppMerge(g){ const ord=['AM','PM','entreno','otros'], n=x=>Object.keys
   const L=g.items.slice().sort((a,b)=>ord.indexOf(suppSlot(a))-ord.indexOf(suppSlot(b))||n(b)-n(a)), A=L[0], made=[];
   L.slice(1).forEach(X=>{ const was=JSON.parse(JSON.stringify(X)); delete was.ticks; delete was.tickTimes; delete was.tickEdited; delete was.tickQty; delete was.more; was._pos=db.stack.indexOf(X);
     const m={id:uid(),when:suppSlot(X)==='otros'?((X.when||[])[0]||''):suppSlot(X),dose:X.dose==null?'':String(X.dose),unit:X.unit||'',from:X.startDate||'',ticks:X.ticks||{},tickTimes:X.tickTimes||{},tickEdited:X.tickEdited||{},was}; if(X.tickQty)m.tickQty=X.tickQty;
+    { const pa=JSON.stringify(A.periodization||{type:'daily'}), px=JSON.stringify(X.periodization||{type:'daily'}); if(px!==pa)m.periodization=JSON.parse(px); if(X.endDate)m.end=X.endDate; }   // v334 · S-DOSIS b
     if((X.more||[]).length)m.sub=X.more.map(x=>x.id);
     (A.more=A.more||[]).push(m); (X.more||[]).forEach(x=>A.more.push(x)); made.push(m.id); db.stack=db.stack.filter(x=>x!==X); });
   return {into:A,takes:made}; }
@@ -10824,6 +10878,7 @@ function suppSplitTake(it,tk){ const i=(it&&it.more||[]).findIndex(m=>m.id===tk)
   const b=m.was?JSON.parse(JSON.stringify(m.was)):{id:'st_'+uid(),name:it.name,category:it.category,dose:takeDoseTxt({dose:m.dose})?m.dose:it.dose,unit:takeDoseTxt({dose:m.dose})?(m.unit||''):it.unit,when:m.when?[m.when]:[],periodization:JSON.parse(JSON.stringify(it.periodization||{type:'daily'})),notes:'',startDate:m.from||it.startDate||todayISO()};
   const pos=b._pos; delete b._pos; b.ticks=m.ticks||{}; b.tickTimes=m.tickTimes||{}; b.tickEdited=m.tickEdited||{}; if(m.tickQty)b.tickQty=m.tickQty;
   if(m.was&&(String(m.dose==null?'':m.dose)!==String(m.was.dose==null?'':m.was.dose)||(m.unit||'')!==(m.was.unit||''))){ b.dose=m.dose; b.unit=m.unit; }   // la dosis que le cambiaste ya unida se va con ella
+  if(m.periodization)b.periodization=JSON.parse(JSON.stringify(m.periodization));   // v334 · y su periodo propio también
   if(m.sub&&m.sub.length){ b.more=it.more.filter(x=>m.sub.indexOf(x.id)>=0); it.more=it.more.filter(x=>m.sub.indexOf(x.id)<0); }
   if(!it.more.length)delete it.more;
   db.stack.splice(pos>=0&&pos<=db.stack.length?pos:db.stack.indexOf(it)+1,0,b); return b; }
@@ -10977,9 +11032,9 @@ function renderAgenda(){
 const TICK_GLY={taken:'✓',late:'✓',skipped:'✕'}, TICK_WORD={late:'tarde',skipped:'saltado'};
 function stackSeg(rowsOf){ const keys=SUPP_SEG.map(x=>x[0]), has=k=>k==='otros'||rowsOf(k).length>0; let k=window._stackTab;
   if(!k||!has(k)){ k=new Date().getHours()<14?'AM':'PM'; if(!rowsOf(k).length)k=keys.find(x=>rowsOf(x).length>0)||'otros'; window._stackTab=k; } return k; }
-function stackRowHTML(t,iso){ const it=t.it, own=!t.id, st=takeState(t,iso), due=isDueToday(it,iso), oc=(it.periodization||{}).type==='occasional', can=due||oc;
+function stackRowHTML(t,iso){ const it=t.it, own=!t.id, st=takeState(t,iso), due=takeDue(t,iso), oc=(it.periodization||{}).type==='occasional', can=due||oc;
   const nm=escTxt(it.name||'supp'), q=qtyTxt(takeUnitsOn(t,iso)), sk=own?suppStock(it):null, A=`data-id="${escTxt(it.id)}" data-tk="${escTxt(t.id)}"`;
-  const att=[]; if(st&&TICK_WORD[st])att.push(TICK_WORD[st]); if(sk&&(sk.low||sk.out))att.push('<span class="u-warn">⚠</span> '+(sk.out?'se acabó':'~'+sk.d+' d')); if(!due)att.push(escTxt(oc?'ocasional':stackPeriodLabel(it)));
+  const att=[]; if(st&&TICK_WORD[st])att.push(TICK_WORD[st]); if(sk&&(sk.low||sk.out))att.push('<span class="u-warn">⚠</span> '+(sk.out?'se acabó':'~'+sk.d+' d')); if(!due)att.push(escTxt(oc?'ocasional':stackPeriodLabel(t.o&&t.o.periodization?t.o:it)));
   const tt=takeDone(t,iso)?takeTime(t,iso):null, unk=own&&!subOfItem(it).items.length;
   return `<div class="sprow${st&&st!=='skipped'?' on':''}${st==='skipped'?' sk':''}${can?'':' off'}" data-rk="st:${escTxt(it.id)}:${escTxt(t.id)}">`
     +(can?`<button type="button" class="sprk" data-act="stacktick" ${A} aria-label="${nm}: ${st?(st==='taken'?'tomado':TICK_WORD[st]):'pendiente'}" title="toca: tomado → tarde → saltado">${st?TICK_GLY[st]:'○'}</button>`:`<span class="sprk" aria-hidden="true">—</span>`)
@@ -11000,7 +11055,7 @@ function renderStack(){
   // las mismas pestañas de //SUPPS; aquí salen TODOS los activos de ese momento (lo que hoy no toca dice su periodo a la derecha)
   const takes=[]; act.forEach(x=>takesOf(x,iso).forEach(t=>takes.push(t)));
   const rowsOf=k=>takes.filter(t=>t.when===k), seg=stackSeg(rowsOf);
-  const tabs=SUPP_SEG.filter(([k])=>k==='otros'||rowsOf(k).length).map(([k,l])=>{ const due=rowsOf(k).filter(t=>isDueToday(t.it,iso)), d=due.filter(t=>takeState(t,iso)).length, x=k==='otros'?xs.length:0;
+  const tabs=SUPP_SEG.filter(([k])=>k==='otros'||rowsOf(k).length).map(([k,l])=>{ const due=rowsOf(k).filter(t=>takeDue(t,iso)), d=due.filter(t=>takeState(t,iso)).length, x=k==='otros'?xs.length:0;
     return `<span class="${k===seg?'on':''}" role="tab" aria-selected="${k===seg}" data-act="stackseg" data-v="${k}">${l}${due.length||x?`<i>${due.length?d+'/'+due.length:''}${x?(due.length?' ':'')+'+'+x:''}</i>`:''}</span>`; }).join('');
   const rows=rowsOf(seg).map(t=>stackRowHTML(t,iso)).join('');
   const xrows=seg==='otros'?xs.map(a=>`<div class="sprow on xt" data-rk="xt:${escTxt(a.id)}"><span class="sprk" aria-hidden="true">✓</span><button type="button" class="sprb" data-act="extraedit" data-id="${escTxt(a.id)}" data-d="${iso}" aria-label="extra · ${escTxt(a.name||'')}"><span class="sprq">${qtyTxt(extraQty(a))}</span><span class="sprn">${escTxt(a.name||'extra')}</span><span class="sprv">extra${a.time?' · '+escTxt(a.time):''}</span></button><button type="button" class="sprc" data-act="extraedit" data-id="${escTxt(a.id)}" data-d="${iso}" tabindex="-1" aria-hidden="true">›</button></div>`).join(''):'';
@@ -11076,13 +11131,13 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
   });
   root.querySelectorAll('#se_when button').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
   // v297 · otras tomas del mismo día: cada una con su momento, su dosis y (ya guardada) su propio check
-  const _today=todayISO(), _mo=(it.more||[]).filter(m=>m&&!(m.end&&m.end<=_today)).map(m=>({id:m.id,when:m.when||'',dose:m.dose==null?'':String(m.dose),unit:m.unit||'',was:!!m.was}));
+  const _today=todayISO(), _mo=(it.more||[]).filter(m=>m&&!(m.end&&m.end<=_today)).map(m=>({id:m.id,when:m.when||'',dose:m.dose==null?'':String(m.dose),unit:m.unit||'',was:!!m.was,per:takePerKey(m)}));
   const _tkPaint=()=>{ const box=document.getElementById('se_tk'); if(!box)return;
     const WH=[['','sin momento'],['AM','AM'],['PM','PM'],['entreno','entreno'],['comidas','comidas']];
-    box.innerHTML=_mo.map((m,i)=>`<div class="tkrow" data-i="${i}"><select data-k="when" aria-label="momento de la toma ${i+2}">${WH.map(([v,l])=>`<option value="${v}"${(m.when||'')===v?' selected':''}>${l}</option>`).join('')}</select><input data-k="dose" value="${escTxt(m.dose)}" placeholder="dosis" inputmode="decimal" autocomplete="off" aria-label="dosis de la toma ${i+2}"/><select data-k="unit" aria-label="unidad de la toma ${i+2}">${UNITS.map(u=>`<option value="${u}"${(m.unit||'')===u?' selected':''}>${u||'—'}</option>`).join('')}</select><button type="button" class="b" data-k="del" aria-label="${m.was?'separar':'quitar'} la toma ${i+2}">${m.was?'separar':'quitar'}</button></div>`).join('');
+    box.innerHTML=_mo.map((m,i)=>`<div class="tkrow" data-i="${i}"><select data-k="when" aria-label="momento de la toma ${i+2}">${WH.map(([v,l])=>`<option value="${v}"${(m.when||'')===v?' selected':''}>${l}</option>`).join('')}</select><input data-k="dose" value="${escTxt(m.dose)}" placeholder="dosis" inputmode="decimal" autocomplete="off" aria-label="dosis de la toma ${i+2}"/><select data-k="unit" aria-label="unidad de la toma ${i+2}">${UNITS.map(u=>`<option value="${u}"${(m.unit||'')===u?' selected':''}>${u||'—'}</option>`).join('')}</select><button type="button" class="b" data-k="del" aria-label="${m.was?'separar':'quitar'} la toma ${i+2}">${m.was?'separar':'quitar'}</button><select class="tkp" data-k="per" aria-label="cada cuánto va la toma ${i+2}">${TAKE_PER.concat(m.per==='keep'?[['keep','su propio periodo']]:[]).map(([v,l])=>`<option value="${v}"${(m.per||'')===v?' selected':''}>${l}</option>`).join('')}</select></div>`).join('');
     box.querySelectorAll('.tkrow').forEach(r=>{ const m=_mo[+r.dataset.i]; r.querySelectorAll('select,input').forEach(e=>e.addEventListener(e.tagName==='INPUT'?'input':'change',()=>{ m[e.dataset.k]=e.value; }));
       r.querySelector('[data-k="del"]').onclick=()=>{ _mo.splice(+r.dataset.i,1); _tkPaint(); }; }); };
-  { const b=document.getElementById('se_tkadd'); if(b)b.onclick=()=>{ _mo.push({id:'',when:'',dose:val('se_dose'),unit:val('se_unit')}); _tkPaint(); }; _tkPaint(); }
+  { const b=document.getElementById('se_tkadd'); if(b)b.onclick=()=>{ _mo.push({id:'',when:'',dose:val('se_dose'),unit:val('se_unit'),per:''}); _tkPaint(); }; _tkPaint(); }
   root.querySelectorAll('#se_pt button').forEach(b=>b.onclick=()=>{
     root.querySelectorAll('#se_pt button').forEach(x=>x.classList.remove('on'));
     b.classList.add('on');
@@ -11181,7 +11236,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
     it.when=Array.from(root.querySelectorAll('#se_when button.on')).map(b=>b.dataset.when);
     { // v297 · las otras tomas: las que siguen conservan su historial; una quitada con historial se termina (ayer, u hoy si ya la marcaste) y una que venía de unir vuelve a ser su item
       const old={}, out=[], split=[]; (it.more||[]).forEach(m=>{ if(m)old[m.id]=m; });
-      _mo.forEach(d=>{ const m=(d.id&&old[d.id])||{id:uid(),from:isNew?(val('se_start')||_today):_today,ticks:{},tickTimes:{},tickEdited:{}}; m.when=d.when||''; m.dose=String(d.dose==null?'':d.dose).trim(); m.unit=d.unit||''; delete m.end; out.push(m); delete old[m.id]; });
+      _mo.forEach(d=>{ const m=(d.id&&old[d.id])||{id:uid(),from:isNew?(val('se_start')||_today):_today,ticks:{},tickTimes:{},tickEdited:{}}; m.when=d.when||''; m.dose=String(d.dose==null?'':d.dose).trim(); m.unit=d.unit||''; takePerSet(m,d.per); delete m.end; out.push(m); delete old[m.id]; });
       Object.keys(old).forEach(k=>{ const m=old[k]; if(m.end&&m.end<=_today){ out.push(m); return; }
         if(m.was){ out.push(m); split.push(m.id); return; }
         if(Object.keys(m.ticks||{}).length){ m.end=tickState(m.ticks[_today])?_today:shiftDate(_today,-1); out.push(m); } });
@@ -16876,6 +16931,7 @@ function buildExportMd(db){
   L.push('## //CÓMO LEER ESTE ARCHIVO');
   L.push('- app '+APP_V+' · generado el '+T+' a las '+nowHM()+(allD.length?' · datos del '+allD[0]+' al '+allD[allD.length-1]:''));
   L.push('- unidades: peso corporal en kg · pesas en la unidad de cada serie (kg, lbs o placas) · energía en kcal · macros en g (P proteína, C carbos, F grasa) · agua en L · sueño en h y min');
+  L.push('- agua = solo agua (la que cuenta contra tu meta de agua) · líquidos = agua más lo que traen tus bebidas y alimentos');
   L.push('- horas: la del teléfono, en 24 h. El sueño va en la fecha del día en que despertaste');
   L.push('- lo calcula la app (no lo escribe el usuario): σ (estímulo de cada serie, de 0 a 1), volumen, la meta de cada día, readiness y sus partes, adherencia y cuánto queda de cada frasco');
   L.push('- no se registra a propósito: energía, humor ni estrés. El estado del día sale de sueño, carga y biométricos (sección //ESTADO)');
@@ -16923,26 +16979,26 @@ function buildExportMd(db){
     // la hora de una comida: la que le pusiste o, si no, la del primer alimento que trae la suya (la app lee esa hora: última comida, antes de entrenar)
     const hOf=k=>mealTime(d,k)||(by[k].map(m=>m.time).filter(x=>isFinite(hm2min(x))).sort((a,b)=>hm2min(a)-hm2min(b))[0]||''); ord.sort((a,b)=>hmK(hOf(a))-hmK(hOf(b)));   // con hora primero, en su orden; sin hora, como se registraron
     ord.forEach(k=>{ const mt={kcal:0,protein:0,carbs:0,fat:0}, hm=hOf(k); L.push('#### '+cl(k)+' · '+(hm||'sin hora'));
-      by[k].forEach(m=>{ ['kcal','protein','carbs','fat'].forEach(x=>{ mt[x]+=+m[x]||0; t[x]+=+m[x]||0; }); L.push('- '+(m.time&&m.time!==hm&&isFinite(hm2min(m.time))?m.time+' · ':'')+nz(m.name)+(m.qty?' '+cl(m.qty):'')+' — '+Math.round(+m.kcal||0)+'kcal P'+n(m.protein)+' C'+n(m.carbs)+' F'+n(m.fat)+(+m.water>0?' · agua '+n(m.water)+'L':'')); });
+      by[k].forEach(m=>{ ['kcal','protein','carbs','fat'].forEach(x=>{ mt[x]+=+m[x]||0; t[x]+=+m[x]||0; }); L.push('- '+(m.time&&m.time!==hm&&isFinite(hm2min(m.time))?m.time+' · ':'')+nz(m.name)+(m.qty?' '+cl(m.qty):'')+' — '+Math.round(+m.kcal||0)+'kcal P'+n(m.protein)+' C'+n(m.carbs)+' F'+n(m.fat)+(+m.water>0?' · '+(isWaterItem(m)?'agua ':'líquido ')+n(m.water)+'L':'')); });
       L.push('  · comida: '+Math.round(mt.kcal)+' kcal · P'+n(mt.protein)+' C'+n(mt.carbs)+' F'+n(mt.fat)); });
     L.push('**día: '+Math.round(t.kcal)+' kcal · P'+n(t.protein)+' C'+n(t.carbs)+' F'+n(t.fat)+(g&&+g.kcal>0?' · '+Math.round(t.kcal/g.kcal*100)+' % de su meta':'')+'**','');
   });
   // D3 · el sueño, noche por noche
   const sdates=Object.keys(sleep).filter(d=>sleepBlocks(sleep[d]).filter(Boolean).length&&sleepMinOf(sleep[d])>0).sort().reverse();
   L.push('## //SUEÑO ('+sdates.length+' noches)','');
-  if(sdates.length){ L.push('| despertó el | se durmió | despertó | dormido de noche | en cama | despierto | REM | core | profundo | siestas | total del día | fuente |','| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |');
+  if(sdates.length){ L.push('| despertó el | se durmió | despertó | dormido de noche | en cama | despierto | despertares | REM | core | profundo | siestas | total del día | fuente |','| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |');
     sdates.forEach(d=>{ const B=sleepBlocks(sleep[d]).filter(Boolean); let night=B.filter(b=>!b.start||isNocturnal(b.start)), naps=B.filter(b=>b.start&&!isNocturnal(b.start)); if(!night.length){ night=B; naps=[]; }   // un día solo con bloques de día: van como su noche (no se esconde nada)
       const kS=x=>{ const m=hm2min(x); return isFinite(m)?(m>=720?m-1440:m):null; }, kE=x=>{ const m=hm2min(x); return isFinite(m)?(m>=1080?m-1440:m):null; };   // la noche empieza donde empieza su primer bloque y acaba donde acaba el último
       const b0=night.filter(b=>kS(b.start)!=null).sort((a,b)=>kS(a.start)-kS(b.start))[0], b1=night.filter(b=>kE(b.end)!=null).sort((a,b)=>kE(b.end)-kE(a.end))[0], main={start:b0&&b0.start,end:b1&&b1.end}, nm=night.reduce((a,b)=>a+sleepMinOf(b),0), zm=naps.reduce((a,b)=>a+sleepMinOf(b),0);
       const ph={awake:0,rem:0,core:0,deep:0}; let any=false, bed=0; night.forEach(b=>{ const p=phaseMin(b); if(p){ any=true; for(const k in ph)ph[k]+=p[k]; } bed+=+b.inBed>0?Math.round(+b.inBed*60):winMin(b); });
-      const src=[...new Set(B.map(b=>b.src||'a mano'))].join(' + ');
-      L.push('| '+fd(d)+' | '+((main&&main.start)||'—')+' | '+((main&&main.end)||'—')+' | '+dm(nm)+' | '+dm(bed)+' | '+(any?fmtDur(ph.awake):'—')+' | '+(any?fmtDur(ph.rem):'—')+' | '+(any?fmtDur(ph.core):'—')+' | '+(any?fmtDur(ph.deep):'—')+' | '+(naps.length?naps.length+' · '+fmtDur(zm):'—')+' | '+dm(nm+zm)+' | '+src+' |'); });
+      const src=[...new Set(B.map(b=>b.src||'a mano'))].join(' + '), wkN=night.some(b=>b.wk!=null)?night.reduce((a,b)=>a+(+b.wk||0),0):null;   // v334 · despertares, cuando la noche los trae
+      L.push('| '+fd(d)+' | '+((main&&main.start)||'—')+' | '+((main&&main.end)||'—')+' | '+dm(nm)+' | '+dm(bed)+' | '+(any?fmtDur(ph.awake):'—')+' | '+(wkN!=null?wkN:'—')+' | '+(any?fmtDur(ph.rem):'—')+' | '+(any?fmtDur(ph.core):'—')+' | '+(any?fmtDur(ph.deep):'—')+' | '+(naps.length?naps.length+' · '+fmtDur(zm):'—')+' | '+dm(nm+zm)+' | '+src+' |'); });
     L.push(''); } else L.push('// sin datos','');
-  const waterFor=d=>(meals[d]||[]).reduce((a,m)=>a+(+(m&&m.water)||0),0);
+  const waterFor=d=>(meals[d]||[]).reduce((a,m)=>a+(+(m&&m.water)||0),0), aguaFor=d=>(meals[d]||[]).reduce((a,m)=>a+(isWaterItem(m)?(+m.water||0):0),0);   // v334 · D4 · líquidos (todo) y agua (solo agua)
   const hdates=Array.from(new Set([].concat(bwk,Object.keys(steps),Object.keys(meals),Object.keys(HD)))).filter(Boolean).sort().reverse();
-  const hrows=hdates.map(d=>{ const w=waterFor(d), h=HD[d]||{}; return {d,pe:bw[d]!=null?n(bw[d])+'kg':'—',pa:steps[d]!=null?Math.round(steps[d]):'—',ag:w>0?n(w)+'L':'—',rh:+h.rhr>0?Math.round(h.rhr):'—',hv:h.hrv&&+h.hrv.v>0?Math.round(h.hrv.v)+' '+(hrvKindOf(h)==='rmssd'?'RMSSD':'SDNN'):'—',any:(bw[d]!=null||steps[d]!=null||w>0||+h.rhr>0||!!(h.hrv&&+h.hrv.v>0))}; }).filter(r=>r.any);
+  const hrows=hdates.map(d=>{ const w=waterFor(d), h=HD[d]||{}; return {d,pe:bw[d]!=null?n(bw[d])+'kg':'—',pa:steps[d]!=null?Math.round(steps[d]):'—',ag:aguaFor(d)>0?n(aguaFor(d))+'L':'—',lq:w>0?n(w)+'L':'—',rh:+h.rhr>0?Math.round(h.rhr):'—',hv:h.hrv&&+h.hrv.v>0?Math.round(h.hrv.v)+' '+(hrvKindOf(h)==='rmssd'?'RMSSD':'SDNN'):'—',any:(bw[d]!=null||steps[d]!=null||w>0||+h.rhr>0||!!(h.hrv&&+h.hrv.v>0))}; }).filter(r=>r.any);
   L.push('## //HÁBITOS','');
-  if(hrows.length){ L.push('| fecha | peso | pasos | agua | FC reposo | HRV |','| --- | --- | --- | --- | --- | --- |'); hrows.forEach(r=>L.push('| '+fd(r.d)+' | '+r.pe+' | '+r.pa+' | '+r.ag+' | '+r.rh+' | '+r.hv+' |')); L.push(''); }
+  if(hrows.length){ L.push('| fecha | peso | pasos | agua | líquidos | FC reposo | HRV |','| --- | --- | --- | --- | --- | --- | --- |'); hrows.forEach(r=>L.push('| '+fd(r.d)+' | '+r.pe+' | '+r.pa+' | '+r.ag+' | '+r.lq+' | '+r.rh+' | '+r.hv+' |')); L.push(''); }
   else { L.push('// sin datos',''); }
   // D7 · el estado del día, calculado (nada subjetivo a mano)
   { const rows=[]; for(let i=0;i<90;i++){ const d=shiftDate(T,-i); let r=null; try{ r=readinessV2(d); }catch(_){} if(!r||r.score==null)continue; const p=r.parts||{}, sc=k=>p[k]?String(p[k].score):'—';
@@ -16955,13 +17011,13 @@ function buildExportMd(db){
   if(stack.length){
     L.push('## //REGÍMENES ('+stack.length+')','');
     stack.forEach(it=>{ const p=suppProd(it), k=suppStock(it), stt=suppStatus(it), oc=(it.periodization||{}).type==='occasional';
-      L.push('- '+nz(it.name)+(p&&p.brand?' ('+cl(p.brand)+')':'')+(it.dose?' · '+it.dose+(it.unit?' '+it.unit:''):'')+' · '+qtyTxt(suppPer(it,p))+' por toma'+(it.when&&it.when.length?' · '+it.when.join('/'):'')+' · '+stackPeriodLabel(it)+takesOf(it).slice(1).map(x=>' + '+[takeDoseTxt(x),x.when!=='otros'?x.when:''].filter(Boolean).join(' ')).join('')+(it.category?' ['+it.category+']':'')+(stt!=='active'?' · '+(stt==='paused'?'en pausa':'archivado'):'')+(it.startDate?' · desde '+it.startDate:'')+(k?' · '+suppStockTxt(k):''));
+      L.push('- '+nz(it.name)+(p&&p.brand?' ('+cl(p.brand)+')':'')+(it.dose?' · '+it.dose+(it.unit?' '+it.unit:''):'')+' · '+qtyTxt(suppPer(it,p))+' por toma'+(it.when&&it.when.length?' · '+it.when.join('/'):'')+' · '+stackPeriodLabel(it)+takesOf(it).slice(1).map(x=>' + '+[takeDoseTxt(x),x.when!=='otros'?x.when:'',x.o&&x.o.periodization?stackPeriodLabel(x.o):''].filter(Boolean).join(' ')).join('')+(it.category?' ['+it.category+']':'')+(stt!=='active'?' · '+(stt==='paused'?'en pausa':'archivado'):'')+(it.startDate?' · desde '+it.startDate:'')+(k?' · '+suppStockTxt(k):''));
       if(stt!=='active')return;
       // la hora típica es POR TOMA (dos tomas al día no se promedian entre sí) y en reloj circular (23:50 y 00:10 dan medianoche, no mediodía)
       const hrs=Object.create(null); let n90=0; for(let i=0;i<90;i++){ const d=shiftDate(T,-i); takesOf(it,d).forEach(t=>{ if(takeDone(t,d)){ n90++; const m=hm2min(takeTime(t,d)), k=t.id||'_'; if(isFinite(m))(hrs[k]=hrs[k]||[]).push(m); } }); }
       const cmed=a=>{ const z=a.slice().sort((x,y)=>x-y); let gi=0, g=-1; z.forEach((v,i)=>{ const q=(z[(i+1)%z.length]-v+1440)%1440; if(q>g){ g=q; gi=i; } }); const st=(gi+1)%z.length, b=z[st]; return minToHM(median(z.map((_,i)=>{ const v=z[(st+i)%z.length]; return v<b?v+1440:v; }))); };
       const ht=Object.keys(hrs).filter(k=>hrs[k].length>=3).map(k=>cmed(hrs[k])).sort(), s0=it.startDate||Object.keys(it.ticks||{}).sort()[0]||'';
-      const ad=w=>{ let due=0, done=0; for(let i=1;i<=w;i++){ const d=shiftDate(T,-i); if(!s0||d<s0)break;   /* días completos: hoy no entra (a media tarde casi todo "faltaría") */ if(!isDueToday(it,d))continue; takesOf(it,d).forEach(t=>{ due++; if(takeDone(t,d))done++; }); } return due?done+' de '+due+' ('+Math.round(done/due*100)+' %)':'—'; };
+      const ad=w=>{ let due=0, done=0; for(let i=1;i<=w;i++){ const d=shiftDate(T,-i); if(!s0||d<s0)break;   /* días completos: hoy no entra (a media tarde casi todo "faltaría") */ takesOf(it,d).forEach(t=>{ if(!takeDue(t,d))return; due++; if(takeDone(t,d))done++; }); } return due?done+' de '+due+' ('+Math.round(done/due*100)+' %)':'—'; };
       L.push('  · '+(oc?n90+(n90===1?' toma':' tomas')+' en 90 d':'adherencia: 30 d '+ad(30)+' · 90 d '+ad(90))+(ht.length?' · '+(ht.length>1?'horas típicas ':'hora típica ')+ht.join(' · '):'')); });
     L.push('');
   }
@@ -16971,7 +17027,7 @@ function buildExportMd(db){
     if(dk.length){ L.push('## //TOMAS (desde '+fd(dk[0])+')','');
       let gap=[]; const flush=()=>{ if(!gap.length)return; if(gap.length===1)L.push('### '+fd(gap[0][0])+' · 0 de '+gap[0][1],'sin registro',''); else L.push('### del '+fd(gap[gap.length-1][0])+' al '+fd(gap[0][0])+' · sin registro ('+gap.length+' días)',''); gap=[]; };   // los días seguidos sin marcar van en un renglón
       for(let d=T, g=0; d>=dk[0]&&g<4000; d=shiftDate(d,-1), g++){ const rows=[]; let due=0, done=0;
-        stack.forEach(it=>{ const dd=isDueToday(it,d); takesOf(it,d).forEach(t=>{ const s=takeState(t,d); if(dd||s)due++; if(!s)return; if(s!=='skipped')done++; const hm=takeTime(t,d);
+        stack.forEach(it=>{ takesOf(it,d).forEach(t=>{ const s=takeState(t,d); if(takeDue(t,d)||s)due++; if(!s)return; if(s!=='skipped')done++; const hm=takeTime(t,d);
             rows.push([hmK(hm),'- '+(hm||'sin hora')+' · '+nz(it.name)+' · '+qtyTxt(takeUnitsOn(t,d))+' · '+(s==='taken'?'tomada':s==='late'?'tarde':'saltada')]); }); });
         ((db.adhoc&&db.adhoc[d])||[]).forEach(a=>{ if(a)rows.push([hmK(a.time),'- '+(a.time||'sin hora')+' · '+nz(a.name)+' · '+qtyTxt(extraQty(a))+' · extra']); });
         if(!due&&!rows.length)continue;
@@ -17060,7 +17116,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
