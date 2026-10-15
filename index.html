@@ -102,6 +102,10 @@
   .status .back>i{position:absolute; left:-8px; right:-8px; top:-6px; bottom:-6px;}
   .status .center{text-align:center; line-height:var(--lh-read);}
   .status .streak{font-size:var(--t-data); font-weight:800; color:var(--o50);}
+  .status .streak.lv1 b{color:var(--o60);} .status .streak.lv2 b{color:var(--o70);} .status .streak.lv3 b{color:var(--fg);}   /* v341 · R2 · el nivel se lee en el número, sin texto de más */
+  .status .streak.lv4 b,.status .streak.lv5 b,.status .streak.lv6 b,.status .streak.lv7 b{padding:0 var(--s1); background:var(--fill); color:var(--on-fill);}
+  .status .streak{position:relative; z-index:1;} .status .streak::after{content:''; position:absolute; left:calc(-1 * var(--s3)); right:calc(-1 * var(--s3)); bottom:calc(-1 * (var(--s2) + var(--s1))); height:44px;} .status .sgoal::after{top:var(--s1);}   /* v341 · los dos toques de 44: la racha de 0 a 44 y `meta:` de 44 a 88 (debajo de la barra no hay nada que tocar) */
+  .status .streak.lv0 b{color:var(--o50);}   /* v341 · el número sube parejo por nivel: 0 · 1 · 2 · 3 = o50 · o60 · o70 · fg; desde el 4, invertido */
   .status b{color:var(--o70); font-weight:inherit;}
 
   .rule{border:0; border-top:var(--bw-rule) solid var(--line); margin:var(--s5) 0;}
@@ -1466,7 +1470,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v340';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v341';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -3461,11 +3465,17 @@ function dayScoresHTML(day){ const rc=dayRecovery(day);
   return `<div class="scores">${rcH}${rdH}</div>`+dayMusclesHTML(rc); }
 // "si le picas puedes ver cómo va cada músculo": una fila por músculo en columnas (su % · cuánto lleva descansando); cada
 // fila abre el detalle de ese músculo
+// v341 · RV1 · el dueño (14-oct): "no hay consistencia como en los layouts ni en las screens del formato". Recovery usa el esqueleto de
+// readiness: el mismo título, el renglón de estado (su banda y el músculo más bajo), la misma rejilla `señal · /100 · dato`, el número sin %, la
+// barra de cada fila (leverBarHTML) y la misma nota al pie. Cada músculo sigue abriendo su detalle. La lista del gym no cambia (`músculo ···· 63%`).
 function openRecovery(){ const day=db.split&&db.split.days&&db.split.days[selIdx()]; const rc=dayRecovery(day); if(!rc.rows.length)return;
-  const body=rc.rows.slice().sort(recByPct).map(x=>{ const r=x.r; return `<div class="rvr m u-tap" role="button" tabindex="0" data-act="muscledetail" data-id="${escTxt(String(x.id))}"><span class="k">${escTxt(muscleLabel(x.id))}</span>`
-    +`<span class="n${r&&r.p<100?'':' q'}">${recPct(r)}</span><span class="n q">${r?fmtDur(Math.round(r.h)*60):'—'}</span><span class="q">›</span></div>`; }).join('');
+  const rows=rc.rows.slice().sort(recByPct), lo=rows.find(x=>x.r), band=rc.score!=null?rdyBand(rc.score):'', low=lo?'lo más bajo: '+muscleLabel(lo.id)+' '+lo.r.p:'';
+  const body=rows.map(x=>{ const r=x.r, lbl=muscleLabel(x.id); return `<div class="rvr y u-tap" role="button" tabindex="0" data-act="muscledetail" data-id="${escTxt(String(x.id))}"><span class="k">${escTxt(lbl)}</span>`
+    +`<span class="n${r&&r.p<100?'':' q'}">${r?r.p:'—'}</span><span class="q">${r?fmtDur(Math.round(r.h)*60):'—'}</span><span class="q">›</span></div>`+(r?leverBarHTML(Math.min(100,r.p),lbl+' '+r.p+' de 100'):''); }).join('');
   openModal(`<h3><span data-gloss="recov">recovery</span> ${rc.score!=null?'~'+rc.score:'—'}<span class="u-o40 u-w4"> · ${escTxt(day.name)}</span></h3>
-    <div class="rvr m hd"><span>músculo</span><span class="n">recovery</span><span class="n">descanso</span><span></span></div>${body}
+    ${band||low?`<div class="rdyd">${band?'<b>'+band+'</b>':''}${band&&low?' · ':''}${escTxt(low)}</div>`:''}
+    <div class="rvr y hd"><span>músculo</span><span class="n">/100</span><span>descanso</span><span></span></div>${body}
+    <div class="submeta u-mt10">estimado con lo que registraste · no es un diagnóstico</div>
     <div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div>`); }
 // FOTO al iniciar la sesión ("registrarlo justo antes de empezar… lo más fresco posible… justo antes de meterle estrés al
 // cuerpo"). Aditiva: w.pre = {at, recovery, muscles:{id:%}, readiness, parts:{sleep,load,rhr,hrv}} con null donde no hubo
@@ -3816,7 +3826,7 @@ function statusBar(back){
   const d=new Date();
   return `<div class="status"><div class="left"><div class="uname u-tap" data-act="navmenu">u/${escTxt(db.profile.username)} <span class="umcaret">▾</span></div>${back?'<span class="back" data-act="leave">‹ back<i></i></span>':''}</div>`
     +`<div class="center">${fmtDate(todayISO())}<br/>${nowHM()}</div>`
-    +`<div class="sright">${(state.screen==='home'&&dayCount())?'':`<div class="streak u-tap" data-act="nav" data-screen="progress">streak: <b>${streak()}</b></div>`}`   // v291 · en gym la racha va en su bloque
+    +`<div class="sright"><div class="streak u-tap lv${streakLevel(streak())}" role="button" tabindex="0" data-act="streakcal" aria-label="racha ${streak()} días · abre el calendario">streak: <b>${streak()}</b></div>`   // v341 · R2 · "en gym quitar ese formato y dejarlo así como en macros y progress": la misma racha en las tres, con el estilo de su nivel; tocarla abre el calendario
     // v256 · la meta vive "abajo de streak" (pedido del dueño): dos toques para cambiarla desde cualquier pantalla con nav
     +(STATUS_GOAL.indexOf(state.screen)>=0?`<button type="button" class="sgoal" data-act="goalpick" aria-label="meta: ${GOAL_L[db.profile.goal||'maintain']} · cambiar">meta: <b>${GOAL_L[db.profile.goal||'maintain']}</b><span class="cv">▾</span></button>`:'')
     +`</div></div>`;
@@ -3875,7 +3885,6 @@ function renderHome(){
   }
   return statusBar(false)
     +`<hr class="rule"/>`
-    +streakHeroHTML()   // v291 · la racha como logro: número grande + niveles
     +`<div class="rot"><span class="lbl">ROTATION</span><span class="n"><span class="arrow" data-act="prevday">‹</span> day ${di+1}/${dayCount()}${_plan.mode==='cycle'?' · '+cycleLen()+' d':_plan.mode==='weekly'?' · '+DOW_ES[dowOf(_nx||todayISO())]:''}${offLabel} <span class="arrow" data-act="nextday">›</span></span></div>`
     +`<div class="segs">${segs}</div>`
     +`<div class="ctrls"><a data-act="changesplit">change split</a><a data-act="changegym">change gym</a><a data-act="history">history</a></div>`
@@ -5827,10 +5836,11 @@ function _v291SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('racha 9 = nivel 1; la mejor anterior es 4', streak()===9&&streakLevel(streak())===1&&bestStreak()===9&&bestStreakBefore()===4);
     state.screen='home'; state.selDay=null; state.work=null; state.previewDay=false; render();
     const h=v.querySelector('.stkh');
-    A('gym trae la racha arriba de ROTATION: nivel 1 · mejor 9 / 9 / [barra] 9/14 · faltan 5', !!h&&h.classList.contains('lv1')&&h.querySelector('.meta').textContent==='nivel 1 · mejor 9'&&h.querySelector('.stkh-n').textContent==='9'&&/^\[[█▏▎▍▌▋▊▉░]{12}\] 9\/14 · faltan 5$/.test(h.querySelector('.stkh-p').textContent)&&h.getBoundingClientRect().bottom<=v.querySelector('.rot').getBoundingClientRect().top+1);
-    A('el número mide 28 px y en gym la barra de estado ya no lo repite', getComputedStyle(h.querySelector('.stkh-n')).fontSize==='28px'&&!v.querySelector('.status .streak'));
+    A('v341 · R2 · gym dice `streak:` como macros y progress, con el estilo de su nivel y sin el bloque grande', !v.querySelector('.stkh')&&!!v.querySelector('.status .streak.lv1')&&v.querySelector('.status .streak b').textContent==='9');
+    if(0)A('gym trae la racha arriba de ROTATION: nivel 1 · mejor 9 / 9 / [barra] 9/14 · faltan 5', !!h&&h.classList.contains('lv1')&&h.querySelector('.meta').textContent==='nivel 1 · mejor 9'&&h.querySelector('.stkh-n').textContent==='9'&&/^\[[█▏▎▍▌▋▊▉░]{12}\] 9\/14 · faltan 5$/.test(h.querySelector('.stkh-p').textContent)&&h.getBoundingClientRect().bottom<=v.querySelector('.rot').getBoundingClientRect().top+1);
+
     state.screen='macros'; render(); A('…en las demás pantallas sí sale', !!v.querySelector('.status .streak')); state.screen='home'; render();
-    tap(v.querySelector('.stkh')); A('tocarla abre el calendario de siempre', !!md()&&md().querySelector('h3').textContent==='racha'); closeModal();
+    tap(v.querySelector('.status .streak')); A('tocarla abre el calendario de siempre', !!md()&&md().querySelector('h3').textContent==='racha'); closeModal();
     { const t=document.createElement('div'), P=()=>{ t.innerHTML=streakHeroHTML(); return t.firstChild; };
       streak=()=>3; let e=P(); A('sin nivel todavía: la meta es 7 y no dice nivel', e.classList.contains('lv0')&&!/nivel/.test(e.querySelector('.meta').textContent)&&/ 3\/7 · faltan 4$/.test(e.querySelector('.stkh-p').textContent));
       streak=()=>29; e=P(); A('a un día del nivel: `falta 1`', e.classList.contains('lv2')&&/ 29\/30 · falta 1$/.test(e.querySelector('.stkh-p').textContent));
@@ -11007,7 +11017,7 @@ function _recovScoreSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFC
     A('la lista sale también con todo al 100; sin ningún dato, no', /100%/.test(dayMusclesHTML(recoveryOf([{id:'biceps',sets:1}],now)))&&dayMusclesHTML(recoveryOf([{id:'calves',sets:1}],now))==='');
     A('el % es el de muscleRecAt (el mismo de //STIMULUS)', recPct(q)===q.p+'%'&&recPct(null)==='—');
     openRecovery(); const shR=(document.getElementById('modal')||{}).innerHTML||''; closeModal();
-    A('la hoja de recovery: músculo · % · descanso, y cada fila abre su detalle', (shR.match(/class="rvr m u-tap"/g)||[]).length===3&&shR.indexOf('class="rvr m hd"')>0&&shR.indexOf('data-act="muscledetail" data-id="quads"')>0&&shR.indexOf('>'+q.p+'%<')>0&&!/falta|casi|fresco|estado/.test(shR));
+    A('v341 · RV1 · la hoja de recovery con el esqueleto de readiness: músculo · /100 · descanso, su barra (el que no tiene dato dice — sin barra), y cada fila abre su detalle', (shR.match(/class="rvr y u-tap"/g)||[]).length===3&&shR.indexOf('class="rvr y hd"')>0&&shR.indexOf('<span class="n">/100</span>')>0&&(shR.match(/class="lvb"/g)||[]).length===2&&shR.indexOf('data-act="muscledetail" data-id="quads"')>0&&shR.indexOf('>'+q.p+'<')>0&&!/casi|fresco/.test(shR)&&/no es un diagnóstico/.test(shR));
     // readiness: sin el sueño de anoche no hay número; la comida no entra; una sola señal no alcanza
     for(let i=1;i<=20;i++){ const d=shiftDate(today,-i); db.sleep[d]=[{date:d,type:'nocturno',hours:8}]; H().daily[d]={rhr:58}; }
     H().daily[today]={rhr:64}; bumpIdx();
