@@ -309,7 +309,7 @@
 .chrs{position:absolute; top:0; height:100%; box-sizing:border-box; padding:var(--s1) 0 0 var(--s1); border:0; border-top:var(--bw-mark) solid var(--o40); background:none; font-size:var(--t-label); line-height:var(--lh-tight); color:var(--o50); text-align:left;}
 .chrt{display:block; overflow:hidden; white-space:nowrap;}
 button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; left:0; right:0; top:0; height:44px;}
-.chrail .chrs:nth-child(even){border-top-color:var(--o20);} .chrs.nm{color:var(--o70);} .chrail.sub .chrs{border-top-width:var(--bw-sep); border-top-style:dashed;}
+.chrail .chrs:nth-child(even){border-top-color:var(--o20);} .chrs.nm{color:var(--o70);} .chrs.mm{color:var(--o70);} .chrail.sub.mm .chrs{border-top-style:solid; border-top-color:var(--o50);} .chrail.sub.mm .chrt{text-overflow:ellipsis;}   /* v350 · MM5 · mamarre: un renglón sólido (las sustancias van punteadas) */ .chrail.sub .chrs{border-top-width:var(--bw-sep); border-top-style:dashed;}
 .mdtrr{display:flex; margin:0 0 var(--s3);} .mdtrr[hidden]{display:none;}   /* sin esto display:flex le gana al atributo hidden y el pliegue no plegaba (verificador, 9-oct) */
 .mdtc{flex:1 1 0; min-width:0; min-height:44px; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:var(--s1); padding:0; border:0; background:none; font-size:var(--t-label); letter-spacing:var(--ls-ui); cursor:pointer;}
 .mdtc .mdth{color:var(--o40);} .mdtc .mdtp{color:var(--o70); font-weight:700; font-variant-numeric:tabular-nums;} .mdtc .mdtp.n{color:var(--o40); font-weight:400;} .mdtc .mdtp.g{color:var(--good);} .mdtc .mdtp.b{color:var(--bad);}
@@ -1483,7 +1483,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v349';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v350';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -5982,7 +5982,7 @@ function _macroVizSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHE
     const y1=row2.getBoundingClientRect().top; tap(row2);
     A('…y otra vez la pliega, también sin moverse', !q('.kpanel .macro-rad')&&db.settings.radarOpen===false&&Math.abs(q('[data-act="radarfold"]').getBoundingClientRect().top-y1)<=1);
     const order=Array.from(q('.kpanel').children).map(e=>e.className.split(' ')[0]).join(',');
-    A('orden: anillo de kcal → balance → aros → [ver %] → radar → INTAKE', /^hero(,hbal)?,rule,rings,kp-unit,line,rule,grp-label/.test(order));
+    A('orden: anillo de kcal → balance → (carb day · mamarre) → aros → [ver %] → radar → INTAKE', /^hero(,hbal)?(,line)*,rule,rings,kp-unit,line,rule,grp-label/.test(order));
     A('la tarjeta para compartir sigue trayendo radar y aros', /macro-rad/.test(renderShareMacros())&&/class="rings"/.test(renderShareMacros()));
   } finally { if(had)db.settings.radarOpen=r0; else delete db.settings.radarOpen; K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; _sbx=sb0; try{ render(); }catch(_){} }
   console.log('macro viz self-check OK'); }
@@ -6285,7 +6285,7 @@ function _v324SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
   try{ _sbx=true; db=migrate({profile:{username:'t'},split:{days:[]},sessions:[]}); bumpIdx();
     A('BK1 · la hoja de copiar y pegar el respaldo ya no existe', typeof openSync==='undefined');
     openNavMenu(); const rows=[...document.querySelectorAll('#modal .nvm')].map(x=>x.dataset.nav); closeModal();
-    A('BK1 · el menú del usuario ya no trae respaldo / exportar (y conserva lo demás)', rows.indexOf('sync')<0&&rows.join()==='settings,history,splitedit,catalog,muscles,stack,sharefood');
+    A('BK1 · el menú del usuario ya no trae respaldo / exportar (y conserva lo demás)', rows.indexOf('sync')<0&&rows.join()==='settings,history,splitedit,catalog,muscles,stack,sharefood,mamarre');   /* v350 · + mamarre */
     const st=renderSettings(); A('BK1 · en ajustes quedan export file, export .md e import file, sin el botón de copiar y pegar', /data-act="export"/.test(st)&&/data-act="exportmd"/.test(st)&&/data-act="import"/.test(st)&&!/data-act="sync"/.test(st)&&!/copy \/ paste/.test(st));
     openTextSheet('x.json','a'.repeat(50000)); A('BK1 · la hoja de reserva ya no pinta un respaldo entero (solo el principio; copiar se lleva todo)', document.getElementById('ts_txt').value.length<3000&&/KB/.test(document.querySelector('#modal .submeta').textContent)); closeModal();
     openTextSheet('x.txt','hola'); A('…y un texto corto sale completo', document.getElementById('ts_txt').value==='hola'); closeModal();
@@ -7192,6 +7192,90 @@ function _v349SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     closeModal(); openSleepRaw(D(10)); A('H6 · una noche sin registro lo dice (antes abría otra sin avisar)', /sin registro de esta noche/.test(document.getElementById('modal').textContent)); closeModal();
     console.log('v349 self-check OK');
   } finally { try{ closeModal(); }catch(_){} db=real; window._mdKey=mk; window._mdRange=mr; window._mdEnd=me; window._mdCustom=mc; bumpIdx(); }
+}
+// v350 · MM1 · MM5 · el dueño (15-oct): "modo mamarre es cuando salgo de fiesta o de viaje por varios días a tragar…, a echar vino, fiesta,
+// desvelo, comer fuera… modo que se pueda poner on y off" · "que el modo mamarre aparezca en el timeline similar a cuando se cambia a
+// definición, cut, bulk" · y (al preguntarle por la meta) "no hay un objetivo como tal, el chiste es poder registrar todo para ver cómo es que
+// afectan esos días, no apartarlos, sino considerarlos". Un periodo: db.mamarre=[{id,from,to}] (to:null = sigue prendido; aditivo).
+// NO toca metas (goalsFor, goalHist) ni ningún cálculo: esos días cuentan como cualquier otro. Se ve en el carril de abajo de TODAS las
+// gráficas (como las fases) y en el export; desde v351 simplifica cómo se registra.
+function mmList(){ return Array.isArray(db.mamarre)?db.mamarre.filter(p=>p&&/^\d{4}-\d{2}-\d{2}$/.test(p.from||'')&&(!p.to||/^\d{4}-\d{2}-\d{2}$/.test(p.to))):[]; }
+function mamarreOn(d){ d=d||todayISO(); return mmList().some(p=>p.from<=d&&(!p.to||p.to>=d)); }
+// prendido AHORA: el periodo sigue abierto (o tiene un fin que aún no llega). Apagado hoy, hoy SÍ fue mamarre (mamarreOn) pero el modo ya está apagado.
+function mmCur(){ const T=todayISO(), L=mmList(); return L.find(p=>!p.to)||L.find(p=>p.from<=T&&p.to>T)||null; }   // un periodo abierto manda aunque el reloj haya vuelto atrás (viaje al oeste)
+function mmDays(p){ const to=p.to||todayISO(); return Math.max(1,Math.round((Date.parse(to+'T12:00:00')-Date.parse(p.from+'T12:00:00'))/864e5)+1); }
+function mmSpanTxt(p){ return fmtShort(p.from)+' – '+(p.to?fmtShort(p.to):'hoy')+' · '+mmDays(p)+(mmDays(p)===1?' día':' días'); }
+// prender: abre un periodo que empieza hoy; si el último terminó ayer u hoy, lo continúa (apagar y volver a prender no parte la fiesta)
+function mmStart(){ if(mmCur())return; state._mmNormal=null; const T=todayISO(), Y=shiftDate(T,-1); db.mamarre=mmList(); const last=db.mamarre.filter(p=>p.to&&p.to>=Y&&p.from<=T).sort((a,b)=>a.to<b.to?1:-1)[0];
+  let undo; if(last){ const prev=last.to; last.to=null; undo=()=>{ last.to=prev; }; } else { const p={id:uid(),from:T,to:null}; db.mamarre.push(p); undo=()=>{ db.mamarre=mmList().filter(x=>x!==p); }; }
+  save(); reRender(); toast('✓ mamarre · desde '+(last?fmtShort(last.from):'hoy'),'ok',{undo}); }
+// apagar: el periodo termina hoy (o se quita si empezó hoy y nunca hubo nada que registrar en él… no: se queda, hoy fue mamarre)
+function mmStop(){ const p=mmCur(); if(!p)return; const prev=p.to, T=todayISO(); p.to=T<p.from?p.from:T; save(); reRender(); toast('✓ mamarre apagado · '+mmDays(p)+(mmDays(p)===1?' día':' días'),'ok',{undo:()=>{ p.to=prev; }}); }
+// el menú (renglón del panel prendido, y `u/`): apagar o prender, y las fechas del actual y de los últimos 5 periodos. En el carril de las
+// gráficas mamarre se VE pero no se toca: el renglón de fases ya ocupa sus 44 px de toque hacia abajo y dos renglones tocables no caben.
+function mmMenu(){ const p=mmCur(), past=mmList().filter(x=>x!==p).sort((a,b)=>a.from<b.from?1:-1).slice(0,5);
+  const it=p?[['apagar mamarre',mmStop],['fechas · '+mmSpanTxt(p),()=>openMamarre(p.id)]]:[['prender mamarre',mmStart]];
+  past.forEach(x=>it.push(['periodo · '+mmSpanTxt(x),()=>openMamarre(x.id)]));
+  trkMenu(p?'mamarre · desde '+fmtShort(p.from):'mamarre',it); }
+// las fechas de un periodo (desde el menú): inicio, fin (vacío = sigue) o quitarlo
+function openMamarre(id){ const p=mmList().find(x=>x.id===id); if(!p)return; const T=todayISO();
+  const m=askLayer('<h3>mamarre · '+escTxt(mmSpanTxt(p))+'</h3>'
+    +'<div class="field"><label>INICIO</label><input id="mm_from" type="date" value="'+escTxt(p.from)+'" max="'+T+'"/></div>'
+    +'<div class="field"><label>FIN · vacío = sigue</label><input id="mm_to" type="date" value="'+escTxt(p.to||'')+'" max="'+T+'"/></div>'
+    +'<div class="sheetbtns"><button class="ok" data-ask="ok">guardar</button><button class="cancel danger" data-ask="del">quitar</button><button class="cancel" data-ask="no">cancelar</button></div>');
+  m.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-ask]'); if(!b)return; ev.stopPropagation(); const k=b.dataset.ask;
+    if(k==='no'){ closeAsk(); return; }
+    if(k==='del'){ closeAsk(); const prev=mmList(); db.mamarre=prev.filter(x=>x!==p); save(); mmRefresh(); toast('✓ periodo mamarre quitado','ok',{undo:()=>{ db.mamarre=prev; }}); return; }
+    const f=String((document.getElementById('mm_from')||{}).value||''), t=String((document.getElementById('mm_to')||{}).value||'');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(f)){ toast('⚠ pon el inicio','err'); return; } if(f>T){ toast('⚠ el inicio no puede ser después de hoy','err'); return; }
+    if(t&&(!/^\d{4}-\d{2}-\d{2}$/.test(t)||t<f)){ toast('⚠ el fin va el mismo día o después del inicio','err'); return; } if(t>T){ toast('⚠ el fin no puede ser después de hoy · vacío = sigue','err'); return; }
+    if(mmList().some(x=>x!==p&&x.from<=(t||'9999-12-31')&&(!x.to||x.to>=f))){ toast('⚠ se encima con otro periodo mamarre','err'); return; }
+    closeAsk(); const pf=p.from, pt=p.to; p.from=f; p.to=t||null; save(); mmRefresh(); toast('✓ mamarre · '+mmSpanTxt(p),'ok',{undo:()=>{ p.from=pf; p.to=pt; }}); }); }
+function mmRefresh(){ if(window._mdKey&&document.getElementById('modal')&&document.querySelector('#modal .mdetail-wrap, #modal.mdetail-wrap, #modal .sheet.mdetail-wrap'))openMetricDetail(window._mdKey); else reRender(); }
+// el renglón del panel de macros (la misma pieza que `carb day`): hoy se toca para prenderlo o abrir su menú; un día pasado solo lo dice
+function mmTagHTML(date){ const k='<span class="k">mamarre</span><span class="dots"></span>';
+  if(date!==todayISO())return mamarreOn(date)?'<div class="line stat kp-rad">'+k+'<span class="v">sí</span></div>':'';
+  const p=mmCur(); return p?'<button type="button" class="line stat tap kp-rad kp-cc" data-act="mmmenu" aria-label="mamarre prendido desde '+escTxt(fmtShort(p.from))+' · opciones">'+k+'<span class="v">on · desde '+escTxt(fmtShort(p.from))+' ›</span></button>'
+    :'<button type="button" class="line stat tap kp-rad kp-cc" data-act="mmtog" aria-label="mamarre apagado · prender">'+k+'<span class="v">off ›</span></button>'; }
+// el carril: los periodos van juntos en UN renglón (`row`), sólido. Van antes que las sustancias: el carril tiene 4 renglones.
+function mmRail(fromISO,toISO){ const T=todayISO(); return mmList().filter(p=>p.from<=toISO&&(p.to||T)>=fromISO).map(p=>{ const to=p.to||T; return {from:p.from<fromISO?fromISO:p.from,to:to>toISO?toISO:to,label:'mamarre',cut:true,cls:'mm',row:'mm',id:p.id}; }); }
+// cuántos renglones ocupa un carril de abajo (las entradas con el mismo `row` comparten renglón)
+function railRows(list){ const seen={}; let n=0; (list||[]).forEach((s,i)=>{ const k=s&&s.row?'r:'+s.row:'i:'+i; if(!seen[k]){ seen[k]=1; n++; } }); return n; }
+// self-check de v350 (MM1 · MM5). Base de juguete; nada llega a disco; todo se restaura en finally.
+function _v350SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v350: '+nm); }; const real=db;
+  try{ const T=todayISO(), D=k=>shiftDate(T,-k);
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',weightKg:61},gyms:['g'],activeGym:'g',sessions:[],meals:{[D(1)]:[{id:'m1',tag:'lunch',name:'x',qty:1,kcal:800,protein:40,carbs:80,fat:30,alcohol:0}]}}); bumpIdx();
+    const g0=JSON.stringify(goalsFor(T)), h0=JSON.stringify(db.goalHist), t0=JSON.stringify(macroTotals());
+    A('MM1 · apagado: el panel dice mamarre off y se toca', /data-act="mmtog"[^>]*><span class="k">mamarre<\/span><span class="dots"><\/span><span class="v">off ›/.test(mmTagHTML(T))&&!mamarreOn(T));
+    mmStart(); A('MM1 · prender abre un periodo desde hoy', mamarreOn(T)&&!!mmCur()&&mmCur().from===T&&mmCur().to===null&&/on · desde/.test(mmTagHTML(T)));
+    A('MM1 · no toca metas, su historial ni los totales', JSON.stringify(goalsFor(T))===g0&&JSON.stringify(db.goalHist)===h0&&JSON.stringify(macroTotals())===t0);
+    mmStop(); A('MM1 · apagar lo cierra hoy y sigue contando hoy', !mmCur()||mmCur().to===T); A('MM1 · …hoy fue mamarre', mamarreOn(T)&&db.mamarre.length===1&&db.mamarre[0].to===T);
+    mmStart(); A('MM1 · volver a prender el mismo día continúa el periodo (no abre otro)', db.mamarre.length===1&&db.mamarre[0].to===null);
+    db.mamarre=[{id:'p1',from:D(10),to:D(7)},{id:'p2',from:D(3),to:null}]; bumpIdx();
+    A('MM1 · cada día sabe si fue mamarre', mamarreOn(D(8))&&!mamarreOn(D(5))&&mamarreOn(D(1))&&mamarreOn(T)&&!mamarreOn(D(11)));
+    A('MM1 · un día pasado mamarre lo dice en su panel (sin botón); uno normal no dice nada', /<div class="line stat kp-rad"><span class="k">mamarre<\/span><span class="dots"><\/span><span class="v">sí/.test(mmTagHTML(D(8)))&&mmTagHTML(D(5))==='');
+    // MM5 · el carril: un renglón para todos los periodos, antes que las sustancias, tocable
+    const R=subRail(D(30),T); A('MM5 · el carril trae los dos periodos en un renglón', R.filter(s=>s.row==='mm').length===2&&R[0].row==='mm'&&railRows(R)===1);
+    const days=[]; for(let i=29;i>=0;i--)days.push(D(i)); const tlo=Date.parse(days[0]+'T12:00:00'), thi=Date.parse(T+'T12:00:00');
+    const hh=lineChart(days.map((d,i)=>60+i%3),{h:150,detail:true,dates:days,tlo,thi,rail2:subRail(days[0],T)});
+    A('MM5 · la gráfica pinta un renglón mamarre con un tramo por periodo (se ve, no se toca)', (hh.match(/class="chrail sub mm"/g)||[]).length===1&&(hh.match(/<span class="chrs mm"/g)||[]).length===2&&!/data-act="mmedit"/.test(hh));
+    db.stack=[1,2,3,4].map(i=>({id:'s'+i,name:'S'+i,category:'hormone',startDate:D(200),ticks:{},when:['am'],periodization:{type:'daily'}})); bumpIdx();
+    { const h5=lineChart(days.map((d,i)=>60+i%3),{h:150,detail:true,dates:days,tlo,thi,rail2:subRail(days[0],T),railKeep:mdRailKeep()}); A('MM5 · las 4 sustancias conservan sus renglones; mamarre va aparte, arriba', (h5.match(/class="chrail sub mm"/g)||[]).length===1&&(h5.match(/class="chrail sub"/g)||[]).length===4&&/S4/.test(h5)&&h5.indexOf('chrail sub mm')<h5.indexOf('>S1<')); }
+    { const days2=[]; for(let i=89;i>=60;i--)days2.push(D(i)); const h6=lineChart(days2.map((d,i)=>60+i%3),{h:150,detail:true,dates:days2,tlo:Date.parse(days2[0]+'T12:00:00'),thi:Date.parse(days2[29]+'T12:00:00'),rail2:subRail(days2[0],days2[29]),railKeep:mdRailKeep()}); A('MM5 · una ventana sin mamarre reserva su renglón (al recorrer nada cambia de renglón)', (h6.match(/class="chrail sub mm"/g)||[]).length===1&&(h6.match(/class="chrail sub"/g)||[]).length===4); }
+    db.stack=[]; bumpIdx();
+    // el menú: prendido, apagar y las fechas de cada periodo
+    mmMenu(); { const L0=document.getElementById('asklayer'), tx=L0?L0.textContent:''; A('MM1 · el menú: apagar, las fechas del actual y los periodos pasados', /apagar mamarre/.test(tx)&&/fechas · /.test(tx)&&/periodo · /.test(tx)); closeAsk(true); }
+    openMamarre('p1'); const L=document.getElementById('asklayer'); A('MM5 · las fechas de un periodo: inicio y fin', !!L&&L.querySelector('#mm_from').value===D(10)&&L.querySelector('#mm_to').value===D(7));
+    L.querySelector('#mm_to').value=D(2); L.querySelector('[data-ask="ok"]').click(); A('MM5 · un periodo que se encima con otro no se guarda', db.mamarre[0].to===D(7)&&!!document.getElementById('asklayer'));
+    document.querySelector('#asklayer #mm_to').value=D(6); document.querySelector('#asklayer [data-ask="ok"]').click(); A('MM5 · …y uno bueno sí', db.mamarre[0].to===D(6)&&!document.getElementById('asklayer'));
+    // export
+    db.meals[D(8)]=[{id:'m2',tag:'cena',name:'y',qty:1,kcal:500,protein:20,carbs:50,fat:20,alcohol:28}]; db.meals[D(5)]=[{id:'m3',tag:'cena',name:'z',qty:1,kcal:600,protein:30,carbs:60,fat:20,alcohol:0}];
+    const md=buildExportMd(db), hd=d=>(md.split('\n').find(l=>l.indexOf('### '+fmtDate(d))===0)||'');
+    A('MM1 · el export marca los días mamarre (y solo esos)', /· mamarre$/.test(hd(D(8)))&&!!hd(D(5))&&!/mamarre/.test(hd(D(5))));
+    { const keep=db.mamarre; db.mamarre=[{id:'q',from:shiftDate(T,1),to:null}]; mmStart(); A('MM1 · con el reloj atrás (viaje al oeste) prender no abre otro periodo', db.mamarre.length===1&&!!mmCur()); db.mamarre=keep; }
+    openMamarre('p1'); { const L2=document.getElementById('asklayer'); L2.querySelector('#mm_to').value=shiftDate(T,3); L2.querySelector('[data-ask="ok"]').click(); A('MM5 · un fin en el futuro no se guarda', db.mamarre[0].to===D(6)&&!!document.getElementById('asklayer')); closeAsk(true); }
+    console.log('v350 self-check OK');
+  } finally { try{ closeAsk(true); }catch(_){} try{ closeModal(); }catch(_){} db=real; bumpIdx(); }
 }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
@@ -8566,7 +8650,7 @@ function renderMacros(){
   return statusBar(false)
     +`<hr class="rule"/>`
     +`<div class="section"><div class="h dnavh"><a data-act="dayprev" class="dnav">‹</a><span class="dnlbl-wrap"><span class="dnlbl">${dayLabel(curDate(),1)}</span><input type="date" class="dcal" data-act="daycal" value="${curDate()}"/></span><a data-act="daynext" class="dnav">›</a></div><div class="meta"><a data-act="share" class="vb">share</a> <a data-act="editgoals" class="vb u-ml8">goals</a></div></div>`
-    +`<div class="card kpanel u-pt16 u-pb16 u-px16"><button class="hero ${open?'open':''} ${kStat}" data-act="togglemacros">${ringHTML(pct,`<div class="num" data-nk="kcal" data-nv="${Math.round(t.kcal)}">${Math.round(t.kcal).toLocaleString()}</div><div class="of">/ ${g.kcal.toLocaleString()} kcal</div>`,'lg')}<div class="hero-meta"><span class="left ${left<0?'over':'under'}">${left>=0?left+' left':Math.abs(left)+' over'}</span> · ${Math.round(pct)}% <span class="chev">▾</span></div></button>${goalSecHidden('balance')?'':(function(){var b=balanceOf(g.kcal);return b?'<div class="hbal">'+(b.label==='mantenimiento'?'en mantenimiento':'<span class="u-w7">'+b.label+'</span> '+Math.abs(b.delta)+' kcal')+' · mant. ≈ '+b.maint+'</div>':'';})()}${ccTagHTML(curDate(),g)}${details}</div>`
+    +`<div class="card kpanel u-pt16 u-pb16 u-px16"><button class="hero ${open?'open':''} ${kStat}" data-act="togglemacros">${ringHTML(pct,`<div class="num" data-nk="kcal" data-nv="${Math.round(t.kcal)}">${Math.round(t.kcal).toLocaleString()}</div><div class="of">/ ${g.kcal.toLocaleString()} kcal</div>`,'lg')}<div class="hero-meta"><span class="left ${left<0?'over':'under'}">${left>=0?left+' left':Math.abs(left)+' over'}</span> · ${Math.round(pct)}% <span class="chev">▾</span></div></button>${goalSecHidden('balance')?'':(function(){var b=balanceOf(g.kcal);return b?'<div class="hbal">'+(b.label==='mantenimiento'?'en mantenimiento':'<span class="u-w7">'+b.label+'</span> '+Math.abs(b.delta)+' kcal')+' · mant. ≈ '+b.maint+'</div>':'';})()}${ccTagHTML(curDate(),g)}${mmTagHTML(curDate())}${details}</div>`
     +suppSecHTML(curDate())
     +foodSecHTML(curDate(),items.filter(m=>!isWaterItem(m)),t.kcal)
     +waterSecHTML(curDate());   // orden del dueño: supps → meals → water al final
@@ -9316,11 +9400,13 @@ function lineChart(vals,opt){ opt=opt||{};
       goalBelow=goalY<15?true:goalY>H-15?false:hit(goalY+1,goalY+14)<hit(goalY-14,goalY-1); } }
   if(opt.detail&&opt.tlo!=null&&opt.thi!=null&&((opt.rail&&opt.rail.length)||(opt.rail2&&opt.rail2.length))){ const span=(opt.thi-opt.tlo)||1, dayW=864e5/span*(W-2*padX);
     const TX=d=>padX+((Date.parse(String(d).slice(0,10)+'T12:00:00')||0)-opt.tlo)/span*(W-2*padX), cl=x=>Math.max(padX,Math.min(W-padX,x));
-    const seg=(s,tag,extra)=>{ const a=cl(TX(s.from)-dayW/2), b=cl(TX(s.to)+dayW/2); if(b-a<1)return ''; const wpx=(b-a)/W*317, fit=t=>!!t&&wpx>=String(t).length*6+6, txt=fit(s.label)?s.label:fit(s.short)?s.short:'';
+    const seg=(s,tag,extra)=>{ const a=cl(TX(s.from)-dayW/2), b=cl(TX(s.to)+dayW/2); if(b-a<1)return ''; const wpx=(b-a)/W*317, fit=t=>!!t&&wpx>=String(t).length*6+6, txt=fit(s.label)?s.label:fit(s.short)?s.short:(s.cut&&wpx>=14?s.label:'');   /* v350 · mamarre: si no cabe, el navegador lo corta con … (text-overflow) */
       return '<'+tag+' class="chrs '+(s.cls||'')+'" style="left:'+(a/W*100).toFixed(2)+'%;width:'+((b-a)/W*100).toFixed(2)+'%"'+(extra||'')+'><span class="chrt">'+escTxt(txt)+'</span></'+tag+'>'; };
     if(opt.rail&&opt.rail.length){ railH+='<div class="chrail">'+opt.rail.map(s=>seg(s,'button',' type="button" data-act="phasename" data-f="'+escTxt(s.f0||s.from)+'" data-t="'+escTxt(s.t0||s.to)+'" data-k="'+(+s.kcal||0)+'" aria-label="fase: '+escTxt(s.label||'')+'"')).join('')+'</div>';
       opt.rail.forEach((s,i)=>{ if(!i)return; const x=TX(s.from)-dayW/2; if(x>padX+0.5&&x<W-padX-0.5)railV+='<path d="M'+x.toFixed(1)+',0 L'+x.toFixed(1)+','+H+'" class="sw-grid chph" stroke="var(--o20)" stroke-width=".5" fill="none" vector-effect="non-scaling-stroke"/>'; }); }
-    (opt.rail2||[]).slice(0,4).forEach(s=>{ railH+='<div class="chrail sub">'+seg(s,'span','')+'</div>'; }); }
+    { const R2=[]; (opt.rail2||[]).forEach(s=>{ const g=s.row&&R2.find(r=>r.row===s.row); if(g)g.list.push(s); else R2.push({row:s.row||'',list:[s]}); });   // v350 · MM5 · las entradas con el mismo `row` comparten renglón (mamarre); las que traen id se tocan
+      if(opt.railKeep&&opt.railKeep.mm&&!R2.some(r=>r.row==='mm'))R2.unshift({row:'mm',list:[]});   // v350 · mamarre aparte de las 4 sustancias y siempre en su renglón
+      R2.filter(r=>r.row==='mm').concat(R2.filter(r=>r.row!=='mm').slice(0,4)).forEach(r=>{ railH+='<div class="chrail sub'+(r.row?' '+r.row:'')+'">'+r.list.map(s=>seg(s,'span','')).join('')+'</div>'; }); } }
   // v332 · GR4 · opt.railKeep={main,sub}: el detalle que se recorre reserva SIEMPRE el alto de sus carriles (vacíos donde esa ventana no tiene
   // fase o sustancia): si no, al pasar por un tramo sin fases la gráfica perdía 26 px y la fila de fechas saltaba bajo el dedo (verificador)
   if(opt.railKeep){ const hasMain=/class="chrail">/.test(railH), nSub=(railH.match(/class="chrail sub"/g)||[]).length; if(opt.railKeep.main&&!hasMain)railH='<div class="chrail" aria-hidden="true"></div>'+railH; for(let i=nSub;i<Math.min(4,+opt.railKeep.sub||0);i++)railH+='<div class="chrail sub" aria-hidden="true"></div>'; }
@@ -9438,7 +9524,7 @@ function phaseNameOf(from,to){ const a=Date.parse(from+'T00:00:00'), b=Date.pars
 function phasesIn(fromISO,toISO){ const R=phaseRuns(); return R.map((r,i)=>{ const to=i<R.length-1?shiftDate(R[i+1].from,-1):r.to, p=phaseNameOf(r.from,to); return {from:r.from,to,kcal:r.kcal,n:r.n,name:p?p.name:''}; }).filter(x=>x.to>=fromISO&&x.from<=toISO); }
 function phaseRail(fromISO,toISO){ return phasesIn(fromISO,toISO).map(p=>({from:p.from<fromISO?fromISO:p.from,to:p.to>toISO?toISO:p.to,f0:p.from,t0:p.to,kcal:p.kcal,label:p.name||('~'+Math.round(p.kcal).toLocaleString()+' kcal'),short:p.name?'':'~'+Math.round(p.kcal).toLocaleString(),cls:p.name?'nm':''})); }
 // sustancias en las gráficas: SOLO nombre y periodo. Hormonas y péptidos salen solos; lo demás, si lo marcas (it.chart). Nunca dosis.
-function subRail(fromISO,toISO){ const T=todayISO(), out=[];
+function subRail(fromISO,toISO){ const T=todayISO(), out=mmRail(fromISO,toISO);   // v350 · MM5 · mamarre primero (un renglón; el carril tiene 4)
   (db.stack||[]).forEach(it=>{ if(!it||!(it.chart===true||(it.chart!==false&&/^(hormone|peptide)$/.test(it.category||''))))return;
     const tk=Object.keys(it.ticks||{}).sort(), from=String(it.startDate||tk[0]||'').slice(0,10); if(!from)return;
     const lg=(it.statusLog||[]).slice(-1)[0], to=suppStatus(it)==='active'?T:String((lg&&lg.d)||tk[tk.length-1]||T).slice(0,10);
@@ -9540,7 +9626,7 @@ function mdFirstDate(key){ try{ const sp=metricSeries(key,1500,todayISO()); if(!
 // primer registro; con menos historial que la ventana, no se mueve.
 function mdPanEnd(end0,days,dx,pxDay,first,today){ const lo=first?shiftDate(first,days-1):end0; if(lo>today)return end0>today?today:end0; let e=shiftDate(end0,-Math.round(dx/Math.max(0.5,pxDay))); if(e<lo)e=lo; if(e>today)e=today; return e; }
 function mdPanRow(lo,end,kind){ return '<div class="chxs pan" data-pan="'+(kind||'md')+'"><span class="chx a0" style="left:0%">'+escTxt(fmtShort(lo))+'</span><span class="chx a1" style="left:100%">'+escTxt(fmtShort(end))+'</span></div>'; }
-function mdRailKeep(){ let main=false, sub=0; try{ main=phaseRuns().length>0; }catch(_){} try{ sub=Math.min(4,subRail('0000-01-01',todayISO()).length); }catch(_){} return {main,sub}; }
+function mdRailKeep(){ let main=false, sub=0, mm=false; try{ main=phaseRuns().length>0; }catch(_){} try{ const L=subRail('0000-01-01',todayISO()); mm=L.some(s=>s.row==='mm'); sub=Math.min(4,railRows(L.filter(s=>s.row!=='mm'))); }catch(_){} return {main,sub,mm}; }   // v350 · mamarre aparte de las 4 sustancias
 // el marco de una ventana sin registros: mismo alto que la gráfica y los mismos carriles reservados
 function panNone(txt,keep,h){ return '<div class="chwrap chnone" style="height:'+(h||150)+'px"><div class="empty">'+escTxt(txt)+'</div></div>'+(keep&&keep.main?'<div class="chrail" aria-hidden="true"></div>':'')+new Array((keep&&+keep.sub||0)+1).join('<div class="chrail sub" aria-hidden="true"></div>'); }
 function mdRepaint(){ const m=document.getElementById('modal'), a=m&&m.querySelector('#mdcw'), t=m&&m.querySelector('.mdetail .mdtop2'); if(!a||!t)return false; const h=mdHTML(window._mdKey); if(h==null)return false;
@@ -10890,7 +10976,7 @@ function cmpChart(a,b,D,h,detail){ const ra=D.A.filter(v=>v!=null), rb=D.B.filte
   const L=i=>{ const x=D.A[i], y=D.B[i]; return fmtShort(D.dates[i])+(x!=null?' · A '+fa(x):'')+(y!=null?' · B '+fb(y):''); };
   const idx=V=>{ const ix=[]; V.forEach((v,i)=>{ if(v!=null)ix.push(i); }); return ix; };
   const main=(V,k)=>CMP[k].join?(ix=>({vals:ix.map(i=>V[i]),dates:ix.map(i=>D.dates[i]),labels:ix.map(L)}))(idx(V)):{vals:V,dates:D.dates,labels:V.map((v,i)=>v==null?'':L(i))};
-  const o={h,tlo,thi,noFill:true}; if(detail){ o.detail=true; o.xtime=true; o.rail=phaseRail(D.dates[0],D.end); }
+  const o={h,tlo,thi,noFill:true}; if(detail){ o.detail=true; o.xtime=true; o.rail=phaseRail(D.dates[0],D.end); o.rail2=mmRail(D.dates[0],D.end); o.railKeep={main:false,sub:0,mm:mmList().length>0}; }   // v350 · MM5 · compare también marca mamarre
   if(!ra.length){ const p=main(D.B,b); return lineChart(p.vals,Object.assign(o,{dates:p.dates,labels:p.labels,fmt:fb,tfmt:cmpNum(b),dash:'5 4',tone:'var(--o60)'})); }
   const pa=main(D.A,a); o.dates=pa.dates; o.labels=pa.labels; o.fmt=fa; o.tfmt=cmpNum(a);
   if(rb.length){ const al=Math.min.apply(null,ra), ah=Math.max.apply(null,ra), bl=Math.min.apply(null,rb), bh=Math.max.apply(null,rb), sa=(ah-al)||Math.max(1,Math.abs(al)*0.1), sb=(bh-bl)||1;
@@ -13542,6 +13628,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='bakshare'){ doBackupShare(); }
   else if(a==='storage'){ openStorage(); }
   else if(a==='goalpick'){ openGoalPick(el); }
+  else if(a==='mmtog'){ mmStart(); } else if(a==='mmmenu'){ mmMenu(); }   // v350 · MM1
   else if(a==='streakcal'){ openStreakSheet(); }
   else if(a==='pf_sex'){ trkSelect(el,[{v:'M',t:'hombre'},{v:'F',t:'mujer'}],db.profile.sex||'',v=>setProfile('sex',v),{title:'sexo'}); }
   else if(a==='pf_age'){ trkWheel({title:'edad',opts:Array.from({length:77},(_,i)=>String(14+i)),cur:String(db.profile.age||'')},v=>setProfile('age',+v)); }
@@ -17559,8 +17646,10 @@ function openNavMenu(){
      ${item('músculos · cómo los cuenta el motor'+(_un?' · '+_un+' sin asignar':''),'muscles')}
      ${item('suplementos · administrar','stack')}
      ${item('compartir el día','sharefood')}
+     ${item('mamarre · '+(mmCur()?'on · desde '+fmtShort(mmCur().from):'off'),'mamarre')}
    </div>`);
   document.querySelectorAll('#modal .nvm').forEach(el=>el.onclick=()=>{ const a=el.dataset.nav;
+    if(a==='mamarre'){ closeModal(); mmMenu(); return; }   // v350 · MM1 · su menú: prender o apagar, y las fechas de cada periodo
     if(a==='muscles'){ openMuscleMap(); return; } if(a==='catalog'){ window._mgSel=[]; openExerciseDirectory(); return; } closeModal();
     if(a==='settings')go('settings'); else if(a==='history')go('history'); else if(a==='splitedit')go('splitedit'); else if(a==='stack')go('stack');
     else if(a==='sharefood'){ state.shareType='food'; go('share'); } });
@@ -17718,7 +17807,7 @@ function buildExportMd(db){
   const mdates=Object.keys(meals).filter(d=>(meals[d]||[]).length).sort().reverse();
   L.push('## //NUTRICIÓN ('+mdates.length+' días)','');
   mdates.forEach(d=>{ const g=goalOn(d);
-    L.push('### '+fd(d)+(g?' · meta '+gtxt(g):' · sin meta guardada'));
+    L.push('### '+fd(d)+(g?' · meta '+gtxt(g):' · sin meta guardada')+(mamarreOn(d)?' · mamarre':''));   // v350 · MM1
     const t={kcal:0,protein:0,carbs:0,fat:0}, by=Object.create(null), ord=[];   /* sin prototipo: una comida llamada `constructor` es una comida más */ (meals[d]||[]).forEach(m=>{ if(!m)return; const k=m.tag||'sin comida'; if(!by[k]){ by[k]=[]; ord.push(k); } by[k].push(m); });
     // la hora de una comida: la que le pusiste o, si no, la del primer alimento que trae la suya (la app lee esa hora: última comida, antes de entrenar)
     const hOf=k=>mealTime(d,k)||(by[k].map(m=>m.time).filter(x=>isFinite(hm2min(x))).sort((a,b)=>hm2min(a)-hm2min(b))[0]||''); ord.sort((a,b)=>hmK(hOf(a))-hmK(hOf(b)));   // con hora primero, en su orden; sin hora, como se registraron
@@ -17860,7 +17949,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
