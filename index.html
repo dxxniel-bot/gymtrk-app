@@ -862,6 +862,10 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   input[type=range].gslider::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:18px; height:18px; border-radius:50%; background:var(--fg); cursor:pointer;}
   input[type=range].gslider::-moz-range-thumb{width:18px; height:18px; border-radius:50%; background:var(--fg); border:none; cursor:pointer;}
   input[type=range].gslider:disabled{opacity:var(--op-disabled);}
+  input[type=range].ccsl{-webkit-appearance:none; appearance:none; display:block; width:100%; height:44px; margin:0; background:transparent; cursor:pointer;}   /* v339 · CC4 · el slider del carb cycling: caja de 44, pista de 2 en --o40, pulgar de 18 en --fg */
+  input[type=range].ccsl::-webkit-slider-runnable-track{height:2px; background:var(--o40); border-radius:var(--r-sm);} input[type=range].ccsl::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:18px; height:18px; margin-top:-8px; border-radius:50%; background:var(--fg);}
+  input[type=range].ccsl::-moz-range-track{height:2px; background:var(--o40); border-radius:var(--r-sm);} input[type=range].ccsl::-moz-range-thumb{width:18px; height:18px; border:none; border-radius:50%; background:var(--fg);}
+  .ccgrid{display:grid; grid-template-columns:1fr 1fr; gap:var(--s3); margin:var(--s2) 0 var(--s3);} .ccgrid .cl{font-size:var(--t-label); color:var(--o50);} .ccgrid .ck{font-size:var(--t-display); font-weight:800; color:var(--fg); font-variant-numeric:tabular-nums;} .ccgrid .ck .u{font-size:var(--t-label); font-weight:400; color:var(--o50);} .ccgrid .cm{font-size:var(--t-label); white-space:nowrap; color:var(--o60); font-variant-numeric:tabular-nums;}
   .lk{font-size:var(--t-label); line-height:var(--lh-tight); background:transparent; border:none; cursor:pointer; color:var(--o40); padding:var(--s2) var(--s1); vertical-align:middle;} .lk.on{color:var(--fg); font-weight:700;}
   .hbal{text-align:center; font-size:var(--t-label); color:var(--o50); margin-top:var(--s3);}
   .kpanel .rule{margin:var(--s5) calc(-1 * var(--s5));}   /* v269 · reglas a sangre dentro del panel del anillo, mismo aire arriba y abajo */
@@ -1456,7 +1460,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v338';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v339';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -1723,9 +1727,32 @@ function migrate(d){ if(!d.version){d.version=1;} if(d.adhoc&&typeof d.adhoc==='
 // (4 kcal por gramo), así el promedio de la semana sigue siendo tu meta. `goalsFor(fecha)` sigue siendo la única lectura.
 // Datos (aditivos; sin ellos = apagado): db.settings.carbCycle={on,hi,lo,set:'hi'|'lo',mode:'g'|'pct',val} · db.goalHist[fecha].cc=
 // {hi,lo,t?} (los dos valores de ese día; t = el tipo con que quedó cuando pasó) · db.ccDay[fecha]='hi'|'lo' (lo que dijiste a mano).
+// v339 · CC2 · CC4 · el dueño (14-oct): "que se alineen con los días de entrenamiento, se alineen con el split" · "con un solo slider
+// configurar… qué tanto va a ser la diferencia entre los días on y off" · "entre más pongas el slider hacia la derecha, más agresivo". Su
+// decisión (14-oct): el promedio se reparte con la proporción REAL de su plan (ccShare: 56 días simulados de su split, con sus días sin
+// gym), no con días que se teclean; un día pasado sin sesión ni rest fue off; lo que viene sigue su plan día por día (ccFuture); el slider
+// (`amp`, 0–20) sigue una curva cuadrática y el día off nunca baja del 25 % de su meta de carbos. Una configuración de v331 (hi/lo/set/
+// mode/val, sin amp) sigue calculando igual hasta que se guarde de nuevo.
+let _ccShareC=null, _ccFc=null;
+function ccShare(){ const P=splitPlan(), N=dayCount(), key=JSON.stringify(P)+'|'+N; if(_ccShareC&&_ccShareC.k===key&&_ccShareC.db===db)return _ccShareC.v;
+  let on=0; const tr=new Set(); if(N){ for(let i=0;i<56;i++){ const iso=shiftDate('2026-01-05',i); let pd=null; try{ pd=planDay(iso,tr); }catch(_){} if(pd&&!pd.rest){ on++; tr.add(iso); } } }
+  const v=N?{on,off:56-on,p:on/56}:{on:40,off:16,p:5/7}; _ccShareC={k:key,db,v}; return v; }
+function ccFuture(){ const t=todayISO(), w=db.activeWork, key=t+'|'+(db.sessions||[]).length+'|'+(w&&w.date===t?1:0)+'|'+JSON.stringify(splitPlan())+'|'+dayCount();
+  if(_ccFc&&_ccFc.k===key&&_ccFc.db===db)return _ccFc.s; const tr=trainedDates(), on=new Set(); if(w&&w.date===t)tr.add(t);
+  for(let k=0;k<=120;k++){ const iso=shiftDate(t,k); if(k===0&&(tr.has(t)||restToday()))continue; let pd=null; try{ pd=planDay(iso,tr); }catch(_){} if(pd&&!pd.rest){ if(k>0)on.add(iso); tr.add(iso); } }
+  _ccFc={k:key,db,s:on}; return on; }
+// dónde arranca el slider: el suyo; con una config de v331, la diferencia que ya tenía; sin nada, 6 (suave)
+function ccAmpOf(c){ c=c||{}; if(c.amp!=null&&isFinite(+c.amp))return Math.max(0,Math.min(20,Math.round(+c.amp))); const C=+((db.settings&&db.settings.goals)||{}).carbs||0, k=c.hi!=null?ccCalc(C,Object.assign({},c,{amp:null})):null;
+  if(k&&C>0){ const p=ccShare().p, dM=Math.min(C,0.75*C/Math.max(p,1e-6)); return Math.max(0,Math.min(20,Math.round(20*Math.sqrt(Math.max(0,k.hi-k.lo)/dM)))); } return 6; }
+// v339 · CC3 · el dueño: "se tiene que ajustar en ese momento pum". Marcar rest o entrenar (start, entrenar igual) manda sobre el cambio a
+// mano de `carb day` de hoy (lo último que haces manda); devuelve lo que había para que deshacer lo regrese.
+function ccActDay(){ const d=todayISO(); if(!db.ccDay||!Object.prototype.hasOwnProperty.call(db.ccDay,d))return null; const prev=db.ccDay[d]; delete db.ccDay[d]; return {d,prev}; }
+function ccTxt(){ const g=ccCfg()?goalsFor(todayISO()):null; return g&&g.ccT?' · '+(g.ccT==='lo'?'off':'on')+' '+Math.round(g.carbs)+' g':''; }
 function ccCfg(){ const c=db.settings&&db.settings.carbCycle; return c&&c.on?c:null; }
 // los gramos de un día high y de uno low. null si no cuadra (el otro saldría negativo, o el high quedaría debajo del low)
-function ccCalc(avg,c){ avg=+avg||0; if(!c)return null; const nh=Math.max(0,Math.round(+c.hi||0)), nl=Math.max(0,Math.round(+c.lo||0)), N=nh+nl; let v=+c.val||0; if(c.mode==='pct')v=avg*v/100;
+function ccCalc(avg,c){ avg=+avg||0; if(!c)return null;
+  if(c.amp!=null&&isFinite(+c.amp)){ if(!(avg>0))return null; const p=ccShare().p, dM=Math.min(avg,0.75*avg/Math.max(p,1e-6)), s=Math.max(0,Math.min(20,+c.amp))/20, d=dM*s*s; return {hi:Math.round(avg+(1-p)*d),lo:Math.round(avg-p*d)}; }   // v339 · CC4 · un slider: la media de tu plan exacta y el off nunca bajo el 25 %
+  const nh=Math.max(0,Math.round(+c.hi||0)), nl=Math.max(0,Math.round(+c.lo||0)), N=nh+nl; let v=+c.val||0; if(c.mode==='pct')v=avg*v/100;
   if(!(avg>0)||!nh||!nl||!(v>0))return null; let hi, lo; if(c.set==='lo'){ lo=v; hi=(avg*N-lo*nl)/nh; } else { hi=v; lo=(avg*N-hi*nh)/nl; }
   if(!(hi>=0)||!(lo>=0)||hi<lo)return null; return {hi:Math.round(hi),lo:Math.round(lo)}; }
 function ccSnap(base){ return ccCalc(base&&base.carbs,ccCfg())||undefined; }
@@ -1733,6 +1760,8 @@ function ccSnap(base){ return ccCalc(base&&base.carbs,ccCfg())||undefined; }
 function ccDayType(date){ const m=db.ccDay&&db.ccDay[date]; if(m==='hi'||m==='lo')return m; const S=db.sessions||[], w=db.activeWork;
   if((w&&w.date===date)||S.some(s=>s&&s.date===date&&s.type!=='rest'&&(s.exercises||[]).length))return 'hi';
   if(S.some(s=>s&&s.date===date&&s.type==='rest'))return 'lo';
+  const T=todayISO(); if(date<T)return 'lo';   // v339 · CC2 · un día que ya pasó sin sesión ni rest fue descanso (la regla de su plan, v273)
+  if(date>T)return ccFuture().has(date)?'hi':'lo';   // v339 · CC2 · lo que viene sigue su plan día por día (antes cada día futuro se leía sin los de en medio)
   let p=null; try{ p=planDay(date); }catch(_){} return p&&p.rest?'lo':'hi'; }
 // cuántos días high y low proponer: los de tu plan (rotativo: sus on / off; semanal: lo que toca en 7 días); sin plan, 5 y 2
 function ccPlanDays(){ try{ const P=splitPlan(); if(P.mode==='cycle')return {hi:P.on,lo:P.off}; let lo=0; const T=todayISO(), tr=trainedDates(); for(let i=0;i<7;i++){ const p=planDay(shiftDate(T,i),tr); if(p&&p.rest)lo++; } if(lo>0&&lo<7)return {hi:7-lo,lo}; }catch(_){} return {hi:5,lo:2}; }
@@ -3554,7 +3583,7 @@ function musclesOf(sessOrWork,ei){
 let _exIdxCache=null;
 // call after any mutation that could change db.sessions (save() does this) so exIndex() rebuilds once, lazily.
 let _refCache={}, _sessTCache={}, _fatCtxCache={}, _readyCache={};
-function bumpIdx(){ _machIdCache=null; _exIdxCache=null; _catIdxCache=null; _refCache={}; _sessTCache={}; _fatCtxCache={}; _readyCache={}; _mLblCache={}; _muscExpCache=null; _diagCache={}; _exKeyFold=null; _exStCache={}; _fatFlagCache=null; }
+function bumpIdx(){ _ccShareC=null; _ccFc=null; _machIdCache=null; _exIdxCache=null; _catIdxCache=null; _refCache={}; _sessTCache={}; _fatCtxCache={}; _readyCache={}; _mLblCache={}; _muscExpCache=null; _diagCache={}; _exKeyFold=null; _exStCache={}; _fatFlagCache=null; }
 // flat, memoized list of every REAL (non-_pf, non-empty) exercise-occurrence across all saved sessions,
 // most-recent-first. Base for baselineSetsFor() — rebuilt only when bumpIdx() invalidates it.
 function exIndex(){
@@ -6461,7 +6490,7 @@ function _carbCycleSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
     A('mañana no toca: día low', (g=>g.ccT==='lo'&&g.carbs===240&&g.kcal===2000)(goalsFor(shiftDate(T,1))));
     db.sessions=[{id:'r1',date:T,type:'rest'}]; bumpIdx(); A('si hoy lo marcas rest day, pasa a low', goalsFor(T).carbs===240);
     db.sessions=[{id:'s1',date:D(1),dayName:'x',exercises:[{name:'x',sets:[{w:1,r:1,done:true}]}]}]; bumpIdx(); A('…o viceversa: ayer no tocaba y entrenaste, fue high', goalsFor(D(1)).ccT==='hi'&&goalsFor(T).carbs===380);
-    ccFlip(); A('un toque lo cambia a mano y avisa con deshacer', db.ccDay[T]==='lo'&&goalsFor(T).carbs===240&&msg==='✓ hoy es low · carbs 240 g'&&typeof undo==='function');
+    ccFlip(); A('un toque lo cambia a mano y avisa con deshacer', db.ccDay[T]==='lo'&&goalsFor(T).carbs===240&&msg==='✓ hoy es off · carbs 240 g'&&typeof undo==='function');
     undo(); A('…y el deshacer lo regresa', !(T in db.ccDay)&&goalsFor(T).carbs===380);
     snapshotGoal(T); A('del día se guarda la meta base con sus dos valores, no el número de hoy', db.goalHist[T].carbs===340&&db.goalHist[T].kcal===2400&&db.goalHist[T].cc.hi===380&&db.goalHist[T].cc.lo===240&&!db.goalHist[T].cc.t);
     db.goalHist[D(1)]=Object.assign({},G,{cc:{hi:380,lo:240}}); A('un día pasado queda con el tipo que tuvo', goalsFor(D(1)).carbs===380&&db.goalHist[D(1)].cc.t==='hi');
@@ -6470,22 +6499,16 @@ function _carbCycleSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
     db.goalHist[D(3)]=Object.assign({},G); A('un día de antes de encenderlo no cicla', (g=>g.carbs===340&&!g.ccT)(goalsFor(D(3))));
     db.settings.carbCycle.val=380;
     window._goalMode='grams'; openGoals(T); let m=document.getElementById('modal'); const $=id=>m.querySelector('#'+id), fire=e=>e.dispatchEvent(new Event('input',{bubbles:true}));
-    A('edit goals trae el renglón de carb cycling con sus valores', $('cc_v').textContent==='on ›'&&!$('cc_box').hidden&&$('cc_hi').value==='5'&&$('cc_lo').value==='2'&&$('cc_hv').value==='380'&&$('cc_lv').value==='240'&&$('cc_hl').textContent==='ALTO g'&&m.querySelector('#cc_box label').textContent==='DÍAS ALTOS');
-    $('cc_lv').value='200'; fire($('cc_lv')); A('escribes el low y el high sale solo', $('cc_hv').value==='396'&&/alto <b[^>]*>396<\/b> g · bajo <b[^>]*>200<\/b> g · promedio <b[^>]*>340<\/b> g/.test($('cc_sum').innerHTML));
-    $('cc_hv').value='-50'; fire($('cc_hv')); A('un valor que no sirve (negativo, 0, vacío) se dice, no se ignora', /no cuadra/.test($('cc_sum').textContent)&&$('cc_lv').value==='');
-    $('cc_hv').value='500'; fire($('cc_hv')); A('si no cuadra lo dice', /no cuadra/.test($('cc_sum').textContent)); msg=''; m.querySelector('[data-act="okgoals"]').click();
-    A('…y no guarda ni cierra', !!document.getElementById('modal')&&/^⚠/.test(msg)&&db.settings.carbCycle.val===380);
-    $('cc_hv').value='390'; fire($('cc_hv')); m.querySelector('[data-act="okgoals"]').click();
-    A('guardar deja el carb cycling y la meta de hoy con sus dos valores', !document.getElementById('modal')&&JSON.stringify(db.settings.carbCycle)==='{"on":true,"hi":5,"lo":2,"set":"hi","mode":"g","val":390}'&&db.goalHist[T].cc.hi===390&&db.goalHist[T].cc.lo===215&&db.goalHist[T].carbs===340&&db.settings.goals.carbs===340);
-    db.goalHist[T]=Object.assign({},db.settings.goals); A('si otro guardado deja la meta de hoy sin sus dos valores (cambiar de objetivo, ajustar la meta), hoy sigue ciclando y se pone al día', (g=>g.ccT==='hi'&&g.carbs===390)(goalsFor(T))&&db.goalHist[T].cc.hi===390&&db.goalHist[T].cc.lo===215);
-    ghost(); window._goalMode='pct'; openGoals(T); m=document.getElementById('modal'); A('con la hoja en % las casillas se leen en % de la meta', $('cc_hl').textContent==='ALTO %'&&$('cc_hv').value==='115'&&$('cc_lv').value==='63'); m.querySelector('[data-act="okgoals"]').click();
-    A('…y guardar sin tocarlas no convierte tus gramos a %', db.settings.carbCycle.mode==='g'&&db.settings.carbCycle.val===390); ghost(); window._goalMode='grams';
+    A('v339 · edit goals trae el renglón de carb cycling con su slider (sin casillas de días)', $('cc_v').textContent==='on ›'&&!$('cc_box').hidden&&!!$('cc_amp')&&!$('cc_hi')&&!$('cc_hv'));
+    m.querySelector('[data-act="okgoals"]').click(); A('v339 · guardar sin tocarlo pasa tu config al slider', !document.getElementById('modal')&&db.settings.carbCycle.v===2&&db.settings.carbCycle.amp>=0); ghost();
+    db.settings.carbCycle={on:true,hi:5,lo:2,set:'hi',mode:'g',val:390}; db.goalHist[T]=Object.assign({},db.settings.goals);   // la config de v331 sigue calculando igual
+    A('si otro guardado deja la meta de hoy sin sus dos valores (cambiar de objetivo, ajustar la meta), hoy sigue ciclando y se pone al día', (g=>g.ccT==='hi'&&g.carbs===390)(goalsFor(T))&&db.goalHist[T].cc.hi===390&&db.goalHist[T].cc.lo===215); window._goalMode='grams';
     openGoals(D(2)); m=document.getElementById('modal'); A('un día pasado que cicló se edita con SUS números y sin la sección', !$('cc_tog')&&$('gg_carbs').value==='240'); $('gg_carbs').value='260'; fire($('gg_carbs')); m.querySelector('[data-act="okgoals"]').click();
     A('…y queda con lo que escribiste, sin tocar hoy ni el carb cycling', (g=>g.carbs===260&&!g.ccT)(goalsFor(D(2)))&&goalsFor(T).carbs===390&&db.settings.carbCycle.val===390); ghost();
-    state.screen='macros'; state.macroDate=T; A('macros dice qué día es hoy, con sus gramos, y se puede tocar', /<button[^>]*data-act="cctog"[^>]*><span class="k">carb day<\/span><span class="dots"><\/span><span class="v">high · 390 g ›<\/span><\/button>/.test(renderMacros()));
-    state.macroDate=D(1); A('un día pasado lo dice sin botón', (h=>h.indexOf('<span class="v">high · 380 g</span>')>=0&&h.indexOf('data-act="cctog"')<0)(renderMacros()));
+    state.screen='macros'; state.macroDate=T; A('macros dice qué día es hoy, con sus gramos, y se puede tocar', /<button[^>]*data-act="cctog"[^>]*><span class="k">carb day<\/span><span class="dots"><\/span><span class="v">on · 390 g ›<\/span><\/button>/.test(renderMacros()));
+    state.macroDate=D(1); A('un día pasado lo dice sin botón', (h=>h.indexOf('<span class="v">on · 380 g</span>')>=0&&h.indexOf('data-act="cctog"')<0)(renderMacros()));
     db.meals[D(1)]=[{id:'m1',tag:'lunch',name:'arroz',kcal:500,protein:10,carbs:90,fat:5}]; bumpIdx();
-    A('el export dice la meta de ese día y su tipo', (x=>x.indexOf('### '+fmtDate(D(1))+' · meta 2560 kcal · P180 C380 F70 · día alto')>=0&&x.indexOf('- carb cycling: 5 días altos de 390 g y 2 días bajos de 215 g')>=0)(buildExportMd(db)));
+    A('el export dice la meta de ese día y su tipo', (x=>x.indexOf('### '+fmtDate(D(1))+' · meta 2560 kcal · P180 C380 F70 · día on')>=0&&x.indexOf('- carb cycling: 5 días altos de 390 g y 2 días bajos de 215 g')>=0)(buildExportMd(db)));
     ghost(); state.macroDate=T; openGoals(T); m=document.getElementById('modal'); $('cc_tog').click(); A('se apaga con un toque', $('cc_box').hidden&&$('cc_v').textContent==='off ›'); m.querySelector('[data-act="okgoals"]').click();
     A('apagado, hoy vuelve a la meta base y lo ya pasado no se toca', db.settings.carbCycle.on===false&&(g=>g.carbs===340&&!g.ccT)(goalsFor(T))&&goalsFor(D(1)).carbs===380&&renderMacros().indexOf('cctog')<0);
     console.log('carb cycling self-check OK');
@@ -6695,6 +6718,44 @@ function _v338SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     console.log('v338 self-check OK');
   } finally { try{ closeModal(); }catch(_){} db=real; window._mdKey=mk; window._mdRange=mr; window._mdEnd=me; window._mdCustom=mc; bumpIdx(); }
 }
+// self-check de v339 (CC2 · CC3 · CC4 · CC5). Base de juguete; save, reRender y toast se sustituyen; todo se restaura en finally.
+function _v339SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v339: '+nm); }; const real=db, sb0=_sbx, _sv=save, _rr=reRender, _t=toast, gm0=window._goalMode, sc0=state.screen; let msg='', undo=null, btn=null;
+  const ghost=()=>{ const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } };
+  try{ _sbx=true; save=()=>true; reRender=()=>{}; toast=(m,t,o)=>{ msg=String(m); undo=(o&&o.undo)||null; return null; };
+    const T=todayISO(), D=k=>shiftDate(T,k), G={kcal:2711,protein:180,carbs:340,fat:70};   // kcal 1 sobre P·4 + C·4 + F·9 (como su meta real): la hoja tiene que dar lo mismo que goalsFor
+    const mk=plan=>{ db=migrate({_idfix:true,_fsfix:true,_dataVer:3,profile:{username:'t'},settings:{goals:Object.assign({},G)},split:{name:'t',days:[1,2,3,4,5,6].map(i=>({id:'d'+i,name:'d'+i,exercises:[{id:'e'+i,name:'x'+i,muscle:'chest',type:'free',sets:2}]})),plan},sessions:[],meals:{}}); bumpIdx(); };
+    mk({mode:'cycle',on:3,off:1}); A('CC2 · la proporción de tu plan: 6 días a 3/1 = 6 de 8', Math.abs(ccShare().p-6/8)<1e-9);
+    mk({mode:'cycle',on:3,off:1,blocked:[0]}); A('CC2 · …y con el domingo sin gym, 5 de 7', Math.abs(ccShare().p-5/7)<1e-9);
+    mk({mode:'daily'}); A('CC2 · diario sin días sin gym: todos on', ccShare().p===1);
+    mk({mode:'weekly',week:{1:'d1'}}); A('CC2 · semanal con 1 día: 1 de 7', Math.abs(ccShare().p-1/7)<1e-9);
+    mk({mode:'cycle',on:3,off:1}); const Ss=d=>({id:'s'+d,date:d,dayName:'x',type:'training',exercises:[{name:'x',sets:[{w:1,r:1,rir:'1',done:true}]}]}); db.sessions=[Ss(D(-1)),Ss(T)]; bumpIdx();
+    A('CC2 · lo que viene sigue tu plan día por día: tras ayer y hoy, mañana on, pasado off y luego 3 on', [1,2,3,4,5].map(k=>ccDayType(D(k))).join()==='hi,lo,hi,hi,hi');
+    db.sessions=[]; bumpIdx(); A('CC2 · un día que ya pasó sin sesión ni rest fue off', ccDayType(D(-3))==='lo');
+    // CC4 · la curva
+    let ok=true, pd=-1, ps=-1; for(let s=0;s<=20;s++){ const k=ccCalc(340,{amp:s}), d=k.hi-k.lo, st=pd<0?0:d-pd; if(s===0&&!(k.hi===340&&k.lo===340))ok=false; if(pd>=0&&(d<pd||st<ps-1))ok=false; if(Math.abs(0.75*k.hi+0.25*k.lo-340)>1)ok=false; pd=d; ps=st; }
+    A('CC4 · el slider: a la izquierda iguales; crece sin bajar y cada paso más que el anterior; la media de tu plan exacta', ok);
+    [[{mode:'cycle',on:3,off:1,blocked:[0]},5/7],[{mode:'cycle',on:3,off:1},6/8],[{mode:'daily'},1]].forEach(([pl,p])=>{ mk(pl); const k=ccCalc(340,{amp:20}); A('CC4 · al tope el off nunca baja del 25 % y la media se queda (p '+p.toFixed(2)+')', k.lo>=85-1&&k.hi<=680&&Math.abs(p*k.hi+(1-p)*k.lo-340)<=1); });
+    A('CC4 · una config de v331 (sin slider) sigue igual', JSON.stringify(ccCalc(340,{hi:5,lo:2,set:'hi',mode:'g',val:380}))==='{"hi":380,"lo":240}');
+    // CC3 · rest y entrenar mandan sobre el cambio a mano
+    mk({mode:'weekly',week:{[dowOf(T)]:'d1'}}); db.settings.carbCycle={on:true,amp:12,v:2}; db.ccDay={[T]:'hi'}; bumpIdx(); state.screen='home';
+    btn=document.createElement('button'); btn.type='button'; btn.hidden=true; document.getElementById('app').appendChild(btn); const tap=a=>{ btn.dataset.act=a; btn.click(); };
+    tap('rest'); A('CC3 · marcar rest pasa hoy a off al instante aunque lo hubieras puesto on a mano, y lo dice', goalsFor(T).ccT==='lo'&&!(T in db.ccDay)&&/off \d+ g$/.test(msg));
+    undo(); A('CC3 · …y deshacer regresa el rest y tu cambio a mano', !restToday()&&db.ccDay[T]==='hi');
+    db.ccDay[T]='lo'; tap('start'); A('CC3 · entrenar (start / entrenar igual) pasa hoy a on aunque lo hubieras puesto off', goalsFor(T).ccT==='hi'&&!(T in db.ccDay)&&!!db.activeWork);
+    db.activeWork=null; db.ccDay={}; state.screen='macros'; state.macroDate=T; A('CC5 · los tipos se llaman on / off', /carb day<\/span><span class="dots"><\/span><span class="v">on · \d+ g ›/.test(renderMacros()));
+    // CC4 · CC5 · la hoja
+    db.goalHist={[D(-2)]:Object.assign({},G,{cc:{hi:380,lo:240,t:'hi'}})}; const gh0=JSON.stringify(db.goalHist[D(-2)]);
+    window._goalMode='grams'; openGoals(T); const m=document.getElementById('modal'), $=id=>m.querySelector('#'+id), sh=m.querySelector('.sheet');
+    A('CC4 · la hoja: un slider de 44 y sin casillas de días', !!$('cc_amp')&&$('cc_amp').getBoundingClientRect().height>=44&&!$('cc_hi')&&!$('cc_lo')&&!$('cc_hv')&&!$('cc_lv'));
+    const kc=i=>+((m.querySelectorAll('#cc_tab .ck')[i]||{}).textContent||'').replace(/[^0-9]/g,'');
+    A('CC5 · kcal de un día on y de uno off, iguales a las de esos días', kc(0)===goalsFor(T).kcal&&kc(1)===goalsFor(D(1)).kcal&&kc(0)>kc(1)&&/P 180 · C \d+ · F 70/.test($('cc_tab').textContent));
+    const h0=sh.scrollHeight; for(let i=0;i<20;i++){ $('cc_amp').value=String(i); $('cc_amp').dispatchEvent(new Event('input',{bubbles:true})); }
+    A('CC4 · mover el slider solo cambia texto: la hoja no cambia de alto', sh.scrollHeight===h0&&document.getElementById('modal')===m&&/^\d+ g · [\d,]+ kcal$/.test($('cc_d').textContent));
+    $('cc_amp').value='0'; $('cc_amp').dispatchEvent(new Event('input',{bubbles:true})); A('CC4 · a la izquierda on y off iguales', $('cc_d').textContent==='sin diferencia');
+    $('cc_amp').value='14'; $('cc_amp').dispatchEvent(new Event('input',{bubbles:true})); m.querySelector('[data-act="okgoals"]').click();
+    A('CC4 · guardar deja el slider y no toca las metas pasadas', db.settings.carbCycle.amp===14&&db.settings.carbCycle.v===2&&JSON.stringify(db.goalHist[D(-2)])===gh0);
+    console.log('v339 self-check OK');
+  } finally { try{ closeModal(); }catch(_){} ghost(); if(btn)btn.remove(); save=_sv; reRender=_rr; toast=_t; db=real; window._goalMode=gm0; state.screen=sc0; _sbx=sb0; bumpIdx(); try{ render(); }catch(_){} } }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -12633,7 +12694,7 @@ document.getElementById('app').addEventListener('click',e=>{
   if(a==='nav'){ go(el.dataset.screen); }
   // G2 · R-SESS: lo que CREA una sesión o mueve la rotación nunca corre con una sesión viva (antes reemplazaba la tuya)
   else if((a==='start'||a==='loglater'||a==='rest'||a==='skip'||a==='unrest')&&db.activeWork){ toast('⚠ sesión en curso · termínala o abórtala','err'); }
-  else if(a==='start'){ db.activeWork=stampSessionPre(newWorkSession()); save(); state._autoScroll=true; go('workout'); }
+  else if(a==='start'){ const _t0=ccCfg()?goalsFor(todayISO()).ccT:null; ccActDay(); db.activeWork=stampSessionPre(newWorkSession()); save(); state._autoScroll=true; go('workout'); if(_t0&&_t0!=='hi')toast('✓ hoy es on'+ccTxt().replace(/^ · on/,' ·')); }   // v339 · CC3 · entrenar manda sobre el cambio a mano de hoy
   else if(a==='togglepreview'){ state.previewDay=!state.previewDay; reRender(); }
   else if(a==='loglater'){ const w=newWorkSession(); w.loggedAfter=true; w.startMs=null; const y=new Date(); y.setDate(y.getDate()-1); w.date=todayISO(y); db.activeWork=w; save(); go('workout'); }
   else if(a==='togglenoadv'){ if(db.activeWork){ db.activeWork.noAdvance=!db.activeWork.noAdvance; reRender(); } }
@@ -12649,10 +12710,10 @@ document.getElementById('app').addEventListener('click',e=>{
   else if((a==='rest'||a==='skip')&&!dayCount()){ go('home'); }
   // rest = descanso programado: se registra (cuenta para la racha) y NO mueve la rotación · skip = salta este día del split
   else if(a==='rest'){ if(trainedToday()){ toast('⚠ hoy ya entrenaste','err'); return; } if(restToday())return;
-    const r={id:uid(),date:todayISO(),type:'rest'}; db.sessions.push(r); state.selDay=null; save(); go('home'); const _f=planForecast(14)[0]; const nx=_f?db.split.days[_f.idx]:curDay();
-    toast('✓ descanso · sigue '+(nx?nx.name:'tu split')+(_f?' · '+dayLabel(_f.iso).toLowerCase():''),'ok',{undo:()=>{ db.sessions=db.sessions.filter(x=>x.id!==r.id); save(); render(); }}); }
-  else if(a==='calday_unrest'){ const id=el.dataset.id; db.sessions=(db.sessions||[]).filter(x=>x.id!==id); save(); closeModal(); reRender(); toast('✓ descanso quitado'); }
-  else if(a==='unrest'){ const r=restToday(); if(r){ db.sessions=db.sessions.filter(x=>x.id!==r.id); save(); render(); toast('✓ descanso quitado'); } }
+    const _cc=ccActDay(), r={id:uid(),date:todayISO(),type:'rest'}; db.sessions.push(r); state.selDay=null; save(); go('home'); const _f=planForecast(14)[0]; const nx=_f?db.split.days[_f.idx]:curDay();   // v339 · CC3 · rest manda sobre el cambio a mano de hoy
+    toast('✓ descanso · sigue '+(nx?nx.name:'tu split')+(_f?' · '+dayLabel(_f.iso).toLowerCase():'')+ccTxt(),'ok',{undo:()=>{ db.sessions=db.sessions.filter(x=>x.id!==r.id); if(_cc)(db.ccDay=db.ccDay||{})[_cc.d]=_cc.prev; save(); render(); }}); }
+  else if(a==='calday_unrest'){ const id=el.dataset.id; { const _r=(db.sessions||[]).find(x=>x.id===id); if(_r&&_r.date===todayISO())ccActDay(); } db.sessions=(db.sessions||[]).filter(x=>x.id!==id); save(); closeModal(); reRender(); toast('✓ descanso quitado'); }
+  else if(a==='unrest'){ const r=restToday(); if(r){ ccActDay(); db.sessions=db.sessions.filter(x=>x.id!==r.id); save(); render(); toast('✓ descanso quitado'+ccTxt()); } }
   else if(a==='skip'){ const from=curDay(), rot0=db.rotIdx; db.rotIdx++; state.selDay=null; save(); go('home'); const nx=curDay();
     toast('✓ saltado · sigue '+(nx?nx.name:'el siguiente'),'ok',{undo:()=>{ db.rotIdx=rot0; save(); render(); }}); }
   else if(a==='changegym'){ openGymPicker(); }
@@ -16574,37 +16635,30 @@ function profileSecHTML(){ const p=db.profile||{}, g=db.settings.goals||{};
 function balanceOf(kcal){ const m=maintenanceKcal(); if(!m)return null; const delta=Math.round((+kcal||0)-m); const band=Math.max(60,m*0.03); const label=delta<-band?'déficit':(delta>band?'volumen':'mantenimiento'); return {maint:m,delta:delta,label:label}; }   /* v264 · el balance no lleva color: 'déficit' no es bueno ni malo y la palabra ya lo dice (B-07) */
 // v331 · CC1 · el renglón del día en el panel de macros (misma pieza que `radar ›`): hoy se toca para cambiarlo a mano; un día pasado solo lo dice.
 // Va en el panel y no en la cabecera: a 320 de ancho, un tercer botón junto a [share] y [goals] no cabe (se medía partido en dos renglones).
-function ccTagHTML(date,g){ if(!g||!g.ccT)return ''; const w=g.ccT==='lo'?'low':'high', v=w+' · '+Math.round(g.carbs)+' g', k='<span class="k">carb day</span><span class="dots"></span>';
+function ccTagHTML(date,g){ if(!g||!g.ccT)return ''; const w=g.ccT==='lo'?'off':'on', v=w+' · '+Math.round(g.carbs)+' g', k='<span class="k">carb day</span><span class="dots"></span>';
   return date===todayISO()?'<button type="button" class="line stat tap kp-rad kp-cc" data-act="cctog" aria-label="hoy es día '+w+' · tocar para cambiarlo">'+k+'<span class="v">'+v+' ›</span></button>':'<div class="line stat kp-rad">'+k+'<span class="v">'+v+'</span></div>'; }
 function ccFlip(){ const d=todayISO(), g=goalsFor(d); if(!g.ccT)return; db.ccDay=db.ccDay||{}; const had=Object.prototype.hasOwnProperty.call(db.ccDay,d), prev=db.ccDay[d], nt=g.ccT==='hi'?'lo':'hi'; db.ccDay[d]=nt;
-  save(); reRender(); toast('✓ hoy es '+(nt==='lo'?'low':'high')+' · carbs '+goalsFor(d).carbs+' g','ok',{undo:()=>{ if(had)db.ccDay[d]=prev; else delete db.ccDay[d]; }}); }
+  save(); reRender(); toast('✓ hoy es '+(nt==='lo'?'off':'on')+' · carbs '+goalsFor(d).carbs+' g','ok',{undo:()=>{ if(had)db.ccDay[d]=prev; else delete db.ccDay[d]; }}); }
 // la sección de `edit goals` (solo al editar la meta de hoy): un renglón que la enciende y, encendida, sus cuatro casillas (etiquetas en español, como sus vecinas PROT · GRASA · SODIO)
-function ccFormHTML(){ const c=db.settings.carbCycle||{}, pd=ccPlanDays(), on=!!c.on;
+// v339 · CC4 · CC5 · la sección de `edit goals`: on / off, la diferencia (un slider) y, debajo, las kcal y P/C/F de un día on y de uno off.
+function ccFormHTML(){ const c=db.settings.carbCycle||{}, on=!!c.on;
   return '<div class="line u-tap kp-rad" role="button" tabindex="0" id="cc_tog" aria-expanded="'+on+'" aria-controls="cc_box"><span class="k">carb cycling</span><span class="dots"></span><span class="v" id="cc_v">'+(on?'on':'off')+' ›</span></div>'
-    +'<div id="cc_box"'+(on?'':' hidden')+'><div class="field row2 u-mt8"><div><label>DÍAS ALTOS</label><input id="cc_hi" type="number" inputmode="numeric" value="'+(Math.round(+c.hi)||pd.hi)+'"/></div><div><label>DÍAS BAJOS</label><input id="cc_lo" type="number" inputmode="numeric" value="'+(Math.round(+c.lo)||pd.lo)+'"/></div></div>'
-    +'<div class="field row2"><div><label id="cc_hl">ALTO g</label><input id="cc_hv" type="number" inputmode="decimal" placeholder="0"/></div><div><label id="cc_ll">BAJO g</label><input id="cc_lv" type="number" inputmode="decimal" placeholder="0"/></div></div>'
-    +'<div id="cc_sum" class="submeta u-mt2 u-mb10 u-mx0 u-data"></div></div>'; }
-// getAvg() = los carbos que hay en la hoja en ese momento (la meta = el promedio). La última casilla que escribes es la que queda fija, EN LO
-// QUE LA ESCRIBISTE: gramos se quedan en gramos, y un % sigue a tu meta si la mueves (antes guardar con la hoja en "% de kcal" convertía los
-// gramos a % sin avisar). Un valor que no sirve (0, negativo, vacío) se dice y no deja guardar.
-function ccWire(getAvg){ const $=id=>document.getElementById(id); if(!$('cc_tog'))return null; const c0=db.settings.carbCycle||{};
-  const S={on:!!c0.on,set:c0.set==='lo'?'lo':'hi',mode:c0.mode==='pct'?'pct':'g',val:+c0.val||0,bad:false};
-  if(!ccCalc(getAvg(),{hi:c0.hi,lo:c0.lo,set:S.set,mode:S.mode,val:S.val})){ S.set='hi'; S.mode='g'; S.val=Math.round((+getAvg()||0)*1.1/5)*5; }   // sin valores (o ya no cuadran): se propone alto = meta + 10 %
-  const pct=()=>window._goalMode==='pct', N=id=>Math.max(0,Math.round(parseFloat($(id).value)||0));
-  const cur=()=>S.bad?null:ccCalc(getAvg(),{hi:N('cc_hi'),lo:N('cc_lo'),set:S.set,mode:S.mode,val:S.val});
-  const show=skip=>{ const a=+getAvg()||0, k=cur(), u=pct()?'%':'g', f=v=>pct()?(a>0?Math.round(v/a*100):0):Math.round(v), mine=S.mode==='pct'?a*S.val/100:S.val;
-    $('cc_hl').textContent='ALTO '+u; $('cc_ll').textContent='BAJO '+u;
-    const hv=k?k.hi:(S.set==='hi'&&!S.bad?mine:null), lv=k?k.lo:(S.set==='lo'&&!S.bad?mine:null);
-    if(skip!=='cc_hv')$('cc_hv').value=hv==null?'':f(hv); if(skip!=='cc_lv')$('cc_lv').value=lv==null?'':f(lv);
-    $('cc_sum').innerHTML=k?'alto <b class="u-fg">'+k.hi+'</b> g · bajo <b class="u-fg">'+k.lo+'</b> g · promedio <b class="u-fg">'+Math.round(a)+'</b> g (tu meta de carbos)':'⚠ no cuadra · con esos días y ese valor, el otro saldría negativo o al revés'; };
-  const typed=(id,set)=>{ const v=parseFloat($(id).value); S.set=set; if(!(v>0)){ S.bad=true; show(id); return; } S.bad=false; S.mode=pct()?'pct':'g'; S.val=v; show(id); };
-  $('cc_hv').addEventListener('input',()=>typed('cc_hv','hi')); $('cc_lv').addEventListener('input',()=>typed('cc_lv','lo'));
-  ['cc_hi','cc_lo'].forEach(id=>$(id).addEventListener('input',()=>show(id)));
+    +'<div id="cc_box"'+(on?'':' hidden')+'><div class="line"><span class="k">difference</span><span class="dots"></span><span class="v" id="cc_d">—</span></div>'
+    +'<input type="range" id="cc_amp" class="ccsl" min="0" max="20" step="1" value="'+ccAmpOf(c)+'" aria-label="diferencia entre días on y off"/>'
+    +'<div class="ccgrid" id="cc_tab"></div><div id="cc_sum" class="submeta u-mt2 u-mb10 u-mx0 u-data"></div></div>'; }
+// getBase() = la meta que hay en la hoja en ese momento ({kcal, protein, carbs, fat}; los carbos son el promedio). El slider solo cambia texto.
+function ccWire(getBase){ const $=id=>document.getElementById(id); if(!$('cc_tog'))return null; const c0=db.settings.carbCycle||{}, S={on:!!c0.on,amp:ccAmpOf(c0)};
+  const B=()=>{ const b=(getBase&&getBase())||{}; return {kcal:+b.kcal||0,protein:+b.protein||0,carbs:+b.carbs||0,fat:+b.fat||0}; }, n=x=>Math.round(x).toLocaleString('en-US');
+  const show=()=>{ const b=B(), k=ccCalc(b.carbs,{amp:S.amp}), sh=ccShare(), wk=Math.round(sh.p*7), d=k?k.hi-k.lo:0;
+    $('cc_d').textContent=d>0?d+' g · '+n(d*4)+' kcal':'sin diferencia';
+    const cell=(t,lbl,days)=>'<div><div class="cl">'+lbl+' · ~'+days+'/sem</div><div class="ck">'+n(b.kcal+(t-b.carbs)*4)+' <span class="u">kcal</span></div><div class="cm">P '+Math.round(b.protein)+' · C '+t+' · F '+Math.round(b.fat)+'</div></div>';
+    $('cc_tab').innerHTML=k?cell(k.hi,'on',wk)+cell(k.lo,'off',7-wk):'';
+    $('cc_sum').innerHTML='promedio <b class="u-fg">'+Math.round(b.carbs)+'</b> g · tu meta de carbos'; };
+  $('cc_amp').addEventListener('input',()=>{ S.amp=Math.max(0,Math.min(20,Math.round(+$('cc_amp').value||0))); show(); });
   $('cc_tog').onclick=()=>{ S.on=!S.on; $('cc_box').hidden=!S.on; $('cc_v').textContent=(S.on?'on':'off')+' ›'; $('cc_tog').setAttribute('aria-expanded',S.on?'true':'false'); if(S.on)show(); };
   show();
-  return { refresh:()=>show(), ok:()=>!S.on||!!cur(),
-    commit:()=>{ const prev=db.settings.carbCycle; if(!S.on){ if(prev)prev.on=false; return; }
-      db.settings.carbCycle={on:true,hi:N('cc_hi'),lo:N('cc_lo'),set:S.set,mode:S.mode,val:S.mode==='pct'?Math.round(S.val*10)/10:Math.round(S.val)}; } }; }
+  return { refresh:()=>show(), ok:()=>true,
+    commit:()=>{ const prev=db.settings.carbCycle; if(!S.on){ if(prev)prev.on=false; return; } db.settings.carbCycle=Object.assign({},prev||{},{on:true,amp:S.amp,v:2}); } }; }
 function openGoals(dayArg){   // v256: desde //PERFIL se abre con hoy (antes heredaba el día que estuvieras viendo en macros)
   // Editing day-scope: PAST → edit only that day's goalHist snapshot; TODAY → update both
   // settings.goals (future default) AND goalHist[today] (so today reflects immediately);
@@ -16678,7 +16732,7 @@ function openGoals(dayArg){   // v256: desde //PERFIL se abre con hoy (antes her
   ['gg_protein','gg_carbs','gg_fat'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('input',gkc); });
   applyLocks(); onKcal(); gkc();   // normalize grams to the kcal total on open so the split sums to 100%
   // v331 · CC1 · el carb cycling lee los carbos que haya en la hoja en ese momento (su promedio) y se repinta cuando los mueves o cambias de % a gramos
-  const ccw=(isPast||isFuture)?null:ccWire(()=>window._goalMode==='pct'?gr.carbs:(parseFloat(val('gg_carbs'))||0));
+  const ccw=(isPast||isFuture)?null:ccWire(()=>{ let P,C,F,K; if(window._goalMode==='pct'){ P=gr.protein; C=gr.carbs; F=gr.fat; K=Kget()||(P*4+C*4+F*9); } else { P=parseFloat(val('gg_protein'))||0; C=parseFloat(val('gg_carbs'))||0; F=parseFloat(val('gg_fat'))||0; K=(Math.round(P)===Math.round(+g.protein)&&Math.round(C)===Math.round(+g.carbs)&&Math.round(F)===Math.round(+g.fat)&&+g.kcal>0)?+g.kcal:P*4+C*4+F*9; } return {kcal:Math.round(K),protein:Math.round(P),carbs:Math.round(C),fat:Math.round(F)}; });   // v339 · CC5 · la meta entera: las kcal y P/C/F de on y de off
   if(ccw){ ['gm_pct','gm_grams'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('input',()=>ccw.refresh()); }); document.querySelectorAll('#gm_tog [data-gm]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{ try{ ccw.refresh(); }catch(_){} },0))); }
   document.querySelectorAll('#gm_tog [data-gm]').forEach(b=>b.onclick=()=>{ const mode=b.dataset.gm; if(mode===window._goalMode)return;
     if(mode==='grams'){ setVal('gg_protein',Math.round(gr.protein)); setVal('gg_carbs',Math.round(gr.carbs)); setVal('gg_fat',Math.round(gr.fat)); gkc(); }
@@ -16687,7 +16741,7 @@ function openGoals(dayArg){   // v256: desde //PERFIL se abre con hoy (antes her
   document.querySelector('[data-act="okgoals"]').onclick=()=>{ let kcal,P,C,F;
     if(ccw&&!ccw.ok()){ toast('⚠ carb cycling no cuadra','err'); return; }
     if(window._goalMode==='pct'){ P=gr.protein; C=gr.carbs; F=gr.fat; kcal=Kget()||(P*4+C*4+F*9); }
-    else { P=parseFloat(val('gg_protein'))||0; C=parseFloat(val('gg_carbs'))||0; F=parseFloat(val('gg_fat'))||0; kcal=P*4+C*4+F*9; }
+    else { P=parseFloat(val('gg_protein'))||0; C=parseFloat(val('gg_carbs'))||0; F=parseFloat(val('gg_fat'))||0; kcal=(Math.round(P)===Math.round(+g.protein)&&Math.round(C)===Math.round(+g.carbs)&&Math.round(F)===Math.round(+g.fat)&&+g.kcal>0)?+g.kcal:P*4+C*4+F*9; }
     g.kcal=Math.round(kcal); g.protein=Math.round(P); g.carbs=Math.round(C); g.fat=Math.round(F);
     ['sugar','fiber','caffeine','alcohol','sleep'].forEach(k=>{ const v=parseFloat(val('g_'+k)); if(!isNaN(v))g[k]=v; });   // Na/K/water are AUTO from derivedActivity()
     if(isPast){ db.goalHist=db.goalHist||{}; db.goalHist[day]=g; }            // past: only this day
@@ -17154,7 +17208,7 @@ function buildExportMd(db){
   const hmK=x=>{ const m=hm2min(x); return isFinite(m)?m:1e9; };
   const bw=db.bodyweight||{}, bwk=Object.keys(bw).sort(), meals=db.meals||{}, sleep=db.sleep||{}, steps=db.steps||{}, GH=db.goalHist||{}, ghk=Object.keys(GH).sort(), HD=(db.health&&db.health.daily)||{};
   const goalOn=d=>{ if(GH[d])return goalsFor(d); let g=null; for(const k of ghk){ if(k<=d)g=GH[k]; else break; } return g; };   // D9 · la meta de ESE día
-  const gtxt=g=>g?Math.round(+g.kcal||0)+' kcal · P'+n(g.protein)+' C'+n(g.carbs)+' F'+n(g.fat)+(g.ccT?' · día '+(g.ccT==='lo'?'bajo':'alto'):''):'';
+  const gtxt=g=>g?Math.round(+g.kcal||0)+' kcal · P'+n(g.protein)+' C'+n(g.carbs)+' F'+n(g.fat)+(g.ccT?' · día '+(g.ccT==='lo'?'off':'on'):''):'';
   const sess=(db.sessions||[]).filter(Boolean).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   const allD=[].concat(Object.keys(meals),Object.keys(sleep),bwk,Object.keys(steps),sess.map(s=>s.date)).filter(Boolean).sort();
   L.push('# gym//TRK · export · '+fd(T),'');
@@ -17177,7 +17231,8 @@ function buildExportMd(db){
   if(P.age)L.push('- edad: '+P.age);
   if(P.heightCm)L.push('- altura: '+P.heightCm+' cm');
   { const g=goalsFor(T); if(g&&+g.kcal>0)L.push('- meta de hoy: '+gtxt(g)+(+g.water>0?' · agua '+n(g.water)+' L':'')+(+g.sleep>0?' · sueño '+n(g.sleep)+' h':'')); }
-  { const c=ccCfg(), k=c&&ccCalc((db.settings.goals||{}).carbs,c); if(k)L.push('- carb cycling: '+Math.round(c.hi)+' días altos de '+k.hi+' g y '+Math.round(c.lo)+' días bajos de '+k.lo+' g de carbos (la meta es el promedio; las kcal se mueven con los carbos; cada día de //NUTRICIÓN dice cuál fue)'); }
+  { const c=ccCfg(), k=c&&ccCalc((db.settings.goals||{}).carbs,c); if(k){ if(c.amp!=null){ const wk=Math.round(ccShare().p*7); L.push('- carb cycling: días on de '+k.hi+' g y días off de '+k.lo+' g de carbos (~'+wk+' on y '+(7-wk)+' off por semana según tu plan; la meta es el promedio; las kcal se mueven con los carbos; cada día de //NUTRICIÓN dice cuál fue)'); }   // v339
+    else L.push('- carb cycling: '+Math.round(c.hi)+' días altos de '+k.hi+' g y '+Math.round(c.lo)+' días bajos de '+k.lo+' g de carbos (la meta es el promedio; las kcal se mueven con los carbos; cada día de //NUTRICIÓN dice cuál fue)'); } }
   L.push('');
   // D9 · cada cambio de meta
   L.push('## //METAS','');
@@ -17347,7 +17402,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
