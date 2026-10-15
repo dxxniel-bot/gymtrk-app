@@ -948,6 +948,8 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .obi:focus{border-color:var(--fg);} .obi:focus-visible{outline:none;} .obi::placeholder{color:var(--o40);}
   .obi.sm{flex:0 0 auto; width:7ch; text-align:right;}
   .obu{color:var(--o40);}
+  .obv select.obi.obs{flex:0 0 auto; width:auto; max-width:15ch;} .obv .obu{white-space:nowrap;}   /* v343 · el nombre del envase / la pieza junto a su peso */
+  .vrow{display:flex; flex-wrap:wrap; gap:var(--s4); margin:0 0 var(--s2);}
   .obr .toggles{gap:0 var(--s1);}
   /* v277: .obr.obtop (la forma de una sola pantalla de v268) se fue con el alta paso a paso */
   .toggles.oblist{display:flex; flex-direction:column; align-items:stretch; gap:0;}
@@ -1470,7 +1472,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v342';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v343';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -6822,6 +6824,34 @@ function _v342SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     { const wx=window.__x342; window.__x342=0; openNameSearch('<img src=x onerror="window.__x342=1">'); A('BC1 · un código leído es dato ajeno: el título de buscar por nombre lo escapa', !document.querySelector('#modal h3 img')&&/<img/.test(document.querySelector('#modal h3').textContent)); closeModal(); window.__x342=wx; }
     console.log('v342 self-check OK');
   } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } window._faTag=ft; }
+}
+// self-check de v343 (FD2 · FD1 en la hoja de registrar). Nada se guarda; todo se restaura en finally.
+function _v343SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v343: '+nm); }; const fc=window._faCtx;
+  try{ window._faCtx=null; const at={id:'t',name:'atún',base:'g',per100:Object.assign(foodPer(),{kcal:116,protein:26}),sizes:{container:140},containerLabel:'lata'};
+    A('FD2 · la lata se llama lata: `lata (140 g)` y una lata = 140 g', foodUnits(at).some(u=>u.key==='container'&&u.label==='lata (140 g)')&&Math.round(computeNutrients(at,'container',1).kcal)===162);
+    A('FD2 · un alimento de antes sin nombre sigue diciendo envase y pieza', foodUnits({base:'g',per100:{},sizes:{container:200,piece:25}}).map(u=>u.label).join()==='pieza (25 g),envase (200 g),100 g,g');
+    A('FD2 · el nombre sobrevive a asCanonical', asCanonical(at).containerLabel==='lata'&&asCanonical({per100:{},sizes:{},pieceLabel:'galleta'}).pieceLabel==='galleta');
+    openVerify({name:'x',base:'g',per100:{},sizes:{}},{isNew:true,tag:'lunch'}); const m=document.getElementById('modal'), $=id=>m.querySelector('#'+id), set=(id,v)=>{ $(id).value=String(v); $(id).dispatchEvent(new Event('input',{bubbles:true})); }, vb=v=>m.querySelector('#v_vb .t[data-v="'+v+'"]').click();
+    set('v_serv_g',50); set('v_pack_g',200); vb('100'); set('v_kcal',200); const a=readRegister().per100.kcal; vb('serving'); set('v_kcal',100); const b=readRegister().per100.kcal; vb('container'); set('v_kcal',400); const c=readRegister().per100.kcal;
+    A('FD2 · por 100 g, por porción o por envase dan el mismo valor por 100', a===200&&b===200&&c===200&&/^por 100 g: /.test($('v_reg_sum').textContent));
+    $('v_cl').value='lata'; $('v_cl').dispatchEvent(new Event('change',{bubbles:true})); set('v_pack_servings',4); set('v_piece_g',''); const r=readRegister();
+    A('FD2 · el envase con su nombre, y la pieza ya no se inventa de envase ÷ porciones', r.containerLabel==='lata'&&r.sizes.container===200&&!r.sizes.piece&&/lata \(200 g\)/.test($('v_reg_sum').textContent));
+    A('FD1 · cada casilla en una fila del alta (nombre a la izquierda, toque de 44), sin etiquetas en MAYÚSCULAS', !m.querySelector('.field')&&[...m.querySelectorAll('input:not([type=hidden])')].every(i=>!!i.closest('.obr'))&&[...m.querySelectorAll('.obr')].every(x=>x.getBoundingClientRect().height>=44||x.closest('[hidden]')));
+    const sh=m.querySelector('.sheet'), y0=$('v_more').getBoundingClientRect().top, s0=sh.scrollTop; $('v_more').click();
+    A('FD1 · `más ›` abre los micros hacia abajo: nada de arriba se mueve', !$('v_morebox').hidden&&Math.abs($('v_more').getBoundingClientRect().top-y0)<1&&sh.scrollTop===s0);
+    { // la lata de 140 g en 2 porciones con los valores [por porción] y la porción vacía: la porción sale del envase (70 g)
+      closeModal(); openVerify({name:'',base:'g',per100:{},sizes:{}},{isNew:true,tag:'lunch'}); const S=(id,v)=>{ const e=document.getElementById(id); e.value=String(v); e.dispatchEvent(new Event('input',{bubbles:true})); };
+      S('v_name','atún'); S('v_pack_g',140); S('v_pack_servings',2); document.querySelector('#v_vb .t[data-v="serving"]').click(); S('v_kcal',81); S('v_protein',18);
+      const f=readRegister(); A('FD2 · [por porción] con la porción que sale del envase: 1 porción = 81 kcal y 1 lata = 162', f.sizes.serving===70&&Math.round(computeNutrients(asCanonical(f),'serving',1).kcal)===81&&Math.round(computeNutrients(asCanonical(f),'container',1).kcal)===162&&!f.gramsUnknown);
+      closeModal();
+      // lo que llega por porción y sin gramos (pegar texto, OCR) abre en [por porción]; con la porción escrita, las cuentas cuadran
+      openVerify({name:'barra',serving:'1 serving',per:Object.assign(foodPer(),{kcal:120,protein:2})},{isNew:true,tag:'lunch'});
+      A('FD2 · por porción y sin gramos: abre en [por porción], sin inventar 100 g', document.querySelector('#v_vb .t.on').dataset.v==='serving'&&document.getElementById('v_serv_g').value===''&&Math.round(computeNutrients(asCanonical(readRegister()),'serving',1).kcal)===120);
+      S('v_serv_g',30); A('FD2 · …y al escribir 30 g, 1 porción sigue siendo 120 kcal', Math.round(computeNutrients(asCanonical(readRegister()),'serving',1).kcal)===120&&Math.round(readRegister().per100.kcal)===400);
+      A('FD1 · en envase y pieza, la fila enfoca la casilla de gramos', document.querySelector('label.obr[for="v_pack_g"]')&&document.querySelector('label.obr[for="v_piece_g"]'));
+      closeModal(); }
+    console.log('v343 self-check OK');
+  } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } window._faCtx=fc; }
 }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
@@ -15355,7 +15385,7 @@ function srcMark(f){ const s=foodSource(f); if(s.kind==='self')return ''; if(s.k
 function srcPrefix(f){ const s=foodSource(f); if(s.kind==='verified')return '<span class="u-good">✓</span> '; if(s.kind==='community'){ const bad=dataIncomplete(f)||!kcalPlausible(f); return '<span class="u-o40">'+(bad?'⚠':'◦')+'</span> '; } return ''; }
 function asCanonical(food){ food=food||{};
   if(food.per100){ const per100=Object.assign({},foodPer(),food.per100); delete per100.water;
-    return {id:food.id,barcode:food.barcode||'',name:food.name||'',brand:food.brand||'',base:food.base||'g',per100,sizes:food.sizes||{},servingLabel:food.servingLabel||'',gramsUnknown:!!food.gramsUnknown}; }
+    return {id:food.id,barcode:food.barcode||'',name:food.name||'',brand:food.brand||'',base:food.base||'g',per100,sizes:food.sizes||{},servingLabel:food.servingLabel||'',containerLabel:food.containerLabel||'',pieceLabel:food.pieceLabel||'',gramsUnknown:!!food.gramsUnknown}; }   // v343 · FD2 · el nombre del envase y de la pieza viajan con el alimento
   const base=food.isLiquid?'ml':'g'; const per=Object.assign({},foodPer(),food.per||{}); const sv=food.serving||''; const g=servingToGrams(sv);
   const per100=foodPer(); delete per100.water; const sizes={}; let gramsUnknown=false, servingLabel='';
   if(g>0){ const f=100/g; MACROKEYS.forEach(k=>per100[k]=Math.round((per[k]||0)*f*100)/100); if(g!==100)sizes.serving=g; }
@@ -15365,8 +15395,8 @@ function unitGrams(food,key){ const s=(food&&food.sizes)||{}; if(key==='g'||key=
 function foodUnits(food){ const base=(food&&food.base)||'g'; const s=(food&&food.sizes)||{};
   if(food&&food.gramsUnknown){ return [{key:'serving',label:food.servingLabel||'porción',grams:s.serving||100}]; }
   const u=[]; if(s.serving)u.push({key:'serving',label:(food.servingLabel||'porción')+' ('+numTxt(s.serving)+' '+base+')',grams:s.serving});
-  if(s.piece)u.push({key:'piece',label:'pieza ('+numTxt(s.piece)+' '+base+')',grams:s.piece});
-  if(s.container)u.push({key:'container',label:'envase ('+numTxt(s.container)+' '+base+')',grams:s.container});
+  if(s.piece)u.push({key:'piece',label:((food&&food.pieceLabel)||'pieza')+' ('+numTxt(s.piece)+' '+base+')',grams:s.piece});
+  if(s.container)u.push({key:'container',label:((food&&food.containerLabel)||'envase')+' ('+numTxt(s.container)+' '+base+')',grams:s.container});
   u.push({key:'100',label:'100 '+base,grams:100}); u.push({key:base,label:base,grams:1}); return u; }
 function computeNutrients(food,key,qty){ const grams=(qty||0)*unitGrams(food,key); const f=grams/100; const p=food.per100||{}; const out={};
   MACROKEYS.forEach(k=>out[k]=Math.round(((p[k]||0)*f)*100)/100); out.water=(food.base==='ml')?Math.round((grams/1000)*1000)/1000:0; out._grams=grams; return out; }
@@ -16479,58 +16509,57 @@ function parseNutritionText(txt){
   const caf=afterU('cafe[íi]na|caffeine'); per.caffeine=caf.u==='g'?caf.v*1000:caf.v;
   return per;
 }
-// build a canonical food from the REGISTER screen (macros are per the typed porción; empty porción = per 100)
+// v343 · FD2 · el dueño (14-oct): "está medio confuso" (porción, serving y envase). La hoja de registrar dice en qué base vienen los números
+// (`valores de la etiqueta · [por 100 g] por porción por envase`; por 100 g de entrada, como la base y OpenFoodFacts) y la app los lleva a
+// por 100. El envase y la pieza tienen nombre, elegido de una lista (lata, botella, bolsa… / galleta, rebanada…: `containerLabel`,
+// `pieceLabel`, aditivos), así una lata de atún se loguea como `lata (140 g)`. Ya no se inventa la pieza de envase ÷ porciones.
 function readRegister(){ const n=id=>{ const v=parseFloat(val(id)); return (isNaN(v)||v<0)?0:v; };
-  const base=(document.getElementById('v_base')||{}).value||'g';
-  const sg=n('v_serv_g'); const per={}; MACROKEYS.forEach(k=>per[k]=n('v_'+k));
-  const per100={}; if(sg>0){ const f=100/sg; MACROKEYS.forEach(k=>per100[k]=Math.round((per[k]||0)*f*100)/100); } else { MACROKEYS.forEach(k=>per100[k]=per[k]||0); }
-  const sizes={}; if(sg>0)sizes.serving=sg; const pcg=n('v_piece_g'); if(pcg>0)sizes.piece=pcg;
-  const packG=n('v_pack_g'), packN=n('v_pack_servings'); if(packG>0)sizes.container=packG; else if(sg>0&&packN>0)sizes.container=Math.round(sg*packN*100)/100;
-  // derive pieza/porción from container÷servings when user didn't enter them explicitly
-  // (envase 200g + 4 porciones → cada pieza/porción = 50g — basta para tener la unidad "pieza")
-  if(sizes.container>0 && packN>0){ const w=Math.round(sizes.container/packN*100)/100;
-    if(!sizes.piece) sizes.piece=w;
-    if(!sizes.serving) sizes.serving=w;            // ← si no puso porción, usar derivada como porción/pieza
-  }
-  // collapse the duplicate when piece == serving (avoid "porción 50g" + "pieza 50g" together)
-  if(sizes.serving>0 && sizes.piece>0 && Math.abs(sizes.serving-sizes.piece)<0.5) delete sizes.piece;
+  const base=(document.getElementById('v_base')||{}).value||'g', on=document.querySelector('#v_vb .t.on'), vb=(on&&on.dataset.v)||'100';
+  const sg=n('v_serv_g'), packN=n('v_pack_servings'); let packG=n('v_pack_g'); if(!(packG>0)&&sg>0&&packN>0)packG=Math.round(sg*packN*100)/100;
+  const sgD=sg>0?sg:(packG>0&&packN>0?Math.round(packG/packN*100)/100:0);   // la porción escrita, o la que sale del envase ÷ porciones
+  const per={}; MACROKEYS.forEach(k=>per[k]=n('v_'+k)); const div=vb==='serving'?sgD:vb==='container'?packG:100, unk=vb!=='100'&&!(div>0), f=div>0?100/div:1;   // por porción / por envase sin su tamaño: 1 porción = lo que dice la etiqueta (gramos desconocidos, como antes)
+  const per100={}; MACROKEYS.forEach(k=>per100[k]=Math.round((per[k]||0)*f*100)/100);
+  const sizes={}; if(sgD>0)sizes.serving=sgD; else if(unk)sizes.serving=100; const pcg=n('v_piece_g'); if(pcg>0)sizes.piece=pcg; if(packG>0)sizes.container=packG;
+  if(!sizes.serving&&sizes.container>0&&packN>0)sizes.serving=Math.round(sizes.container/packN*100)/100;
+  const cl=val('v_cl'), pl=val('v_pl'); if(sizes.serving>0&&sizes.piece>0&&Math.abs(sizes.serving-sizes.piece)<0.5&&(!pl||pl==='pieza'))delete sizes.piece;
   const vv=window._verify||{};
-  return {id:vv.fromId||undefined,barcode:val('v_barcode')||vv.barcode||'',name:val('v_name'),brand:val('v_brand')||'',base,per100,sizes,servingLabel:val('v_serv_label')||'',gramsUnknown:false}; }
+  return {id:vv.fromId||undefined,barcode:val('v_barcode')||vv.barcode||'',name:val('v_name'),brand:val('v_brand')||'',base,per100,sizes,servingLabel:val('v_serv_label')||'',containerLabel:cl&&cl!=='envase'?cl:'',pieceLabel:pl&&pl!=='pieza'?pl:'',gramsUnknown:unk,_vb:vb,_short:unk?vb:''}; }
 // REGISTER screen: name + serving size + macros (per serving) + package. NO unit/qty (that's the LOG step).
+// v343 · FD1 · la hoja de registrar con las filas del alta (`formRow`: nombre a la izquierda, casilla a la derecha, toque de 44), un orden
+// único (qué es → el envase → la porción → la pieza → los valores) y los micros en `más ›`. Los ids v_* no cambian.
+function formRow(id,k,u,o){ o=o||{}; return '<label class="obr"><span class="obk">'+k+'</span><span class="obv"><input class="obi" id="'+id+'"'+(o.num?' type="number" inputmode="'+(o.int?'numeric':'decimal')+'"':' autocomplete="off"')+(o.attr||'')+' value="'+escTxt(o.v==null?'':String(o.v))+'" placeholder="'+escTxt(o.ph||'')+'"/>'+(u?'<span class="obu">'+u+'</span>':'')+'</span></label>'; }
+const FOOD_CL=['envase','lata','botella','bolsa','caja','frasco','sobre','paquete'], FOOD_PL=['pieza','galleta','rebanada','barra','tortilla','unidad'];
 function openVerify(food, opts){
-  opts=opts||{}; const fd=asCanonical(food); const base=fd.base; const sg=fd.sizes.serving||0; const factor=sg?sg/100:1;
+  opts=opts||{}; const fd=asCanonical(food); const base=fd.base; const unk0=!!fd.gramsUnknown, sg=unk0?0:(fd.sizes.serving||0);
   window._verify={tag:opts.tag||curTag(),barcode:fd.barcode||(food&&food.barcode)||'',fromId:opts.fromId||null};
-  const disp={}; MACROKEYS.forEach(k=>disp[k]=Math.round((fd.per100[k]||0)*factor*100)/100);
+  const disp={}; MACROKEYS.forEach(k=>disp[k]=Math.round((fd.per100[k]||0)*100)/100);   // por 100: como los trae la base y OpenFoodFacts
   const packServings=(fd.sizes.container&&sg)?Math.round(fd.sizes.container/sg*100)/100:'';
-  const nf=(id,lbl,v)=>`<div><label>${lbl}</label><input id="${id}" type="number" inputmode="decimal" value="${v?numTxt(v):''}" placeholder="0"/></div>`;
-  const sz=(id,lbl,v)=>`<div><label>${lbl}</label><input id="${id}" type="number" inputmode="decimal" value="${v?numTxt(v):''}" placeholder="—"/></div>`;
+  const R=(id,k,u,v,o)=>formRow(id,k,u,Object.assign({num:1,v:v?numTxt(v):'',ph:'—'},o||{}));
+  const SEL=(id,list,cur)=>'<select id="'+id+'" class="obi obs">'+list.map(o=>'<option value="'+o+'"'+(o===cur?' selected':'')+'>'+o+'</option>').join('')+'</select>';
+  const more=['sugar','fiber','sodium','potassium','caffeine','alcohol'].some(k=>disp[k]>0);
   openModal(`<h3>${window._faCtx?'<a data-act="faback" class="vb u-mr8" title="volver a la búsqueda">‹ back</a>':''}registrar alimento</h3>
-   <div class="field"><label>NOMBRE DEL PRODUCTO</label><input id="v_name" value="${escTxt(fd.name||'')}" placeholder="ej. galletas marías"/></div>
-   <div class="field"><label>MARCA (opcional)</label><input id="v_brand" value="${escTxt(fd.brand||'')}" placeholder="ej. Gamesa"/></div>
-   <div class="field"><label>CÓDIGO DE BARRAS (opcional)</label><input id="v_barcode" inputmode="numeric" value="${escTxt(window._verify.barcode||'')}" placeholder="escanea o escribe los dígitos"/></div>
-   <button class="b u-w100 u-mb8" id="v_bc_scan">escanear código (foto)</button>
-   <button class="b u-w100 u-mb8" id="v_label_photo">foto de tabla nutricional → rellenar</button>
-   <div class="field row2"><div><label>TIPO</label><select id="v_base" class="pick"><option value="g"${base==='g'?' selected':''}>sólido · g</option><option value="ml"${base==='ml'?' selected':''}>líquido · ml</option></select></div>${sz('v_serv_g','PORCIÓN ('+base+')',sg)}</div>
-   <div class="field"><label>ETIQUETA PORCIÓN (opc)</label><input id="v_serv_label" value="${escTxt(fd.servingLabel||'')}" placeholder="ej. 4 galletas, 1 taza"/></div>
-   <div class="submeta u-my4 u-mx0 u-o50" id="v_perlbl"></div>
-   <div class="field row2">${nf('v_kcal','KCAL',disp.kcal)}${nf('v_protein','PROTEÍNA g',disp.protein)}</div>
-   <div class="field row2">${nf('v_carbs','CARBS g',disp.carbs)}${nf('v_fat','GRASA g',disp.fat)}</div>
-   <div class="field row2">${nf('v_sugar','AZÚCAR g',disp.sugar)}${nf('v_fiber','FIBRA g',disp.fiber)}</div>
-   <div class="field row2">${nf('v_sodium','SODIO mg',disp.sodium)}${nf('v_potassium','POTASIO mg',disp.potassium)}</div>
-   <div class="field row2">${nf('v_caffeine','CAFEÍNA mg',disp.caffeine)}${nf('v_alcohol','ALCOHOL g',disp.alcohol)}</div>
-   <div class="submeta u-mt6 u-mb2 u-mx0 u-o50">ENVASE (opcional · para loguear "1 envase"):</div>
-   <div class="field row2">${sz('v_pack_g','ENVASE NETO ('+base+')',fd.sizes.container)}${sz('v_pack_servings','PORCIONES/ENVASE',packServings)}</div>
-   <div class="field">${sz('v_piece_g','PESO POR PIEZA ('+base+', se deduce si dejas envase + porciones)',fd.sizes.piece)}</div>
+   ${formRow('v_name','nombre','',{v:fd.name||'',ph:'galletas marías'})}${formRow('v_brand','marca','',{v:fd.brand||'',ph:'opcional'})}${formRow('v_barcode','código','',{v:window._verify.barcode||'',ph:'opcional',attr:' inputmode="numeric"'})}
+   <div class="vrow"><button type="button" class="b" id="v_bc_scan">escanear código</button><button type="button" class="b" id="v_label_photo">foto de la tabla</button></div>
+   <label class="obr"><span class="obk">tipo</span><span class="obv"><select id="v_base" class="obi"><option value="g"${base==='g'?' selected':''}>sólido · g</option><option value="ml"${base==='ml'?' selected':''}>líquido · ml</option></select></span></label>
+   <label class="obr" for="v_pack_g"><span class="obk">envase</span><span class="obv">${SEL('v_cl',FOOD_CL,fd.containerLabel||'envase')}<input class="obi" id="v_pack_g" type="number" inputmode="decimal" value="${fd.sizes.container?numTxt(fd.sizes.container):''}" placeholder="—"/><span class="obu vbu">${base}</span></span></label>
+   ${R('v_pack_servings','porciones','por envase',packServings)}${R('v_serv_g','porción','<span class="vbu">'+base+'</span>',sg)}${formRow('v_serv_label','equivale a','',{v:fd.servingLabel||'',ph:'4 galletas'})}
+   <label class="obr" for="v_piece_g"><span class="obk">pieza</span><span class="obv">${SEL('v_pl',FOOD_PL,fd.pieceLabel||'pieza')}<input class="obi" id="v_piece_g" type="number" inputmode="decimal" value="${fd.sizes.piece?numTxt(fd.sizes.piece):''}" placeholder="—"/><span class="obu vbu">${base}</span></span></label>
+   <div class="obr obstack"><span class="obk">valores de la etiqueta</span><span class="toggles" id="v_vb"><button type="button" class="t${unk0?'':' on'}" data-v="100">por 100 <span class="vbu">${base}</span></button><button type="button" class="t${unk0?' on':''}" data-v="serving">por porción</button><button type="button" class="t" data-v="container">por envase</button></span></div>
+   ${R('v_kcal','kcal','kcal',disp.kcal,{ph:'0'})}${R('v_protein','proteína','g',disp.protein,{ph:'0'})}${R('v_carbs','carbos','g',disp.carbs,{ph:'0'})}${R('v_fat','grasa','g',disp.fat,{ph:'0'})}
+   <div class="line u-tap kp-rad" role="button" tabindex="0" id="v_more" aria-expanded="${more}" aria-controls="v_morebox"><span class="k">más</span><span class="dots"></span><span class="v">azúcar · fibra · sodio… ›</span></div>
+   <div id="v_morebox"${more?'':' hidden'}>${R('v_sugar','azúcar','g',disp.sugar,{ph:'0'})}${R('v_fiber','fibra','g',disp.fiber,{ph:'0'})}${R('v_sodium','sodio','mg',disp.sodium,{ph:'0'})}${R('v_potassium','potasio','mg',disp.potassium,{ph:'0'})}${R('v_caffeine','cafeína','mg',disp.caffeine,{ph:'0'})}${R('v_alcohol','alcohol','g',disp.alcohol,{ph:'0'})}</div>
    <div id="v_reg_sum" class="submeta u-mt6 u-mb4 u-mx0"></div>
    ${opts.ocrText?`<details class="u-mb8"><summary class="submeta u-tap">qué leyó la IA</summary><pre class="u-label u-o50 u-mt6 u-mb0 u-mx0" style="white-space:pre-wrap;max-height:120px;overflow:auto">${(opts.ocrText||'').replace(/[<&]/g,c=>c==='<'?'&lt;':'&amp;')}</pre></details>`:''}
    <div class="sheetbtns"><button class="ok" data-act="vcontinue">continuar → loguear</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
-  const rsum=()=>{ const f=readRegister(); const sgn=f.sizes.serving||0; const lbl=document.getElementById('v_perlbl');
-    if(lbl)lbl.textContent=sgn?('VALORES POR PORCIÓN ('+numTxt(sgn)+' '+f.base+'):'):('VALORES POR 100 '+f.base.toUpperCase()+' (no pusiste porción):');
-    const s=document.getElementById('v_reg_sum'); if(s){ const c=f.sizes.container||0; const env=c?(' · envase '+numTxt(c)+f.base+' = <b class="u-fg">'+Math.round(f.per100.kcal*c/100)+'</b> kcal'):''; s.innerHTML='por 100 '+f.base+': <b class="u-fg">'+Math.round(f.per100.kcal)+'</b> kcal'+env; } };
-  ['v_serv_g','v_kcal','v_protein','v_carbs','v_fat','v_sugar','v_fiber','v_sodium','v_potassium','v_caffeine','v_alcohol','v_pack_g','v_pack_servings','v_piece_g'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('input',rsum); });
-  const vb=document.getElementById('v_base'); if(vb)vb.addEventListener('change',rsum);
-  const bcs=document.getElementById('v_bc_scan'); if(bcs)bcs.onclick=()=>scanCodeToInput('v_barcode');
-  const lph=document.getElementById('v_label_photo'); if(lph)lph.onclick=()=>{ window._faTag=(window._verify||{}).tag||window._faTag; const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.setAttribute('capture','environment'); inp.onchange=()=>{ if(inp.files&&inp.files[0])labelPhoto(inp.files[0], val('v_barcode')); }; inp.click(); };
+  const $=id=>document.getElementById(id);
+  const rsum=()=>{ const f=readRegister(); const s=$('v_reg_sum'); document.querySelectorAll('#modal .vbu').forEach(x=>{ x.textContent=f.base; });
+    if(s){ const c=f.sizes.container||0; s.innerHTML='por 100 '+f.base+': <b class="u-fg">'+Math.round(f.per100.kcal)+'</b> kcal'+(c?' · '+escTxt(f.containerLabel||'envase')+' ('+numTxt(c)+' '+f.base+') = <b class="u-fg">'+Math.round(f.per100.kcal*c/100)+'</b> kcal':'')+(f._short?' · sin el tamaño '+(f._short==='serving'?'de la porción':'del envase')+': 1 '+(f._short==='serving'?'porción':escTxt(f.containerLabel||'envase'))+' = lo que dice la etiqueta':''); } };
+  ['v_serv_g','v_kcal','v_protein','v_carbs','v_fat','v_sugar','v_fiber','v_sodium','v_potassium','v_caffeine','v_alcohol','v_pack_g','v_pack_servings','v_piece_g'].forEach(id=>{ const e=$(id); if(e)e.addEventListener('input',rsum); });
+  ['v_base','v_cl','v_pl'].forEach(id=>{ const e=$(id); if(e)e.addEventListener('change',rsum); });
+  document.querySelectorAll('#v_vb .t').forEach(b=>b.addEventListener('click',()=>{ document.querySelectorAll('#v_vb .t').forEach(x=>x.classList.toggle('on',x===b)); rsum(); }));
+  const mo=$('v_more'); if(mo)mo.onclick=()=>{ const bx=$('v_morebox'), op=bx.hidden; bx.hidden=!op; mo.setAttribute('aria-expanded',op?'true':'false'); if(op)revealAnim&&revealAnim(bx); };
+  const bcs=$('v_bc_scan'); if(bcs)bcs.onclick=()=>scanCodeToInput('v_barcode');
+  const lph=$('v_label_photo'); if(lph)lph.onclick=()=>{ window._faTag=(window._verify||{}).tag||window._faTag; const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.setAttribute('capture','environment'); inp.onchange=()=>{ if(inp.files&&inp.files[0])labelPhoto(inp.files[0], val('v_barcode')); }; inp.click(); };
   rsum();
 }
 // LOG screen: pick unit (dropdown of defaults) + qty → add to meal.
@@ -16622,11 +16651,11 @@ function commitLog(saveToDb){
   let foodId=L.fromId||null;
   if(saveToDb){ db.foods=db.foods||[];
     const ex=L.fromId?db.foods.find(x=>x.id===L.fromId):(bc?db.foods.find(x=>x.barcode===bc):null);
-    const stored={id:(ex&&ex.id)||f.id||uid(),barcode:bc||(ex&&ex.barcode)||'',name:f.name,brand:f.brand||'',base:f.base,per100:f.per100,sizes:f.sizes,servingLabel:f.servingLabel,lastUsed:Date.now()};
+    const stored={id:(ex&&ex.id)||f.id||uid(),barcode:bc||(ex&&ex.barcode)||'',name:f.name,brand:f.brand||'',base:f.base,per100:f.per100,sizes:f.sizes,servingLabel:f.servingLabel,containerLabel:f.containerLabel||'',pieceLabel:f.pieceLabel||'',lastUsed:Date.now()};
     if(ex)Object.assign(ex,stored); else db.foods.push(stored); foodId=stored.id;
   } else if(L.fromId){ const ex=(db.foods||[]).find(x=>x.id===L.fromId); if(ex)ex.lastUsed=Date.now(); }
   const t=curDate(); db.meals[t]=db.meals[t]||[]; snapshotGoal(t);
-  const apply=m=>{ m.tag=L.tag; m.name=f.name+(qty!==1?' ×'+numTxt(qty):''); m.qty=qty; m.serving=unitLabel; MACROKEYS.forEach(k=>m[k]=nut[k]); m.water=nut.water; m._food={id:foodId,base:f.base,per100:f.per100,sizes:f.sizes,servingLabel:f.servingLabel,name:f.name,brand:f.brand||'',barcode:bc}; m._unit=unit; };
+  const apply=m=>{ m.tag=L.tag; m.name=f.name+(qty!==1?' ×'+numTxt(qty):''); m.qty=qty; m.serving=unitLabel; MACROKEYS.forEach(k=>m[k]=nut[k]); m.water=nut.water; m._food={id:foodId,base:f.base,per100:f.per100,sizes:f.sizes,servingLabel:f.servingLabel,containerLabel:f.containerLabel||'',pieceLabel:f.pieceLabel||'',name:f.name,brand:f.brand||'',barcode:bc}; m._unit=unit; };
   if(L.editId){ const m=(db.meals[t]||[]).find(x=>x.id===L.editId); if(m){ apply(m); save(); closeModal(); reRender(); return; } }
   const item={id:uid()}; apply(item); db.meals[t].push(item);
   // v308 · AN1b · "cuando logueas un alimento… medio choppy": su comida queda abierta, el alimento ENTRA (lo de abajo baja deslizando),
@@ -17483,7 +17512,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
