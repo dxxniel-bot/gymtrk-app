@@ -918,7 +918,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .slsw{flex:0 0 auto; width:10px; height:10px; border-radius:var(--r-sm);}
   .phbx > .grp-label{position:relative; z-index:1;} .phhb{font:inherit; color:inherit; letter-spacing:inherit; text-transform:inherit; background:none; border:0; padding:0; margin:0; position:relative; cursor:pointer;} .phhb::after{content:''; position:absolute; left:0; right:0; top:0; height:44px;} .phhd{color:var(--fg);}   /* v338 · GR7 · tocar PHASES vuelve al promedio */
   .slfc i.on{box-shadow:0 0 0 1px var(--fg);}
-  .slrl{margin-top:var(--s2);} .slrw{font-size:var(--t-label); color:var(--o60); line-height:var(--lh-read); font-variant-numeric:tabular-nums;} .slrw.on{color:var(--fg);}   /* v338 · H6 · registro del sueño: lo que se encima, en blanco */ .slsw.hy-awake{box-shadow:inset 0 0 0 .5px var(--o30);}
+  .slrl{margin-top:var(--s2);} .slrw{font-size:var(--t-label); color:var(--o60); line-height:var(--lh-read); font-variant-numeric:tabular-nums;} .slrw.on{color:var(--fg);} .slrw.no{color:var(--o40);}   /* v349 · lo que no cuenta (otra app encima de la noche), a la vista pero tenue */   /* v338 · H6 · registro del sueño: lo que se encima, en blanco */ .slsw.hy-awake{box-shadow:inset 0 0 0 .5px var(--o30);}
   .slsum{font-size:var(--t-label); color:var(--o40); margin:0 0 var(--s3) var(--s5);}
   .slblk{display:flex;gap:var(--s3);align-items:center;margin-bottom:6px;} .slblk input{height:44px;background:transparent;border:var(--bw-field) solid var(--o40);border-radius:var(--r-ctl);color:var(--fg);font:inherit;font-size:var(--t-field);padding:0 var(--s3);min-width:0;} .slblk input[type=time]{flex:0 0 auto;} .slblk .slsep{color:var(--o40);font-size:var(--t-section);} .slblk .sllbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:var(--t-label);color:var(--o50);text-align:right;white-space:nowrap;} .slblk .slx{color:var(--o40);cursor:pointer;padding:0 var(--s2);flex:0 0 auto;font-size:var(--t-section);}
   .sheetbtns{display:flex; gap:10px; margin-top:10px;} .sheetbtns .ok{flex:1; height:var(--h-pri); background:var(--fill); color:var(--on-fill); font-weight:800; border:0; font-size:var(--t-data); cursor:pointer; border-radius:var(--r-ctl);} .sheetbtns .cancel{flex:0 0 auto;}
@@ -1483,7 +1483,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v348';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v349';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -1735,7 +1735,7 @@ function _idSelfCheck(){
   A('gated: a second call is a no-op once _idfix is set', JSON.stringify(fx)===before);
   console.log('id self-check OK');
 }
-function migrate(d){ if(!d.version){d.version=1;} if(d.adhoc&&typeof d.adhoc==='object')Object.keys(d.adhoc).forEach(k=>{ if(Array.isArray(d.adhoc[k]))d.adhoc[k].forEach((a,i)=>{ if(a&&!a.id)a.id='ad_'+k+'_'+i; }); });   /* v326 · un extra de antes sin id: se le da el suyo (para tocarlo y quitarlo) */ if(d.profile&&d.profile.username&&!(d.onb&&d.onb.done))d.onb={done:true,at:'antes'};   /* v277 · quien ya tiene perfil nunca ve el alta */ if(!d.tour||typeof d.tour!=='object'||Array.isArray(d.tour))d.tour={v:1,seen:{home:1,homeEmpty:1,workout:1,macros:1,progress:1,settings:1},step:{},skipped:false};   /* v278 · quien ya usaba la app no ve el tour */  if(!d._meta||typeof d._meta!=='object')d._meta={seq:0,t:0}; if(!d.meals||typeof d.meals!=='object'||Array.isArray(d.meals))d.meals={}; if(!Array.isArray(d.foods))d.foods=[]; d.foods=d.foods.map(f=>(f&&f.per100)?f:asCanonical(f)); if(!Array.isArray(d.sessions))d.sessions=[]; if(!d.split||typeof d.split!=='object')d.split={name:'',days:[]}; if(!Array.isArray(d.split.days))d.split.days=[]; d.split.days.forEach(day=>{ if(!Array.isArray(day.exercises))day.exercises=[]; day.exercises.forEach(e=>{ if(e&&!e.id)e.id='e'+uid(); }); }); fixDuplicateExIds(d); fixLeakedFullStack(d); fixStraySides(d); purgeMood(d); d.health=healthShape((d.health&&typeof d.health==='object'&&!Array.isArray(d.health))?d.health:{}); if(!d.steps||typeof d.steps!=='object')d.steps={}; if(!d.machines||typeof d.machines!=='object')d.machines={}; if(!d.exCat||typeof d.exCat!=='object')d.exCat={}; if(!d.muscleMap||typeof d.muscleMap!=='object')d.muscleMap={}; if(!d.muscleNames||typeof d.muscleNames!=='object')d.muscleNames={}; if(!d.bodyweight||typeof d.bodyweight!=='object')d.bodyweight={}; if(!d.sleep||typeof d.sleep!=='object')d.sleep={}; if('selfcheck' in d)delete d.selfcheck;/* v263 · la auto-percepción estética se retira: el dato se borra una vez y no vuelve (boot, respaldo, log in, sync y archivo pasan por aquí) */ if(!d.adhoc||typeof d.adhoc!=='object')d.adhoc={}; if(!Array.isArray(d.mealTags))d.mealTags=['breakfast','lunch','snack','dinner']; if(!Array.isArray(d.stack))d.stack=[]; subHygiene(d); if(!d.lastUsed||typeof d.lastUsed!=='object')d.lastUsed={}; if(!d.settings||typeof d.settings!=='object')d.settings={goals:seed().settings.goals}; if(d.settings&&d.settings.goals&&d.settings.goals.alcohol==null)d.settings.goals.alcohol=(d.profile&&d.profile.sex==='F')?14:28; if(d.settings&&d.settings.restSec==null)d.settings.restSec=90; if(d.settings&&d.settings.restBeep==null)d.settings.restBeep=true; if(d.settings&&d.settings.goals&&d.settings.goals.sleep==null)d.settings.goals.sleep=8; if(d.profile&&!d.profile.since){ try{ const _cd=[]; (d.sessions||[]).forEach(s=>{if(s.date)_cd.push(s.date);}); Object.keys(d.meals||{}).forEach(k=>_cd.push(k)); Object.keys(d.bodyweight||{}).forEach(k=>_cd.push(k)); if(_cd.length)d.profile.since=_cd.sort()[0]; }catch(_){} }
+function migrate(d){ if(!d.version){d.version=1;} if(d.adhoc&&typeof d.adhoc==='object')Object.keys(d.adhoc).forEach(k=>{ if(Array.isArray(d.adhoc[k]))d.adhoc[k].forEach((a,i)=>{ if(a&&!a.id)a.id='ad_'+k+'_'+i; }); });   /* v326 · un extra de antes sin id: se le da el suyo (para tocarlo y quitarlo) */ if(d.profile&&d.profile.username&&!(d.onb&&d.onb.done))d.onb={done:true,at:'antes'};   /* v277 · quien ya tiene perfil nunca ve el alta */ if(!d.tour||typeof d.tour!=='object'||Array.isArray(d.tour))d.tour={v:1,seen:{home:1,homeEmpty:1,workout:1,macros:1,progress:1,settings:1},step:{},skipped:false};   /* v278 · quien ya usaba la app no ve el tour */  if(!d._meta||typeof d._meta!=='object')d._meta={seq:0,t:0}; if(!d.meals||typeof d.meals!=='object'||Array.isArray(d.meals))d.meals={}; if(!Array.isArray(d.foods))d.foods=[]; d.foods=d.foods.map(f=>(f&&f.per100)?f:asCanonical(f)); if(!Array.isArray(d.sessions))d.sessions=[]; if(!d.split||typeof d.split!=='object')d.split={name:'',days:[]}; if(!Array.isArray(d.split.days))d.split.days=[]; d.split.days.forEach(day=>{ if(!Array.isArray(day.exercises))day.exercises=[]; day.exercises.forEach(e=>{ if(e&&!e.id)e.id='e'+uid(); }); }); fixDuplicateExIds(d); fixLeakedFullStack(d); fixStraySides(d); purgeMood(d); d.health=healthShape((d.health&&typeof d.health==='object'&&!Array.isArray(d.health))?d.health:{}); sleepFix349(d); if(!d.steps||typeof d.steps!=='object')d.steps={}; if(!d.machines||typeof d.machines!=='object')d.machines={}; if(!d.exCat||typeof d.exCat!=='object')d.exCat={}; if(!d.muscleMap||typeof d.muscleMap!=='object')d.muscleMap={}; if(!d.muscleNames||typeof d.muscleNames!=='object')d.muscleNames={}; if(!d.bodyweight||typeof d.bodyweight!=='object')d.bodyweight={}; if(!d.sleep||typeof d.sleep!=='object')d.sleep={}; if('selfcheck' in d)delete d.selfcheck;/* v263 · la auto-percepción estética se retira: el dato se borra una vez y no vuelve (boot, respaldo, log in, sync y archivo pasan por aquí) */ if(!d.adhoc||typeof d.adhoc!=='object')d.adhoc={}; if(!Array.isArray(d.mealTags))d.mealTags=['breakfast','lunch','snack','dinner']; if(!Array.isArray(d.stack))d.stack=[]; subHygiene(d); if(!d.lastUsed||typeof d.lastUsed!=='object')d.lastUsed={}; if(!d.settings||typeof d.settings!=='object')d.settings={goals:seed().settings.goals}; if(d.settings&&d.settings.goals&&d.settings.goals.alcohol==null)d.settings.goals.alcohol=(d.profile&&d.profile.sex==='F')?14:28; if(d.settings&&d.settings.restSec==null)d.settings.restSec=90; if(d.settings&&d.settings.restBeep==null)d.settings.restBeep=true; if(d.settings&&d.settings.goals&&d.settings.goals.sleep==null)d.settings.goals.sleep=8; if(d.profile&&!d.profile.since){ try{ const _cd=[]; (d.sessions||[]).forEach(s=>{if(s.date)_cd.push(s.date);}); Object.keys(d.meals||{}).forEach(k=>_cd.push(k)); Object.keys(d.bodyweight||{}).forEach(k=>_cd.push(k)); if(_cd.length)d.profile.since=_cd.sort()[0]; }catch(_){} }
   // recompute alcohol for old meal items logged before alcohol was in MACROKEYS
   try{ Object.values(d.meals||{}).forEach(arr=>arr.forEach(m=>{ if(m.alcohol==null){ if(m._food&&m._food.per100&&m._food.per100.alcohol&&m._unit){ m.alcohol=computeNutrients(m._food,m._unit,m.qty||1).alcohol; } else m.alcohol=0; } })); }catch(e){}
   // goalHist: snapshot of intake goals at the moment of first logging that day (history is FROZEN — past days never re-read the current goal)
@@ -5473,7 +5473,7 @@ function _v294SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     // 1 · la primera vez: el historial, y la entrada (con su número de corrida) viaja en la URL
     const p0=bioPlan(); A('la primera vez pide el historial de lo fijo y prueba UN opcional (FC reposo); HRV espera su turno; grasa y reposo, nunca', ['steps','act','weight','sleep'].every(k=>p0[k]===HP_HIST[k])&&p0.steps===365&&p0.sleep===30&&p0.rhr===365&&p0.hrv===0&&p0.fat===0&&p0.bas===0);
     bioMark(); bioRun(); { const m=/&input=text&text=(.*)$/.exec(went[0]||''), j=m&&JSON.parse(decodeURIComponent(m[1]));
-      A('la URL lleva el plan como texto, con su número de corrida, y la app lo guarda', went.length===1&&went[0].indexOf('shortcuts://run-shortcut?name=TRK%20Salud&input=text&text=')===0&&!!j&&HP_ORDER.every(k=>j[k]===p0[k])&&!!j.id&&sc().plan&&sc().plan.id===j.id); }
+      A('la URL lleva el plan como texto, con su número de corrida, y la app lo guarda (v349: lo que no se busca no viaja)', went.length===1&&went[0].indexOf('shortcuts://run-shortcut?name=TRK%20Salud&input=text&text=')===0&&!!j&&HP_ORDER.every(k=>p0[k]>0?j[k]===p0[k]:!(k in j))&&!('fat' in j)&&!('bas' in j)&&!!j.id&&sc().plan&&sc().plan.id===j.id); }
     // 2 · su caso (8-oct): un reloj que no escribe FC en reposo. Se probó, iOS detuvo el atajo ahí: lo fijo entra y FC reposo ya no se pide
     let r=healthPasteApply(out(['steps','act','weight','sleep']));
     A('se detuvo en FC reposo: entra lo fijo y la app sabe dónde paró', !!r&&r.stop==='rhr'&&r.kinds.length===4&&sc().skip.rhr&&sc().skip.rhr.n===1&&!sc().plan&&sc().learn.stop==='rhr');
@@ -5492,6 +5492,7 @@ function _v294SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     went.length=0; bioRun(); r=healthPasteApply(['trk2','ok in','ok id '+sc().plan.id,'ok cfg','steps '+T(2,'18:00')+' 4000','steps '+T(1,'12:14')+' 13393','ok steps','rhr '+T(5,'12:00')+' 57','ok rhr'].join('\n'));
     A('el día cortado (4000) no pisa el completo (16450), aunque FC traiga un día más viejo', db.steps[D(2)]===16450&&db.steps[D(1)]===13393&&!!(db.bodyweight&&db.bodyweight[D(1)]));
     // 5 · un opcional que faltó no se vuelve a probar solo, pase el tiempo que pase (antes se reintentaba al mes)
+    sc().skip.rhr=sc().skip.rhr||{n:1}; delete sc().got.rhr;   /* v349 · el pegado de arriba trajo FC: se vuelve a suponer que falta */
     sc().skip.hrv.t=Date.now()-400*DAY; sc().skip.rhr.t=Date.now()-400*DAY; A('pasado un año, FC reposo y HRV siguen sin pedirse', bioPlan().hrv===0&&bioPlan().rhr===0);
     // …lo fijo conserva sus dos niveles: si nunca llegó, un mes; la segunda vez seguida, hasta [buscar todo]
     { const g0=sc().got.sleep; delete sc().got.sleep; sc().skip.sleep={t:Date.now()-31*DAY,n:1}; A('un dato fijo que nunca llegó se vuelve a pedir al mes', bioPlan().sleep===30);
@@ -7036,6 +7037,161 @@ function _v348SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('S-XLOG · …y lo que eliges se registra como extra (sin mg no suma nutrientes)', !!r&&(()=>{ r.click(); const n=document.getElementById('ad_name'); return !!n&&n.value.length>2&&document.getElementById('modal').dataset.xcat==='1'; })());
     console.log('v348 self-check OK');
   } finally { try{ closeModal(); }catch(_){} db=real; state.suppSeg=sg; state.suppSegD=sgd; bumpIdx(); }
+}
+// v349 · H7 · el dueño (15-oct, captura): en su iPhone cada "Si dias es mayor que" salía en rojo y sin número, y lo cambió a "tiene algún
+// valor". Con eso un 0 SÍ tiene valor y el atajo buscaba igual lo que la app pedía saltar. Lo que no se busca ya no viaja en el plan: una
+// llave que falta no tiene valor (vale para su atajo arreglado y para el de antes, que comparaba > 0). La app conserva el plan completo.
+function bioWire(p){ const o={}; Object.keys(p||{}).forEach(k=>{ if(k==='id'||+p[k]>0)o[k]=p[k]; }); return o; }
+// v349 · GR7 · la fila `registro de la noche` dice el día que miras en PHASES (antes siempre la última noche, aunque miraras otra)
+function sleepRawRowSync(d){ const row=document.querySelector('#modal .line[data-act="sleepraw"]'); if(!row)return; const ks=Object.keys((db.health&&db.health.sleepRaw)||{}).sort(); if(!ks.length)return;
+  const has=!!d&&ks.indexOf(d)>=0, day=has?d:ks[ks.length-1], v=row.querySelector('.v'); row.dataset.d=d&&!has?d:day; if(v)v.textContent=d&&!has?'sin registro':fmtShort(day)+' ›'; }   // la fecha ya la dice PHASES, arriba (a 320 «09 oct · sin registro» partía el renglón)
+// v349 · H6 · el dueño (15-oct, con capturas de Salud y de Fitbit): el 12-oct los dos dicen 5 h 06 dormido (en cama 5 h 20; profundo 1 h,
+// core 3 h 14, REM 52, despierto 14) y gym//TRK decía 6 h 14 con unas fases que sumaban 3 h 52: "en Gym Tracker se pone una hora de más".
+// Lo reprodujo un forense con el código real (n10 · v349): (1) en Salud, además de Fitbit (con fases), escribe otra app tramos «dormido»
+// SIN fase sobre la misma noche; la app los sumaba todos (la unión) y, al recortar lo encimado, ganaba el que empezaba antes: el tramo sin
+// fase se comía minutos de las fases. Salud enseña solo una fuente por noche. Ahora: si una noche trae fases, cuentan sus fases y los
+// despiertos pegados a ellas; lo que se encima con esa noche (o la toca) y no es de ella no cuenta (se ve en el registro como `no cuenta`).
+// Un tramo sin fase que NO se encima (una siesta: Fitbit no le pone fases bajo 3 h) es su propio tramo. Una noche sin fases: como antes.
+function sleepOneWriter(st){ const STG={deep:1,core:1,rem:1,light:1}, M=60000, ov=(x,y)=>Math.min(x[1],y[1])-Math.max(x[0],y[0])>M, tc=(x,y)=>Math.abs(x[1]-y[0])<=M||Math.abs(y[1]-x[0])<=M;
+  st=(st||[]).slice().sort((a,b)=>a[0]-b[0]); const stg=st.filter(x=>STG[x[2]]); if(!stg.length)return {keep:st,drop:[],apart:[]};
+  // los despiertos de la noche: pegados a sus fases y SIN encimarse con ellas (el despierto de otra app encima de las fases no les quita minutos)
+  const keep=stg.slice(); let grew=true; while(grew){ grew=false; st.forEach(x=>{ if(x[2]!=='awake'||keep.indexOf(x)>=0||stg.some(y=>ov(x,y)))return; if(keep.some(y=>tc(x,y))){ keep.push(x); grew=true; } }); }
+  const a0=Math.min.apply(null,keep.map(x=>x[0])), a1=Math.max.apply(null,keep.map(x=>x[1]));
+  // lo demás, en grupos: lo que se encima o queda a 5 min o menos es de un mismo escritor (aunque deje un hueco corto). Un grupo que se
+  // encima con la noche es de otra app (no cuenta); pegado a ella (≤ 1 min, sin encimarse), sigue la noche; aparte, es otro tramo (una
+  // siesta, que cuenta en el día de su noche, como en v348). Un despierto suelto no es de esta noche.
+  const rest=st.filter(x=>keep.indexOf(x)<0), comp=[]; let cur=null, end=0; rest.forEach(x=>{ if(cur&&x[0]<=end+5*M){ cur.push(x); end=Math.max(end,x[1]); } else { cur=[x]; comp.push(cur); end=x[1]; } });
+  const drop=[], apart=[]; comp.forEach(c=>{ const sl=c.some(x=>SLEEP_ASLEEP[x[2]]);
+    if(!sl||c.some(x=>x[0]<a1&&x[1]>a0))drop.push.apply(drop,c); else if(c.some(x=>x[0]<a1+M&&x[1]>a0-M))keep.push.apply(keep,c); else apart.push(c); });
+  return {keep:keep.sort((a,b)=>a[0]-b[0]),drop,apart}; }
+// las noches de un pegado (o de un registro guardado): se agrupan (hueco de más de 60 min = otro bloque; un «en cama» largo no une dos
+// tramos), un escritor por noche, y `asl` = la unión de lo dormido que cuenta (cada minuto una vez; un despierto nunca resta minutos
+// dormidos, como en v338). Un tramo aparte lleva `day`: el día de su noche (un rato dormido antes de la noche no se va al día anterior).
+function sleepGroup(sleep){ const S=(sleep||[]).filter(x=>x&&x[1]>x[0]).slice().sort((x,y)=>x[0]-y[0]), nb=S.filter(x=>x[2]!=='inBed'), grp=nb.concat(S.filter(x=>x[2]==='inBed'&&!nb.some(y=>y[0]<x[1]&&y[1]>x[0]))).sort((x,y)=>x[0]-y[0]);
+  const B0=[]; grp.forEach(sg=>{ const b=B0[B0.length-1]; if(b&&sg[0]-b.endMs<=60*60000){ b.endMs=Math.max(b.endMs,sg[1]); b.stages.push(sg); } else B0.push({startMs:sg[0],endMs:sg[1],stages:[sg],src:'shortcut'}); });
+  const B=[], drop=[];
+  B0.forEach(b=>{ if(!b.stages.every(x=>x[2]==='inBed'))b.stages=b.stages.filter(x=>x[2]!=='inBed');
+    const w=sleepOneWriter(b.stages); drop.push.apply(drop,w.drop); b.stages=w.keep; B.push(b); w.apart.forEach(c=>B.push({startMs:c[0][0],endMs:Math.max.apply(null,c.map(x=>x[1])),stages:c,src:'shortcut',_of:b})); });
+  B.forEach(b=>{ const un=Math.round(msUnion(b.stages.filter(x=>SLEEP_ASLEEP[x[2]]).map(x=>[x[0],x[1]])));
+    let end=0; const st=[]; b.stages.sort((x,y)=>x[0]-y[0]).forEach(x=>{ const a=Math.max(x[0],end); if(x[1]>a){ st.push([a,x[1],x[2]]); end=x[1]; } else end=Math.max(end,x[1]); });
+    b.stages=st; if(st.length){ b.startMs=st[0][0]; b.endMs=st[st.length-1][1]; } b.asl=un; });
+  B.forEach(b=>{ if(b._of){ b.day=isoOfMs(b._of.endMs); delete b._of; } });
+  return {blocks:B.sort((x,y)=>x.startMs-y.startMs),drop}; }
+// el día de un tramo: el de su noche si va aparte (sleepGroup), si no el día en que termina
+function sleepDayOf(b){ return (b&&b.day)||isoOfMs(b.endMs); }
+// lo que la app le pidió al atajo en ESTA corrida (antes de que hpLearn lo borre): cuándo y cuántos días de sueño. Corrido desde Atajos
+// sin la lista: 7 días (DEFAULT_DAYS de build.cjs). El mismo portapapeles pegado otra vez sigue siendo esa corrida (`lastPlan`: antes,
+// a la segunda, sin plan, entraba la noche cortada). Un portapapeles de otra corrida: null.
+function hpPlanFor(t){ const s=String(t||''), sc=H().shortcut, fresh=p=>p&&Date.now()-(+p.t||0)<6*3600000?p:null, m=/^\s*ok\s+id\s+(\S+)\s*$/im.exec(s), inp=/^\s*ok\s+in\s*$/im.test(s), cfg=/^\s*ok\s+cfg\s*$/im.test(s);
+  const sent=[fresh(sc.plan),fresh(sc.lastPlan)].find(p=>p&&m&&m[1]===String(p.id));
+  if(inp&&sent)return {t:+sent.t,id:String(sent.id),sleep:+((sent.p||{}).sleep)||0};
+  if(cfg&&!inp)return {t:Date.now(),sleep:7};
+  return null; }
+// lo que LLEGÓ dice que existe: fuera la marca de "no lo tienes" y se anota la fecha (antes, con un dato saltado, llegara o no, se
+// seguía pidiendo 0: con el atajo arreglado a mano, ya no llegaría nunca). Y la reparación del sueño se da por hecha cuando ya cubrió
+function hpArrived(r,pl){ const sc=H().shortcut, last=hpLatest(r.payload); sc.skip=Object.assign({},sc.skip); sc.got=Object.assign({},sc.got);
+  (r.kinds||[]).forEach(k=>{ delete sc.skip[k]; if(last[k]&&(!sc.got[k]||last[k]>sc.got[k]))sc.got[k]=last[k]; });
+  if(sc.sleepFix&&pl&&pl.sleep>0&&(r.kinds||[]).indexOf('sleep')>=0&&shiftDate(isoOfMs(pl.t),1-pl.sleep)<sc.sleepFix)delete sc.sleepFix;
+  if(pl&&pl.id)sc.lastPlan={t:pl.t,id:pl.id,p:{sleep:pl.sleep}}; }
+// el corte de la noche cortada se cuenta desde el día en que se PEGA (el atajo corrió entre que la app lo mandó y ahora): si cruzó la
+// medianoche entre mandar y correr, el día que vale es el de después
+function hpCutDay(pl){ return shiftDate(isoOfMs(Math.max(+pl.t||0,Date.now())),1-pl.sleep); }
+// v349 · una vez (migrate): lo que ya llegó del atajo en los últimos 14 días se da por existente (su "Si" estaba roto: llegaba aunque la app
+// pidiera 0, y la app nunca lo anotaba), y se piden otra vez las últimas 14 noches, para escribirlas con la regla nueva
+function sleepFix349(d){ const h=d.health; if(!h||!h.shortcut||h.shortcut.fix349)return; const sc=h.shortcut, T=todayISO(), lim=shiftDate(T,-14), src=h.src||{}, dly=h.daily||{}, last={}; sc.fix349=1;
+  const up=(k,dd)=>{ if(dd>=lim&&dd<=T&&(!last[k]||dd>last[k]))last[k]=dd; }, mk=(o,k)=>Object.keys(o||{}).forEach(dd=>{ if(o[dd]==='shortcut')up(k,dd); });
+  mk(src.steps,'steps'); mk(src.weight,'weight'); mk(src.sleep,'sleep');
+  Object.keys(dly).forEach(dd=>{ const r=dly[dd]||{}, s=r.src||{}; if(r.activeKcal&&s.activeKcal==='shortcut')up('act',dd); if(r.rhr&&s.rhr==='shortcut')up('rhr',dd); if(r.hrv&&s.hrv==='shortcut')up('hrv',dd); });
+  if(Object.keys(last).length){ sc.skip=Object.assign({},sc.skip); sc.got=Object.assign({},sc.got); Object.keys(last).forEach(k=>{ delete sc.skip[k]; if(!sc.got[k]||last[k]>sc.got[k])sc.got[k]=last[k]; }); }
+  if(last.sleep)sc.sleepFix=lim; }
+// el registro de una noche: lo de v338 y, v349, lo que cuenta la regla (un escritor por noche), lo que no cuenta y los tramos (noche / siesta)
+function sleepRawStats(day){ const raw=(((db.health&&db.health.sleepRaw)||{})[day]||[]).slice().sort((a,b)=>a[0]-b[0]); if(!raw.length)return null;
+  const asl=raw.filter(x=>SLEEP_ASLEEP[x[2]]), ib=raw.filter(x=>x[2]==='inBed'), sum=asl.reduce((a,x)=>a+(x[1]-x[0])/60000,0), ph={awake:0,rem:0,core:0,deep:0,asleep:0};
+  raw.forEach(x=>{ const k=x[2]==='light'?'core':x[2]; if(ph[k]!=null)ph[k]+=(x[1]-x[0])/60000; });
+  const v=db.sleep&&db.sleep[day], G=sleepGroup(raw), no=raw.map(x=>G.drop.indexOf(x)>=0), kept=raw.filter((x,j)=>!no[j]&&x[2]!=='inBed'), dra=raw.filter((x,j)=>no[j]&&SLEEP_ASLEEP[x[2]]);
+  // despierto y dormido a la vez: solo cuando lo dormido SÍ cuenta (un despierto de Fitbit bajo el «dormido» de otra app sigue despierto)
+  const aw=raw.filter(x=>x[2]==='awake'), aslK=asl.filter(x=>G.drop.indexOf(x)<0), awOv=aw.length&&aslK.length?Math.round(msUnion(aw)+msUnion(aslK)-msUnion(aw.concat(aslK))):0, nb=raw.filter(x=>x[2]!=='inBed');
+  return {raw,n:raw.length,nIb:ib.length,sum:Math.round(sum),uni:Math.round(msUnion(asl)),dup:Math.round(sum-msUnion(asl)),awOv,inBed:Math.round(ib.length?msUnion(ib):((G.blocks.some(b=>isNocturnal(hmOfMs(b.startMs)))?G.blocks.filter(b=>isNocturnal(hmOfMs(b.startMs))):G.blocks).reduce((a,b)=>a+(b.endMs-b.startMs)/60000,0)||msUnion(kept.length?kept:raw))),ph,
+    over:raw.map(x=>x[2]!=='inBed'&&nb.some(y=>y!==x&&y[0]<x[1]&&y[1]>x[0]&&(!!SLEEP_ASLEEP[x[2]]||!!SLEEP_ASLEEP[y[2]]))),app:v!=null?sleepMinOf(v):0,manual:sleepBlocks(v).some(b=>b&&typeof b==='object'&&!b.src),
+    overK:raw.map((x,j)=>!no[j]&&x[2]!=='inBed'&&nb.some(y=>y!==x&&G.drop.indexOf(y)<0&&y[0]<x[1]&&y[1]>x[0]&&(!!SLEEP_ASLEEP[x[2]]||!!SLEEP_ASLEEP[y[2]]))),   // encima, entre lo que sí cuenta
+    sinF:Math.round(msUnion(kept.filter(x=>x[2]==='asleep').map(x=>[x[0],x[1]]))),   // lo dormido sin fase que SÍ cuenta
+    no, drp:dra.length?Math.round(msUnion(dra)):0, cnt:G.blocks.reduce((a,b)=>a+(+b.asl||0),0), blocks:G.blocks.filter(b=>+b.asl>0)}; }
+function openSleepRaw(day){ const ks=Object.keys((db.health&&db.health.sleepRaw)||{}).sort(), L=(k,v)=>'<div class="line"><span class="k">'+k+'</span><span class="dots"></span><span class="v">'+v+'</span></div>', M=m=>m>0?fmtDur(m):'—';
+  if(!ks.length){ openModal('<h3>registro del sueño</h3><div class="submeta u-mb10">llega con el próximo sync biometrics.</div><div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div>'); return; }
+  const d=day||ks[ks.length-1], i=ks.indexOf(d), has=i>=0, pv=has?ks[i-1]:ks.filter(k=>k<d).pop(), nx=has?ks[i+1]:ks.find(k=>k>d);
+  const B=(t,x)=>'<button type="button" class="b" data-act="sleepraw" data-d="'+(x||'')+'"'+(x?'':' disabled')+' aria-label="'+t+'">'+(t==='noche anterior'?'‹':'›')+'</button>', nav=L('noche',B('noche anterior',pv)+' '+escTxt(fmtShort(d))+' '+B('noche siguiente',nx));
+  // v349 · una noche sin registro (llegó antes del 14-oct o ya salió de las 14) lo dice: antes abría otra noche sin avisar
+  if(!has){ openModal('<h3>registro del sueño</h3>'+nav+'<div class="submeta u-mb10">sin registro de esta noche: se guardan las que trae el atajo (las últimas '+SLEEP_RAW_N+').</div><div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div>','top'); return; }
+  const S=sleepRawStats(d), PH=sleepPhDay(d)||S.ph, STG=x=>x[2]==='deep'||x[2]==='core'||x[2]==='rem'||x[2]==='light', nap=b=>!isNocturnal(hmOfMs(b.startMs));
+  const cells=[['deep','profundo'],['core','core'],['rem','REM'],['awake','despierto']].map(([k,l])=>'<span class="cpc"><span><span class="slsw hy-'+k+'"></span>'+l+'</span><b>'+M(PH[k])+'</b></span>').join('');
+  const blk=S.blocks.length>1||S.blocks.some(nap)?S.blocks.map(b=>L(nap(b)?'siesta':'de noche',hmOfMs(b.startMs)+' · '+M(b.asl))).join(''):'';
+  const list=S.raw.map((x,j)=>'<div class="slrw'+(S.no[j]?' no':S.overK[j]?' on':'')+'">'+hmOfMs(x[0])+'–'+hmOfMs(x[1])+' · '+(SLEEP_RAW_LBL[x[2]]||x[2])+(S.no[j]?' · no cuenta':S.overK[j]?' · encima':'')+'</div>').join('');
+  openModal('<h3>registro del sueño</h3>'+nav
+    +L('dormido · la app',M(S.app))+L('dormido · el registro',M(S.cnt))
+    +(S.drp>0?L('no cuenta',M(S.drp)+' · otra app'):'')+(S.uni!==S.cnt?L('todo junto',M(S.uni)):'')
+    +(S.dup>0&&!S.drp?L('se enciman',M(S.dup)+' · dos fuentes a la vez'):'')+(S.awOv>0?L('despierto y dormido',M(S.awOv)+' · cuenta dormido'):'')
+    +blk+L('en cama',M(S.inBed))+(S.sinF>0?L('dormido sin fase',M(S.sinF)):'')
+    +'<div class="grp-label sub u-mt8">fases · como las cuenta la app</div><div class="cpr cpr4 u-mb10">'+cells+'</div>'
+    +(S.manual?'<div class="submeta u-mb10">esta noche la tecleaste: el atajo ya no la cambia.</div>':(Math.abs(S.app-S.cnt)>1?'<div class="submeta u-mb10">la app aún no la cuenta así: se rehace en el próximo sync biometrics.</div>':''))
+    +'<div class="grp-label sub">'+S.n+' muestras</div><div class="slrl">'+list+'</div>'
+    +'<div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div>','top'); }   // abre arriba: al pasar de noche la hoja crece hacia abajo y ‹ › no se mueven bajo el dedo
+// self-check de v349 (H6 · H7 · GR7). Base de juguete con tus números del 12-oct (el hipnograma es inventado; los totales son los de tus
+// capturas); todo se restaura en finally.
+function _v349SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v349: '+nm); }; const real=db, mk=window._mdKey, mr=window._mdRange, me=window._mdEnd, mc=window._mdCustom;
+  try{ const T=todayISO(), D=k=>shiftDate(T,-k), tz=(()=>{ const o=-new Date().getTimezoneOffset(), a=Math.abs(o); return (o>=0?'+':'-')+pad(Math.floor(a/60))+':'+pad(a%60); })(), I=(d,hm)=>d+'T'+hm+':00'+tz;
+    const fresh=()=>{ db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',age:30,sex:'m',weightKg:61},gyms:['g'],activeGym:'g',sessions:[]}); db.sleep={}; db.health=healthShape({}); bumpIdx(); };
+    fresh();
+    // H7 · lo que no se busca no viaja
+    const w=bioWire({id:'x',steps:3,act:0,weight:2,sleep:15,rhr:0,hrv:0,fat:0,bas:0});
+    A('H7 · lo que no se busca no viaja en el plan (una llave que falta no tiene valor)', w.id==='x'&&w.steps===3&&w.sleep===15&&w.weight===2&&!('act' in w)&&!('rhr' in w)&&!('hrv' in w)&&!('fat' in w)&&!('bas' in w));
+    A('H7 · la URL del atajo usa el plan sin ceros', (()=>{ const u=bioRunURL({id:'y',steps:2,hrv:0}), j=JSON.parse(decodeURIComponent(u.split('&text=')[1])); return j.id==='y'&&j.steps===2&&!('hrv' in j); })());
+    // H6 · su noche del 12-oct: Fitbit con fases 22:42–04:02 (dormido 5 h 06) + un «Dormido» de otra app 21:40–00:02
+    const N=D(3), W=D(2), FB=[[N,'22:42',N,'22:48','Despierto'],[N,'22:48',N,'23:02','Esencial'],[N,'23:02',N,'23:36','Profundo'],[N,'23:36',N,'23:48','Esencial'],[N,'23:48',W,'00:02','REM'],[W,'00:02',W,'00:50','Esencial'],[W,'00:50',W,'01:16','Profundo'],[W,'01:16',W,'02:00','Esencial'],[W,'02:00',W,'02:20','REM'],[W,'02:20',W,'02:24','Despierto'],[W,'02:24',W,'03:20','Esencial'],[W,'03:20',W,'03:38','REM'],[W,'03:38',W,'03:58','Esencial'],[W,'03:58',W,'04:02','Despierto']];
+    const line=r=>'sleep '+I(r[0],r[1])+' '+I(r[2],r[3])+' '+r[4], night='trk2\n'+FB.map(line).join('\n');
+    healthPasteApply(night+'\n'+line([N,'21:40',W,'00:02','Dormido']));
+    { const v=db.sleep[W], p=sleepPhDay(W); A('H6 · su 12-oct: con otra app encima, la noche es la de Fitbit (5 h 06, no 6 h 14) y sus fases 1 h · 3 h 14 · 52 · 14', sleepMinOf(v)===306&&!!p&&p.deep===60&&p.core===194&&p.rem===52&&p.awake===14&&sleepBlocks(v).length===1); }
+    { const S=sleepRawStats(W); A('H6 · el registro: lo de la otra app no cuenta (2 h 22) y la regla da lo mismo que la app', !!S&&S.cnt===306&&S.app===306&&S.drp===142&&S.no.filter(Boolean).length===1&&S.inBed===320);
+      const j0=JSON.stringify(db); openSleepRaw(W); const m=document.getElementById('modal'), tx=m.textContent;
+      A('H6 · la hoja lo dice (no cuenta · otra app), marca el renglón y abrirla no escribe nada', /no cuenta/.test(tx)&&/otra app/.test(tx)&&!/dormido sin fase/.test(tx)&&m.querySelectorAll('.slrw.no').length===1&&JSON.stringify(db)===j0); closeModal(); }
+    // sin la otra app: igual (Fitbit solo)
+    fresh(); healthPasteApply(night); A('H6 · Fitbit solo: 5 h 06 y sus fases, como antes', sleepMinOf(db.sleep[W])===306&&sleepPhDay(W).deep===60);
+    // un tramo sin fases que NO se encima (aunque quede a menos de 60 min): es su propio tramo y cuenta, como hoy (las siestas no cambian)
+    fresh(); healthPasteApply(night+'\n'+line([W,'04:40',W,'05:40','Dormido']));
+    { const bs=sleepBlocks(db.sleep[W]); A('H6 · un tramo sin fases a 38 min de la noche, sin encimarse: otro tramo, la noche no cambia', bs.length===2&&bs[0].asl===306&&bs[1].asl===60&&sleepPhDay(W).core===194&&sleepMinOf(db.sleep[W])===366); }
+    fresh(); healthPasteApply(night+'\n'+line([W,'15:00',W,'16:00','Dormido']));
+    { openSleepRaw(W); const tx=document.getElementById('modal').textContent; A('H6 · el registro enseña noche y siesta (y lo dormido sin fase)', /siesta/.test(tx)&&/dormido sin fase/.test(tx)&&!/no cuenta/.test(tx)&&sleepMinOf(db.sleep[W])===366); closeModal(); }
+    // lo que encontraron los verificadores: una siesta escrita por dos apps cuenta una vez; el despierto de otra app encima de las fases no les
+    // quita minutos; el pedazo de otra app con un hueco corto no se va al día anterior; un rato dormido antes de la noche cuenta en el día de la noche
+    fresh(); healthPasteApply(night+'\n'+line([W,'04:40',W,'05:40','Dormido'])+'\n'+line([W,'04:45',W,'05:35','Dormido']));
+    A('H6 · una siesta escrita por dos apps cuenta una vez (no 1 h 50)', sleepMinOf(db.sleep[W])===366&&sleepBlocks(db.sleep[W]).length===2);
+    fresh(); healthPasteApply(night+'\n'+line([W,'02:20',W,'02:45','Despierto']));
+    { const p=sleepPhDay(W); A('H6 · el despierto de otra app encima de las fases no les quita minutos', sleepMinOf(db.sleep[W])===306&&p.deep===60&&p.core===194&&p.rem===52&&p.awake===14); }
+    fresh(); healthPasteApply(night+'\n'+line([N,'21:40',N,'22:20','Dormido'])+'\n'+line([N,'22:22',W,'00:02','Dormido']));
+    A('H6 · el pedazo de otra app con un hueco de 2 min tampoco cuenta, ni se va al día anterior', sleepMinOf(db.sleep[W])===306&&!db.sleep[N]);
+    fresh(); healthPasteApply(night+'\n'+line([N,'21:00',N,'22:15','Dormido']));
+    A('H6 · un rato dormido antes de la noche (sin encimarse) cuenta en el día de la noche, como en v348', sleepMinOf(db.sleep[W])===381&&!db.sleep[N]);
+    // la noche que el atajo trae cortada a medianoche no pisa a la guardada (la app sabe qué pidió); la de después sí entra
+    fresh(); healthPasteApply('trk2\n'+line([D(4),'23:00',D(3),'06:00','Esencial']));
+    { const sc=H().shortcut; sc.sleepFix=D(1); sc.plan={t:Date.now(),id:'c1',p:{steps:0,act:0,weight:0,sleep:3,rhr:0,hrv:0}};
+      const tx2=['trk2','ok in','ok id c1','ok cfg',line([D(3),'00:00',D(3),'06:00','Esencial']),line([D(2),'23:30',D(1),'06:30','Esencial']),'ok sleep','ok end'].join('\n'); healthPasteApply(tx2); healthPasteApply(tx2);
+      A('H6 · una noche cortada a medianoche no se escribe ni pisa su registro, aunque pegues dos veces', sleepMinOf(db.sleep[D(3)])===420&&db.health.sleepRaw[D(3)].length===1&&db.health.sleepRaw[D(3)][0][1]-db.health.sleepRaw[D(3)][0][0]===420*60000);
+      A('H6 · …la noche completa sí entra', sleepMinOf(db.sleep[D(1)])===420);
+      A('H6 · lo que llegó se anota (sueño) y la reparación de 14 noches se da por hecha', H().shortcut.got.sleep===D(2)&&!H().shortcut.skip.sleep&&!H().shortcut.sleepFix); }
+    // una vez: lo que llegó del atajo se da por existente y se piden otra vez las últimas 14 noches
+    { const sh={skip:{sleep:{t:Date.now()-86400000,n:1},act:{t:Date.now()-86400000,n:1}},got:{steps:D(6)}};
+      db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',sessions:[],health:{src:{sleep:{[D(2)]:'shortcut'},steps:{[D(1)]:'shortcut'},weight:{}},shortcut:sh}}); bumpIdx();
+      const sc=H().shortcut; A('H6 · una vez: el sueño que llegó deja de estar saltado y se piden otra vez 14 noches', sc.fix349===1&&!sc.skip.sleep&&!!sc.skip.act&&sc.got.sleep===D(2)&&sc.got.steps===D(1)&&sc.sleepFix===D(14)&&bioPlan().sleep>=15);
+      sc.skip.sleep={t:Date.now(),n:1}; const j=JSON.stringify(sc); migrate(db); A('H6 · …solo una vez', JSON.stringify(H().shortcut)===j); }
+    // GR7 · la fila del registro sigue al día que miras
+    fresh(); healthPasteApply(night); healthPasteApply('trk2\n'+line([D(2),'23:30',D(1),'06:30','Esencial']));
+    window._mdRange=30; window._mdEnd=null; window._mdCustom=null; openMetricDetail('sleep');
+    { const row=document.querySelector('#modal .line[data-act="sleepraw"]'); A('GR7 · la fila del registro existe', !!row);
+      sleepRawRowSync(W); A('GR7 · al deslizar, la fila del registro dice ese día', row.dataset.d===W&&row.querySelector('.v').textContent===fmtShort(W)+' ›');
+      sleepRawRowSync(D(10)); A('GR7 · un día sin registro lo dice', row.dataset.d===D(10)&&/sin registro/.test(row.querySelector('.v').textContent));
+      sleepRawRowSync(''); A('GR7 · de vuelta al promedio, la última noche', row.dataset.d===D(1)); }
+    closeModal(); openSleepRaw(D(10)); A('H6 · una noche sin registro lo dice (antes abría otra sin avisar)', /sin registro de esta noche/.test(document.getElementById('modal').textContent)); closeModal();
+    console.log('v349 self-check OK');
+  } finally { try{ closeModal(); }catch(_){} db=real; window._mdKey=mk; window._mdRange=mr; window._mdEnd=me; window._mdCustom=mc; bumpIdx(); }
 }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
@@ -9445,7 +9601,7 @@ function chartZoomReset(w){ const kind=w.dataset.kind; if(!kind)return; window._
     clearTimeout(hideT); w.classList.add('scrub');
     const sc=w.querySelector('.chscrub'); const L=(b.f*100)+'%';
     sc.querySelector('.chsl').style.left=L; const d=sc.querySelector('.chsd'); d.style.left=L; d.style.top=Math.max(0,Math.min(100,b.y*100))+'%';
-    if(b.d&&w.dataset.kind==='md'&&window._mdKey==='sleep'){ try{ slPhPick(b.d); }catch(_){} }   // v338 · GR7 · PHASES dice ese día
+    if(b.d&&w.dataset.kind==='md'&&window._mdKey==='sleep'){ try{ slPhPick(b.d); sleepRawRowSync(b.d); }catch(_){} }   // v338 · GR7 · PHASES dice ese día
     const t=sc.querySelector('.chst'); t.textContent=b.l||''; // C4 · la etiqueta se queda dentro de la gráfica a su ancho real (con el gym es más larga); una corta cae donde siempre (16–84 %)
     const sw=sc.clientWidth||1, hw=t.offsetWidth/2, lo=Math.max(hw,sw*0.16), hi=Math.min(sw-hw,sw*0.84); t.style.left=((lo>hi?sw/2:Math.min(hi,Math.max(lo,b.f*sw)))/sw*100)+'%'; }
   function hideSoon(w){ if(!w)return; clearTimeout(hideT); hideT=setTimeout(()=>{ try{ w.classList.remove('scrub'); }catch(_){} },1600); }
@@ -9935,14 +10091,14 @@ function ingestHealth(p,opts){ opts=opts||{}; const h=H(); const out={daily:0,sl
     if(+r.kg>=20&&+r.kg<=400&&h.src.weight[r.date]!=='manual'){ db.bodyweight=db.bodyweight||{}; db.bodyweight[r.date]=Math.round(+r.kg*100)/100; h.src.weight[r.date]=r.src||plat; out.body=(out.body||0)+1; }
     if(+r.fat>0&&+r.fat<80){ const d=h.daily[r.date]||(h.daily[r.date]={}); d.src=d.src||{}; if(d.src.fat!=='manual'){ d.fat=Math.round(+r.fat*10)/10; d.src.fat=r.src||plat; } } });
   if(out.body){ const ks=Object.keys(db.bodyweight).sort(); if(ks.length&&db.profile)db.profile.weightKg=db.bodyweight[ks[ks.length-1]]; }
-  if(p.sleepRaw)sleepRawStore(p.sleepRaw,p.sleep);   // v338 · H6 · lo que trajo el atajo, tal cual (14 noches)
-  const byDay={}; (p.sleep||[]).forEach(r=>{ if(!r||!(r.endMs>r.startMs))return; const k=isoOfMs(r.endMs); (byDay[k]=byDay[k]||[]).push(r); });
+  if(p.sleepRaw)sleepRawStore(p.sleepRaw,p.sleepAll||p.sleep,p.sleepDrop);   // v338 · H6 · lo que trajo el atajo, tal cual (14 noches)
+  const byDay={}; (p.sleep||[]).forEach(r=>{ if(!r||!(r.endMs>r.startMs))return; const k=r.day||isoOfMs(r.endMs); (byDay[k]=byDay[k]||[]).push(r); });
   Object.keys(byDay).forEach(day=>{
-    const segs=byDay[day].sort((a,b)=>a.startMs-b.startMs).map(r=>({startMs:r.startMs,endMs:r.endMs,stages:Array.isArray(r.stages)?r.stages.filter(x=>Array.isArray(x)&&x[1]>x[0]):[],src:r.src||plat}));
+    const segs=byDay[day].sort((a,b)=>a.startMs-b.startMs).map(r=>({startMs:r.startMs,endMs:r.endMs,stages:Array.isArray(r.stages)?r.stages.filter(x=>Array.isArray(x)&&x[1]>x[0]):[],src:r.src||plat,asl:r.asl!=null&&isFinite(+r.asl)?Math.round(+r.asl):undefined}));
     h.sleep[day]=segs;
     const cur=sleepBlocks(db.sleep&&db.sleep[day]); const auto=!cur.length||cur.every(b=>b&&typeof b==='object'&&b.src);
     if(auto){ db.sleep=db.sleep||{};
-      db.sleep[day]=segs.map(sg=>{ const st=hmOfMs(sg.startMs), ph=segPh(sg), _am=sleepRawAsl(p.sleepRaw,sg)!=null?sleepRawAsl(p.sleepRaw,sg):Math.round(asleepMin(sg)); return Object.assign({start:st,end:hmOfMs(sg.endMs),date:day,type:isNocturnal(st)?'nocturno':'siesta',hours:Math.round(_am/6)/10,asl:_am,src:sg.src},ph?Object.assign({ph,inBed:Math.round((sg.endMs-sg.startMs)/360000)/10},segWk(sg)!=null?{wk:segWk(sg)}:{}):{}); }).filter(b=>b.hours>0);
+      db.sleep[day]=segs.map(sg=>{ const st=hmOfMs(sg.startMs), ph=segPh(sg), _am=sg.asl!=null?sg.asl:Math.round(asleepMin(sg)); return Object.assign({start:st,end:hmOfMs(sg.endMs),date:day,type:isNocturnal(st)?'nocturno':'siesta',hours:Math.round(_am/6)/10,asl:_am,src:sg.src},ph?Object.assign({ph,inBed:Math.round((sg.endMs-sg.startMs)/360000)/10},segWk(sg)!=null?{wk:segWk(sg)}:{}):{}); }).filter(b=>b.hours>0);
       h.src.sleep[day]=plat; }
     out.sleep++; });
   (p.workouts||[]).forEach(r=>{ if(!r||!r.id||!(r.endMs>r.startMs))return; const o=h.workouts[r.id]||{};
@@ -10162,12 +10318,8 @@ function parseHealthPaste(text){ const lines=String(text||'').replace(/[\u200b\u
   bd.forEach(d=>{ const w=acc.weight[d], ft=acc.fat[d]; body.push({date:d,kg:w?Math.round(last(w)*100)/100:null,fat:ft?Math.round(last(ft)*10)/10:null,src:'shortcut'}); });
   // sueño: los tramos se agrupan en noches (hueco de más de 60 min = otro bloque, igual que el sync nativo); "en cama" sale si hay
   // fases; si dos fuentes (iPhone + reloj) se enciman, cada minuto cuenta una vez
-  sleep.sort((x,y)=>x[0]-y[0]); const _nb=sleep.filter(x=>x[2]!=='inBed'), _grp=_nb.concat(sleep.filter(x=>x[2]==='inBed'&&!_nb.some(y=>y[0]<x[1]&&y[1]>x[0]))).sort((x,y)=>x[0]-y[0]);   // v338 · H6 · un «en cama» largo ya no une dos tramos separados
-  const blocks=[]; _grp.forEach(sg=>{ const b=blocks[blocks.length-1]; if(b&&sg[0]-b.endMs<=60*60000){ b.endMs=Math.max(b.endMs,sg[1]); b.stages.push(sg); } else blocks.push({startMs:sg[0],endMs:sg[1],stages:[sg],src:'shortcut'}); });
-  blocks.forEach(b=>{ if(!b.stages.every(x=>x[2]==='inBed'))b.stages=b.stages.filter(x=>x[2]!=='inBed');
-    let end=0; const st=[]; b.stages.sort((x,y)=>x[0]-y[0]).forEach(x=>{ const a=Math.max(x[0],end); if(x[1]>a){ st.push([a,x[1],x[2]]); end=x[1]; } else end=Math.max(end,x[1]); });
-    b.stages=st; if(st.length){ b.startMs=st[0][0]; b.endMs=st[st.length-1][1]; } });
-  const days=new Set(Object.keys(daily).concat(body.map(b=>b.date)).concat(blocks.map(b=>isoOfMs(b.endMs))));
+  sleep.sort((x,y)=>x[0]-y[0]); const blocks=sleepGroup(sleep).blocks;   // v349 · H6 · un escritor por noche: lo de otra app encima de una noche con fases no cuenta (sleepOneWriter)
+  const days=new Set(Object.keys(daily).concat(body.map(b=>b.date)).concat(blocks.map(sleepDayOf)));
   const dl=Object.values(daily); if(!dl.length&&!body.length&&!blocks.length)return null;
   // v285 · qué clases de dato llegaron de verdad (ya filtradas): alimenta el "llegó ✓ / no llegó —" de la receta
   const has={steps:dl.some(x=>x.steps),weight:body.some(x=>x.kg>=20&&x.kg<=400),fat:body.some(x=>x.fat>0&&x.fat<80),sleep:blocks.length>0,rhr:dl.some(x=>x.rhr),hrv:dl.some(x=>x.hrv),act:dl.some(x=>x.activeKcal),bas:dl.some(x=>x.basalKcal)};
@@ -10176,13 +10328,18 @@ function parseHealthPaste(text){ const lines=String(text||'').replace(/[\u200b\u
 function hpAgo(ms){ const m=Math.round((Date.now()-ms)/60000); return m<60?Math.max(1,m)+' min':m<2880?Math.round(m/60)+' h':Math.round(m/1440)+' d'; }
 // v285 · el Atajo pide "los últimos 7 días" contados desde la hora en que corre: el día MÁS VIEJO del pegado llega cortado (sus pasos,
 // su energía y su noche, a medias). Ahí un total menor nunca pisa al que ya estaba guardado; los demás días se reemplazan como siempre.
-function hpEdge(p){ const h=H(), dl=p.daily||[];
+function hpEdge(p,pl){ const h=H(), dl=p.daily||[];
   // v294 · cada dato trae su propia ventana (bioPlan): el día más viejo de CADA uno llega cortado, no solo el más viejo del pegado
   // (aunque ese dato traiga un solo día: también es el primero de su ventana). Un total menor nunca pisa al guardado en ese día.
   [['steps',d=>+(db.steps&&db.steps[d])||0],['activeKcal',()=>0],['basalKcal',()=>0]].forEach(([k,ext])=>{ const ds=dl.filter(x=>x[k]).map(x=>x.date).sort(); if(!ds.length)return;
     const d=ds[0], r=dl.find(x=>x.date===d), old=Math.max(+(h.daily[d]||{})[k]||0,ext(d)); if(old>r[k])r[k]=old; });
-  const ns=Array.from(new Set((p.sleep||[]).map(b=>isoOfMs(b.endMs)))).sort();
-  if(ns.length>1){ const e=ns[0], mins=a=>(a||[]).reduce((s,b)=>s+asleepMin(b),0); if(mins(h.sleep[e])>mins(p.sleep.filter(b=>isoOfMs(b.endMs)===e)))p.sleep=p.sleep.filter(b=>isoOfMs(b.endMs)!==e); }
+  // v349 · H6 · "en los últimos N días" corta a MEDIANOCHE de hoy−N (lo enseñó su respaldo del 9-oct): la noche que despierta en hoy−N o
+  // antes (un día de margen: Atajos puede contar hoy como uno de los N) llega sin su principio. Con lo que pidió la app (pl) esas noches no se escriben; sin plan (pegado a mano), la más vieja no pisa
+  // a la guardada si trae menos (las dos contadas con la misma regla: un escritor por noche)
+  p.sleepAll=(p.sleep||[]).slice(); const ns=Array.from(new Set(p.sleepAll.map(sleepDayOf))).sort(); let dr=[];
+  if(pl&&pl.sleep>0){ const cut=hpCutDay(pl); dr=ns.filter(d=>d<=cut); }
+  else if(ns.length>1){ const e=ns[0], mins=a=>(a||[]).reduce((s,b)=>s+asleepMin({startMs:b.startMs,endMs:b.endMs,stages:sleepOneWriter(b.stages||[]).keep}),0); if(mins(h.sleep[e])>mins(p.sleep.filter(b=>sleepDayOf(b)===e)))dr=[e]; }
+  if(dr.length){ p.sleepDrop=dr; p.sleep=p.sleep.filter(b=>dr.indexOf(sleepDayOf(b))<0); }
   return p; }
 // v294 · lo más reciente que llegó de cada dato (la fecha de la muestra): la siguiente vez se piden los días desde ahí, así la búsqueda nunca queda vacía
 function hpLatest(p){ const o={}, up=(k,d)=>{ if(d&&(!o[k]||d>o[k]))o[k]=d; };
@@ -10212,8 +10369,9 @@ function bioPlan(){ const sc=H().shortcut, got=sc.got||{}, now=Date.now(), o={};
   HP_ORDER.forEach(k=>{ if(bioSkipped(k)){ o[k]=0; return; }
     if(HP_OPT.indexOf(k)>=0&&!got[k]){ if(probe){ o[k]=0; return; } probe=true; }   // un opcional que nunca ha llegado: UNA prueba por corrida (si falta, iOS detiene el atajo ahí)
     o[k]=got[k]?Math.min(3650,Math.max(2,Math.ceil((now-new Date(got[k]+'T00:00:00').getTime())/86400000)+1)):HP_HIST[k]; });
+  if(sc.sleepFix&&o.sleep>0)o.sleep=Math.max(o.sleep,Math.ceil((now-new Date(sc.sleepFix+'T00:00:00').getTime())/86400000)+1);   // v349 · H6 · una vez: las últimas 14 noches otra vez
   HP_GONE.forEach(k=>{ o[k]=0; }); return o; }
-function healthPasteApply(t){ const r=parseHealthPaste(t), L=hpLearn(t,r); if(!r)return null; ingestHealth(hpEdge(r.payload)); const h=H(); h.shortcut=Object.assign({},h.shortcut,{setup:true,lastPaste:Date.now(),lastSummary:r.summary,lastKinds:r.kinds}); if(/^[ \t]*ok[ \t]+cfg[ \t]*$/im.test(String(t)))h.shortcut.miss=0; /* v337 · lo que copió el atajo de ahora (con sus marcas) dice que sí existe, aunque se pegue a mano */ r.stop=L.stop; return r; }
+function healthPasteApply(t){ const pl=hpPlanFor(t), r=parseHealthPaste(t), L=hpLearn(t,r); if(!r)return null; ingestHealth(hpEdge(r.payload,pl)); hpArrived(r,pl); const h=H(); h.shortcut=Object.assign({},h.shortcut,{setup:true,lastPaste:Date.now(),lastSummary:r.summary,lastKinds:r.kinds}); if(/^[ \t]*ok[ \t]+cfg[ \t]*$/im.test(String(t)))h.shortcut.miss=0; /* v337 · lo que copió el atajo de ahora (con sus marcas) dice que sí existe, aunque se pegue a mano */ r.stop=L.stop; return r; }
 function healthPasteNow(fromBio){ const done=t=>{ t=String(t||'');
     if(fromBio&&bioMissed(t)){ const sc=H().shortcut; sc.miss=(+sc.miss||0)+1; sc.wait=0; sc.plan=null; healthLog('el atajo no corrió (sin lo que copia esta corrida)'); saveSoon(); openBioMiss(); return; }   // v337 · H5
     const k0=(H().shortcut.lastKinds||[]).join(), r=healthPasteApply(t); if(r){ bioDone(r,k0); return; }
@@ -10237,7 +10395,7 @@ function hpSkipHTML(){ const sk=HP_ORDER.filter(k=>bioSkipped(k)); return sk.len
 function hpLastHTML(){ const sc=H().shortcut||{}; if(!sc.lastPaste)return hpSkipHTML(); return '<div class="submeta u-mb10">último pegado · '+escTxt(agoTxt(sc.lastPaste))+(Array.isArray(sc.lastKinds)?'<br>'+bioKindsTxt(sc.lastKinds):'')+'</div>'+hpSkipHTML(); }
 let bioGo=u=>{ try{ location.href=u; }catch(_){} };   // salir a la app Atajos (la prueba la cambia por una que solo anota)
 // v294 · la entrada del atajo es el plan (texto JSON): `input=text&text=` es la forma documentada por Apple de pasarle texto a un atajo por URL
-function bioRunURL(p){ return 'shortcuts://run-shortcut?name='+encodeURIComponent(BIO_NAME)+'&input=text&text='+encodeURIComponent(JSON.stringify(p||bioPlan())); }
+function bioRunURL(p){ return 'shortcuts://run-shortcut?name='+encodeURIComponent(BIO_NAME)+'&input=text&text='+encodeURIComponent(JSON.stringify(bioWire(p||bioPlan()))); }
 // shortcut.bio = cuándo dijo "ya lo tengo" (el atajo que se descarga está en su iPhone) · shortcut.bioName = con qué nombre (v293, aditivo: otro nombre = hay que instalar el nuevo) · shortcut.wait = cuándo se mandó a correr (0 en cuanto se ofrece traer). Campos nuevos, sin migración.
 function bioWaiting(){ const sc=H().shortcut, w=+sc.wait||0; return w>0&&Date.now()-w<BIO_WAIT&&!(+sc.lastPaste>w); }   // corrió hace poco y todavía no trae los datos
 // v337 · H5 · el dueño (14-oct): "al picarle directamente me manda a ejecutar el shortcut pero como no hay no pasa nada". Una vez instalado,
@@ -10381,8 +10539,8 @@ function sleepBlocks(v){ if(v==null)return []; if(Array.isArray(v))return v; if(
 //     cada muestra, cuánto se encima (dos fuentes escribiendo a la vez: la suma del registro pasa de lo dormido) y cómo sale el número.
 // (3) Un «en cama» largo ya no une dos tramos separados (se agrupa sin él).
 const SLEEP_RAW_N=14;
-function sleepRawStore(raw,blocks){ if(!Array.isArray(raw)||!raw.length)return; const h=H(), out={};
-  raw.forEach(x=>{ if(!x||!(x[1]>x[0]))return; const b=(blocks||[]).find(b=>b.startMs<x[1]&&b.endMs>x[0]); const k=isoOfMs(b?b.endMs:x[1]); (out[k]=out[k]||[]).push([x[0],x[1],x[2]]); });
+function sleepRawStore(raw,blocks,drop){ if(!Array.isArray(raw)||!raw.length)return; const h=H(), out={};
+  raw.forEach(x=>{ if(!x||!(x[1]>x[0]))return; const b=(blocks||[]).find(b=>b.startMs<x[1]&&b.endMs>x[0]); const k=b?sleepDayOf(b):isoOfMs(x[1]); if(drop&&drop.indexOf(k)>=0)return; (out[k]=out[k]||[]).push([x[0],x[1],x[2]]); });
   h.sleepRaw=Object.assign({},h.sleepRaw||{},out); const ks=Object.keys(h.sleepRaw).sort(); ks.slice(0,Math.max(0,ks.length-SLEEP_RAW_N)).forEach(k=>{ delete h.sleepRaw[k]; }); }
 // minutos dormidos de un bloque sincronizado según su registro: `asl` si lo trae; si no, sus tramos guardados en health.sleep (sin escribir)
 function sleepAslOf(b){ if(!b||!b.src)return null; if(b.asl!=null&&isFinite(+b.asl))return +b.asl; const segs=(db.health&&db.health.sleep&&db.health.sleep[b.date])||[];
@@ -10391,31 +10549,9 @@ function sleepAslOf(b){ if(!b||!b.src)return null; if(b.asl!=null&&isFinite(+b.a
 // dice despierto y otra dormido, cuenta dormido). null si el pegado no trae registro.
 function sleepRawAsl(raw,sg){ if(!Array.isArray(raw)||!raw.length||!sg)return null; const xs=raw.filter(x=>x&&SLEEP_ASLEEP[x[2]]&&x[1]>sg.startMs&&x[0]<sg.endMs).map(x=>[Math.max(x[0],sg.startMs),Math.min(x[1],sg.endMs)]); return xs.length?Math.round(msUnion(xs)):null; }
 function msUnion(xs){ const s=xs.slice().sort((a,b)=>a[0]-b[0]); let tot=0, a=null, e=null; s.forEach(x=>{ if(a==null||x[0]>e){ if(a!=null)tot+=e-a; a=x[0]; e=x[1]; } else e=Math.max(e,x[1]); }); if(a!=null)tot+=e-a; return tot/60000; }
-function sleepRawStats(day){ const raw=(((db.health&&db.health.sleepRaw)||{})[day]||[]).slice().sort((a,b)=>a[0]-b[0]); if(!raw.length)return null;
-  const asl=raw.filter(x=>SLEEP_ASLEEP[x[2]]), ib=raw.filter(x=>x[2]==='inBed'), sum=asl.reduce((a,x)=>a+(x[1]-x[0])/60000,0), ph={awake:0,rem:0,core:0,deep:0,asleep:0};
-  raw.forEach(x=>{ const k=x[2]==='light'?'core':x[2]; if(ph[k]!=null)ph[k]+=(x[1]-x[0])/60000; });
-  const v=db.sleep&&db.sleep[day];
-  const aw=raw.filter(x=>x[2]==='awake'), awOv=aw.length&&asl.length?Math.round(msUnion(aw)+msUnion(asl)-msUnion(aw.concat(asl))):0, nb=raw.filter(x=>x[2]!=='inBed');
-  return {raw,n:raw.length,nIb:ib.length,sum:Math.round(sum),uni:Math.round(msUnion(asl)),dup:Math.round(sum-msUnion(asl)),awOv,inBed:Math.round(msUnion(ib.length?ib:raw)),ph,
-    over:raw.map(x=>x[2]!=='inBed'&&nb.some(y=>y!==x&&y[0]<x[1]&&y[1]>x[0]&&(!!SLEEP_ASLEEP[x[2]]||!!SLEEP_ASLEEP[y[2]]))),app:v!=null?sleepMinOf(v):0,manual:sleepBlocks(v).some(b=>b&&typeof b==='object'&&!b.src)}; }
 const SLEEP_RAW_LBL={deep:'profundo',core:'core',light:'ligero',rem:'REM',awake:'despierto',asleep:'dormido',inBed:'en cama'};
 function sleepRawRowHTML(){ const ks=Object.keys((db.health&&db.health.sleepRaw)||{}).sort(); if(!ks.length)return ''; const d=ks[ks.length-1];
   return '<div class="line lnav" role="button" tabindex="0" data-act="sleepraw" data-d="'+d+'"><span class="k">registro de la noche</span><span class="dots"></span><span class="v">'+escTxt(fmtShort(d))+' ›</span></div>'; }
-function openSleepRaw(day){ const ks=Object.keys((db.health&&db.health.sleepRaw)||{}).sort(), L=(k,v)=>'<div class="line"><span class="k">'+k+'</span><span class="dots"></span><span class="v">'+v+'</span></div>', M=m=>m>0?fmtDur(m):'—';
-  if(!ks.length){ openModal('<h3>registro del sueño</h3><div class="submeta u-mb10">llega con el próximo sync biometrics.</div><div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div>'); return; }
-  const d=ks.indexOf(day)>=0?day:ks[ks.length-1], i=ks.indexOf(d), S=sleepRawStats(d), B=(t,x,on)=>'<button type="button" class="b" data-act="sleepraw" data-d="'+(x||'')+'"'+(on?'':' disabled')+' aria-label="'+t+'">'+(t==='noche anterior'?'‹':'›')+'</button>';
-  const PH=sleepPhDay(d)||S.ph;   // las fases de la noche como las cuenta la app (sin lo encimado dos veces), igual que PHASES
-  const cells=[['deep','profundo'],['core','core'],['rem','REM'],['awake','despierto']].map(([k,l])=>'<span class="cpc"><span><span class="slsw hy-'+k+'"></span>'+l+'</span><b>'+M(PH[k])+'</b></span>').join('');
-  const list=S.raw.map((x,j)=>'<div class="slrw'+(S.over[j]?' on':'')+'">'+hmOfMs(x[0])+'–'+hmOfMs(x[1])+' · '+(SLEEP_RAW_LBL[x[2]]||x[2])+(S.over[j]?' · encima':'')+'</div>').join('');
-  openModal('<h3>registro del sueño</h3>'
-    +L('noche',B('noche anterior',ks[i-1],i>0)+' '+escTxt(fmtShort(d))+' '+B('noche siguiente',ks[i+1],i<ks.length-1))
-    +L('dormido · la app',M(S.app))+L('dormido · el registro',M(S.uni))
-    +(S.dup>0?L('se enciman',M(S.dup)+' · dos fuentes a la vez'):'')+(S.awOv>0?L('despierto y dormido',M(S.awOv)+' · cuenta dormido'):'')
-    +L('en cama',M(S.inBed))+(S.ph.asleep>0?L('dormido sin fase',M(S.ph.asleep)):'')
-    +'<div class="grp-label sub u-mt8">fases · como las cuenta la app</div><div class="cpr cpr4 u-mb10">'+cells+'</div>'
-    +(S.manual?'<div class="submeta u-mb10">esta noche la tecleaste: el atajo ya no la cambia.</div>':'')
-    +'<div class="grp-label sub">'+S.n+' muestras</div><div class="slrl">'+list+'</div>'
-    +'<div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div>','top'); }   // abre arriba: al pasar de noche la hoja crece hacia abajo y ‹ › no se mueven bajo el dedo
 // v338 · GR7 · el dueño (14-oct): "poder ver el resumen, el promedio semanal en la gráfica, pero también ver lo del día". Al deslizar la
 // gráfica de sueño, PHASES dice ESE día: sus 4 fases y su puntaje (tu noche contra 8.2 h: la misma parte "anoche" del readiness, con su
 // fuente); se queda en ese día hasta tocar PHASES, que vuelve al promedio. Solo cambia texto: nada se mueve ni cambia de alto.
@@ -13348,7 +13484,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='biounskip'){ H().shortcut.skip={}; saveSoon(); closeModal(); toast('✓ se buscará todo otra vez'); }
   else if(a==='biosetup'){ openBioInstall(); }
   else if(a==='sleepraw'){ openSleepRaw(el.dataset.d||''); }   // v338 · H6
-  else if(a==='slphavg'){ slPhPick(''); }   // v338 · GR7
+  else if(a==='slphavg'){ slPhPick(''); sleepRawRowSync(''); }   // v338 · GR7
   else if(a==='biocopy'){ const u=bioPageURL(), no=()=>{ const m=askLayer('<h3>copiar enlace</h3><div class="field"><input readonly value="'+escTxt(u)+'"/></div><div class="sheetbtns"><button class="cancel" data-ask="no">cerrar</button></div>'); m.addEventListener('click',ev=>{ if(ev.target.closest&&ev.target.closest('[data-ask]')){ ev.stopPropagation(); closeAsk(); } }); };   // encima de la hoja: instalar y [ya lo tengo] siguen ahí
     try{ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(()=>toast('✓ enlace copiado · pégalo en Safari'),no); else no(); }catch(_){ no(); } }
   else if(a==='atajohtml'){ bioHtml(); }
@@ -17724,7 +17860,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
