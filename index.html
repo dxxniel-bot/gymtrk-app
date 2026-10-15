@@ -1453,7 +1453,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v334';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v335';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2286,9 +2286,28 @@ function pinUnit(ex,u0){ if(!u0||!ex||isCardio(ex))return; const u=String(u0).to
 // vez de desaparecer en silencio (setPersistable sigue tirando las sugerencias que nunca tocaste).
 function touchedSets(w){ const out=[]; ((w&&w.exercises)||[]).forEach(e=>(e.sets||[]).forEach(s=>{ if(pfTouched(s)&&(s.bw||+s.w>0)&&+s.r>0)out.push(s); })); return out; }
 function setPersistable(s){ if(!s||s._pf)return false;
-  if(s.w||s.r)return true;
+  if(setReps(s)>0)return true;   // v335 · G13 · sin reps no es una serie (antes bastaba el peso: el peso corporal que pone la app guardaba series que nunca hiciste)
   return !!(s.minutes||s.distance||s.speed||s.incline||s.resistance||s.rpm||s.level||s.floors||s.strokeRate||s.calories||s.hr);
 }
+// v335 · G12 · el ✓ pide RIR. El dueño (14-oct): "no debería de dejarte marcar una serie como hecha si es que no está el RIR puesto".
+// Sin ningún RIR, el ✓ no marca: abre el selector de ESA serie y, al elegir, la serie queda hecha por el mismo camino que el ✓ (su
+// hora, su descanso, su deshacer). El RIR gris que sugiere la app SÍ cuenta (su decisión del 14-oct): el ✓ lo confirma como siempre.
+// El selector es un popover: nada cambia de alto ni se mueve el scroll.
+function askRirThenDone(exi,si){ const b=document.querySelector('#view .ex[data-exi="'+exi+'"] [data-f="rir"][data-si="'+si+'"]');
+  if(!b||b.tagName!=='BUTTON'){ toast('falta el RIR de esta serie'); return false; }
+  openRirSelect(b,false,()=>{ const d=document.querySelector('#view .dchk[data-act="done"][data-exi="'+exi+'"][data-si="'+si+'"]'); if(d)d.click(); });
+  profNote('falta el RIR · al elegirlo la serie queda hecha'); return true; }
+// desde el aviso de guardar: lleva a la serie (showEl solo baja lo necesario) y abre su RIR
+function completeRir(exi,si){ const b=document.querySelector('#view .ex[data-exi="'+exi+'"] [data-f="rir"][data-si="'+si+'"]'); if(!b)return;
+  const sc=scrollerOf(b), y0=sc?sc.scrollTop:0, go=()=>{ if(b.isConnected)askRirThenDone(exi,si); }; showEl(b); if(sc&&sc.scrollTop!==y0)setTimeout(go,160); else go(); }
+// v335 · G13 · qué se guarda. El dueño: "si no hay RIR y no hay check, no se tiene que interpretar como que se hizo algo". Una serie
+// sin reps no se guarda (setPersistable). Lo escrito sin ✓ queda HECHO solo si trae RIR (el gris sugerido vale); con reps y sin RIR no
+// se guarda, y el aviso de guardar lo dice antes (con [completar], que lleva a su RIR). Una sugerencia que nunca tocaste, como siempre,
+// no se guarda. Antes (v223) lo escrito sin ✓ se guardaba sin marcar y el aviso decía "se cuenta como hecha" aunque no lo estaba.
+function settleSets(w){ const ok=[], no=[]; ((w&&w.exercises)||[]).forEach((e,ei)=>{ if(!e||isCardio(e))return; (e.sets||[]).forEach((s,si)=>{
+    if(!s||s.done||setReps(s)<=0)return; if(s._pf&&!pfTouched(s))return; (rirKnown(s)?ok:no).push({s,ei,si}); }); }); return {ok,no}; }
+function settleApply(S){ ((S&&S.ok)||[]).forEach(x=>{ pfClearAll(x.s); x.s.done=true; }); }
+function setSaveOk(s,e){ return setPersistable(s)&&(isCardio(e)||!!(s&&s.done)); }
 function emptySet(ex,side,isDrop,src){
   // cardio sets: distinct field bag (no w/r/rir); still reuses the exercise.sets[] list
   if(ex&&String(ex.type||'').toLowerCase()==='cardio'){
@@ -2334,7 +2353,8 @@ function seedSets(ex,fallbackN,ctx){
   // v266 · el lado solo en unilaterales · v279 · una base sin lados no sirve de molde para un unilateral (quedaba sin pares
   // y "no se actualizaba"), y el orden de cada par sigue al lado por el que se empieza HOY
   const _u=uniOf(ex);
-  if(last&&last.length&&(!_u||last.every(s=>s&&s.side))){ const out=last.map(s=>emptySet(ex,_u?(s.side||null):null,!!s.isDrop,s)); if(_u)swapSides({startSide:ex.startSide,sets:out}); return out; }
+  const _last=(last&&!_u)?last.filter(setPersistable):last;   // v335 · una serie vieja sin reps no vuelve como sugerencia gris (en unilateral se conservan los pares)
+  if(_last&&_last.length&&(!_u||_last.every(s=>s&&s.side))){ const out=_last.map(s=>emptySet(ex,_u?(s.side||null):null,!!s.isDrop,s)); if(_u)swapSides({startSide:ex.startSide,sets:out}); return out; }
   const fromKey=ctx.fromKey||leafMovedInto(ex);   // v289 · también cuando el split ya trae la variante nueva
   if(fromKey&&!_u){ const rows=exHistRows(fromKey), r=rows.find(x=>gymMatch(x.gym,gym))||null;
     if(r&&!(r.sets||[]).some(s=>s&&s.bw)===!(ex.type==='bodyweight')){ const src=collapsePairs((r.sets||[]).filter(setPersistable)).sets, out=src.map(s=>emptySet(ex,null,!!s.isDrop,s)); if(out.length)return out; } }
@@ -6557,6 +6577,36 @@ function _v334SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
       state.macroDate=D(1); const e2=document.createElement('input'); e2.type='time'; e2.dataset.mt='breakfast'; mealClockArm(e2,true); A('D4b · …y en otro día nace vacío: no se inventa', e2.value===''); }
     console.log('v334 self-check OK');
   } finally { try{ closeModal(); }catch(_){} ghost(); save=_sv; reRender=_rr; toast=_t; db=real; window._stackTab=tab0; K.forEach(k=>{ state[k]=st0[k]; }); _sbx=sb0; bumpIdx(); } }
+// self-check de v335 (G12 · G13 · el nombre que brincaba). Base de juguete; reRender y toast se sustituyen; todo se restaura en finally.
+function _v335SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v335: '+nm); }; const real=db, c0=state._curEx, f0=state._focusSet, p0=state._pop, rr=reRender, rf=_restFinT, t0=toast, sc0=state.screen; let btn=null, host=null, tn=0;
+  try{ const S=o=>Object.assign({w:'60',r:'8',rir:'',unit:'lbs',done:false},o||{});
+    db=migrate({profile:{username:'t'},gyms:['g1'],activeGym:'g1',split:{name:'s',days:[{id:'d1',name:'A',exercises:[{id:'eB',name:'press',muscle:'chest',type:'free',unilateral:false,sets:2}]}]},sessions:[]});
+    db.activeWork={id:'w',date:todayISO(),dayId:'d1',gym:'g1',startMs:Date.now(),exercises:[{exId:'eB',name:'press',muscle:'chest',type:'free',unilateral:false,sets:[S(),S({r:''}),S({rir:'1',done:true})]},
+      {name:'bici',muscle:'quads',type:'cardio',cardioSub:'bike',sets:[{minutes:'10',distance:'',speed:'',incline:'',resistance:'',rpm:'',level:'',floors:'',strokeRate:'',calories:'',hr:'',intensity:'moderada',isDrop:false,done:false}]}]}; bumpIdx();
+    const w=db.activeWork, ex=w.exercises[0]; reRender=function(){}; toast=function(){ tn++; return null; }; state.screen='workout'; state._curEx=0;
+    host=document.createElement('div'); host.className='wfocus'; host.innerHTML=renderExercise(0,ex,sessIctx(w),false); document.getElementById('view').appendChild(host);
+    btn=document.createElement('button'); btn.type='button'; btn.hidden=true; btn.dataset.act='done'; document.getElementById('app').appendChild(btn);
+    const tap=(exi,si)=>{ btn.dataset.exi=String(exi); btn.dataset.si=String(si); btn.click(); };
+    tap(0,0); const p=document.getElementById('tsel');
+    A('G12 · sin RIR el ✓ no marca: abre el selector de esa serie y dice por qué', ex.sets[0].done===false&&!!p&&/falta el RIR/.test(p.textContent)&&!w.restEnd);
+    const o1=[...p.querySelectorAll('.tselo')].find(b=>b.textContent==='1'); o1.click();
+    A('G12 · al elegir el RIR la serie queda hecha, con su hora y su descanso', ex.sets[0].done===true&&ex.sets[0].rir==='1'&&ex.sets[0].doneAt>0&&w.restEnd>Date.now()&&!document.getElementById('tsel'));
+    let n0=tn; tap(0,1); A('G12 · sin reps no se marca y lo dice', ex.sets[1].done===false&&tn===n0+1&&!document.getElementById('tsel'));
+    ex.sets[2].rir=''; tap(0,2); A('G12 · desmarcar no pide nada', ex.sets[2].done===false);
+    tap(1,0); A('G12 · cardio no pide RIR', w.exercises[1].sets[0].done===true);
+    ex.sets[2]=S({rir:'2',_pf:true,_pfF:{w:1,r:1,rir:1},_pfN:3}); tap(0,2); A('G12 · el RIR gris que sugiere la app cuenta: el ✓ lo confirma', ex.sets[2].done===true&&ex.sets[2]._pf===false);
+    ex.sets[1]=S(); A('G12 · el ✓ del pie no ofrece una serie sin RIR', footDoneTarget()===null); ex.sets[1].rir='1'; A('…y con RIR sí', (t=>!!t&&t.si===1)(footDoneTarget()));
+    const P=o=>Object.assign(S(),o||{}), e0={name:'x',type:'free',sets:[P({rir:'1',_pf:true,_pfF:{w:1,r:1,rir:1},_pfN:3}),P({r:''}),P(),P({rir:'2'}),P({rir:'1',done:true})]}, wk={exercises:[e0]};
+    const St=settleSets(wk); A('G13 · al guardar: lo escrito con RIR queda hecho y lo que trae reps sin RIR se nombra', St.ok.length===1&&St.ok[0].si===3&&St.no.length===1&&St.no[0].si===2);
+    settleApply(St); const kept=e0.sets.filter(s=>setSaveOk(s,e0));
+    A('G13 · se guardan solo las dos hechas (la escrita con RIR sale con ✓); la sugerida, la de solo peso y la de reps sin RIR no', kept.length===2&&kept.every(s=>s.done)&&kept[0]===e0.sets[3]&&kept[1]===e0.sets[4]);
+    A('G13 · sin reps no se guarda (peso tecleado o el peso corporal que pone la app)', setPersistable({w:'60',r:''})===false&&setPersistable({bw:true,w:'70',r:''})===false&&setPersistable({w:'60',r:'8'})===true&&setPersistable({minutes:'10'})===true);
+    host.innerHTML=renderExercise(0,ex,sessIctx(w),false); const hd=host.querySelector('.exhead'), nm=hd.querySelector('.n[data-act="editexname"]'), x0=nm.getBoundingClientRect().left;
+    updateProgBadge(0); updateProgBadge(0); const chip=hd.querySelector('.exT');
+    A('el nombre no brinca al teclear ni al elegir un RIR (Δx = 0) y las insignias van detrás de él', !!chip&&Math.abs(nm.getBoundingClientRect().left-x0)<0.5&&hd.querySelector('.n')!==nm&&!!(nm.compareDocumentPosition(chip)&Node.DOCUMENT_POSITION_FOLLOWING)&&hd.querySelectorAll('.exT').length===1);
+    console.log('v335 self-check OK');
+  } finally { try{ popClose(); }catch(_){} reRender=rr; toast=t0; if(btn)btn.remove(); if(host)host.remove(); exHoldClear(); db=real; state._curEx=c0; state._focusSet=f0; state._pop=p0; state.screen=sc0; _restFinT=rf; bumpIdx(); }
+}
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -6895,7 +6945,9 @@ function muscleWindowScore(muscle,startISO,endISO){ return muscleWindowTension(m
 function muscleProgress(muscle){ const now=new Date(); const c7=new Date(now); c7.setDate(now.getDate()-6); const c14=new Date(now); c14.setDate(now.getDate()-13); const tomorrow=new Date(now); tomorrow.setDate(now.getDate()+1); const cur=muscleWindowScore(muscle,todayISO(c7),todayISO(tomorrow)); const prev=muscleWindowScore(muscle,todayISO(c14),todayISO(c7)); const pr=progFromScores(cur,prev); return pr?Object.assign(pr,{cur,prev}):{dir:null,pct:0,cur,prev}; }
 // live-update the badge while logging (setField avoids a full re-render to keep input focus)
 function exTensChip(tn){ return (tn&&tn.total>0)?`<span class="exT" data-gloss="t" title="σ del ejercicio en esta sesión (suma de sus series)${tn.est?' · incluye RIR estimado':''}">${tn.est?'~':''}σ ${fmtSig(tn.total)}</span>`:''; }
-function updateProgBadge(exi){ const w=db.activeWork; if(!w||!w.exercises[exi])return; const nm=document.querySelector('.exhead .n[data-exi="'+exi+'"]'); if(!nm)return; const ex=w.exercises[exi]; const _t=isCardio(ex)?null:exTensionSets(w,exi); const html=progBadgeHTML(ex,_t)+(isCardio(ex)?'':exTensChip(_t)); ['exprog','exzones','exT'].forEach(cls=>{ const el=nm.parentElement.querySelector('.'+cls); if(el)el.remove(); }); if(html)nm.insertAdjacentHTML('afterend',html); }
+// v335 · desde v279 el primer `.n[data-exi]` de la cabecera es el corchete [bi]: las insignias se metían ANTES del nombre y lo empujaban
+// ~80 px en cada tecla. Ahora se busca el nombre y se pone detrás de él y de su * / resistencia, en el mismo orden que el render.
+function updateProgBadge(exi){ const w=db.activeWork; if(!w||!w.exercises[exi])return; const hd=document.querySelector('#view .ex[data-exi="'+exi+'"] .exhead'), nm=hd&&hd.querySelector('.n[data-act="editexname"]'); if(!nm)return; const ex=w.exercises[exi]; const _t=isCardio(ex)?null:exTensionSets(w,exi); const html=progBadgeHTML(ex,_t)+(isCardio(ex)?'':exTensChip(_t)); ['exprog','exzones','exT'].forEach(cls=>{ const el=hd.querySelector('.'+cls); if(el)el.remove(); }); if(html){ const rp=hd.querySelector('.exstar,.exrp'); (rp||nm).insertAdjacentHTML('afterend',html); } }
 // also update per-set zone color in-place (called from setField after a weight/reps/RIR change)
 function updateSetZone(exi,si){ const w=db.activeWork; if(!w||!w.exercises[exi])return; const s=w.exercises[exi].sets[si]; if(!s)return; const z=setZone(s); const el=document.querySelector('.setn[data-exi="'+exi+'"][data-si="'+si+'"]'); if(!el)return; el.style.color=''; }   // v272 · sin color por zona (salía de reps+RIR, no de la carga); se conserva para limpiar un color viejo
 // live update of the per-set ▲/▼% badge line (uni: anchored on the EVEN index of each pair).
@@ -11942,7 +11994,7 @@ function _restFocusSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
 function footDoneOn(){ return !(db&&db.settings&&db.settings.footDone===false); }
 function footDoneTarget(){ const w=db&&db.activeWork; if(!w||!w.exercises||state.screen!=='workout')return null; const t=currentSetTarget(); if(!t)return null;
   const e=w.exercises[t.exi]; if(!e||isCardio(e))return null; let si=t.si; if(e.unilateral&&e.sets[si]&&e.sets[si].done)si=si+1;
-  const s=e.sets[si]; if(!s||s.done)return null; const r=parseFloat(s.r)||0, wv=parseFloat(s.w)||0; if(!(r>0)||!(wv>0||s.bw))return null;
+  const s=e.sets[si]; if(!s||s.done)return null; const r=parseFloat(s.r)||0, wv=parseFloat(s.w)||0; if(!(r>0)||!(wv>0||s.bw))return null; if(!rirKnown(s))return null;   // v335 · G12 · el pie no ofrece lo que no puede confirmar
   return {exi:t.exi,si,s,e,label:t.label,tot:t.tot}; }
 function footDonePaint(){ const b=document.querySelector('#wfooter .fdone'); if(!b)return; const t=footDoneOn()?footDoneTarget():null;
   if(!t){ if(!b.hidden)b.hidden=true; return; }
@@ -12645,7 +12697,9 @@ document.getElementById('app').addEventListener('click',e=>{
     // v282 · unilateral: cada lado es su serie (antes un ✓ marcaba el par R+L y el descanso arrancaba tras los dos). El dueño: "haces un
     // lado, descansas un poco y haces el otro… el tiempo de descanso es menor, que sea customizable": entre lados corre restSideSec(); tras
     // el segundo lado, el descanso normal.
-    { const st=ex.sets[si]; if(!st)return; st.done=!st.done; nowDone=st.done; if(nowDone)pfClearAll(st); }
+    { const st=ex.sets[si]; if(!st)return;
+      if(!st.done&&!isCardio(ex)){ if(!(setReps(st)>0)){ toast('faltan las reps de esta serie'); return; } if(!rirKnown(st)){ askRirThenDone(exi,si); return; } }   // v335 · G12 · sin RIR abre su selector; al elegir queda hecha
+      st.done=!st.done; nowDone=st.done; if(nowDone)pfClearAll(st); }
     const _p0=ex.unilateral?Math.floor(si/2)*2:si, _mate=ex.unilateral?ex.sets[_p0+(si===_p0?1:0)]:null, _side=!!(_mate&&!_mate.done);
     if(nowDone&&!w.loggedAfter){ const sec=_side?restSideSec():(db.settings.restSec||90); w.restKind=_side?'side':''; if(sec>0){ restAudioInit(); w.restEnd=Date.now()+sec*1000; _restFinT=0; } else w.restEnd=null; }
     if(nowDone)ex.sets[si].doneAt=Date.now();
@@ -13309,15 +13363,14 @@ function restructureLat(ex,to,ctx){ to=latNorm(to); const wasUni=uniOf(ex), toUn
   ex.sets.forEach(s=>{ if(!has(s))return; if(s.lr)delete s.lr; s.side=a; out.push(s); out.push(emptySet(ex,b,!!s.isDrop,s)); });
   ex.sets=out; }
 function mapWorkExercises(w){
-  return w.exercises.map(e=>{ unitPrefSync(e,w.gym); const r=machineRec(w.gym,e); return {exId:e.exId||null,name:e.name,muscle:e.muscle,muscles:Array.isArray(e.muscles)?e.muscles.slice():undefined,type:e.type,unilateral:e.unilateral,lat:e.lat,startSide:e.startSide,assisted:e.assisted,weighted:e.weighted,cardioSub:e.cardioSub,unit:e.unit,note:e.note||'',machine:r.na?'':r.brand,setup:r.na?'':r.setup,sets:e.sets.filter(setPersistable)};});
+  return w.exercises.map(e=>{ unitPrefSync(e,w.gym); const r=machineRec(w.gym,e); return {exId:e.exId||null,name:e.name,muscle:e.muscle,muscles:Array.isArray(e.muscles)?e.muscles.slice():undefined,type:e.type,unilateral:e.unilateral,lat:e.lat,startSide:e.startSide,assisted:e.assisted,weighted:e.weighted,cardioSub:e.cardioSub,unit:e.unit,note:e.note||'',machine:r.na?'':r.brand,setup:r.na?'':r.setup,sets:e.sets.filter(s=>setSaveOk(s,e))};});   // v335 · G13 · en fuerza solo lo hecho (settleApply ya marcó lo escrito con RIR)
 }
 function saveSession(){
   const w=db.activeWork; if(!w){go('home');return;}
-  const savable=setPersistable;
-  const touched=touchedSets(w);   // v223: escritas a mano, sin ✓ — se cuentan, no se tiran
-  const has=w.exercises.some(e=>e.sets.some(savable))||touched.length>0;
+  const S=settleSets(w);   // v335 · G13 · lo escrito sin ✓: con RIR queda hecho; con reps y sin RIR no se guarda
+  const has=w.exercises.some(e=>e.sets.some(s=>setSaveOk(s,e)))||S.ok.length>0;
   const commit=()=>{
-  touched.forEach(pfClearAll);
+  settleApply(S);
   const sess={id:w.id,date:w.date,dayId:w.dayId,dayName:w.dayName,gym:w.gym,metric:w.metric==='rpe'?'rpe':undefined,type:'training',savedMs:Date.now(),loggedAfter:!!w.loggedAfter,durSec:w.loggedAfter?((parseInt(w.manualDur,10)||0)*60):(w.startMs?Math.round((Date.now()-w.startMs)/1000):0),startTime:w.loggedAfter?(w.startTime||null):(w.startTs||null),endTime:w.loggedAfter?(w.endTime||null):nowHM(),startMs:w.loggedAfter?null:(w.startMs||null),endMs:w.loggedAfter?null:Date.now(),
     exercises:mapWorkExercises(w)};
   carryPre(sess,w);   // E6 · la foto de recovery/readiness del inicio viaja con la sesión
@@ -13335,10 +13388,11 @@ function saveSession(){
     const _ns=sess.exercises.reduce((x,e)=>x+((e.sets||[]).length),0); toast('✓ sesión guardada · '+_ns+' serie'+(_ns===1?'':'s'));
     setTimeout(()=>{ try{ nudgeBackup('acabas de cerrar una sesión y '); }catch(_){} },1200);   // v255: el momento en que más duele perderla
   };
-  if(!has) return trkAsk({title:'guardar sin series',detail:'no registraste ninguna serie en esta sesión',ok:'guardar igual'},commit);
-  const n=w.exercises.reduce((a,e)=>a+e.sets.filter(s=>(savable(s)||touched.indexOf(s)>=0)&&(s.rir===''||s.rir==null)).length,0);
-  const pl=touched.length>1?'s':'';
-  const bits=[n>0?n+' serie'+(n>1?'s':'')+' sin RIR':'', touched.length?touched.length+' serie'+pl+' escrita'+pl+' sin ✓ se cuenta'+(touched.length>1?'n':'')+' como hecha'+pl:''].filter(Boolean);
+  if(!has&&!S.no.length) return trkAsk({title:'guardar sin series',detail:'no registraste ninguna serie en esta sesión',ok:'guardar igual'},commit);
+  const pl=k=>k===1?'':'s', nr=w.exercises.reduce((a,e)=>a+(isCardio(e)?0:e.sets.filter(s=>s&&s.done&&setReps(s)>0&&!rirKnown(s)).length),0), no=S.no.length, ok=S.ok.length;
+  const bits=[nr?nr+' serie'+pl(nr)+' hecha'+pl(nr)+' sin RIR':'', ok?ok+' serie'+pl(ok)+' escrita'+pl(ok)+' sin ✓ queda'+(ok>1?'n':'')+' hecha'+pl(ok):''].filter(Boolean);
+  if(no){ const f0=S.no[0];   // v335 · lo dice ANTES: completar lleva a su RIR; guardar sin ellas no las guarda; tocar fuera no hace nada
+    return trkAsk({title:'faltan RIR',detail:[no+' serie'+pl(no)+' con reps y sin RIR no se guarda'+(no>1?'n':'')].concat(bits).join(' · '),ok:'completar',cancel:'guardar sin '+(no>1?'ellas':'ella'),dismiss:()=>{}},()=>completeRir(f0.ei,f0.si),commit); }
   trkAsk({title:'finalizar la sesión',detail:bits.length?bits.join(' · '):'se guarda en tu historial',ok:'guardar sesión'},commit);
 }
 // last REAL activity in a live session: the most recent doneAt stamp (existing since v201), lastTouch, or
@@ -13364,7 +13418,7 @@ const AUTO_END_IDLE_MS=10*60*1000;
 function finalizeIdleSession(){
   const w=db.activeWork; if(!w)return false;
   const last=sessionIdleEnd(w); if(!last)return false;
-  touchedSets(w).forEach(pfClearAll);   // v223: lo escrito sin ✓ también se conserva al cerrar por inactividad
+  settleApply(settleSets(w));   // v335 · lo escrito sin ✓ con RIR queda hecho; con reps y sin RIR no se guarda (el aviso de inactividad lo dice)
   const endMs=last+AUTO_END_IDLE_MS; const endD=new Date(endMs);
   const sess={id:w.id,date:w.date,dayId:w.dayId,dayName:w.dayName,gym:w.gym,metric:w.metric==='rpe'?'rpe':undefined,type:'training',savedMs:endMs,loggedAfter:false,autoEnded:true,
     durSec:w.startMs?Math.max(0,Math.round((endMs-w.startMs)/1000)):0,
@@ -13389,7 +13443,7 @@ function promptIdleSession(){
   if(document.getElementById('modal'))return;
   const last=sessionIdleEnd(w); const lastD=new Date(last); const endD=new Date(last+AUTO_END_IDLE_MS);
   openModal(`<h3>${escTxt(w.dayName||'sesión')}</h3>
-   <div class="submeta gap">sin actividad desde las ${pad(lastD.getHours())}:${pad(lastD.getMinutes())}</div>
+   <div class="submeta gap">sin actividad desde las ${pad(lastD.getHours())}:${pad(lastD.getMinutes())}${(k=>k?' · '+k+' serie'+(k>1?'s':'')+' con reps y sin RIR no se guarda'+(k>1?'n':'')+' al cerrar':'')(settleSets(w).no.length)}</div>
    <div class="sheetbtns"><button class="ok" data-act="idle_continue">▶ continuar</button><button class="cancel" data-act="idle_close">cerrar a las ${pad(endD.getHours())}:${pad(endD.getMinutes())}</button></div>`,'nodismiss idlesheet');
 }
 // mirrors setField() but writes into a PAST db.sessions[] entry — deliberately does NOT mirror to a
@@ -16753,13 +16807,14 @@ function trkSelect(anchor,opts,cur,onPick,o){ o=o||{}; popClose(); const app=doc
   p.style.left=Math.max(18,Math.min(fr.width-18-w,r.left-fr.left+r.width/2-w/2))+'px';
   const below=r.bottom-fr.top+6, ph=p.offsetHeight; p.style.top=(below+ph>fr.height-90?Math.max(8,r.top-fr.top-6-ph):below)+'px';
   window._tselEl=anchor; return p; }
-function openRirSelect(el,hist){ const exi=+el.dataset.exi, si=+el.dataset.si; const m=el.dataset.m==='rpe'?'rpe':'rir', noF=el.dataset.nf==='1';
+// v335 · then: lo que sigue al elegir un RIR (askRirThenDone: marcar la serie)
+function openRirSelect(el,hist,then){ const exi=+el.dataset.exi, si=+el.dataset.si; const m=el.dataset.m==='rpe'?'rpe':'rir', noF=el.dataset.nf==='1';
   // v273 · RPE 10 … 5 (medios puntos de 7 a 10; Zourdos 2016) o RIR F 0-5; se guarda siempre como RIR. Sin F si el split no lo usa.
   let opts=m==='rpe'?[{v:'F',t:'F'},{v:'0',t:'10'},{v:'0.5',t:'9.5'},{v:'1',t:'9'},{v:'1.5',t:'8.5'},{v:'2',t:'8'},{v:'2.5',t:'7.5'},{v:'3',t:'7'},{v:'4',t:'6'},{v:'5',t:'5'}]:['F','0','1','2','3','4','5'];
   if(noF)opts=opts.filter(o=>(o.v||o)!=='F');
   trkSelect(el,opts,el.dataset.v||'',v=>{
-    if(hist){ setHistField(exi,si,'rir',v); reRender(); return; }
-    setField(exi,si,'rir',v); el.dataset.v=v; el.textContent=rirShow(v,m)||'—';
+    if(hist){ setHistField(exi,si,'rir',v); reRender(); if(then&&v!=='')then(); return; }
+    setField(exi,si,'rir',v); el.dataset.v=v; el.textContent=rirShow(v,m)||'—'; if(then&&v!=='')then();
   },{title:m==='rpe'?'RPE · 10 = no salía otra':'RIR · reps en reserva',clear:'— quitar',wrap:m==='rpe'}); }
 function trkPop(anchor,text){ popClose(); if(!text)return; const app=document.getElementById('app'); const p=document.createElement('div'); p.className='gloss'; p.id='gloss'; p.setAttribute('role','tooltip'); p.textContent=text; app.appendChild(p);
   const r=anchor.getBoundingClientRect(), fr=app.getBoundingClientRect(); const w=Math.min(300,fr.width-36); p.style.width=w+'px';
@@ -17116,7 +17171,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
