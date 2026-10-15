@@ -948,6 +948,8 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .obi:focus{border-color:var(--fg);} .obi:focus-visible{outline:none;} .obi::placeholder{color:var(--o40);}
   .obi.sm{flex:0 0 auto; width:7ch; text-align:right;}
   .obu{color:var(--o40);}
+  .gsl .lk{position:relative;} .gsl .lk::after{content:''; position:absolute; left:calc(-1 * var(--s2)); right:calc(-1 * var(--s2)); top:50%; height:44px; transform:translateY(-50%);}   /* v344 · [fijar] con toque de 44 */
+  .chip.off{color:var(--o40); text-decoration:line-through;} .dest{color:var(--fg);} .obv .obu{white-space:nowrap; flex:0 0 auto;} #gm_grams .obu, #g_morebox .obu{min-width:10ch;} .obv .dest{flex:1 1 auto; min-width:0;}   /* v344 · en metas las casillas terminan en la misma x */
   .obv select.obi.obs{flex:0 0 auto; width:auto; max-width:15ch;} .obv .obu{white-space:nowrap;}   /* v343 · el nombre del envase / la pieza junto a su peso */
   .vrow{display:flex; flex-wrap:wrap; gap:var(--s4); margin:0 0 var(--s2);}
   .obr .toggles{gap:0 var(--s1);}
@@ -1109,9 +1111,9 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   #fa_q{width:100%; height:44px; border:var(--bw-field) solid var(--o40); border-radius:var(--r-ctl); background:transparent; color:var(--fg); font-size:var(--t-field); padding:0 var(--s4); margin-bottom:10px;}
   /* U2 · atajos del sheet como una fila de acciones de texto (MFP pone buscar arriba y los atajos en fila) */
   .fa-acts{display:flex; gap:var(--s5); align-items:center; padding:var(--s2) var(--s1) 0;}
-  .fa-acts a{font-size:var(--t-label); color:var(--o60); cursor:pointer; padding:var(--s3) 0;}
+  .fa-acts a{font-size:var(--t-label); color:var(--o60); cursor:pointer; display:inline-flex; align-items:center; min-height:44px; margin:calc(-1 * var(--s4)) 0; padding:0;}   /* v344 · toque de 44 */
   .fa-meal{display:flex; align-items:center; gap:var(--s3); margin:0 0 var(--s3); font-size:var(--t-data); color:var(--o50);}
-  .fa-meal b{color:var(--fg); font-weight:700;} .fa-meal a{font-size:var(--t-label); color:var(--o60); cursor:pointer; padding:var(--s3) var(--s2); margin:calc(-1 * var(--s3)) 0;}
+  .fa-meal b{color:var(--fg); font-weight:700;} .fa-meal a{font-size:var(--t-label); color:var(--o60); cursor:pointer; display:inline-flex; align-items:center; min-height:44px; padding:0 var(--s2); margin:calc(-1 * (var(--s5) + var(--s2) + var(--s1))) 0 calc(-1 * (var(--s2) + var(--s1)));}   /* v344 · 44 de toque hacia arriba: el renglón sigue de 16 y no tapa el buscador de abajo */
   .fa-btns{display:flex; gap:var(--s3);}
   .fa-btns .b{flex:1 1 0; text-align:center; font-family:inherit; font-size:var(--t-data); font-weight:700; letter-spacing:var(--ls-ui); color:var(--fg); border:var(--bw-ctl) solid var(--border); border-radius:var(--r-ctl); padding:var(--s4) 0; background:var(--card); cursor:pointer;}
   .fa-btns .b:active{background:var(--card2);}
@@ -1472,7 +1474,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v343';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v344';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -6852,6 +6854,29 @@ function _v343SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
       closeModal(); }
     console.log('v343 self-check OK');
   } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } window._faCtx=fc; }
+}
+// self-check de v344 (FD1 en loguear, quick macros y edit goals). Nada se guarda; todo se restaura en finally.
+function _v344SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v344: '+nm); }; const fc=window._faCtx, gm=window._goalMode;
+  const ghost=()=>{ const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } };
+  try{ window._faCtx=null; const fd={id:'zz',name:'avena',base:'g',per100:Object.assign(foodPer(),{kcal:380,protein:13}),sizes:{serving:40}};
+    openLog(fd,{tag:'breakfast',isNew:true}); let m=document.getElementById('modal');
+    A('FD1 · loguear: la comida a la vista y unidad / cantidad en filas del alta', m.querySelector('#l_tag').textContent==='breakfast'&&!!m.querySelector('#l_unit').closest('.obr')&&!!m.querySelector('#l_qty').closest('.obr')&&!m.querySelector('.field')&&!!m.querySelector('#l_tag_c'));
+    closeModal(); ghost(); openApproxMeal('lunch'); m=document.getElementById('modal');
+    A('FD1 · quick macros: la comida a la vista y los macros en filas', m.querySelector('#am_tagv').textContent==='lunch'&&document.getElementById('am_tag').value==='lunch'&&['am_p','am_c','am_f'].every(id=>!!m.querySelector('#'+id).closest('.obr'))&&!m.querySelector('.field'));
+    closeModal(); ghost(); window._goalMode=undefined; openGoals(todayISO()); m=document.getElementById('modal');
+    A('FD1 · edit goals abre en gramos, una fila por macro con su %', window._goalMode==='grams'&&m.querySelector('#gm_grams').style.display==='block'&&['protein','carbs','fat'].every(k=>!!m.querySelector('#gg_'+k).closest('.obr')&&/^\d+$/.test(m.querySelector('#gq_'+k).textContent))&&m.querySelectorAll('#gg_protein').length===1);
+    A('FD1 · …los micros plegados en `más ›` y sin estilos en línea en las secciones', m.querySelector('#g_morebox').hidden===true&&!m.querySelector('#g_sectog [style]')&&!/tap para ocultar/.test(m.textContent));
+    document.getAnimations().forEach(a=>{ try{ a.finish(); }catch(_){} }); const y0=m.querySelector('#g_more').getBoundingClientRect().top; m.querySelector('#g_more').click(); document.getAnimations().forEach(a=>{ try{ a.finish(); }catch(_){} }); A('FD1 · …y `más ›` abre hacia abajo sin mover lo de arriba', !m.querySelector('#g_morebox').hidden&&Math.abs(m.querySelector('#g_more').getBoundingClientRect().top-y0)<1);
+    // `otro nombre…` desde quick macros: el nombre se pide encima de la hoja y lo escrito se queda
+    closeModal(); ghost(); openApproxMeal('lunch'); m=document.getElementById('modal'); m.querySelector('#am_p').value='30'; m.querySelector('#am_tagv_c').click();
+    { const ot=[...document.querySelectorAll('#tsel button')].find(b=>/otro nombre/.test(b.textContent)); A('FD1 · el cuadro de nombres ofrece otro nombre…', !!ot); ot.click(); const L=document.getElementById('asklayer'), i=L&&L.querySelector('#dn_in');
+      A('FD1 · …se pide en una capa encima de la hoja (la hoja sigue con lo escrito)', !!i&&document.getElementById('modal')===m&&m.querySelector('#am_p').value==='30');
+      i.value='cena tarde'; L.querySelector('[data-ask="ok"]').click(); A('FD1 · …y al usarlo la hoja dice ese nombre', document.getElementById('modal')===m&&m.querySelector('#am_tagv').textContent==='cena tarde'&&document.getElementById('am_tag').value==='cena tarde'&&m.querySelector('#am_p').value==='30'); }
+    // un chip de SECCIONES cambia en su lugar: la hoja no se repinta ni cierra `más`
+    closeModal(); ghost(); openGoals(todayISO()); m=document.getElementById('modal'); m.querySelector('#g_more').click(); { const ch=m.querySelector('#g_sectog .chip[data-sec]'), was=ch.classList.contains('off'); ch.click();
+      A('FD1 · un chip de SECCIONES cambia en su lugar', document.getElementById('modal')===m&&m.querySelector('#g_sectog .chip[data-sec="'+ch.dataset.sec+'"]')===ch&&ch.classList.contains('off')!==was&&!m.querySelector('#g_morebox').hidden); ch.click(); }
+    console.log('v344 self-check OK');
+  } finally { try{ closeModal(); }catch(_){} ghost(); window._faCtx=fc; window._goalMode=gm; }
 }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
@@ -13202,7 +13227,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='logonly'){ commitLog(false); }
   else if(a==='delmeal'){ const t=curDate(); db.meals[t]=(db.meals[t]||[]).filter(m=>m.id!==el.dataset.id); save(); render(); }
   else if(a==='editgoals'){ openGoals(); }
-  else if(a==='goalsechtog'){ const k=el.dataset.sec; db.settings=db.settings||{}; const arr=db.settings.hiddenGoalSections=db.settings.hiddenGoalSections||[]; const i=arr.indexOf(k); if(i>=0)arr.splice(i,1); else arr.push(k); save(); openGoals(); }
+  else if(a==='goalsechtog'){ const k=el.dataset.sec; db.settings=db.settings||{}; const arr=db.settings.hiddenGoalSections=db.settings.hiddenGoalSections||[]; const i=arr.indexOf(k); if(i>=0)arr.splice(i,1); else arr.push(k); save(); el.classList.toggle('off',arr.indexOf(k)>=0); }   /* v344 · el chip cambia en su lugar: repintar la hoja cerraba `más` y lo movía bajo el dedo */
   else if(a==='editsteps'){ const cur=(db.steps&&db.steps[todayISO()])||''; trkPrompt({title:'pasos de hoy',label:'PASOS',value:cur,type:'number',inputmode:'numeric',hint:'de Apple Health o tu reloj'},v=>{ const n=parseInt(String(v).replace(/[^0-9]/g,''),10); if(isNaN(n)){ toast('⚠ pon un número','err'); return false; } db.steps=db.steps||{}; db.steps[todayISO()]=n; H().src.steps[todayISO()]='manual'; save(); render(); toast('✓ pasos guardados'); }); }
   else if(a==='export'){ doExport(); }
   else if(a==='bakshare'){ doBackupShare(); }
@@ -15500,7 +15525,7 @@ function mealPick(anchor,o){ o=o||{}; popClose(); const app=document.getElementB
       const n=mk('button','b','otro nombre…');
       // trkPrompt cierra la hoja al volver: aquí se cierra ANTES de elegir y se devuelve false, o cerraría la hoja de agregar que
       // onPick acaba de abrir (pasaba con la rueda: un nombre nuevo abría "add food" y la cerraba en el mismo toque).
-      n.addEventListener('click',ev=>{ ev.stopPropagation(); popClose(); trkPrompt({title:'comida',label:'NOMBRE DE LA COMIDA',ok:'usar'},v=>{ v=(v||'').trim(); if(!v){ toast('⚠ escribe un nombre','err'); return false; }
+      n.addEventListener('click',ev=>{ ev.stopPropagation(); popClose(); if(o.layerPrompt){ destNamePrompt(v=>o.onPick(v)); return; } trkPrompt({title:'comida',label:'NOMBRE DE LA COMIDA',ok:'usar'},v=>{ v=(v||'').trim(); if(!v){ toast('⚠ escribe un nombre','err'); return false; }
         mealNameShow(v); closeModal(); o.onPick(v); return false; }); });
       ft.appendChild(n); }
     p.appendChild(ft); place(); };
@@ -15749,16 +15774,14 @@ function openApproxMeal(preset){
   const sugg=(typeof mealSuggestions==='function'?mealSuggestions():(db.mealTags||['comida'])).filter(x=>x&&x!=='drink');
   const chips=sugg.map(v=>`<span class="chip" data-v="${escTxt(v)}">${escTxt(v)}</span>`).join('');
   openModal(`<h3>meal aproximada</h3>
-   <div class="submeta u-mb10">solo macros · sin buscar alimentos · kcal 4-4-9</div>
    ${foodRingsHTML()}
-   <div class="field"><label>COMIDA</label><input id="am_tag" type="text" value="${escTxt(preset||'comida')}" autocomplete="off"/></div>
-   ${chips?`<div class="chips u-mt-n4 u-mb10 u-mx0" id="am_chips">${chips}</div>`:''}
-   <div class="field row3"><div><label>PROT g</label><input id="am_p" type="number" inputmode="decimal" placeholder="0"/></div><div><label>CARB g</label><input id="am_c" type="number" inputmode="decimal" placeholder="0"/></div><div><label>GRASA g</label><input id="am_f" type="number" inputmode="decimal" placeholder="0"/></div></div>
+   <input id="am_tag" type="hidden" value="${escTxt(preset||'comida')}"/>${destRowHTML('am_tagv',preset||'comida')}
+   ${formRow('am_p','proteína','g',{num:1,ph:'0'})}${formRow('am_c','carbos','g',{num:1,ph:'0'})}${formRow('am_f','grasa','g',{num:1,ph:'0'})}
    <div id="am_kcal" class="submeta u-mt2 u-mb10 u-mx0 u-data">= 0 kcal</div>
    <div class="sheetbtns"><button class="ok" id="am_go">agregar</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
   const upd=()=>{ const P=parseFloat(val('am_p'))||0,C=parseFloat(val('am_c'))||0,F=parseFloat(val('am_f'))||0; const e=document.getElementById('am_kcal'); if(e)e.innerHTML='= <b class="u-fg">'+Math.round(P*4+C*4+F*9)+'</b> kcal'; foodRingsSet({kcal:P*4+C*4+F*9,protein:P,carbs:C,fat:F}); };
   ['am_p','am_c','am_f'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('input',upd); });
-  document.querySelectorAll('#am_chips .chip').forEach(ch=>ch.onclick=()=>{ const e=document.getElementById('am_tag'); if(e)e.value=ch.dataset.v; });
+  destRowWire('am_tagv',t=>{ const e=document.getElementById('am_tag'); if(e)e.value=t; });   /* v344 · FD1 · la comida, con el cuadro de nombres de siempre (mealPick) */
   const go=document.getElementById('am_go'); if(go)go.onclick=()=>{
     const P=parseFloat(val('am_p'))||0,C=parseFloat(val('am_c'))||0,F=parseFloat(val('am_f'))||0;
     if(P<=0&&C<=0&&F<=0){ toast('⚠ pon al menos un macro (P, C o G)','err'); return; }
@@ -16527,6 +16550,18 @@ function readRegister(){ const n=id=>{ const v=parseFloat(val(id)); return (isNa
 // REGISTER screen: name + serving size + macros (per serving) + package. NO unit/qty (that's the LOG step).
 // v343 · FD1 · la hoja de registrar con las filas del alta (`formRow`: nombre a la izquierda, casilla a la derecha, toque de 44), un orden
 // único (qué es → el envase → la porción → la pieza → los valores) y los micros en `más ›`. Los ids v_* no cambian.
+// v344 · FD1 · el destino de lo que registras, a la vista: `comida ···· lunch [cambiar]` (el cuadro de nombres de siempre, mealPick)
+function destRowHTML(id,tag){ return '<div class="obr"><span class="obk">comida</span><span class="obv"><span class="dest" id="'+id+'">'+escTxt(tag||'comida')+'</span><button type="button" class="b" id="'+id+'_c">cambiar</button></span></div>'; }
+function destRowWire(id,onPick){ const b=document.getElementById(id+'_c'), v=document.getElementById(id); if(!b||!v)return; b.onclick=()=>mealPick(b,{layerPrompt:true,onPick:t=>{ v.textContent=t; onPick(t); }}); }
+// `otro nombre…` desde una hoja abierta: el nombre se pide en la capa de avisos, ENCIMA de la hoja (trkPrompt la reemplazaba y se perdía lo escrito)
+function destNamePrompt(onOk){ const m=askLayer('<h3>comida</h3><div class="field"><label>NOMBRE DE LA COMIDA</label><input id="dn_in" autocomplete="off"/></div><div class="sheetbtns"><button class="ok" data-ask="ok">usar</button><button class="cancel" data-ask="no">cancelar</button></div>'); if(!m)return;
+  const i=m.querySelector('#dn_in'), go=()=>{ const t=String(i.value||'').trim(); if(!t){ toast('⚠ escribe un nombre','err'); return; } closeAsk(); mealNameShow(t); onOk(t); };
+  m.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-ask]'); if(!b)return; ev.stopPropagation(); if(b.dataset.ask==='ok')go(); else closeAsk(); });
+  i.addEventListener('keydown',e=>{ if(e.key==='Enter')go(); }); setTimeout(()=>{ try{ focusEl(i); }catch(_){} },60); }
+// un `más ›` dentro de una hoja: si la hoja va anclada abajo, se queda de su alto y lo nuevo abre hacia abajo (con scroll adentro); nada de arriba sube bajo el dedo
+function foldToggle(mo,bx){ if(!mo||!bx)return; const sh=mo.closest('.sheet'); if(sh&&!sh.style.height&&sh.closest('.modal.low'))sh.style.height=Math.round(sh.getBoundingClientRect().height)+'px'; const op=bx.hidden; bx.hidden=!op; mo.setAttribute('aria-expanded',op?'true':'false'); if(op&&typeof revealAnim==='function')revealAnim(bx); }
+// edit goals · los gramos de cada macro en una fila, con su % de las kcal al lado
+function goalGramRows(g){ return [['protein','proteína'],['carbs','carbos'],['fat','grasa']].map(([k,l])=>'<label class="obr"><span class="obk">'+l+'</span><span class="obv"><input class="obi" id="gg_'+k+'" type="number" inputmode="numeric" value="'+(g[k]?Math.round(g[k]):'')+'" placeholder="0"/><span class="obu">g · <span id="gq_'+k+'">0</span> %</span></span></label>').join(''); }
 function formRow(id,k,u,o){ o=o||{}; return '<label class="obr"><span class="obk">'+k+'</span><span class="obv"><input class="obi" id="'+id+'"'+(o.num?' type="number" inputmode="'+(o.int?'numeric':'decimal')+'"':' autocomplete="off"')+(o.attr||'')+' value="'+escTxt(o.v==null?'':String(o.v))+'" placeholder="'+escTxt(o.ph||'')+'"/>'+(u?'<span class="obu">'+u+'</span>':'')+'</span></label>'; }
 const FOOD_CL=['envase','lata','botella','bolsa','caja','frasco','sobre','paquete'], FOOD_PL=['pieza','galleta','rebanada','barra','tortilla','unidad'];
 function openVerify(food, opts){
@@ -16557,7 +16592,7 @@ function openVerify(food, opts){
   ['v_serv_g','v_kcal','v_protein','v_carbs','v_fat','v_sugar','v_fiber','v_sodium','v_potassium','v_caffeine','v_alcohol','v_pack_g','v_pack_servings','v_piece_g'].forEach(id=>{ const e=$(id); if(e)e.addEventListener('input',rsum); });
   ['v_base','v_cl','v_pl'].forEach(id=>{ const e=$(id); if(e)e.addEventListener('change',rsum); });
   document.querySelectorAll('#v_vb .t').forEach(b=>b.addEventListener('click',()=>{ document.querySelectorAll('#v_vb .t').forEach(x=>x.classList.toggle('on',x===b)); rsum(); }));
-  const mo=$('v_more'); if(mo)mo.onclick=()=>{ const bx=$('v_morebox'), op=bx.hidden; bx.hidden=!op; mo.setAttribute('aria-expanded',op?'true':'false'); if(op)revealAnim&&revealAnim(bx); };
+  const mo=$('v_more'); if(mo)mo.onclick=()=>foldToggle(mo,$('v_morebox'));   /* v344 · la hoja no crece hacia arriba */
   const bcs=$('v_bc_scan'); if(bcs)bcs.onclick=()=>scanCodeToInput('v_barcode');
   const lph=$('v_label_photo'); if(lph)lph.onclick=()=>{ window._faTag=(window._verify||{}).tag||window._faTag; const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.setAttribute('capture','environment'); inp.onchange=()=>{ if(inp.files&&inp.files[0])labelPhoto(inp.files[0], val('v_barcode')); }; inp.click(); };
   rsum();
@@ -16569,12 +16604,13 @@ function openLog(food, opts){ opts=opts||{}; const fd=asCanonical(food);
   const defUnit=opts.unit||(lu && units.some(u=>u.key===lu.unit)?lu.unit:(fd.sizes.serving?'serving':units[0].key));
   const defQty=(opts.qty!=null)?opts.qty:(lu && lu.qty>0 ? lu.qty : 1);
   const editing=!!opts.editId; const primary=editing?'guardar cambios':'loguear';   // v271 · guardar en mis alimentos es una fila aparte
-  const defTime=editing?(opts.time||''):nowHM();   // HORA opcional: alta asume hora actual; edición usa la del item (vacío si null)
   const hasBack=!editing && window._faCtx;
   openModal(`<h3>${hasBack?'<a data-act="faback" class="vb u-mr8" title="volver a la búsqueda">‹ back</a>':''}${editing?'editar registro':'loguear'} · ${escTxt(fd.name||'alimento')}</h3>
    <div class="submeta u-mt-n2 u-mb10 u-mx0 u-label">${srcPrefix(fd)}fuente: ${escTxt(foodSource(fd).label)}</div>
    ${foodRingsHTML(null,opts.editId||'')}
-   <div class="field row2"><div><label>UNIDAD${lu?' <span class="u-o40 u-w4">· última vez</span>':''}</label><select id="l_unit" class="pick">${units.map(u=>`<option value="${u.key}"${u.key===defUnit?' selected':''}>${u.label}</option>`).join('')}</select></div><div><label>CANTIDAD</label><input id="l_qty" type="number" inputmode="decimal" step="0.25" value="${defQty}"/></div></div>
+   ${destRowHTML('l_tag',window._log.tag)}
+   <label class="obr"><span class="obk">unidad</span><span class="obv"><select id="l_unit" class="obi">${units.map(u=>`<option value="${u.key}"${u.key===defUnit?' selected':''}>${u.label}</option>`).join('')}</select>${lu?'<span class="obu">última vez</span>':''}</span></label>
+   <label class="obr"><span class="obk">cantidad</span><span class="obv"><input id="l_qty" class="obi" type="number" inputmode="decimal" step="0.25" value="${defQty}"/></span></label>
 
    <div class="lkc" id="l_kcal"></div>
    <div class="lnut" id="l_full"></div>
@@ -16585,6 +16621,7 @@ function openLog(food, opts){ opts=opts||{}; const fd=asCanonical(food);
     foodRingsSet(nut);
     const k=document.getElementById('l_kcal'); if(k)k.innerHTML='<b>'+Math.round(nut.kcal)+'</b> <span class="u">kcal · '+numTxt(nut._grams)+' '+fd.base+'</span>';
     const ff=document.getElementById('l_full'); if(ff)ff.innerHTML=nutRow('proteína',nut.protein,'g',1)+nutRow('carbohidratos',nut.carbs,'g',1)+nutRow('grasa',nut.fat,'g',1)+nutRow('azúcar',nut.sugar,'g')+nutRow('fibra',nut.fiber,'g')+nutRow('sodio',nut.sodium,'mg')+nutRow('potasio',nut.potassium,'mg')+nutRow('cafeína',nut.caffeine,'mg')+(nut.alcohol?nutRow('alcohol',nut.alcohol,'g'):'')+(fd.base==='ml'?nutRow('líquidos',nut.water,'L'):''); };
+  destRowWire('l_tag',t=>{ window._log.tag=t; });   /* v344 · FD1 · la comida a la que va, a la vista y se cambia ahí */
   const us=document.getElementById('l_unit'); if(us)us.addEventListener('change',lrecalc);
   const lq=document.getElementById('l_qty'); if(lq)lq.addEventListener('input',lrecalc);
   lrecalc();
@@ -16777,15 +16814,15 @@ function openGoals(dayArg){   // v256: desde //PERFIL se abre con hoy (antes her
   // Source of values shown in the editor: the goal for the currently-displayed day
   const baseG=(isPast||isFuture)?Object.assign({},(db.goalHist&&db.goalHist[day])||db.settings.goals||{}):db.settings.goals;
   const g=Object.assign({},baseG);   if(isPast&&g.cc){ const dg=goalsFor(day); g.kcal=dg.kcal; g.carbs=dg.carbs; delete g.cc; }   /* v331 · un día pasado que cicló se edita con SUS números (los que ves en macros); al guardarlo queda con lo que escribas, ya sin ciclar */                     // local working copy
-  if(window._goalMode!=='grams')window._goalMode='pct';
+  if(window._goalMode!=='pct')window._goalMode='grams';   // v344 · FD1 · los gramos mandan; el % se lee al lado y los deslizadores quedan tras [por %]
   const pk0=(g.protein||0)*4, fk0=(g.fat||0)*9, ck0=(g.carbs||0)*4, tk=pk0+fk0+ck0||1;
   let pP=Math.round(pk0/tk*100), pF=Math.round(fk0/tk*100), pC=Math.max(0,100-pP-pF);
   const eg=effectiveGoals();
   const scopeLabel=isPast?('· '+dayLabel(day)+' (pasado · solo este día)'):isFuture?('· '+dayLabel(day)+' (futuro · default)'):'';
-  const micro=(id,lbl,v,ro)=>`<div><label>${lbl}${ro?' <span class="u-o60 u-label u-w7 u-lscaps">AUTO</span>':''}</label><input id="${id}" type="number" inputmode="decimal" value="${ro?Math.round(v*100)/100:(v?v:'')}"${ro?' disabled class="u-dim"':' placeholder="0"'}/></div>`;
+  const micro=(id,lbl,v,ro)=>{ const p=String(lbl).split(' '), u=p.slice(1).join(' '); return `<label class="obr"><span class="obk">${p[0].toLowerCase()}</span><span class="obv"><input class="obi${ro?' u-dim':''}" id="${id}" type="number" inputmode="decimal" value="${ro?Math.round(v*100)/100:(v?v:'')}"${ro?' disabled':' placeholder="0"'}/><span class="obu">${escTxt(u)}${ro?' · auto':''}</span></span></label>`; };   // v344 · FD1 · filas del alta
   const sl=(k,lbl,pct)=>`<div class="gsl"><div class="gsl-h"><span>${lbl} <button type="button" class="lk" id="lk_${k}" title="fijar este porcentaje">[fijar]</button></span><span><b id="sp_${k}">${pct}</b>% · <span class="gg" id="sg_${k}">0</span> g</span></div><input type="range" id="sl_${k}" min="0" max="100" value="${pct}" class="gslider"/></div>`;
   openModal(`<h3>edit goals${scopeLabel?' <span class="u-o50 u-w4 u-data u-ls0">'+escTxt(scopeLabel)+'</span>':''}</h3>
-   <div class="toggles u-mb12" id="gm_tog"><button class="t ${window._goalMode==='pct'?'on':''}" data-gm="pct">% de kcal</button><button class="t ${window._goalMode==='grams'?'on':''}" data-gm="grams">gramos</button></div>
+   <div class="toggles u-mb12" id="gm_tog"><button class="t ${window._goalMode==='grams'?'on':''}" data-gm="grams">gramos</button><button class="t ${window._goalMode==='pct'?'on':''}" data-gm="pct">por %</button></div>
    ${goalSecHidden('balance')?'':`<div id="g_bal" class="submeta u-mt-n6 u-mb12 u-mx0 u-data"></div>`}
    <div id="gm_pct" style="display:${window._goalMode==='pct'?'block':'none'}">
      <div class="field"><label>KCAL · total fijo</label><input id="gp_kcal" type="number" inputmode="numeric" value="${g.kcal?Math.round(g.kcal):''}" placeholder="0"/></div>
@@ -16793,19 +16830,20 @@ function openGoals(dayArg){   // v256: desde //PERFIL se abre con hoy (antes her
      <div id="gp_sum" class="submeta u-mt2 u-mb10 u-mx0"></div>
    </div>
    <div id="gm_grams" style="display:${window._goalMode==='grams'?'block':'none'}">
-     <div class="field row3"><div><label>PROT g</label><input id="gg_protein" type="number" inputmode="numeric" value="${g.protein?Math.round(g.protein):''}" placeholder="0"/></div><div><label>CARB g</label><input id="gg_carbs" type="number" inputmode="numeric" value="${g.carbs?Math.round(g.carbs):''}" placeholder="0"/></div><div><label>GRASA g</label><input id="gg_fat" type="number" inputmode="numeric" value="${g.fat?Math.round(g.fat):''}" placeholder="0"/></div></div>
+     ${goalGramRows(g)}
      <div id="gg_kcal" class="submeta u-mt2 u-mb10 u-mx0 u-data"></div>
    </div>
    ${(isPast||isFuture)?'':ccFormHTML()}
    <hr class="rule u-mt4 u-mb12 u-mx0"/>
-   ${goalSecHidden('electro')?'':`<div class="field row2">${micro('g_sodium','SODIO mg',eg.sodium,1)}${micro('g_potassium','POTASIO mg',eg.potassium,1)}</div>`}
-   ${goalSecHidden('sugarfiber')?'':`<div class="field row2">${micro('g_sugar','AZÚCAR g',g.sugar)}${micro('g_fiber','FIBRA g',g.fiber)}</div>`}
-   ${goalSecHidden('minor')?'':`<div class="field row2">${micro('g_water','AGUA L',eg.water,1)}${micro('g_caffeine','CAFEÍNA mg',g.caffeine)}</div>
+   <div class="line u-tap kp-rad" role="button" tabindex="0" id="g_more" aria-expanded="false" aria-controls="g_morebox"><span class="k">más</span><span class="dots"></span><span class="v">sodio · azúcar · agua… ›</span></div><div id="g_morebox" hidden>
+   ${goalSecHidden('electro')?'':`<div class="gmic">${micro('g_sodium','SODIO mg',eg.sodium,1)}${micro('g_potassium','POTASIO mg',eg.potassium,1)}</div>`}
+   ${goalSecHidden('sugarfiber')?'':`<div class="gmic">${micro('g_sugar','AZÚCAR g',g.sugar)}${micro('g_fiber','FIBRA g',g.fiber)}</div>`}
+   ${goalSecHidden('minor')?'':`<div class="gmic">${micro('g_water','AGUA L',eg.water,1)}${micro('g_caffeine','CAFEÍNA mg',g.caffeine)}</div>
    <div class="submeta u-label u-o40 u-mt-n4 u-mb8 u-mx0"><span class="u-o60 u-w7 u-lscaps">AUTO</span> = recalculado de tu actividad real (entrenos últimos 14d + pasos últimos 7d)</div>
-   <div class="field row2">${micro('g_alcohol','ALCOHOL g · límite',g.alcohol||0)}${micro('g_sleep','SUEÑO h · meta',g.sleep||8)}</div>`}
-   <hr class="rule u-my8 u-mx0"/>
-   <div class="submeta u-label u-o40 u-mb6">SECCIONES · tap para ocultar/mostrar</div>
-   <div class="chips u-mb12" id="g_sectog">${[['balance','déficit/mant.'],['electro','electrolitos'],['sugarfiber','azúcar/fibra'],['minor','agua/caf/alc/sueño']].map(s=>`<span class="chip" data-act="goalsechtog" data-sec="${s[0]}" style="${goalSecHidden(s[0])?'opacity:.4;text-decoration:line-through':''}">${s[1]}</span>`).join('')}</div>
+   <div class="gmic">${micro('g_alcohol','ALCOHOL g · límite',g.alcohol||0)}${micro('g_sleep','SUEÑO h · meta',g.sleep||8)}</div>`}
+   </div><hr class="rule u-my8 u-mx0"/>
+   <div class="submeta u-label u-o40 u-mb6">SECCIONES</div>
+   <div class="chips u-mb12" id="g_sectog">${[['balance','déficit/mant.'],['electro','electrolitos'],['sugarfiber','azúcar/fibra'],['minor','agua/caf/alc/sueño']].map(s=>`<span class="chip${goalSecHidden(s[0])?' off':''}" data-act="goalsechtog" data-sec="${s[0]}">${s[1]}</span>`).join('')}</div>
    <div class="sheetbtns"><button class="ok" data-act="okgoals">save</button><button class="cancel" id="g_tomaint" title="poner kcal objetivo = tu mantenimiento">= mantenim.</button><button class="cancel" id="g_recalc" title="recalcular desde tu perfil + actividad">recalcular</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
   const keys=['protein','carbs','fat'], DIV={protein:4,carbs:4,fat:9}, locks={protein:false,carbs:false,fat:false};
   const gr={protein:+g.protein||0, carbs:+g.carbs||0, fat:+g.fat||0};   // GRAMS = source of truth; locks pin grams
@@ -16838,7 +16876,8 @@ function openGoals(dayArg){   // v256: desde //PERFIL se abre con hoy (antes her
   const toggleLock=k=>{ if(!locks[k]&&lockedKeys().length>=2)return; locks[k]=!locks[k]; applyLocks(); paint(); };
   keys.forEach(k=>{ const e=document.getElementById('sl_'+k); if(e)e.addEventListener('input',()=>onDrag(k)); const b=document.getElementById('lk_'+k); if(b)b.onclick=()=>toggleLock(k); });
   const gpk=document.getElementById('gp_kcal'); if(gpk)gpk.addEventListener('input',onKcal);
-  const gkc=()=>{ const P=parseFloat(val('gg_protein'))||0,C=parseFloat(val('gg_carbs'))||0,F=parseFloat(val('gg_fat'))||0; const e=document.getElementById('gg_kcal'); if(e)e.innerHTML='= <b class="u-fg">'+Math.round(P*4+C*4+F*9)+'</b> kcal'; gbal(); };
+  const gkc=()=>{ const P=parseFloat(val('gg_protein'))||0,C=parseFloat(val('gg_carbs'))||0,F=parseFloat(val('gg_fat'))||0, T=P*4+C*4+F*9; const e=document.getElementById('gg_kcal'); if(e)e.innerHTML='= <b class="u-fg">'+Math.round(T)+'</b> kcal'; [['protein',P*4],['carbs',C*4],['fat',F*9]].forEach(([k,x])=>{ const s=document.getElementById('gq_'+k); if(s)s.textContent=T>0?Math.round(x/T*100):0; }); gbal(); };   // v344 · el % de cada macro, al lado de sus gramos
+  { const mo=document.getElementById('g_more'); if(mo)mo.onclick=()=>foldToggle(mo,document.getElementById('g_morebox')); }
   ['gg_protein','gg_carbs','gg_fat'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('input',gkc); });
   applyLocks(); onKcal(); gkc();   // normalize grams to the kcal total on open so the split sums to 100%
   // v331 · CC1 · el carb cycling lee los carbos que haya en la hoja en ese momento (su promedio) y se repinta cuando los mueves o cambias de % a gramos
@@ -17512,7 +17551,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
