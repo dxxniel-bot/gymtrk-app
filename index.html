@@ -1470,7 +1470,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v341';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v342';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -6802,6 +6802,26 @@ function _v340SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('RP2 · la resistencia dice dónde pesa, no un orden', rpTxt({rp:'asc'})==='pesa al final'&&rpTxt({rp:'desc',rpSrc:'suggested'})==='~pesa al inicio');
     console.log('v340 self-check OK');
   } finally { if(host)host.remove(); db=real; state._curEx=c0; state.screen=sc0; bumpIdx(); }
+}
+// self-check de v342 (BC2 · BC1 · el menú). Nada se guarda; todo se restaura en finally.
+function _v342SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v342: '+nm); }; const ft=window._faTag;
+  try{ A('BC2 · el dígito verificador: EAN-13, UPC-A, EAN-8 y UPC-E buenos', gtinOk('4006381333931')&&gtinOk('036000291452')&&gtinOk('96385074')&&gtinOk('01234565'));
+    A('BC2 · …y malos: un dígito cambiado, uno de menos, letras', !gtinOk('4006381333932')&&!gtinOk('400638133393')&&!gtinOk('ABC123')&&!gtinOk(''));
+    const hits=[], V=scanVoter(c=>hits.push(c));
+    V('4006381333931',0); A('BC2 · una lectura sola no confirma', hits.length===0);
+    V('4006381333931',300); A('BC2 · la misma dos veces sí', hits.length===1&&hits[0]==='4006381333931');
+    const h2=[], W=scanVoter(c=>h2.push(c)); W('4006381333932',0); W('4006381333932',100); A('BC2 · lo que no cuadra nunca confirma', h2.length===0);
+    W('96385074',0); W('4006381333931',100); W('96385074',200); W('4006381333931',300); A('BC2 · una de 13 gana a una de 8 que se cuela', h2.length===1&&h2[0]==='4006381333931');
+    W('4006381333931',0); W('4006381333931',2000); A('BC2 · dos lecturas separadas más de 1.5 s no confirman', h2.length===1);
+    openRegisterMenu('4006381333931'); let m=document.getElementById('modal');
+    A('FD1 · el menú: un primario, verbos de 44 y cancel', m.querySelectorAll('.ok').length===1&&[...m.querySelectorAll('.sheetbtns button')].every(b=>b.getBoundingClientRect().height>=44)&&!!m.querySelector('[data-act="closemodal"]')&&!!m.querySelector('[data-act="fname"]'));
+    m.querySelector('[data-act="fmanual"]').click(); A('BC1 · a mano: el código ya está escrito', (document.getElementById('v_barcode')||{}).value==='4006381333931');
+    openRegisterMenu('4006381333931'); document.getElementById('modal').querySelector('[data-act="ftext"]').click(); document.getElementById('tx_go').click();
+    A('BC1 · pegar texto: el código llega a registrar', (document.getElementById('v_barcode')||{}).value==='4006381333931');
+    closeModal(); openRegisterMenu(null); document.getElementById('modal').querySelector('[data-act="fmanual"]').click(); A('BC1 · sin escaneo no se cuela un código de antes', (document.getElementById('v_barcode')||{}).value==='');
+    { const wx=window.__x342; window.__x342=0; openNameSearch('<img src=x onerror="window.__x342=1">'); A('BC1 · un código leído es dato ajeno: el título de buscar por nombre lo escapa', !document.querySelector('#modal h3 img')&&/<img/.test(document.querySelector('#modal h3').textContent)); closeModal(); window.__x342=wx; }
+    console.log('v342 self-check OK');
+  } finally { try{ closeModal(); }catch(_){} const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } window._faTag=ft; }
 }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
@@ -13139,12 +13159,13 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='pickbase'){ snapshotFaCtx(); const f=BASE_FOODS.find(x=>x.id===el.dataset.id); if(f){ const tg=document.getElementById('fa_tagtxt')?curTag():(window._faTag||'meal'); openLog(f,{tag:tg,isNew:true}); } }
   else if(a==='fbarcode'){ if(document.getElementById('fa_tagtxt'))window._faTag=curTag(); openBarcode(); }
 
-  else if(a==='fphoto'){ window._faTag=window._faTag||curTag(); const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.setAttribute('capture','environment'); inp.onchange=()=>{ if(inp.files&&inp.files[0]) labelPhoto(inp.files[0], window._linkBarcode||''); }; inp.click(); }
+  else if(a==='fphoto'){ window._faTag=window._faTag||curTag(); const _bc=window._linkBarcode||''; const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.setAttribute('capture','environment'); inp.onchange=()=>{ if(inp.files&&inp.files[0]) labelPhoto(inp.files[0], _bc); }; inp.click(); }
   else if(a==='nspick'){ snapshotFaCtx(); const f=(window._nsRes||[])[+el.dataset.i]; if(!f)return; if(window._linkBarcode)f.barcode=window._linkBarcode; openVerify(f,{isNew:true,tag:window._faTag||curTag()}); }
   else if(a==='ofpick'){ snapshotFaCtx(); const f=(window._ofRes||[])[+el.dataset.i]; if(!f)return; openLog(f,{tag:window._faTag||curTag(),isNew:true}); }
   else if(a==='faback'){ const c=window._faCtx; window._faCtx=null; sheetBack(()=>{ closeModal(); openFoodAdd(c&&c.tag, c&&c.lock); }); if(c&&c.q){ const q=document.getElementById('fa_q'); if(q){ q.value=c.q; q.dispatchEvent(new Event('input',{bubbles:true})); const term=(c.q||'').trim(); if(c.off && window._faLast===term){ renderOFFRows(term); } } } }
-  else if(a==='ftext'){ openTextParse(); }
-  else if(a==='fmanual'){ openVerify({name:'',base:'g',per100:{},sizes:{}},{isNew:true,tag:window._faTag||curTag()}); }
+  else if(a==='ftext'){ openTextParse(window._linkBarcode||''); }
+  else if(a==='fname'){ openNameSearch(window._linkBarcode||''); }   /* v342 · BC1 · vuelve buscar por nombre, con el código */
+  else if(a==='fmanual'){ openVerify({name:'',base:'g',per100:{},sizes:{},barcode:window._linkBarcode||''},{isNew:true,tag:window._faTag||curTag()}); }
   else if(a==='vcontinue'){ const f=readRegister(); if(!f.name){ toast('⚠ pon un nombre','err'); return; } const _go8=()=>{ const vv=window._verify||{}; openLog(f,{tag:vv.tag,barcode:f.barcode,fromId:vv.fromId,isNew:true}); }; if(!f.barcode) return trkAsk({title:'registrar sin código de barras',detail:'puedes vincular un código después',ok:'registrar'},_go8); return _go8();}
   else if(a==='mealcode'){ openMealCode(); }
   else if(a==='logsave'){ const L=window._log||{}; commitLog(!L.isNew||!document.querySelector('#l_save .t.on[data-v="0"]')); }
@@ -16253,14 +16274,24 @@ function faMealWheel(el){
 function wireLongPress(el,fn){ let t=null; const start=()=>{ t=setTimeout(()=>{ t=null; fn(); },550); }; const cancel=()=>{ if(t){clearTimeout(t); t=null;} };
   el.addEventListener('touchstart',start,{passive:true}); el.addEventListener('touchend',cancel); el.addEventListener('touchmove',cancel);
   el.addEventListener('mousedown',start); el.addEventListener('mouseup',cancel); el.addEventListener('mouseleave',cancel); }
-function openRegisterMenu(barcode){
-  window._linkBarcode=barcode||''; window._faTag=window._faTag||'meal';
-  openModal(`<h3>registrar alimento${barcode?' · vincular a '+escTxt(String(barcode)):''}</h3>
-   <div class="submeta u-mb10">${barcode?'código no encontrado en la base':'no se leyó el código'} · elige cómo seguir:</div>
-   <button class="start u-mb8" data-act="fphoto">foto de tabla nutricional</button>
-   <button class="start ghost u-mb8" data-act="fmanual">registrar manualmente</button>
-   <div class="secondary"><button class="b" data-act="fbarcode">intentar de nuevo</button><button class="b" data-act="ftext">pegar texto</button></div>`);
-}
+// v342 · BC2 · el dueño (14-oct): "que primero verifique tú que sí está saliendo bien el código de barras completo". Un código de producto
+// (EAN-13, EAN-8, UPC-A, GTIN-14; un UPC-E se expande a UPC-A) trae su dígito verificador: se revisa, y en vivo se confirma solo cuando la
+// MISMA lectura válida sale dos veces en 1.5 s (una larga gana a una de 8: un EAN-8 dentro de un EAN-13). Mientras, `▘ verificando…`.
+function gtinCheck(s){ const ds=String(s).split('').map(Number), c=ds.pop(); let sum=0; ds.reverse().forEach((d,i)=>{ sum+=d*(i%2===0?3:1); }); return (10-sum%10)%10===c; }
+function upcEtoA(e){ const ns=e[0], d=e.slice(1,7), c=e[7], l=d[5]; let m; if('012'.indexOf(l)>=0)m=d[0]+d[1]+l+'0000'+d[2]+d[3]+d[4]; else if(l==='3')m=d[0]+d[1]+d[2]+'00000'+d[3]+d[4]; else if(l==='4')m=d[0]+d[1]+d[2]+d[3]+'00000'+d[4]; else m=d[0]+d[1]+d[2]+d[3]+d[4]+'0000'+l; return ns+m+c; }
+function gtinOk(code){ const s=String(code==null?'':code).trim(); if(!/^\d+$/.test(s)||[8,12,13,14].indexOf(s.length)<0)return false; if(gtinCheck(s))return true; return s.length===8&&/^[01]/.test(s)&&gtinCheck(upcEtoA(s)); }
+function gtinLike(code){ const s=String(code==null?'':code).trim(); return /^\d+$/.test(s)&&[8,12,13,14].indexOf(s.length)>=0; }   // numérico con largo de código de producto: su dígito debe cuadrar
+function scanVoter(onHit,onCand){ let cand=null, t0=0; return (code,now)=>{ code=String(code==null?'':code).trim(); now=now==null?Date.now():now; if(!gtinOk(code))return false;
+  if(cand&&now-t0<=1500){ if(code===cand){ cand=null; onHit(code); return true; } if(cand.length>code.length)return false; }
+  cand=code; t0=now; if(onCand)onCand(code); return false; }; }
+// v342 · BC1 · el dueño: "ya tenía el número y lo tengo que volver a escribir". El menú guardaba el código y en la línea siguiente lo borraba
+// (abrir la hoja cierra la anterior y eso limpia `_linkBarcode`); además registrar a mano y pegar texto no lo leían. Ahora el código pasa a
+// registrar a mano, foto, texto y `[buscar por nombre]` (que vuelve). FD1 (este menú): un primario, [verbos] y [cancel].
+function openRegisterMenu(barcode){ const bc=barcode?String(barcode):''; window._faTag=window._faTag||'meal';
+  openModal(`<h3>registrar alimento</h3>${bc?`<div class="submeta u-mb10">el código ${escTxt(bc)} no está en la base · se queda con lo que registres</div>`:''}
+   <div class="sheetbtns"><button class="ok" data-act="fphoto">foto de la tabla</button></div>
+   <div class="sheetbtns u-wrap"><button class="cancel" data-act="fmanual">a mano</button><button class="cancel" data-act="ftext">pegar texto</button>${bc?'<button class="cancel" data-act="fname">buscar por nombre</button>':''}<button class="cancel" data-act="fbarcode">escanear</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
+  window._linkBarcode=bc; }
 async function decodeImgSrc(url){
   try{ await loadScript('https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.4/dist/quagga.min.js','sha384-IkRTkdAeAAAqE2ct5zNAfMiX8+H35pGJp8j7+ZFwh7PKaJh5eunsOFAb9l6Z9R7r'); }catch(_){ return null; }
   const one=(patch,size)=> new Promise(res=>{ try{ Quagga.decodeSingle({ src:url, numOfWorkers:0, locate:true, inputStream:{ size:size }, locator:{ patchSize:patch, halfSample:false }, decoder:{ readers:['ean_reader','ean_8_reader','upc_reader','upc_e_reader','code_128_reader','code_39_reader'] } }, r=>res(r&&r.codeResult?r.codeResult.code:null)); }catch(_){ res(null); } });
@@ -16273,10 +16304,11 @@ function openBarcode(){
   window._faTag=curTag();
   openModal(`<h3>escanear código</h3>
    <div id="bc_cam" class="u-w100 u-flex u-aic" style="position:relative;height:260px;overflow:hidden;border-radius:var(--r-ctl);background:var(--bg);justify-content:center"></div>
-   <div id="bc_msg" class="submeta u-my8 u-mx0" style="min-height:16px">iniciando cámara…</div>
+   <div id="bc_msg" class="submeta u-my8 u-mx0" style="min-height:30px">iniciando cámara…</div>
    <div class="field"><label>O ESCRIBE EL CÓDIGO</label><input id="bc_code" inputmode="numeric" placeholder="7501..." autocomplete="off"/></div>
    <div class="sheetbtns"><button class="ok" id="bc_go">look up</button><button class="cancel" id="bc_cap">capturar</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
-  const doLookup=async()=>{ const code=val('bc_code'); if(!code)return; const m=document.getElementById('bc_msg'); if(m)m.innerHTML=trkSpinHTML('buscando');
+  const doLookup=async()=>{ const code=val('bc_code'); if(!code)return;
+    if(gtinLike(code)&&!gtinOk(code)&&!window._bcForce){ trkAsk({title:'el código no cuadra',detail:'el dígito verificador no coincide · revisa el número',ok:'buscar igual'},()=>{ window._bcForce=1; doLookup(); }); return; } window._bcForce=0;   /* v342 · BC2 */ const m=document.getElementById('bc_msg'); if(m)m.innerHTML=trkSpinHTML('buscando');
     const local=(db.foods||[]).find(f=>foodHasCode(f,code));
     if(local){ openVerify(local,{fromId:local.id,qty:1,tag:window._faTag}); return; }
     const food=await lookupBarcode(code);
@@ -16291,6 +16323,7 @@ function openBarcode(){
   const addReticle=cam=>{ try{ if(cam.querySelector('.scan-reticle'))return; const rt=document.createElement('div'); rt.className='scan-reticle'; rt.innerHTML='<div class="frame2"></div><div class="scl"></div><div class="chk">✓</div>'; cam.appendChild(rt); }catch(_){} };
   const stopScan=()=>{ const s=window._scanner; if(s){ if(s.timer){try{clearTimeout(s.timer);}catch(_){}} if(s.stream){ try{s.stream.getTracks().forEach(t=>t.stop());}catch(_){} } } window._scanner=null; };
   let scanDone=false, decoding=false;
+  const vote=scanVoter(c=>hit(c),c=>{ const mm=document.getElementById('bc_msg'); if(mm)mm.innerHTML=trkSpinHTML('verificando '+escTxt(c)); clearTimeout(window._bcVT); window._bcVT=setTimeout(()=>{ const m2=document.getElementById('bc_msg'); if(m2&&!scanDone&&/verificando/.test(m2.textContent))m2.innerHTML='centra el código en el recuadro · <b class="u-fg">se detecta solo</b>'; },1700); });   /* v342 · BC2 · dos lecturas iguales y válidas; si la segunda no llega, vuelve a pedir que lo centres */
   // detection → green lock-on + haptic, brief pause so the user can lower the phone, then look up
   const hit=code=>{ if(scanDone||!code)return; scanDone=true;
     try{ if(navigator.vibrate)navigator.vibrate(55); }catch(_){}
@@ -16309,14 +16342,14 @@ function openBarcode(){
     v.srcObject=stream; try{ await v.play(); }catch(_){}
     window._scanner={stream, video:v};
     try{ const tr=stream.getVideoTracks()[0]; const caps=tr.getCapabilities?tr.getCapabilities():{}; if(caps.focusMode&&[].concat(caps.focusMode).includes('continuous'))tr.applyConstraints({advanced:[{focusMode:'continuous'}]}).catch(()=>{}); }catch(_){}
-    let det=null; try{ if('BarcodeDetector' in window){ const sup=await BarcodeDetector.getSupportedFormats(); const want=['ean_13','ean_8','upc_a','upc_e','code_128'].filter(f=>sup.includes(f)); if(want.length)det=new BarcodeDetector({formats:want}); } }catch(_){ det=null; }
+    let det=null; try{ if('BarcodeDetector' in window){ const sup=await BarcodeDetector.getSupportedFormats(); const want=['ean_13','ean_8','upc_a','upc_e'].filter(f=>sup.includes(f));   /* v342 · BC2 · en vivo solo códigos de producto (con su dígito); lo demás entra por capturar o escribiéndolo */ if(want.length)det=new BarcodeDetector({formats:want}); } }catch(_){ det=null; }
     if(!det){ try{ await loadScript('https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.4/dist/quagga.min.js','sha384-IkRTkdAeAAAqE2ct5zNAfMiX8+H35pGJp8j7+ZFwh7PKaJh5eunsOFAb9l6Z9R7r'); }catch(_){} }
     if(!window._scanner||scanDone)return;
     m.innerHTML='centra el código en el recuadro · <b class="u-fg">se detecta solo</b>';
     const grab=()=>{ const vw=v.videoWidth, vh=v.videoHeight; if(!vw||!vh)return null; const ch=Math.round(vh*0.62), sy=Math.round((vh-ch)/2); const sc=Math.min(1, 1000/vw); const dw=Math.round(vw*sc), dh=Math.round(ch*sc); const cv=window._bcCv||(window._bcCv=document.createElement('canvas')); cv.width=dw; cv.height=dh; try{ cv.getContext('2d').drawImage(v,0,sy,vw,ch,0,0,dw,dh); }catch(_){ return null; } return cv; };
-    const decodeQ=cv=> new Promise(res=>{ if(typeof Quagga==='undefined'){res(null);return;} try{ Quagga.decodeSingle({ src:cv.toDataURL('image/jpeg',0.7), numOfWorkers:0, locate:true, inputStream:{ size:cv.width }, locator:{ patchSize:'medium', halfSample:false }, decoder:{ readers:['ean_reader','ean_8_reader','upc_reader','upc_e_reader','code_128_reader'] } }, r=>res(r&&r.codeResult?r.codeResult.code:null)); }catch(_){ res(null); } });
+    const decodeQ=cv=> new Promise(res=>{ if(typeof Quagga==='undefined'){res(null);return;} try{ Quagga.decodeSingle({ src:cv.toDataURL('image/jpeg',0.7), numOfWorkers:0, locate:true, inputStream:{ size:cv.width }, locator:{ patchSize:'medium', halfSample:false }, decoder:{ readers:['ean_reader','ean_8_reader','upc_reader','upc_e_reader'] } }, r=>res(r&&r.codeResult?r.codeResult.code:null)); }catch(_){ res(null); } });
     const loop=async()=>{ if(scanDone||!window._scanner)return;
-      if(!decoding){ decoding=true; try{ const cv=grab(); if(cv){ let code=null; if(det){ try{ const r=await det.detect(cv); code=(r&&r[0]&&r[0].rawValue)||null; }catch(_){} } else { code=await decodeQ(cv); } if(code){ decoding=false; hit(code); return; } } }catch(_){} decoding=false; }
+      if(!decoding){ decoding=true; try{ const cv=grab(); if(cv){ let code=null; if(det){ try{ const r=await det.detect(cv); code=(r&&r[0]&&r[0].rawValue)||null; }catch(_){} } else { code=await decodeQ(cv); } if(code)vote(code); } }catch(_){} decoding=false; if(scanDone)return; }
       if(window._scanner&&!scanDone)window._scanner.timer=setTimeout(loop, det?170:360); };
     loop(); };
   startScan();
@@ -16325,8 +16358,8 @@ function openBarcode(){
     if(s&&s.video&&s.video.videoWidth){ for(let i=0;i<20&&decoding;i++){ await new Promise(r=>setTimeout(r,50)); } if(scanDone)return; decoding=true;
       if(mm)mm.innerHTML=trkSpinHTML('leyendo'); const v=s.video; const cv=document.createElement('canvas'); cv.width=v.videoWidth; cv.height=v.videoHeight; try{ cv.getContext('2d').drawImage(v,0,0); }catch(_){}
       let code=null; try{ code=await decodeImgSrc(cv.toDataURL('image/jpeg',0.88)); }catch(_){} decoding=false;
-      if(code){ hit(code); return; } if(mm)mm.textContent='no se leyó · acércalo, enfócalo y captura otra vez (o escríbelo)'; return; }
-    const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.setAttribute('capture','environment'); inp.onchange=async()=>{ const f=inp.files&&inp.files[0]; if(!f)return; if(mm)mm.innerHTML=trkSpinHTML('leyendo código'); const code=await decodeBarcodeImage(f); if(code){ hit(code); } else if(mm){ mm.textContent='no se leyó · acércalo de frente y enfocado, o escríbelo'; } }; inp.click(); }; }
+      if(code&&!(gtinLike(code)&&!gtinOk(code))){ hit(code); return; } if(mm)mm.textContent='no se leyó un código completo · acércalo, enfócalo y captura otra vez (o escríbelo)'; return; }
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.setAttribute('capture','environment'); inp.onchange=async()=>{ const f=inp.files&&inp.files[0]; if(!f)return; if(mm)mm.innerHTML=trkSpinHTML('leyendo código'); const code=await decodeBarcodeImage(f); if(code&&!(gtinLike(code)&&!gtinOk(code))){ hit(code); } else if(mm){ mm.textContent='no se leyó · acércalo de frente y enfocado, o escríbelo'; } }; inp.click(); }; }
 }
 function servingToLiters(sz){
   if(!sz)return 0;
@@ -16401,11 +16434,11 @@ async function searchFoods(q){
   return out.slice(0,30);
 }
 function openNameSearch(barcode){
-  window._linkBarcode=barcode||'';
-  openModal(`<h3>search food${barcode?' · link '+barcode:''}</h3>
+  openModal(`<h3>search food${barcode?' · link '+escTxt(barcode):''}</h3>
    <div class="field"><label>NAME</label><input id="ns_q" placeholder="ej. nutella, protein bar, arroz" autocomplete="off"/></div>
    <div class="sheetbtns u-mb6"><button class="ok" id="ns_go">search →</button><button class="cancel" data-act="closemodal">cancel</button></div>
    <div id="ns_msg" class="submeta"></div><div id="ns_list" style="max-height:210px;overflow-y:auto"></div>`);
+  window._linkBarcode=barcode||'';   /* v342 · BC1 · después de abrir la hoja (abrirla limpia el anterior) */
   const run=async()=>{ const q=val('ns_q'); if(!q)return; const msg=document.getElementById('ns_msg'); msg.innerHTML=trkSpinHTML('buscando');
     const bm=BASE_FOODS.map(f=>({f,sc:searchScore(q,f)})).filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc).slice(0,15).map(x=>x.f);
     const res=await searchFoods(q); window._nsRes=res; const tot=bm.length+res.length; msg.textContent=tot?(tot+' resultados'):'sin resultados';
@@ -16415,13 +16448,13 @@ function openNameSearch(barcode){
   document.getElementById('ns_go').onclick=run;
   const qi=document.getElementById('ns_q'); qi.onkeydown=e=>{ if(e.key==='Enter')run(); };
 }
-function openTextParse(){
+function openTextParse(bc){ bc=bc||'';   /* v342 · BC1 · el código leído llega a registrar */
   window._faTag=curTag();
   openModal(`<h3>from text</h3><div class="submeta u-mb10">pega la tabla nutrimental (o escribe los valores)</div>
    <textarea id="tx_in" class="ta lg" placeholder="calories 250 · protein 20g · carbs 30g · fat 8g · sodium 400mg ..."></textarea>
    <div class="field u-mt8"><label>NAME</label><input id="tx_name" placeholder="food name"/></div>
    <div class="sheetbtns"><button class="ok" id="tx_go">parse →</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
-  document.getElementById('tx_go').onclick=()=>{ openVerify({name:val('tx_name'),serving:'1 serving',per:parseNutritionText(val('tx_in'))},{isNew:true,tag:window._faTag}); };
+  document.getElementById('tx_go').onclick=()=>{ openVerify({name:val('tx_name'),serving:'1 serving',per:parseNutritionText(val('tx_in')),barcode:bc},{isNew:true,tag:window._faTag}); };
 }
 function parseNutritionText(txt){
   const per=foodPer();
@@ -16474,7 +16507,7 @@ function openVerify(food, opts){
   openModal(`<h3>${window._faCtx?'<a data-act="faback" class="vb u-mr8" title="volver a la búsqueda">‹ back</a>':''}registrar alimento</h3>
    <div class="field"><label>NOMBRE DEL PRODUCTO</label><input id="v_name" value="${escTxt(fd.name||'')}" placeholder="ej. galletas marías"/></div>
    <div class="field"><label>MARCA (opcional)</label><input id="v_brand" value="${escTxt(fd.brand||'')}" placeholder="ej. Gamesa"/></div>
-   <div class="field"><label>CÓDIGO DE BARRAS (obligatorio)</label><input id="v_barcode" inputmode="numeric" value="${escTxt(window._verify.barcode||'')}" placeholder="escanea o escribe los dígitos"/></div>
+   <div class="field"><label>CÓDIGO DE BARRAS (opcional)</label><input id="v_barcode" inputmode="numeric" value="${escTxt(window._verify.barcode||'')}" placeholder="escanea o escribe los dígitos"/></div>
    <button class="b u-w100 u-mb8" id="v_bc_scan">escanear código (foto)</button>
    <button class="b u-w100 u-mb8" id="v_label_photo">foto de tabla nutricional → rellenar</button>
    <div class="field row2"><div><label>TIPO</label><select id="v_base" class="pick"><option value="g"${base==='g'?' selected':''}>sólido · g</option><option value="ml"${base==='ml'?' selected':''}>líquido · ml</option></select></div>${sz('v_serv_g','PORCIÓN ('+base+')',sg)}</div>
@@ -17412,7 +17445,7 @@ function labelFallback(msgEl,barcode,reason){ if(!msgEl)return;
   msgEl.innerHTML=(reason||'no se pudo leer la etiqueta')+'<div class="secondary u-mt10"><button class="b" id="ai_retry"> otra foto</button><button class="b" id="ai_text">¶ texto</button><button class="b" id="ai_man"> manual</button></div>';
   const pick=()=>{ const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.setAttribute('capture','environment'); inp.onchange=()=>{ if(inp.files&&inp.files[0]) labelPhoto(inp.files[0],barcode); }; inp.click(); };
   const r=document.getElementById('ai_retry'); if(r)r.onclick=pick;
-  const tx=document.getElementById('ai_text'); if(tx)tx.onclick=()=>openTextParse();
+  const tx=document.getElementById('ai_text'); if(tx)tx.onclick=()=>openTextParse(barcode);
   const mn=document.getElementById('ai_man'); if(mn)mn.onclick=()=>{ if(barcode)window._linkBarcode=barcode; openVerify({name:'',base:'g',per100:{},sizes:{},barcode:barcode||''},{isNew:true,tag:window._faTag||curTag()}); };
 }
 async function aiPhoto(file,barcode){ if(!file)return; window._faTag=window._faTag||curTag();
@@ -17450,7 +17483,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
