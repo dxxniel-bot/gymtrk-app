@@ -1453,7 +1453,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v335';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v336';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2376,7 +2376,7 @@ function approxSeed(ex,gym){ if(!ex||isCardio(ex))return null; const nk=String(e
   const vk=variantKey(ex).split('|'), to=latOf(ex), mach=/^(machine|cable|smith)$/.test(vk[0]); const idx=exIndex();
   const twin=r=>{ if(r.name!==nk||isCardio(r.ex))return false; const v=String(r.variant||'').split('|'); return v[0]===vk[0]&&v[2]===vk[2]&&v[3]===vk[3]; };
   if(idx.some(r=>twin(r)&&latOf(r.ex)===to))return null;   // esta variante ya tiene historia (aunque sea en otro gym): no se inventa nada
-  const real=s=>!!s&&!s._pf&&!!(s.w||s.r);
+  const real=s=>!!s&&!s._pf&&(setReps(s)>0);
   const src=idx.find(r=>twin(r)&&(!mach||gymMatch(r.gym,gym))&&(r.sets||[]).some(real)); if(!src)return null;
   const from=latOf(src.ex), k=mach?APPROX_LOAD[to]/APPROX_LOAD[from]:1; let rows=src.sets.filter(real);
   if(from==='uni'){ const nR=rows.filter(s=>s.side==='R').length, nL=rows.filter(s=>s.side==='L').length;   // un par R/L = una serie: se toma el lado con más filas
@@ -2995,7 +2995,7 @@ function muscleExposureIndex(){
       // v272 · lo que σ necesita por serie: RIR conocido, F/RIR 0, fallo en compuesto pesado, ligero y lejos, >30 reps, F en pierna
       let nk=0,nf=0,heavyF=0,lightFar=0,r30=0,legF=0; const X=(tn&&tn[ei])||null; const legC=isLegCompound(e);
       const heavyEx=legC||(HEAVY_PRESS.test(String(e.name||''))&&/^(free|smith)$/.test(canonType(e.type)));
-      (e.sets||[]).forEach((st,si)=>{ if(!st||st._pf||!(st.w||st.r))return; const x=X&&X.per?X.per[si]:null; const I=x?x.I:0;
+      (e.sets||[]).forEach((st,si)=>{ if(!st||st._pf||!(setReps(st)>0))return; const x=X&&X.per?X.per[si]:null; const I=x?x.I:0;
         if(!st.isDrop&&(isFailure(st)||rirKnown(st))){ nk++; if(isFailure(st)||setRIR(st)===0)nf++; }
         if(isFailure(st)&&I>=0.75&&heavyEx)heavyF++; if(isFailure(st)&&legC)legF++;
         if(!st.isDrop&&I>0&&I<0.5&&rirKnown(st)&&!isFailure(st)&&setRIR(st)>=3)lightFar++;
@@ -3203,7 +3203,7 @@ function dayFlags(date){ const out=[]; const r=readinessFor(date); if(!r)return 
 // ¿este ejercicio iba DESPUÉS de otro del mismo músculo (primario) llevado a RIR ≤1? → nombre de ese otro
 function precededByNearFailure(s,ei,id){ for(let xi=0;xi<ei;xi++){ const x=(s.exercises||[])[xi]; if(!x||isCardio(x))continue;
     if(!exTargets(s,xi).some(t=>t.id===id&&t.w>=1))continue;
-    if((x.sets||[]).some(st=>st&&!st._pf&&!st.isDrop&&(st.w||st.r)&&rirKnown(st)&&(isFailure(st)||setRIR(st)<=1)))return x.name; }
+    if((x.sets||[]).some(st=>st&&!st._pf&&!st.isDrop&&(setReps(st)>0)&&rirKnown(st)&&(isFailure(st)||setRIR(st)<=1)))return x.name; }
   return null; }
 function muscleDiagInput(id,nowMs){ const M=MUSCLES[id]; if(!M)return null; const t=todayISO(new Date(nowMs||Date.now()));
   const d7=shiftDate(t,-6), d8=shiftDate(t,-7), d14=shiftDate(t,-13), d28=shiftDate(t,-27);
@@ -3719,7 +3719,7 @@ function weeklySets(days){ days=days||7; const now=new Date(); const cut=new Dat
       // hard sets (RIR<=4): uni R+L pair = 1 (max across sides), drop = 0.5
       // EFFECTIVE sets = hard AND en zona de tensión real (productive/heavy, no 'light'/junk)
       let plain=0, effPlain=0; const bySide={}, effBySide={};
-      (e.sets||[]).forEach(st=>{ if(!((st.w||st.r)&&isHardSet(st)))return; const v=st.isDrop?0.5:1;
+      (e.sets||[]).forEach(st=>{ if(!((setReps(st)>0)&&isHardSet(st)))return; const v=st.isDrop?0.5:1;
         if(st.side)bySide[st.side]=(bySide[st.side]||0)+v; else plain+=v;
         const z=setZone(st); if(z==='productive'||z==='heavy'){ if(st.side)effBySide[st.side]=(effBySide[st.side]||0)+v; else effPlain+=v; } });
       const sides=Object.keys(bySide); const hard=plain+(sides.length?Math.max.apply(null,sides.map(k=>bySide[k])):0);
@@ -3893,7 +3893,7 @@ function muscleAllIndex(){ const src=muscleExposureIndex(); if(_allSetsCache&&_a
   (db.sessions||[]).forEach(s=>{ if(!s||s.type==='rest'||!s.exercises||!s.date)return;
     s.exercises.forEach((e,ei)=>{ if(isCardio(e))return; const tg=exTargets(s,ei).filter(t=>t.id); if(!tg.length)return;
       let plain=0; const bySide={};
-      (e.sets||[]).forEach(st=>{ if(!st||st._pf||!(st.w||st.r))return; const v=st.isDrop?0.5:1; if(st.side)bySide[st.side]=(bySide[st.side]||0)+v; else plain+=v; });
+      (e.sets||[]).forEach(st=>{ if(!st||st._pf||!(setReps(st)>0))return; const v=st.isDrop?0.5:1; if(st.side)bySide[st.side]=(bySide[st.side]||0)+v; else plain+=v; });
       const sides=Object.keys(bySide); const all=plain+(sides.length?Math.max(...sides.map(k=>bySide[k])):0); if(!(all>0))return;
       tg.forEach(t=>{ const a=idx[t.id]||(idx[t.id]={}); a[s.date]=(a[s.date]||0)+all*t.w; }); }); });
   _allSetsCache={src,idx}; return idx; }
@@ -4247,7 +4247,7 @@ function sessionFatigueContext(session){
       rowOut.push({orderIdx:ei,priorHardSets,priorScore,priorMuscleSets:pm,restSec}); // snapshot BEFORE this set
       if(st.doneAt)prevDoneAt=st.doneAt;
       if(st._pf)return;
-      const counts=(st.w||st.r)&&isHardSet(st); const v=st.isDrop?0.5:1;
+      const counts=(setReps(st)>0)&&isHardSet(st); const v=st.isDrop?0.5:1;
       if(counts){ priorHardSets+=v; muscles.forEach(m=>{ muscleSetsSoFar[m.name]=(muscleSetsSoFar[m.name]||0)+v*m.weight; }); }
       priorScore+=setScore(st);
     });
@@ -6607,6 +6607,33 @@ function _v335SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     console.log('v335 self-check OK');
   } finally { try{ popClose(); }catch(_){} reRender=rr; toast=t0; if(btn)btn.remove(); if(host)host.remove(); exHoldClear(); db=real; state._curEx=c0; state._focusSet=f0; state._pop=p0; state.screen=sc0; _restFinT=rf; bumpIdx(); }
 }
+// self-check de v336 (G13 al leer · G14 · G12 en el historial). Base de juguete; reRender se sustituye; todo se restaura en finally.
+function _v336SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v336: '+nm); }; const real=db, rr=reRender, t0=toast, sc0=state.screen, hs0=state._histSessId, sg0=window._swipeGuard; let host=null, btn=null, tn=0;
+  try{ const S=o=>Object.assign({w:'60',r:'8',rir:'1',unit:'lbs',done:true},o||{}), T=todayISO();
+    db=migrate({profile:{username:'t'},gyms:['g1'],activeGym:'g1',split:{name:'s',days:[{id:'d1',name:'A',exercises:[{id:'eB',name:'press',muscle:'chest',type:'free',unilateral:false,sets:2}]}]},
+      sessions:[{id:'h1',date:shiftDate(T,-1),dayId:'d1',dayName:'A',gym:'g1',type:'training',exercises:[{exId:'eB',name:'press',muscle:'chest',type:'free',unilateral:false,unit:'lbs',sets:[S(),S({r:'',rir:'',done:false}),S({rir:'',done:false})]}]}]}); bumpIdx();
+    const js0=JSON.stringify(db.sessions), e=db.sessions[0].exercises[0], noEmpty=e.sets.filter((_,i)=>i!==1);
+    A('G13 · una serie guardada sin reps no cuenta (series duras)', rowHard(e.sets)===rowHard(noEmpty));
+    A('G13 · …ni sale al compartir o en el historial (sin "×-")', shareExLines(e).lines.join(' ').indexOf('×-')<0&&shExModel(e).toks.length===2);
+    A('G13 · leer no escribe nada', JSON.stringify(db.sessions)===js0);
+    reRender=function(){}; toast=function(){ tn++; return null; }; state.screen='histedit'; state._histSessId='h1';
+    host=document.createElement('div'); host.className='hist-compact'; host.innerHTML=renderHistExercise(0,e,db.sessions[0]); document.getElementById('view').appendChild(host);
+    A('G14 · en el editor sale la pista de deslizar', !!host.querySelector('.swipehint[data-hint="hswipe"]'));
+    const row=host.querySelector('[data-swipe="h_delset"][data-si="0"]'), inp=row&&row.querySelector('input'), app=document.getElementById('app'), r=inp.getBoundingClientRect(), x=r.left+4, y=r.top+r.height/2;
+    const ev=(t,cx)=>inp.dispatchEvent(new MouseEvent(t,{bubbles:true,clientX:cx,clientY:y}));
+    ev('mousedown',x); ev('mousemove',x+100); const on=/translateX\(\d/.test(row.style.transform);
+    ev('mousemove',x+5); ev('mouseup',x+5);
+    A('G14 · en el historial deslizar empieza también sobre un campo (bloqueado o no) y la fila se mueve', !!inp&&on);
+    btn=document.createElement('button'); btn.type='button'; btn.hidden=true; btn.dataset.act='h_done'; app.appendChild(btn); window._swipeGuard=0;
+    const tap=si=>{ btn.dataset.exi='0'; btn.dataset.si=String(si); btn.click(); };
+    let n0=tn; tap(1); A('G12 · historial: sin reps no se marca y lo dice', e.sets[1].done===false&&tn===n0+1);
+    tap(2); const p=document.getElementById('tsel'); A('G12 · historial: sin RIR abre su selector', e.sets[2].done===false&&!!p&&/falta el RIR/.test(p.textContent));
+    [...p.querySelectorAll('.tselo')].find(b=>b.textContent==='2').click();
+    A('G12 · historial: al elegir el RIR queda hecha', e.sets[2].done===true&&e.sets[2].rir==='2');
+    tap(2); A('G12 · historial: desmarcar no pide nada', e.sets[2].done===false);
+    console.log('v336 self-check OK');
+  } finally { try{ popClose(); }catch(_){} reRender=rr; toast=t0; if(host)host.remove(); if(btn)btn.remove(); window._swipeGuard=sg0||0; db=real; state.screen=sc0; state._histSessId=hs0; bumpIdx(); }
+}
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -7423,6 +7450,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
 // record. Machine/setup shown read-only exactly as they were captured when the session was logged.
 // Actions dispatch to h_* (isolated from the live setf/done/etc. handlers).
 function renderHistExercise(exi,ex,sess){ _icM=(sess&&sess.metric)==='rpe'?'rpe':'rir';
+  const _hh=(exi===0&&state.screen==='histedit'&&!hintSeen('hswipe'))?'<div class="swipehint" data-hint="hswipe">desliza una serie → para borrarla</div>':'';   // v336 · G14 · solo en el editor (no en la copia de compartir)
   const sets=ex.sets||[]; const isCardioEx=isCardio(ex); const isM=!isCardioEx&&['machine','pulley','smith','cable'].indexOf(ex.type)>=0; const isU=!isCardioEx&&!!ex.unilateral;
   const isBwEx=ex.type==='bodyweight';
   const mparts=[]; if(ex.machine)mparts.push(escTxt(ex.machine)); if(ex.setup)mparts.push(escTxt(ex.setup));
@@ -7451,7 +7479,7 @@ function renderHistExercise(exi,ex,sess){ _icM=(sess&&sess.metric)==='rpe'?'rpe'
       }).join('');
       body+=`<div class="srow gc-cardio" style="grid-template-columns:${colTpl}" data-swipe="h_delset" data-exi="${exi}" data-si="${si}" data-rk="${rk(s)}">${setnHTML(labels[si],s.done,'h_done',exi,si,'')}${cells}<div class="setend">${doneCellHTML(s.done,'h_done',exi,si)}</div></div>`;
     });
-    const add=`<div class="addrow afree"><span class="aleft"><button class="addbtn" data-act="h_addset" data-exi="${exi}">+ set</button></span></div>`;
+    const add=_hh+`<div class="addrow afree"><span class="aleft"><button class="addbtn" data-act="h_addset" data-exi="${exi}">+ set</button></span></div>`;
     rows=thead+body+add;
   } else if(isU){
     let thead=uniHeadHTML(isBwEx,false);
@@ -7466,7 +7494,7 @@ function renderHistExercise(exi,ex,sess){ _icM=(sess&&sess.metric)==='rpe'?'rpe'
         +(cb?`<div class="srow ${gcU}"><div class="side">${escTxt(b.side||'L')}</div>${cb.w}${midB}${cb.r}${cb.rr}<span class="del u-invis">×</span></div>`:'')
         +`</div></div>`+histSetLine(sets,p,sigBarTag(pairTension(_htn,p),''),hrTag(_hhr[exi+':'+p]));
     }
-    const add=`<div class="addrow auni"><span class="aleft"><button class="addbtn" data-act="h_addset" data-exi="${exi}">+ set</button><button class="addbtn" data-act="h_dropset" data-exi="${exi}" data-si="${Math.max(0,sets.length-2)}">↓ drop set</button></span></div>`;
+    const add=_hh+`<div class="addrow auni"><span class="aleft"><button class="addbtn" data-act="h_addset" data-exi="${exi}">+ set</button><button class="addbtn" data-act="h_dropset" data-exi="${exi}" data-si="${Math.max(0,sets.length-2)}">↓ drop set</button></span></div>`;
     rows=thead+body+add;
   } else {
     const gc=isBwEx?'gc-free-bw':(isM?'gc-mach':'gc-free');
@@ -7479,7 +7507,7 @@ function renderHistExercise(exi,ex,sess){ _icM=(sess&&sess.metric)==='rpe'?'rpe'
       const mid=isBwEx?c.we:(fsOn?c.we+c.u:c.u);   // v256 B1b: antes el lastre SUSTITUÍA a la unidad → 7 hijos en 8 columnas
       body+=`<div class="srow ${gcRow} ${s.isDrop?'isdrop':''}" data-swipe="h_delset" data-exi="${exi}" data-si="${si}" data-rk="${rk(s)}">${setnHTML(labels[si],s.done,'h_done',exi,si,zSty)}${fs}${c.w}${mid}${c.r}${c.rr}<div class="setend">${doneCellHTML(s.done,'h_done',exi,si)}</div></div>`+histSetLine(sets,si,sigBarTag(_htn&&_htn.per[si],''),hrTag(_hhr[exi+':'+si]));
     });
-    const add=`<div class="addrow ${isM?'amach':'afree'}"><span class="aleft"><button class="addbtn" data-act="h_addset" data-exi="${exi}">+ set</button><button class="addbtn" data-act="h_dropset" data-exi="${exi}" data-si="${Math.max(0,sets.length-1)}">↓ drop set</button></span></div>`;
+    const add=_hh+`<div class="addrow ${isM?'amach':'afree'}"><span class="aleft"><button class="addbtn" data-act="h_addset" data-exi="${exi}">+ set</button><button class="addbtn" data-act="h_dropset" data-exi="${exi}" data-si="${Math.max(0,sets.length-1)}">↓ drop set</button></span></div>`;
     rows=thead+body+add;
   }
   return `<div class="ex" data-exi="${exi}" data-rk="${rk(ex)}">${head}${rows}</div>`;
@@ -8037,7 +8065,7 @@ function shSessModel(s){ _shM=(s&&s.metric)==='rpe'?'rpe':'rir';
     dur:s.durSec?(hh?{h:hh,m:pad(mm)}:{min:mm}):null, series, exn:exs.length, exs}; }
 // v257 · el modelo de UN ejercicio: lo usan el share de sesión y compartir ejercicio con 📷. Cada token sabe su serie
 // (`si`, el índice en e.sets; en unilateral el del par) para que la marca apunte a la misma fila en las tres vistas.
-function shExModel(e,tn){ const ok=x=>!!(x&&(x.w||x.r)&&!x._pf);   // v285 · tn (opcional) = exTensionSets del ejercicio: cada token lleva su σ en `sg`
+function shExModel(e,tn){ const ok=x=>!!(x&&(setReps(x)>0)&&!x._pf);   // v285 · tn (opcional) = exTensionSets del ejercicio: cada token lleva su σ en `sg`
   if(!e||isCardio(e))return null; const all=e.sets||[]; if(!all.some(ok))return null;
   const uni=!!e.unilateral, labels=setLabels(all,uni?2:1); let maxInt=0, drops=0; const toks=[];
   for(let i=0;i<all.length;i+=uni?2:1){
@@ -8329,9 +8357,11 @@ async function shareImage(){
 // historial: el formato compacto de una sesión (se conserva tal cual)
 function _shWR(x,showU){ return numTxt(effW(x))+(showU?escTxt(x.unit||''):'')+'×'+((x.r!=null&&x.r!=='')?escTxt(String(x.r)):'-'); }
 function _shRir(x){ const f=String(x.rir==null?'':x.rir).trim().toUpperCase(); return f===''?'':(f==='F'?' F':(_shM==='rpe'?' RPE':' RIR')+escTxt(rirShow(f,_shM))); }
+// v336 · G13 · aquí y en los demás lectores, una serie cuenta solo con reps: una serie guardada sin reps (peso tecleado, o el peso
+// corporal que la app ponía sola) ya no sale como `60×-` ni suma a //VOLUME, σ, recuperación o el export. Sigue en db: se borra en el editor.
 function shareExLines(e){
   const all=e.sets||[]; const step=e.unilateral?2:1;
-  const ok=x=>!!(x&&(x.w||x.r)&&!x._pf);
+  const ok=x=>!!(x&&(setReps(x)>0)&&!x._pf);
   const units={}; all.forEach(x=>{ if(ok(x)&&x.unit)units[x.unit]=1; });
   const uk=Object.keys(units); const one=uk.length===1?uk[0]:''; const showU=!one;
   const out=[];
@@ -8381,7 +8411,7 @@ function renderExHist(){ const key=state._exKey, rows=exHistRows(key); const bac
   // suelta se ve en su día). En σ todas van en una escala: σ cuenta el esfuerzo, no la unidad (S2). Con un solo grupo, como siempre.
   const mach=isMachType(ex.type), off=(state._exOff||{})[key]||{}, sigOf=r=>{ try{ const tn=sessionTension(r.sess)[r.ei]; return tn?Math.round(tn.total*100)/100:0; }catch(_){ return 0; } };
   const ptsOf=g=>g.rows.slice().reverse().filter(r=>!t0||r.date>=t0).map(r=>{ if(tab==='sig')return {date:r.date,v:sigOf(r)};
-    const w=(r.sets||[]).filter(x=>x&&!x._pf&&!x.isDrop&&(x.w||x.r)&&!bwMissing(x)&&(!g.unit||!unitN(x)||unitN(x)===g.unit));
+    const w=(r.sets||[]).filter(x=>x&&!x._pf&&!x.isDrop&&(setReps(x)>0)&&!bwMissing(x)&&(!g.unit||!unitN(x)||unitN(x)===g.unit));
     return {date:r.date,v:(tab==='top'?w.reduce((m,x)=>Math.max(m,effW(x)||0),0):w.reduce((a,x)=>a+(effW(x)||0)*(setReps(x)||0),0))||0}; }).filter(p=>p.v>0);
   const VG=GR.map((g,i)=>({g,i,pts:ptsOf(g)})).filter(x=>x.pts.length), multi=VG.length>1, ON=VG.filter(x=>!multi||!off[x.g.id]);
   const mixU=new Set(VG.map(x=>x.g.unit)).size>1, gLbl=x=>[mach?(x.g.gym||'sin gym'):'',(!mach||mixU)?uTxt(x.g.unit):''].filter(Boolean).join(' · ');
@@ -9318,7 +9348,7 @@ function downContext(sess,ei,base){ const out=[]; if(!sess||!sess.date)return ou
     (db.sessions||[]).forEach(s=>{ if(s===sess||s.type==='rest')return; const sw=sessionWindow(s); const te=sw?sw.endMs:new Date(s.date+'T12:00:00').getTime();
       if(!(te<t&&t-te<48*3600000))return;
       (s.exercises||[]).forEach((x,xi)=>{ if(isCardio(x))return; const hit=exTargets(s,xi).find(g=>g.id&&g.w>=1&&ids.includes(g.id));
-        if(hit&&(x.sets||[]).some(st=>(st.w||st.r)&&isHardSet(st))&&te>last){ last=te; lid=hit.id; } }); });
+        if(hit&&(x.sets||[]).some(st=>(setReps(st)>0)&&isHardSet(st))&&te>last){ last=te; lid=hit.id; } }); });
     if(last&&lid)out.push(muscleLabel(lid)+' entrenado hace '+Math.round((t-last)/3600000)+' h'); }
   if(base&&base.sess){ const c=(fatCtxOf(sess)[ei]||[])[0], b=(fatCtxOf(base.sess)[base.ei]||[])[0];
     if(c&&b&&c.priorHardSets-b.priorHardSets>=4)out.push(Math.round(c.priorHardSets-b.priorHardSets)+' series duras más antes que la vez pasada');
@@ -9336,7 +9366,7 @@ function whyDown(sess,ei,base){ const out=[]; const e=sess&&(sess.exercises||[])
     (e.sets||[]).forEach((x,i)=>{ const j=al[i]; if(j==null)return; const p=base.sets[j]; if(!x||!p||x.isDrop||p.isDrop||x._pf||p._pf||!rirKnown(x)||!rirKnown(p))return; const cu=unitN(x), pu=unitN(p); if(cu&&pu&&cu!==pu)return; const a=e1rmOf(x), b=e1rmOf(p); if(a>0&&b>0){ s+=a/b; n++; } });
     if(n&&s/n>=0.98){ const d=(cB&&cC)?Math.round(cB.priorHardSets-cC.priorHardSets):0; push('en crudo no baja'+(d>=2?' · la vez pasada llevabas '+d+' series antes':' · el % descuenta el cansancio de la sesión')); } }
   { const prior=(S,idx)=>{ const mine=musclesOf(S,idx).map(m=>m.name), acc={}; for(let x=0;x<idx;x++){ const ex=(S.exercises||[])[x]; if(!ex||isCardio(ex))continue;
-        const hs=(ex.sets||[]).reduce((a,st)=>a+((st&&!st._pf&&(st.w||st.r)&&isHardSet(st))?(st.isDrop?0.5:1):0),0); if(!hs)continue;
+        const hs=(ex.sets||[]).reduce((a,st)=>a+((st&&!st._pf&&(setReps(st)>0)&&isHardSet(st))?(st.isDrop?0.5:1):0),0); if(!hs)continue;
         musclesOf(S,x).forEach(m=>{ if(mine.indexOf(m.name)<0)return; const q=acc[m.name]=acc[m.name]||{n:0,top:'',tn:0}, v=hs*(m.weight||1); q.n+=v; if(v>q.tn){ q.tn=v; q.top=ex.name; } }); } return acc; };
     const a=prior(sess,ei), b=(base&&base.sess)?prior(base.sess,base.ei):{}; let best=null;
     Object.keys(a).forEach(k=>{ const d=a[k].n-((b[k]&&b[k].n)||0); if(d>=0.5&&(!best||d>best.d))best={k,d,n:a[k].n,top:a[k].top}; });
@@ -10119,7 +10149,7 @@ function spanHardSets(aISO,bISO){
   let total=0;
   (db.sessions||[]).forEach(s=>{ if(s.type==='rest'||!s.date||s.date<aISO||s.date>bISO)return;
     (s.exercises||[]).forEach(e=>{ let plain=0; const bySide={};
-      (e.sets||[]).forEach(st=>{ if(!((st.w||st.r)&&isHardSet(st)))return; const v=st.isDrop?0.5:1;
+      (e.sets||[]).forEach(st=>{ if(!((setReps(st)>0)&&isHardSet(st)))return; const v=st.isDrop?0.5:1;
         if(st.side)bySide[st.side]=(bySide[st.side]||0)+v; else plain+=v; });
       const sides=Object.keys(bySide); total+=plain+(sides.length?Math.max.apply(null,sides.map(k=>bySide[k])):0); }); });
   return total;
@@ -10378,7 +10408,7 @@ function setsWeek(offsetWeeks){
   (db.sessions||[]).forEach(s=>{ if(s.type==='rest'||!s.date||s.date<=ai||s.date>bi)return;
     (s.exercises||[]).forEach((e,ei)=>{ const muscles=musclesOf(s,ei); if(!muscles.length)return;   // v228: vivo, como tensWeek
       let plain=0; const bySide={};
-      (e.sets||[]).forEach(st=>{ if(!((st.w||st.r)&&isHardSet(st)))return; const v=st.isDrop?0.5:1; if(st.side)bySide[st.side]=(bySide[st.side]||0)+v; else plain+=v; });
+      (e.sets||[]).forEach(st=>{ if(!((setReps(st)>0)&&isHardSet(st)))return; const v=st.isDrop?0.5:1; if(st.side)bySide[st.side]=(bySide[st.side]||0)+v; else plain+=v; });
       const sides=Object.keys(bySide); const hard=plain+(sides.length?Math.max.apply(null,sides.map(k=>bySide[k])):0);
       if(hard>0)muscles.forEach(m=>{ byM[m.name]=(byM[m.name]||0)+hard*m.weight; }); });
   });
@@ -12392,8 +12422,10 @@ function setGoneUndo(ex,p,gone,live){ if(!ex||!gone||!gone.some(x=>x&&!(live&&x.
   function clear(){ if(el){ el.style.transform=''; el.style.opacity=''; } el=null; lock=null; dx=0; moved=false; }
   function begin(e){
     const tg=e.target; if(!tg||!tg.closest)return;
-    if(tg.closest('input,select,button,textarea,.dchk,.pairdone,.dgrip'))return;
     const row=tg.closest('[data-swipe]'); if(!row)return;
+    // v336 · G14 · en el editor de historial casi toda la fila son campos (bloqueados si la serie está hecha) y el gesto nunca
+    // empezaba: ahí arranca desde cualquier parte salvo los controles que se tocan. En la sesión viva, como siempre (ahí tecleas).
+    if(tg.closest(row.dataset.swipe==='h_delset'?'select,.dchk,.pairdone,.dgrip,.fs,.bwchip':'input,select,button,textarea,.dchk,.pairdone,.dgrip'))return;
     const t=pt(e); el=row; x0=t.clientX; y0=t.clientY; dx=0; lock=null; moved=false;
     act=row.dataset.swipe; exi=+row.dataset.exi; si=+row.dataset.si;
   }
@@ -12403,6 +12435,7 @@ function setGoneUndo(ex,p,gone,live){ if(!ex||!gone||!gone.some(x=>x&&!(live&&x.
       if(Math.abs(dx)<9&&Math.abs(dy)<9)return;
       lock=(Math.abs(dx)>Math.abs(dy)+5)?'x':'y';
       if(lock==='y'){ clear(); return; }
+      { const ae=document.activeElement; if(ae&&el.contains(ae)&&ae.blur)ae.blur(); }   // v336 · si el gesto empezó en un campo, no se queda tecleando
     }
     if(dx<0)dx=0; if(dx>MAX)dx=MAX;
     moved=true;
@@ -12414,7 +12447,7 @@ function setGoneUndo(ex,p,gone,live){ if(!ex||!gone||!gone.some(x=>x&&!(live&&x.
     if(!el)return;
     const go=moved&&dx>=TH, a=act, i=exi, j=si, node=el;
     if(moved)window._swipeGuard=Date.now();   // que el 'click' de después no dispare nada
-    if(go)hintMark('swipe');                  // §9.1: aprendido el gesto, la pista no vuelve
+    if(go)hintMark(a==='h_delset'?'hswipe':'swipe');   // §9.1: aprendido el gesto, la pista no vuelve (v336 · el del historial tiene la suya)
     el=null; lock=null; dx=0; moved=false;
     const reset=()=>{ try{ node.style.transition=''; node.style.transform=''; node.style.opacity=''; }catch(_){} };
     if(go){   // DS-5: sale hacia la derecha (180 ms) y entonces se borra; si el borrado se cancela, vuelve
@@ -12592,6 +12625,11 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='h_delsession'){ holdConfirm({title:'borrar esta sesión',detail:'sale del historial y deja de contar para volumen, progreso y recuperación',verb:'borrar'},()=>{ db.sessions=db.sessions.filter(x=>x.id!==el.dataset.id); state._histSessId=null; save(); if(state._histFrom==='history')goBack('history'); else go('history'); }); }
   // history-edit set actions — isolated from the live setf/done/etc. handlers above (never touch db.activeWork).
   else if(a==='h_done'){ const s=db.sessions.find(x=>x.id===state._histSessId); if(!s)return; const ex=s.exercises[exi]; if(!ex||!ex.sets[si])return;
+    // v336 · G12 · igual que en la sesión viva: marcar pide reps y RIR (el gris vale); sin RIR abre su selector y al elegir queda hecha
+    if(!isCardio(ex)&&!(ex.sets[si]&&ex.sets[si].done)){ for(const j of (ex.unilateral?[si,si+1]:[si])){ const st=ex.sets[j]; if(!st)continue;
+      if(!(setReps(st)>0)){ toast('faltan las reps de esta serie'); return; }
+      if(!rirKnown(st)){ const b=document.querySelector('#view [data-f="rir"][data-exi="'+exi+'"][data-si="'+j+'"]'); if(!b||b.tagName!=='BUTTON'){ toast('falta el RIR de esta serie'); return; }
+        openRirSelect(b,true,()=>{ const d=document.querySelector('#view [data-act="h_done"][data-exi="'+exi+'"][data-si="'+si+'"]'); if(d)d.click(); }); profNote('falta el RIR · al elegirlo la serie queda hecha'); return; } } }
     if(ex.unilateral){ const v=!(ex.sets[si]&&ex.sets[si].done); [si,si+1].forEach(j=>{ const st=ex.sets[j]; if(!st)return; st.done=v; if(v)pfClearAll(st); }); }
     else { ex.sets[si].done=!ex.sets[si].done; if(ex.sets[si].done)pfClearAll(ex.sets[si]); }
     save(); reRender(); }
@@ -13877,7 +13915,7 @@ function latMoveAsk(key,to){ to=latNorm(to); const n=latMoveList(key,to).ns; if(
 const LR_VIS=['w','r','rir','unit','extraW','fsOn','isDrop','bw'];
 function lrStr(v){ return v==null?'':String(v); }
 // series duras de UNA fila de ejercicio, con la regla de //VOLUME (par R+L = 1 por el lado que más tiene; drop = 0.5)
-function rowHard(sets){ let plain=0; const by={}; (sets||[]).forEach(st=>{ if(!st||!((st.w||st.r)&&isHardSet(st)))return; const v=st.isDrop?0.5:1;
+function rowHard(sets){ let plain=0; const by={}; (sets||[]).forEach(st=>{ if(!st||!((setReps(st)>0)&&isHardSet(st)))return; const v=st.isDrop?0.5:1;
     if(st.side)by[st.side]=(by[st.side]||0)+v; else plain+=v; }); const ks=Object.keys(by); return plain+(ks.length?Math.max.apply(null,ks.map(k=>by[k])):0); }
 // el lado más flojo: menor capacidad (peso × reps con su RIR); empate → menos reps; empate → el que iba primero
 function weakerSide(a,b){ const ea=e1rmOf(a), eb=e1rmOf(b); if(ea!==eb)return ea<eb?a:b; const ra=parseFloat(a.r)||0, rb=parseFloat(b.r)||0; if(ra!==rb)return ra<rb?a:b; return a; }
@@ -17015,7 +17053,7 @@ function buildExportMd(db){
     L.push('### '+fd(s.date)+' · '+(cl(s.dayName)||'sesión')+(cl(s.gym)?' · '+cl(s.gym):'')+' · '+(st&&en?st+'–'+en:(st||'sin hora'))+(du?' · '+du:'')+(s.loggedAfter?' · registrada después':'')+(hr&&hr.avg?' · FC media '+hr.avg+(hr.max?' · máx '+hr.max:''):''));
     let vol=0, stT=[]; try{ stT=sessionTension(s)||[]; }catch(_){}
     (s.exercises||[]).forEach((e,ei)=>{ if(!e)return;
-      const sets=(e.sets||[]).filter(x=>x&&(x.w||x.r)&&!x._pf); // mismo filtro real que saveSession (y una serie rota no tumba el archivo)
+      const sets=(e.sets||[]).filter(x=>x&&(setReps(x)>0)&&!x._pf); // mismo filtro real que saveSession (y una serie rota no tumba el archivo)
       if(!sets.length)return;
       const parts=sets.map(x=>{ const w=effW(x),r=+x.r||0; if(w&&r)vol+=kgLoad(x)*r; const f=String(x.rir==null?'':x.rir).trim().toUpperCase(); return n(w)+(x.unit||'')+'×'+(r||0)+(x.side?' '+x.side:'')+(x.isDrop?' ↓':'')+(f==='F'?' · F':(f!==''?(s.metric==='rpe'?' · RPE'+rirShow(f,'rpe'):' · RIR'+f):'')); });
       const tx=stT[ei]&&stT[ei].total>0?' · σ '+fmtSig(stT[ei].total):'';
@@ -17171,7 +17209,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
