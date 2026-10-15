@@ -607,7 +607,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
 
   /* workout sets table */
   .wprog{height:2px; background:var(--o10); margin:var(--s3) 0 0;} .wprog>i{display:block; height:100%; background:var(--fill);}
-  .mgroup{margin-top:var(--s6);} .mhead{font-size:var(--t-label); color:var(--o50); margin-bottom:var(--s5);}
+  .mgroup{margin-top:var(--s6);} .mhead{font-size:var(--t-label); color:var(--o50); margin-bottom:var(--s4);}
   .mbody{border-left:var(--bw-rule) solid var(--border); padding-left:var(--s4); margin-left:var(--s2);}
   .ex{margin-bottom:var(--sp-card);} .ex:last-child{margin-bottom:0;}
   /* v223: el ejercicio en curso (primera serie sin ✓) lleva una guía a la izquierda — "te pierdes en cuál vas" */
@@ -680,31 +680,36 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .catlr{flex:1; min-width:0; min-height:44px; display:grid; grid-template-columns:minmax(0,1fr) 4ch 6ch; align-items:start; column-gap:var(--s3);}
   .catll{align-self:center; min-width:0; overflow-wrap:anywhere; line-height:var(--lh-ui); padding:var(--s2) 0; color:var(--o60);} .catlc{line-height:44px; text-align:right; color:var(--o70);} .catld{line-height:44px; text-align:right; white-space:nowrap; color:var(--o50);}
   span.catlt,span.catlr{cursor:default;}
-  .exsub{display:flex; align-items:baseline; flex-wrap:wrap; gap:var(--s3); margin:calc(-1 * var(--s2)) 0 10px;}
+  .exsub{display:flex; align-items:baseline; flex-wrap:wrap; gap:var(--s3); margin:calc(-1 * var(--s2)) 0 var(--s3);}
   .exsub .note{font-size:var(--t-label); color:var(--o50);} .exsub .note.add{color:var(--o40);}
   .exsub .mch{font-size:var(--t-label); color:var(--o60); cursor:pointer; border-bottom:var(--bw-dash) dashed var(--o20);}
   .exsub .mch.none{color:var(--o40); border-bottom:none;} .exsub .mset{font-size:var(--t-label); color:var(--o40); cursor:pointer;}
-  .exhead{display:flex; align-items:baseline; flex-wrap:wrap; gap:var(--s3); margin-bottom:10px;} .exhead .n{font-size:var(--t-section); font-weight:800;} .exhead .mch{font-size:var(--t-label); color:var(--o50); cursor:pointer; border-bottom:var(--bw-dash) dashed var(--o20);} .exhead .mch.none{color:var(--o40); border-bottom:none;} .exhead .mch:active{color:var(--fg);} .exhead .mset{font-size:var(--t-label); color:var(--o40); cursor:pointer;} .exhead .note{font-size:var(--t-label); color:var(--o40);}
+  .exhead{display:flex; align-items:baseline; flex-wrap:wrap; gap:var(--s3); margin-bottom:var(--s3);} .exhead .n{font-size:var(--t-section); font-weight:800;} .exhead .mch{font-size:var(--t-label); color:var(--o50); cursor:pointer; border-bottom:var(--bw-dash) dashed var(--o20);} .exhead .mch.none{color:var(--o40); border-bottom:none;} .exhead .mch:active{color:var(--fg);} .exhead .mset{font-size:var(--t-label); color:var(--o40); cursor:pointer;} .exhead .note{font-size:var(--t-label); color:var(--o40);}
   /* hold & drag — reorder exercises within a muscle, and whole muscle blocks */
   .dgrip{display:inline-block; align-self:center; cursor:grab; color:var(--o40); font-size:var(--t-data); line-height:var(--lh-tight); padding:var(--s2) var(--s3) var(--s2) 0; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;}
   .dgrip:active{color:var(--o60); cursor:grabbing;}
   .exhd{display:grid; grid-template-columns:minmax(0,1fr);} .exhd.hasgrip{grid-template-columns:14px minmax(0,1fr); column-gap:var(--s2);}
   .exhd>.dgrip{align-self:start; padding:var(--s2) 0 0; margin-top:1px;} .exhdc{min-width:0;}
   .mhead .dgrip{padding:var(--s1) 6px var(--s1) 0; vertical-align:-1px;}
+  .exhead .lat{min-width:calc(var(--t-section) * 3);}   /* v340 · G16 · [bi] y [uni] miden lo mismo: el nombre empieza en la misma x en todos */
+  .exhead:has(> .lat) + .exsub,.exhead:has(> .lat) ~ .exref{margin-left:calc(var(--t-section) * 3 + var(--s3));}   /* v340 · G16 · máquina, variantes y la línea del otro gym, en sangría bajo el nombre */
+  .wfocus .mhead{position:relative;} .wfocus .mhead>.dgrip{position:absolute; left:calc(-1 * var(--sp-px)); width:var(--sp-px); padding:var(--s1) 0; text-align:center;}   /* v340 · G16 · el ⠿ del músculo al margen, como el del ejercicio */
+  .exref{display:flex; align-items:center; min-height:44px; margin:calc(-1 * var(--s3)) 0 0; padding:0; background:none; border:0; font:inherit; font-size:var(--t-label); color:var(--o50); text-align:left; cursor:pointer;}   /* v340 · C10 · su toque de 44 es su caja: no se encima con la nota de arriba ni con los rótulos de abajo */
+  .thead .cl[data-gloss]{border-bottom:0;}   /* v340 · G17 · el punteado va bajo la palabra, no bajo toda la columna */
   .ex.dragsrc, .mgroup.dragsrc{opacity:.3;}
   body.dragging, body.dragging *{-webkit-user-select:none; user-select:none;}
   body.dragging{cursor:grabbing;}
   .dragghost{position:fixed; left:0; top:0; z-index:var(--z-float); pointer-events:none; background:var(--card2); border:var(--bw-chrome) solid var(--fg); color:var(--fg); padding:6px var(--s4); font-size:var(--t-data); font-weight:700; box-shadow:var(--shadow-float); white-space:nowrap; letter-spacing:var(--ls-ui);} .dragghost{border-radius:var(--r-float);}
   .ex.dropbefore, .mgroup.dropbefore{position:relative;} .ex.dropbefore::before, .mgroup.dropbefore::before{content:''; position:absolute; left:0; right:0; top:-6px; height:2px; background:var(--fill); border-radius:var(--r-sm);}
   .ex.dropafter, .mgroup.dropafter{position:relative;} .ex.dropafter::after, .mgroup.dropafter::after{content:''; position:absolute; left:0; right:0; bottom:-6px; height:2px; background:var(--fill); border-radius:var(--r-sm);}
-  .thead,.srow{display:grid; gap:var(--s2); align-items:center;} .thead{margin-bottom:6px;} .thead .cl{font-size:var(--t-label); color:var(--o40); text-align:center; letter-spacing:var(--ls-ui);} .thead .cl.w{text-align:left; padding-left:var(--s1);}
+  .thead,.srow{display:grid; gap:var(--s2); align-items:center;} .thead{margin-bottom:var(--s2);} .thead .cl{font-size:var(--t-label); color:var(--o40); text-align:center; letter-spacing:var(--ls-ui);} .thead .cl.w{text-align:left; padding-left:var(--s1);}
   .gc-free{grid-template-columns:22px 1fr 38px 44px 40px 30px;} .gc-mach{grid-template-columns:22px 28px 1fr 38px 44px 40px 30px;} .gc-uni{grid-template-columns:20px 1fr 38px 44px 40px 18px;}
   .gc-mach-fs{grid-template-columns:22px 28px 1fr 1fr 38px 44px 40px 30px;}
   /* bodyweight rows: same total width as gc-free/gc-uni — the "unit" slot is repurposed for the +lastre field */
   .gc-free-bw{grid-template-columns:22px 1fr 38px 44px 40px 30px;} .gc-uni-bw{grid-template-columns:20px 1fr 38px 44px 40px 18px;}
   /* cardio: set# + dynamic field cols + del — columns set inline from field count */
   .gc-cardio{align-items:center;}
-  .srow{margin-bottom:6px;}
+  .srow{margin-bottom:var(--s2);}   /* v340 · G15 · el mismo 4 que separa los campos a lo ancho */
   /* v223: la celda del número ES el ✓ de la serie (un toque = confirmada). Antes solo cambiaba de color
      y no se leía como un control; el glifo va apilado bajo el número para que quepa un "1.5". */
   .setn{font-size:var(--t-label); color:var(--o50); text-align:center; line-height:var(--lh-tight); -webkit-user-select:none; user-select:none;}
@@ -790,7 +795,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 .rvleg{display:flex; gap:var(--s5); margin:var(--s2) 0 var(--s3); font-size:var(--t-label); color:var(--o50); letter-spacing:var(--ls-ui);} .rvleg i{display:inline-block; width:16px; margin-right:var(--s2); vertical-align:middle; border-top:var(--bw-mark) solid var(--fill);} .rvleg i.d{border-top:var(--bw-dash) dashed var(--o50);} .rvleg i.o{border-top-color:var(--o50);}
   .exT{font-size:var(--t-label); font-weight:700; color:var(--o50); margin-left:6px; letter-spacing:var(--ls-ui); white-space:nowrap;}
   .del{font-size:var(--t-section); color:var(--o40); text-align:center; cursor:pointer; background:none; border:0; height:36px; line-height:36px; padding:0;}
-  .pair{display:flex; align-items:center; gap:var(--s2); margin-bottom:6px;} .pair .setn{width:22px; flex:0 0 22px;} .pair .prows{flex:1;}
+  .pair{display:flex; align-items:center; gap:var(--s2); margin-bottom:var(--s2);} .pair .setn{width:22px; flex:0 0 22px;} .pair .prows{flex:1;} .pair .prows>.srow:last-child{margin-bottom:0;}   /* v340 · G15 · SG2 · el margen de la última fila quedaba atrapado y alejaba la barra de su par */
   .addrow{display:grid; gap:var(--s2); margin-top:10px;} .addrow.afree{grid-template-columns:22px 1fr 38px 44px 40px 18px;} .addrow.amach{grid-template-columns:22px 28px 1fr 38px 44px 40px 18px;} .addrow.auni{grid-template-columns:22px 20px 1fr 38px 44px 40px 18px;}
   .addbtn{font-size:var(--t-label); color:var(--o60); background:none; border:0; cursor:pointer; white-space:nowrap; text-align:left; padding:var(--s5) 6px; margin:calc(-1 * var(--s5)) -6px; font-family:inherit; letter-spacing:var(--ls-ui);}
   .aleft{display:flex; gap:var(--s5);} .addrow.afree .aleft{grid-column:2/6;} .addrow.amach .aleft{grid-column:2/6;} .addrow.auni .aleft{grid-column:3/6;}
@@ -1361,7 +1366,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .hold .hold-lbl{position:relative; font-variant-numeric:tabular-nums;}
   /* DS-4 · componentes que vivían en style="" */
   .setprog{font-size:var(--t-label); font-weight:700;} .exprog{font-size:var(--t-data); font-weight:800; margin-left:var(--s3);}   /* R1: la forma fija en clase; en línea solo el color calculado */
-  .setprogline{display:flex; align-items:center; justify-content:flex-end; gap:6px; padding:0 var(--s3); margin:-1px 0 var(--s2); height:11px; line-height:11px;} .setprogline.nil{height:0; padding:0; margin:0;}
+  .setprogline{display:flex; align-items:center; justify-content:flex-end; gap:6px; padding:0 calc(var(--s7) + var(--s1)) 0 var(--s3); margin:calc(-1 * var(--s1)) 0 var(--s3); height:10px; line-height:10px;}   /* v340 · SG2 · a 6 px de su serie y 12 de la siguiente; termina donde termina el campo RIR (34 = columna del ✓ + su hueco) */ .setprogline.nil{height:0; padding:0; margin:0;}
   /* v301 · σ de la serie como barra (SG1): ocupa el renglón a la izquierda del ▲▼ %; punteada = RIR estimado. El renglón sigue midiendo 11 px. */
   /* v305 · el dueño: "está muy grande, hazla más delgada y discreta y que se siga leyendo el num de puntaje": barra corta de 2 px en gris + su número */
   .setprogline .droppct{float:none; margin-right:auto;}
@@ -1369,7 +1374,8 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
      empezaba en 245 · 251 · 269 · 275 · 281 px según lo que midiera la insignia de esa fila. El puntaje ocupa 5 caracteres (`~0.90`), la insignia 6
      (`▼~-10%`) y, sin insignia, su hueco se queda: las barras y los números de todas las series caen en la misma columna. */
   .sgw .sgv{min-width:5ch; text-align:right;}
-  .setprogline[data-exi] .setprog{min-width:6ch; text-align:right;} .setprogline[data-exi] .sgw:last-child{margin-right:calc(6ch + 6px);}
+  .setprogline .setprog{flex:0 0 auto; margin:0; text-align:right; white-space:nowrap;} .setprogline > :not(.sgw):not(.droppct){order:-1;} .setprogline .droppct{order:-2;}   /* v340 · SG2 · la barra y su número terminan con la columna del RIR; el ▲▼ % (y la FC) van a su izquierda con su hueco: caben ▲~+10% y ▲+100% */
+  .hist-compact .pair + .setprogline{padding-right:calc(var(--s5) + var(--s2) + var(--s1));}
   .sgw{display:inline-flex; align-items:center; gap:6px; font-size:var(--t-label);} .sgw[data-gloss]{border-bottom:0;}
   .sgw .sgb{flex:0 0 56px; width:56px; height:2px;} .sgw .sgb>i{background:var(--o60);}
   .sgw .sgb.est>i{background:repeating-linear-gradient(90deg,var(--o60) 0 3px,transparent 3px 6px);}
@@ -1403,7 +1409,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .wfocus .ex:not(.current) .whyln{display:none;}
   /* v305 · cambio de ejercicio en dos tiempos: primero lo que se va a cerrar se desvanece EN SU LUGAR (nada se mueve); luego el hueco se cierra deslizando y el siguiente se enciende, todo con --dur-calm */
   @keyframes exfade{to{opacity:0}} .wfocus .ex.exclosing .exsub,.wfocus .ex.exclosing .setprogline,.wfocus .ex.exclosing .addrow,.wfocus .ex.exclosing .swipehint,.wfocus .ex.exclosing .whyln,.wfocus .ex.exclosing .exholdc{animation:exfade var(--dur-2) var(--ease-in) forwards;}
-  .pair.phead{margin-bottom:6px;} .pair.phead .thead{margin-bottom:0;} .pair.phead .setn,.pair.phead .pairdone{cursor:default;}   /* v256: cabecera unilateral con la envoltura del par */
+  .pair.phead{margin-bottom:var(--s2);} .pair.phead .thead{margin-bottom:0;} .pair.phead .setn,.pair.phead .pairdone{cursor:default;}   /* v256: cabecera unilateral con la envoltura del par */
   .start.ghost{background:transparent; border:var(--bw-ctl) solid var(--border); color:var(--fg);}
   .fa-empty .fa-em-step.off{opacity:.5; cursor:default;}
   .inp-mini{background:transparent; border:var(--bw-box) solid var(--o20); border-radius:var(--r-ctl); color:var(--fg); font:inherit; font-size:var(--t-label); padding:var(--s2) 6px;}   /* dato, versión mini (registro tardío) */
@@ -1460,7 +1466,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v339';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v340';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2895,7 +2901,7 @@ const PROF_DEF={
     val:{desc:'al inicio',mid:'a mitad',asc:'al final',unk:'no sé'},
     why:'no cambia σ ni la recuperación · se lee junto al nombre y en el perfil del músculo'}
 };
-const RP_SHORT={asc:'final',desc:'inicio',mid:'mitad'}, LEN_TXT={long:'estirado',mid:'media',short:'acortado',mixed:'mixto'};
+const RP_SHORT={asc:'pesa al final',desc:'pesa al inicio',mid:'pesa a mitad'}   /* v340 · RP2 · "pensé que me estaba dando sugerencias de la secuencia de orden": dice dónde pesa */, LEN_TXT={long:'estirado',mid:'media',short:'acortado',mixed:'mixto'};
 // sugerencias SOLO donde la evidencia/biomecánica es sólida. types = solo aplica a esos tipos.
 const EX_HINTS=[
   {re:/\b(rdl|sldl|romanian|rumano|stiff|straight ?leg)\b|piernas rectas/, rp:'desc', len:'long', types:['free'], why:'cadera flexionada al fondo: isquios en su máxima longitud; con barra lo más duro es abajo'},
@@ -3583,7 +3589,7 @@ function musclesOf(sessOrWork,ei){
 let _exIdxCache=null;
 // call after any mutation that could change db.sessions (save() does this) so exIndex() rebuilds once, lazily.
 let _refCache={}, _sessTCache={}, _fatCtxCache={}, _readyCache={};
-function bumpIdx(){ _ccShareC=null; _ccFc=null; _machIdCache=null; _exIdxCache=null; _catIdxCache=null; _refCache={}; _sessTCache={}; _fatCtxCache={}; _readyCache={}; _mLblCache={}; _muscExpCache=null; _diagCache={}; _exKeyFold=null; _exStCache={}; _fatFlagCache=null; }
+function bumpIdx(){ _ogrC={}; _ccShareC=null; _ccFc=null; _machIdCache=null; _exIdxCache=null; _catIdxCache=null; _refCache={}; _sessTCache={}; _fatCtxCache={}; _readyCache={}; _mLblCache={}; _muscExpCache=null; _diagCache={}; _exKeyFold=null; _exStCache={}; _fatFlagCache=null; }
 // flat, memoized list of every REAL (non-_pf, non-empty) exercise-occurrence across all saved sessions,
 // most-recent-first. Base for baselineSetsFor() — rebuilt only when bumpIdx() invalidates it.
 function exIndex(){
@@ -3709,6 +3715,16 @@ function openDeloadInfo(){ const F=fatigueFlag();
 // NEVER bare-name: UNI≠BI and free≠machine must stay isolated (false % is worse than no %).
 // confidence 'exact' when identity/day+occurrence pin it down uniquely, 'weak' otherwise.
 function gymN(g){ return String(g||'').toLowerCase().trim(); }
+// v340 · C10 · el dueño (14-oct): "tendrían que mantenerse los pesos" (al marcar que un ejercicio también está en Spartan). Su opción por
+// omisión: el progreso sigue separado por gym (C4), así que lo del otro gym sale como una línea de LECTURA bajo el ejercicio (`en AGON GYM ·
+// 140lbs×8 · 03 sep`: la serie de trabajo más pesada de la última vez allá), sin sugerencia gris, sin ▲▼ y sin tocar su gráfica; tocarla
+// abre su bitácora. Solo cuando aquí no hay sesión previa equivalente.
+let _ogrC={};
+function otherGymRef(ex,gym){ if(!ex||isCardio(ex)||!gym)return null; const name=String(ex.name||'').toLowerCase().trim(), v=variantKey(ex), k=name+'|'+v+'|'+gym; if(Object.prototype.hasOwnProperty.call(_ogrC,k))return _ogrC[k];
+  const r=exIndex().find(x=>x.name===name&&x.variant===v&&x.gym&&!gymMatch(x.gym,gym)); let out=null;
+  if(r){ const ws=(r.sets||[]).filter(s=>s&&!s._pf&&!s.isDrop&&setReps(s)>0); if(ws.length){ const top=ws.slice().sort((a,b)=>(effW(b)-effW(a))||(setReps(b)-setReps(a)))[0]; out={gym:r.gym,date:r.date,set:top,key:exHistKey(r.ex)}; } }
+  _ogrC[k]=out; return out; }
+function otherGymRefHTML(ex){ const o=otherGymRef(ex,db.activeWork&&db.activeWork.gym); return o?'<button type="button" class="exref" data-act="exref" data-k="'+escTxt(o.key)+'" aria-label="tus pesos en '+escTxt(o.gym)+' · abre su bitácora">en '+escTxt(o.gym)+' · '+_shWR(o.set,true)+' · '+escTxt(fmtShort(o.date))+'</button>':''; }
 function gymMatch(a,b){ return !a || !b || gymN(a)===gymN(b); }
 function baselineSetsFor(target){
   target=target||{};
@@ -4957,7 +4973,7 @@ function _perfilSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
     const w=db.activeWork, K=i=>exMissing(w,i).map(m=>m.k).join(',');
     // 1 · qué falta: solo lo que mueve un número, y la resistencia una vez
     A('máquina sin perfil: solo se pregunta la resistencia (la longitud no lleva marca), con la marca tenue', K(0)==='rp'&&/class="exstar rp"/.test(exRpHTML(0)));
-    A('lo sugerido (~) no cuenta como falta', K(1)===''&&rpTxt(exProfileOf(w,1))==='~inicio');
+    A('lo sugerido (~) no cuenta como falta', K(1)===''&&rpTxt(exProfileOf(w,1))==='~pesa al inicio');
     A('un músculo sin resolver va primero', K(2).indexOf('musc')===0);
     A('cardio no lleva marca', K(3)===''&&exRpHTML(3)==='');
     A('corporal sin tu peso registrado: falta el peso', K(4).indexOf('bw')>=0);
@@ -4966,7 +4982,7 @@ function _perfilSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
     A('una sola marca por ejercicio', (exRpHTML(0).match(/<button/g)||[]).length===1&&/class="exstar "/.test(exRpHTML(0)));
     w.exercises[0].sets[1].rir='F'; A('F cuenta como RIR anotado', K(0)==='rp');
     setRpForGym('leg ext','g1','unk'); A('"no sé" es una respuesta: deja de faltar y no se lee nada junto al nombre', K(0)===''&&exRpHTML(0)==='');
-    setRpForGym('leg ext','g1','asc'); A('con la resistencia dada se lee en una palabra, sin marca', K(0)===''&&/class="exrp"[^>]*>· final</.test(exRpHTML(0))&&exRpRead(w,0)==='<span class="exrp">· final</span>');
+    setRpForGym('leg ext','g1','asc'); A('con la resistencia dada se lee en una palabra, sin marca', K(0)===''&&/class="exrp"[^>]*>· pesa al final</.test(exRpHTML(0))&&exRpRead(w,0)==='<span class="exrp">· pesa al final</span>');
     setRpForGym('leg ext','g1',''); setExCat('leg ext',{noAsk:1}); A('"no preguntar más" apaga la pregunta de ESE ejercicio y solo de ese', K(0)===''&&K(2)!=='');
     setExCat('leg ext',{noAsk:0}); A('…y se puede volver a prender', K(0)==='rp');
     setExCat('dumbbell thing',{rpGym:{g1:'mid'}}); A('en peso libre también vale lo guardado por gym', profileFor({name:'dumbbell thing',type:'free'},'g1').rp==='mid');
@@ -5027,7 +5043,7 @@ function _exProfileSelfCheck(){
     A('"no sé" es una respuesta: apaga la sugerencia', profileFor(sldl,'AGON').rp==='unk'&&profileFor(sldl,'AGON').rpSrc==='user');
     setExCat('sldl',{len:'mid'});
     A('lo tuyo gana sobre lo sugerido', profileFor(sldl,'AGON').len==='mid'&&profileFor(sldl,'AGON').lenSrc==='user');
-    A('la etiqueta corta marca lo sugerido con ~', profileTag(profileFor(dlr,'AGON'))==='~final · ~acortado'&&rpTxt(profileFor(dlr,'AGON'))==='~final');
+    A('la etiqueta corta marca lo sugerido con ~', profileTag(profileFor(dlr,'AGON'))==='~pesa al final · ~acortado'&&rpTxt(profileFor(dlr,'AGON'))==='~pesa al final');
   } finally { db=real; bumpIdx(); }
   console.log('profile self-check OK');
 }
@@ -6756,6 +6772,27 @@ function _v339SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('CC4 · guardar deja el slider y no toca las metas pasadas', db.settings.carbCycle.amp===14&&db.settings.carbCycle.v===2&&JSON.stringify(db.goalHist[D(-2)])===gh0);
     console.log('v339 self-check OK');
   } finally { try{ closeModal(); }catch(_){} ghost(); if(btn)btn.remove(); save=_sv; reRender=_rr; toast=_t; db=real; window._goalMode=gm0; state.screen=sc0; _sbx=sb0; bumpIdx(); try{ render(); }catch(_){} } }
+// self-check de v340 (G15 · SG2 · G16 · G17 · C10 · RP2). Base de juguete con una sesión viva en #view; todo se restaura en finally.
+function _v340SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v340: '+nm); }; const real=db, c0=state._curEx, sc0=state.screen; let host=null;
+  try{ const S=o=>Object.assign({w:'60',r:'8',rir:'1',unit:'lbs',done:true},o||{}), T=todayISO();
+    db=migrate({profile:{username:'t'},gyms:['AGON','Spartan'],activeGym:'Spartan',split:{name:'s',days:[{id:'d1',name:'A',exercises:[{id:'e1',name:'press',muscle:'chest',type:'machine',sets:2},{id:'e2',name:'curl',muscle:'bicep',type:'free',unilateral:true,sets:1}]}]},
+      sessions:[{id:'h1',date:shiftDate(T,-3),dayId:'d1',dayName:'A',gym:'AGON',type:'training',exercises:[{exId:'e1',name:'press',muscle:'chest',type:'machine',unit:'lbs',sets:[S({w:'140',r:'8'}),S({w:'120',r:'10'})]}]}]});
+    db.activeWork={id:'w',date:T,dayId:'d1',gym:'Spartan',startMs:Date.now(),exercises:[{exId:'e1',name:'press',muscle:'chest',type:'machine',sets:[S(),S({done:false,rir:''})]},{exId:'e2',name:'curl',muscle:'bicep',type:'free',unilateral:true,startSide:'R',sets:[S({side:'R'}),S({side:'L'})]}]}; bumpIdx();
+    state.screen='workout'; state._curEx=0; host=document.createElement('div'); host.className='wfocus'; host.innerHTML=renderExercise(0,db.activeWork.exercises[0],sessIctx(db.activeWork),true)+renderExercise(1,db.activeWork.exercises[1],sessIctx(db.activeWork),false); document.getElementById('view').appendChild(host);
+    const ex0=host.querySelector('.ex[data-exi="0"]'), ex1=host.querySelector('.ex[data-exi="1"]'), nx=e=>e.querySelector('.exhead .n[data-act="editexname"]').getBoundingClientRect().left;
+    A('G16 · el nombre empieza en la misma x con [bi] y con [uni]', Math.abs(nx(ex0)-nx(ex1))<0.6);
+    const sub=ex0.querySelector('.exsub'); A('G16 · máquina y variantes en sangría bajo el nombre', Math.abs(sub.getBoundingClientRect().left-nx(ex0))<0.6);
+    const ref=ex0.querySelector('.exref'); A('C10 · sin sesión previa aquí, una línea con tus pesos del otro gym, sin ▲▼', !!ref&&/^en AGON · 140lbs×8 · /.test(ref.textContent)&&!ex0.querySelector('.setprogline .setprog')&&Math.abs(ref.getBoundingClientRect().left-nx(ex0))<0.6&&ref.getBoundingClientRect().height>=32);
+    const hd=ex0.querySelector('.thead .cl[data-gloss] .u-dash'); A('G17 · el punteado va solo bajo la palabra rir', !!hd&&hd.getBoundingClientRect().width<=Math.ceil(hd.textContent.length*0.6*parseFloat(getComputedStyle(hd).fontSize))+1&&getComputedStyle(hd.parentElement).borderBottomStyle==='none');
+    const r0=ex0.querySelector('.srow[data-si="0"]'), pl=ex0.querySelector('.setprogline[data-si="0"]'), r1=ex0.querySelector('.srow[data-si="1"]'), bar=pl&&pl.querySelector('.sgb');
+    const up=bar?bar.getBoundingClientRect().top-r0.getBoundingClientRect().bottom:99, dn=bar?r1.getBoundingClientRect().top-bar.getBoundingClientRect().bottom:0;
+    A('SG2 · la barra de σ queda pegada a su serie (≤6 px) y lejos de la siguiente (≥10 px)', !!bar&&up<=6&&dn>=10);
+    const rir=r0.querySelector('[data-f="rir"]'), sgw=pl.querySelector('.sgw'); A('SG2 · …y termina donde termina el campo RIR', !!sgw&&Math.abs(sgw.getBoundingClientRect().right-rir.getBoundingClientRect().right)<=1);
+    A('G15 · entre series 4 px', Math.abs(r1.getBoundingClientRect().top-(pl.getBoundingClientRect().bottom))<=8.5&&parseFloat(getComputedStyle(r1).marginBottom)===4);
+    A('RP2 · la resistencia dice dónde pesa, no un orden', rpTxt({rp:'asc'})==='pesa al final'&&rpTxt({rp:'desc',rpSrc:'suggested'})==='~pesa al inicio');
+    console.log('v340 self-check OK');
+  } finally { if(host)host.remove(); db=real; state._curEx=c0; state.screen=sc0; bumpIdx(); }
+}
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -7131,8 +7168,8 @@ function exUnitTagHead(ex,sets){ if(!ex||isCardio(ex)||ex.type==='bodyweight')re
 function latTxt(ex){ return (!ex||isCardio(ex))?'':('['+latOf(ex)+'] '); }
 // v279 · con exi (sesión viva) el corchete se toca para cambiar la lateralidad; sigue siendo SOLO lateralidad · v286 · [bi] [uni] [alt]
 function exLatTagHead(ex,exi){ if(!ex||isCardio(ex))return ''; const l=latOf(ex);
-  return exi==null?`<span class="n u-mr2">[${l}]</span>`
-    :`<span class="n u-mr2 u-tap" role="button" tabindex="0" data-act="exlat" data-exi="${exi}" aria-label="${LAT_LBL[l]} · toca para cambiar">[${l}]</span>`; }
+  return exi==null?`<span class="n lat">[${l}]</span>`
+    :`<span class="n lat u-tap" role="button" tabindex="0" data-act="exlat" data-exi="${exi}" aria-label="${LAT_LBL[l]} · toca para cambiar">[${l}]</span>`; }
 // v286 · el corchete abre las tres opciones (no un ciclo: bi → alt no pasa por uni, que reestructura y pregunta). El cambio
 // se escribe también en el ejercicio del split con el mismo exId: antes un cambio hecho en vivo se perdía en la sesión
 // siguiente, porque newWorkSession toma la lateralidad del split. [deshacer] deja sesión y split exactamente como estaban.
@@ -7447,7 +7484,7 @@ function doneCellHTML(done,act,exi,si,cls){
 // MISMO template de columnas que la fila + el hueco del ✓ solo en vivo). Antes era un grid aparte de 7 columnas que no
 // contaba el ✓ de 28 px ni la ✕ invisible: unit, reps y rir quedaban 32 px corridos respecto a su etiqueta.
 function uniHeadHTML(isBwEx,live){ const gcU=(isBwEx?'gc-uni-bw':'gc-uni')+(live?' ps':'');   // v282 · en vivo la última columna es la del ✓ de cada lado
-  return `<div class="pair phead"><div class="setn"></div><div class="prows"><div class="thead ${gcU}"><div class="cl">L/R</div><div class="cl w">weight</div><div class="cl">${isBwEx?'lastre':'unit'}</div><div class="cl">reps</div><div class="cl" data-gloss="${_icM}">${_icM}</div><div class="cl"></div></div></div></div>`; }
+  return `<div class="pair phead"><div class="setn"></div><div class="prows"><div class="thead ${gcU}"><div class="cl">L/R</div><div class="cl w">weight</div><div class="cl">${isBwEx?'lastre':'unit'}</div><div class="cl">reps</div><div class="cl" data-gloss="${_icM}"><span class="u-dash">${_icM}</span></div><div class="cl"></div></div></div></div>`; }
 function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe')?'rpe':'rir';   // v273 · la cabecera dice rir o rpe
   const sets=ex.sets||[]; const isCardioEx=isCardio(ex); const isM=!isCardioEx&&['machine','pulley','smith','cable'].indexOf(ex.type)>=0; const isU=!isCardioEx&&!!ex.unilateral;
   const rec=machineRec((db.activeWork||{}).gym,ex); const ed=`data-act="editmach" data-exi="${exi}"`;
@@ -7486,7 +7523,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
   // corchete empujaban solo la primera línea (nombre en x≈72, marca en x≈54). [uni]/[bi] se queda AL FRENTE del
   // nombre: es pedido explícito del dueño (21-ago), no se mueve.
   const head=`<div class="exhd${gripE?' hasgrip':''}">${gripE}<div class="exhdc"><div class="exhead">${exLatTagHead(ex,exi)}<span class="n u-tap" data-act="editexname" data-exi="${exi}">${escTxt(ex.name)}</span>${exRpHTML(exi)}${prBadge}${noBaseline}<button type="button" class="exshr" data-act="exshare" data-exi="${exi}" aria-label="compartir ${escTxt(ex.name||'ejercicio')}" title="compartir · marca la serie que grabaste">${EXSH_SVG}</button></div>`
-   +`<div class="exsub">${variantChips(ex,{act:'editmach',exi})}${mhtml}${noteHTML}</div></div></div>`;
+   +`<div class="exsub">${variantChips(ex,{act:'editmach',exi})}${mhtml}${noteHTML}</div>${prevSets?'':otherGymRefHTML(ex)}</div></div>`;
   // ---- cardio branch: field grid per subtype, no drop sets, no w/r/rir ----
   if(isCardioEx){
     const fields=cardioFields(ex);
@@ -7541,7 +7578,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
     rows=thead+body+add;
   } else {
     const gc=isBwEx?'gc-free-bw':(isM?'gc-mach':'gc-free');
-    let thead=`<div class="thead ${gc}"><div class="cl"></div>${isM?'<div class="cl"></div>':''}<div class="cl w">weight</div><div class="cl">${isBwEx?'lastre':'unit'}</div><div class="cl">reps</div><div class="cl" data-gloss="${_icM}">${_icM}</div><div class="cl"></div></div>`;
+    let thead=`<div class="thead ${gc}"><div class="cl"></div>${isM?'<div class="cl"></div>':''}<div class="cl w">weight</div><div class="cl">${isBwEx?'lastre':'unit'}</div><div class="cl">reps</div><div class="cl" data-gloss="${_icM}"><span class="u-dash">${_icM}</span></div><div class="cl"></div></div>`;
     let body='';
     const labels=setLabels(sets,1);
     sets.forEach((s,si)=>{ const c=renderSetRow(exi,si,s,ex,allowF); const fsOn=isM&&s.fsOn&&!s.isDrop;
@@ -7620,7 +7657,7 @@ function renderHistExercise(exi,ex,sess){ _icM=(sess&&sess.metric)==='rpe'?'rpe'
     rows=thead+body+add;
   } else {
     const gc=isBwEx?'gc-free-bw':(isM?'gc-mach':'gc-free');
-    let thead=`<div class="thead ${gc}"><div class="cl"></div>${isM?'<div class="cl"></div>':''}<div class="cl w">weight</div><div class="cl">${isBwEx?'lastre':'unit'}</div><div class="cl">reps</div><div class="cl" data-gloss="${_icM}">${_icM}</div><div class="cl"></div></div>`;
+    let thead=`<div class="thead ${gc}"><div class="cl"></div>${isM?'<div class="cl"></div>':''}<div class="cl w">weight</div><div class="cl">${isBwEx?'lastre':'unit'}</div><div class="cl">reps</div><div class="cl" data-gloss="${_icM}"><span class="u-dash">${_icM}</span></div><div class="cl"></div></div>`;
     let body=''; const labels=setLabels(sets,1);
     sets.forEach((s,si)=>{ const c=renderSetRow(exi,si,s,ex,sessIctx(sess),'h_'); const fsOn=isM&&s.fsOn&&!s.isDrop;
       const fs=isM?fsCellHTML(s,exi,si,'h_fs'):'';
@@ -12574,7 +12611,7 @@ function setField(exi,si,f,val,skipMirror){ const w=db.activeWork; if(!w)return;
       }
     }
   }
-  try{updateProgBadge(exi);}catch(_){}
+  try{ const _ae=document.activeElement; keepUnder(_ae&&_ae.closest&&_ae.closest('#view .ex')?_ae:null,()=>updateProgBadge(exi)); }catch(_){}   /* v340 · a 320 las insignias pueden bajar de renglón: lo que tecleas se queda bajo el dedo */
   // refresh per-set zone colors for the edited set + every propagated _pf set
   try{ const w2=db.activeWork; if(w2&&w2.exercises[exi])w2.exercises[exi].sets.forEach((_,j)=>{ updateSetZone(exi,j); updateSetProgress(exi,j); }); }catch(_){}
   saveSoon(); }
@@ -12686,7 +12723,7 @@ document.getElementById('app').addEventListener('click',e=>{
     else { const hs=(db.sessions||[]).find(x=>x.id===state._histSessId); s=hs&&hs.exercises[exi]&&hs.exercises[exi].sets[si]; }
     if(s&&pfHas(s,el.dataset.f)){
       pfClearField(s,el.dataset.f); el.classList.remove('pf');
-      if(a==='setf'){ try{updateProgBadge(exi);}catch(_){} try{updateSetZone(exi,si); updateSetProgress(exi,si);}catch(_){} }
+      if(a==='setf'){ try{ keepUnder(el,()=>updateProgBadge(exi)); }catch(_){} try{updateSetZone(exi,si); updateSetProgress(exi,si);}catch(_){} }
       save();
     }
     return;
@@ -12943,6 +12980,7 @@ document.getElementById('app').addEventListener('click',e=>{
     // v256: terminado el ejercicio, el enfoque pasa solo al siguiente · v279: tras una pausa (exHoldStart), no de golpe
     state._curEx=exi; if(ex.sets.some(s=>s&&!s.done))exHoldClear(); else { state._focusSet=null; exHoldStart(ex); }
     save(); reRender(); }
+  else if(a==='exref'){ openExHist(el.dataset.k); }   /* v340 · C10 */
   else if(a==='excur'){ exHoldClear(); exSwap(()=>{ state._curEx=exi; reRender(); }); }
   else if(a==='exholdgo'){ exHoldGo(); }
   // v279 · el corchete se toca para cambiar la variante del MISMO ejercicio (con datos, pregunta antes) · v286 · tres opciones: openLatSelect
@@ -17402,7 +17440,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
