@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; base-uri 'none'; form-action 'none'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#000" />
+<title>gym//TRK · aviso de privacidad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet" />
+<style>
+  /* mismo look que la app (BRAND.md): negro, JetBrains Mono, jerarquía por opacidad, escala 10·12·14·20·28, sin color */
+  :root{ --bg:#000; --fg:#f3f3f3; --o70:rgba(243,243,243,.74); --o60:rgba(243,243,243,.66); --o50:rgba(243,243,243,.56); --o40:rgba(243,243,243,.5); --line:rgba(243,243,243,.08); }
+  *{margin:0; padding:0; box-sizing:border-box;}
+  html{background:var(--bg);}
+  body{background:var(--bg); color:var(--fg); font-family:"JetBrains Mono",ui-monospace,Menlo,monospace; font-size:12px; line-height:1.6; -webkit-font-smoothing:antialiased;
+    padding:calc(24px + env(safe-area-inset-top)) 18px calc(48px + env(safe-area-inset-bottom));}
+  main{max-width:560px; margin:0 auto;}
+  .brand{font-size:20px; font-weight:800; line-height:1.2;} .brand .s{color:var(--o40);}
+  .sub{font-size:12px; color:var(--o50); margin:4px 0 24px;}
+  h2{font-size:14px; font-weight:800; margin:24px 0 8px; padding-top:16px; border-top:1px solid var(--line);} h2 .s{color:var(--o50);}
+  p{color:var(--o70); margin-bottom:8px;} b{color:var(--fg); font-weight:700;}
+  ul{list-style:none; margin-bottom:8px;} li{color:var(--o70); padding-left:2ch; text-indent:-2ch; margin-bottom:4px;} li::before{content:'· '; color:var(--o40);}
+  a{color:var(--fg); text-decoration:underline; text-underline-offset:3px;}
+  .back{display:inline-flex; align-items:center; min-height:44px; color:var(--o60); text-decoration:none;} .back::before{content:'['; color:var(--o40);} .back::after{content:']'; color:var(--o40);}
+  .foot{margin-top:32px; padding-top:16px; border-top:1px solid var(--line); font-size:10px; color:var(--o50);}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="./">‹ volver a la app</a>
+  <div class="brand">gym<span class="s">//</span>TRK</div>
+  <div class="sub">aviso de privacidad · versión 2026-10</div>
+
+  <p>gym//TRK guarda tu entrenamiento, tu comida y tus hábitos. Son <b>datos de salud</b>: aquí dice, sin letra chica, qué se guarda, dónde, para qué y cómo lo borras.</p>
+
+  <h2><span class="s">//</span>QUÉ SE GUARDA</h2>
+  <ul>
+    <li><b>Lo que registras:</b> sesiones de gym (ejercicios, series, pesos, notas), comidas y alimentos, suplementos, peso corporal, pasos, sueño y, si los pegas desde Salud, frecuencia cardíaca y HRV.</li>
+    <li><b>Tu perfil:</b> el nombre que elegiste, sexo, edad, estatura, nivel de actividad, objetivo y tus metas.</li>
+    <li><b>Tu cuenta, si creas una:</b> tu correo y tu contraseña. La contraseña se guarda cifrada (como un resumen irreversible): nadie puede leerla, tampoco nosotros.</li>
+  </ul>
+  <p>No pedimos tu ubicación ni tus contactos. La cámara (o la foto que elijas) se usa solo cuando escaneas un código de barras o una etiqueta, y esa imagen se lee en tu teléfono: no se sube.</p>
+
+  <h2><span class="s">//</span>DÓNDE</h2>
+  <ul>
+    <li><b>En tu teléfono, siempre.</b> La app funciona sin internet y sin cuenta: tus datos viven en el almacenamiento del navegador de tu dispositivo.</li>
+    <li><b>En la nube, solo si creas una cuenta.</b> Se sube una copia de tus datos a <b>Supabase</b>, un proveedor de bases de datos, en servidores de <b>Canadá</b>. Viaja cifrada (HTTPS) y queda cerrada con candado: cada cuenta solo puede leer su propia copia.</li>
+    <li>La nube conserva además la versión anterior de tu copia de los últimos 7 días en que cambió, por si una copia mala pisa a una buena.</li>
+  </ul>
+
+  <h2><span class="s">//</span>PARA QUÉ</h2>
+  <ul>
+    <li>Que tus datos no se pierdan si cambias de teléfono o se borra el navegador.</li>
+    <li>Que puedas entrar desde otro dispositivo y encontrar lo mismo.</li>
+    <li>Tu correo se usa para entrar, para mandarte el código de 6 dígitos y para recuperar tu contraseña. Para nada más. Esos correos salen por <b>Resend</b>, un servicio de envío de correo en Estados Unidos: solo recibe tu dirección y el código.</li>
+  </ul>
+
+  <h2><span class="s">//</span>LO QUE NO HACEMOS</h2>
+  <ul>
+    <li><b>No hay anuncios.</b></li>
+    <li><b>No hay analítica ni rastreadores</b> que reciban tus datos de salud.</li>
+    <li>No vendemos ni compartimos tus datos con nadie. El único tercero que los almacena es Supabase, y solo para darte el servicio.</li>
+  </ul>
+
+  <h2><span class="s">//</span>SERVICIOS QUE LA APP CONSULTA</h2>
+  <p>Ninguno recibe tu historial. Solo ven lo mínimo para responder:</p>
+  <ul>
+    <li><b>Open Food Facts:</b> el código de barras o el nombre del alimento que buscas.</li>
+    <li><b>Google Fonts, jsDelivr y tessdata.projectnaptha.com:</b> entregan la tipografía y las librerías del escáner y del lector de etiquetas. Como cualquier sitio que visitas, ven tu dirección IP.</li>
+  </ul>
+
+  <h2><span class="s">//</span>EXPORTAR TUS DATOS</h2>
+  <p>En la app: <b>menú → perfil / ajustes → [export file]</b> te da un archivo con todo (formato JSON) y <b>[export .md]</b> una versión para leer. Son tuyos: guárdalos donde quieras.</p>
+
+  <h2><span class="s">//</span>BORRAR TU CUENTA</h2>
+  <ul>
+    <li><b>Ajustes → //ACCOUNT → [borrar mi cuenta]</b> (hay que mantener el botón presionado). Se borran al momento tu acceso, tu copia en la nube y su historial de 7 días.</li>
+    <li>Lo que está en tu teléfono se queda hasta que tú lo borres: <b>ajustes → [reset data]</b>, o borrando los datos del sitio en tu navegador.</li>
+    <li><b>[salir]</b> solo cierra la sesión: no borra nada, ni en tu teléfono ni en la nube.</li>
+  </ul>
+
+  <h2><span class="s">//</span>CAMBIOS Y CONTACTO</h2>
+  <p>Si este aviso cambia, cambia la versión que aparece arriba.</p>
+  <p>Dudas o solicitudes sobre tus datos: <a id="contacto" href="mailto:support@gymtrk.app">support@gymtrk.app</a></p>
+
+  <div class="foot">gym//TRK · gymtrk.app</div>
+</main>
+</body>
+</html>

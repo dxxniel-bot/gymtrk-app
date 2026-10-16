@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.openfoodfacts.org https://cdn.jsdelivr.net https://tessdata.projectnaptha.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://gqgvgsxrimcfuyvcfmua.supabase.co https://*.openfoodfacts.org https://cdn.jsdelivr.net https://tessdata.projectnaptha.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>gym//TRK</title>
 <link rel="manifest" href="manifest.json"/>
@@ -1049,6 +1049,11 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .onbfoot .b{align-self:center;}
   .onbl{font-size:var(--t-data); padding:var(--s2) 0; color:var(--o70); border-bottom:var(--bw-sep) solid var(--o10);}
   .onbready{margin-top:var(--s5); font-size:var(--t-section); font-weight:800;}
+  .acland{margin:0 auto var(--s8); max-width:280px;} .secondary.acrow{justify-content:center;} .secondary a.b{text-decoration:none;}
+  .acchk{display:flex; align-items:center; justify-content:space-between; gap:var(--s3); min-height:44px; margin-bottom:var(--s2); font-size:var(--t-data); color:var(--o60);}
+  .acok{flex:1; min-height:44px; display:flex; align-items:center; text-align:left; background:none; border:0; padding:0; font:inherit; font-size:var(--t-data); color:var(--o60); cursor:pointer;} .acok .g{flex:0 0 2ch; color:var(--o50);} .acok[aria-checked="true"]{color:var(--fg);} .acok[aria-checked="true"] .g{color:var(--fg);} .acchk .vb{margin-right:0;}   /* v362 · AC-COPY · [leer] no se sale del borde */
+  .line .v.acem{flex:0 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}   /* v362 · un correo largo no se sale a 320 */
+  .acmsg{min-height:calc(2em*var(--lh-read)); font-size:var(--t-data); line-height:var(--lh-read); color:var(--o70);}
   /* v278 · tour: velo con hueco sobre el control real (se puede tocar), anillo fino y globo de vidrio */
   .tour{position:absolute; inset:0; z-index:var(--z-tour); pointer-events:none;} .tour .tm{position:absolute; background:var(--scrim); pointer-events:auto;}
   .tour .tr{position:absolute; border:var(--bw-field) solid var(--fg); border-radius:var(--r-ctl); pointer-events:none;}
@@ -1556,7 +1561,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v361';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v362';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -1994,6 +1999,7 @@ function save(){ if(_saveT){ clearTimeout(_saveT); _saveT=null; }
   if(NATIVE_APP)nativeMirrorSoon(s);
   idbBackup(s,!ok||_idbForceNext); _idbForceNext=false;
   if(ok){ _saveErr=null; saveOK(); } else saveFailed();
+  cloudNote();   // v352 · la nube se entera de que hubo cambios (apagada o sin cuenta: no hace nada)
   return ok; }
 // aviso PERMANENTE mientras no se pueda guardar (el toast se iba y dejaba a la app fallando en silencio)
 function saveFailed(){ try{ let b=document.getElementById('savebar');
@@ -2195,7 +2201,7 @@ function openStorage(){
 // v265 · //ESPACIO: el estado real de IndexedDB, las copias internas con [restaurar] y [lo que falta], y el diario
 function idbStatusTxt(){ if(_idbErr&&_idbErrT>=_idbOkT)return 'falla desde '+hhmm(_idbErrT)+(_idbLast?' · último bueno '+fmtShort(_idbLast.day):'');
   return _idbLast?fmtShort(_idbLast.day)+' '+hhmm(_idbLast.t):(_idbHold?'arrancando…':'—'); }
-function copyLabel(k){ return k==='latest'?'la última':/^day-/.test(k)?'del día':/^lsbak-/.test(k)?'respaldo viejo':/^offer-/.test(k)?'ofrecida':/^pre-adopt/.test(k)?'antes de adoptar':/^pre-restore/.test(k)?'antes de restaurar':/^pre-rescue/.test(k)?'antes de rescatar':/^pre-reset/.test(k)?'antes de borrar todo':/^pre-idfix/.test(k)?'antes de reparar':/^pre-/.test(k)?'foto previa':k; }
+function copyLabel(k){ return k==='latest'?'la última':/^day-/.test(k)?'del día':/^lsbak-/.test(k)?'respaldo viejo':/^offer-/.test(k)?'ofrecida':/^pre-adopt/.test(k)?'antes de adoptar':/^pre-restore/.test(k)?'antes de restaurar':/^pre-rescue/.test(k)?'antes de rescatar':/^pre-reset/.test(k)?'antes de borrar todo':/^pre-idfix/.test(k)?'antes de reparar':/^pre-nube/.test(k)?'de la nube · no elegida':/^pre-cloud/.test(k)?'antes de traer la nube':/^pre-/.test(k)?'foto previa':k; }   /* v352 */
 function copyRowsHTML(ix){ const kb=b=>b>=1048576?(b/1048576).toFixed(2)+' MB':Math.round(b/1024)+' KB';
   const ks=Object.keys(ix).filter(k=>k==='latest'||COPY_RE.test(k)).sort((a,b)=>((ix[b]&&ix[b].t)||0)-((ix[a]&&ix[a].t)||0)).slice(0,20);
   if(!ks.length)return '<div class="submeta">sin copias todavía</div>';
@@ -2322,6 +2328,503 @@ function confirmReplace(incoming,onOk){
   const cur=dbMass(db), inc=dbMass(incoming);   // R2: TRKHold (reemplazar todo es irreversible)
   const detail=cur===0?'se reemplazan TODOS tus datos con el respaldo':inc<cur?'el respaldo tiene MENOS datos ('+inc+') que los actuales ('+cur+') · no se puede deshacer':'se reemplazan tus '+cur+' registros por los '+inc+' del respaldo';
   holdConfirm({title:'cargar este respaldo',detail:detail,verb:'reemplazar'},onOk); }
+// ---- v352 · cuentas y datos en la nube (gymtrk.app) -----------------------------------------------------------
+// La nube es UNA COPIA MÁS del sistema de copias de v265, no otra base: el teléfono sigue mandando y funciona sin red.
+// Con una cuenta (correo + contraseña + código de 6 dígitos por correo), la base viaja comprimida a Supabase —una fila
+// por persona, cerrada con RLS (tools/supabase/schema.sql)— y vuelve al entrar en otro dispositivo.
+// APAGADA por defecto: con CLOUD_CFG vacío cloudMode() es 'off' y nada de este bloque corre ni se ve.
+// `?cloud=fake` la enciende contra FakeSB, un servidor en memoria con las mismas respuestas (pruebas y demo).
+// Lo que no se rompe: una nube vacía nunca vacía un teléfono · un teléfono nuevo nunca sube su semilla · salir de la
+// cuenta no borra nada · la sesión viva (activeWork) ni viaja ni se reemplaza · los tokens viven solo en IndexedDB
+// (base `gymtrk_kv`), nunca en localStorage ni dentro de `db` (db.account = correo, uid, rev y fecha del último sync).
+const CLOUD_CFG={url:'https://gqgvgsxrimcfuyvcfmua.supabase.co',key:'sb_publishable_lb2gtugJsxn3FIFaTskDHQ_1gs0Mcnk'};   // url del proyecto + llave PUBLICABLE (sb_publishable_…): las dos son públicas. Jamás una sb_secret_.
+const CLOUD_KV='gymtrk_kv', CLOUD_MAX=4000000, CLOUD_PRIV='2026-10', CLOUD_LOCAL={activeWork:1,account:1,_meta:1,_dataLog:1};   /* v362 · _dataLog: sellos de migración de este teléfono */
+// _cl = la cuenta en ESTE dispositivo: {srv,uid,email,at,rt,exp · rev,sigs,mass,t}. Lo segundo es la BASE: la versión de
+// la nube con la que este teléfono quedó igual por última vez y la firma de cada sección de `db` en ese momento.
+let _cl=null, _clMem=null, _clFake=null, _clForce='', _clBusy=null, _clRefP=null, _clNote=0, _clTry=0, _clErr='', _clHold=false, _clAskO=null, _clSess=null, _clSelf=false, _clT=null, _clWaitT=null, _clGen=0, _clBaseMem=null;
+function cloudKeyOk(k){ k=String(k||''); if(!k||/^sb_secret_/.test(k))return false;
+  if(/^eyJ/.test(k)){ try{ if(JSON.parse(atob(k.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))).role!=='anon')return false; }catch(_){ return false; } }   // llave vieja (JWT): solo la `anon`
+  return true; }
+function cloudModeOf(cfg,search,host){ if(/[?&]cloud=fake\b/.test(String(search||''))&&(host==null||/^(localhost|127\.0\.0\.1|\[::1\]|::1)$/.test(String(host))))return 'fake';   /* v352 · la demo solo en tu compu */ return (cfg&&cfg.url&&cloudKeyOk(cfg.key))?'on':'off'; }
+function cloudMode(){ if(_clForce)return _clForce; let s='', h=''; try{ s=location.search; h=location.hostname; }catch(_){} return cloudModeOf(CLOUD_CFG,s,h); }
+function cloudSrv(){ const m=cloudMode(); return m==='fake'?'fake':m==='on'?String(CLOUD_CFG.url).replace(/\/+$/,''):''; }
+function cloudIn(){ const s=cloudSrv(); return !!(s&&_cl&&_cl.at&&_cl.rt&&_cl.srv===s); }
+function cloudFake(){ return _clFake||(_clFake=new FakeSB()); }
+// la sesión, en IndexedDB aparte (en el sandbox de los self-checks y en la demo, en memoria: nada toca el disco)
+function cloudKvGet(){ if(_sbx||cloudMode()==='fake')return Promise.resolve(_clMem); return idbGet('cloud',CLOUD_KV).catch(()=>null); }
+function cloudKvPut(v){ if(_sbx||cloudMode()==='fake'){ _clMem=v||null; return Promise.resolve(true); } return (v?idbPut('cloud',v,CLOUD_KV):idbDel('cloud',CLOUD_KV)).catch(()=>false); }
+// v352 · la BASE: el JSON de la última versión en la que este teléfono y la nube quedaron iguales. Con ella se une de 3 vías
+// (lo que cambió de un solo lado gana ese lado; lo que un lado borró y el otro no tocó, se borra). Vive aparte, junto a la sesión.
+function cloudBasePut(rev,json){ const v={uid:_cl&&_cl.uid,srv:_cl&&_cl.srv,rev:rev,json:json,app:APP_V}; if(_sbx||cloudMode()==='fake'){ _clBaseMem=v; return Promise.resolve(true); } return idbPut('base',v,CLOUD_KV).catch(()=>false); }
+function cloudBaseGet(){ const ok=v=>(v&&_cl&&v.uid===_cl.uid&&v.srv===_cl.srv&&v.rev===_cl.rev&&typeof v.json==='string')?v:null;
+  if(_sbx||cloudMode()==='fake')return Promise.resolve(ok(_clBaseMem)); return idbGet('base',CLOUD_KV).then(ok,()=>null); }
+function cloudBaseDel(){ _clBaseMem=null; if(_sbx||cloudMode()==='fake')return; idbDel('base',CLOUD_KV).catch(()=>{}); }
+function cloudErr(code,msg,st){ const e=new Error(msg||code||'error'); e.code=code||''; e.st=st||0; return e; }
+function cloudErrTxt(e){ const c=String((e&&e.code)||''); if(c==='v')return e.message;
+  const T={offline:'sin conexión',off:'la nube está apagada',invalid_credentials:'correo o contraseña incorrectos',invalid_grant:'correo o contraseña incorrectos',email_not_confirmed:'falta confirmar tu correo',otp_expired:'código incorrecto o vencido',over_email_send_rate_limit:'espera unos minutos para pedir otro código',over_request_rate_limit:'demasiados intentos · espera unos minutos',weak_password:'contraseña muy corta · mínimo 8',user_already_exists:'ese correo ya tiene cuenta',email_exists:'ese correo ya tiene cuenta',same_password:'usa una contraseña distinta a la anterior',validation_failed:'ese correo no es válido',email_address_invalid:'ese correo no es válido',signup_disabled:'el registro está cerrado',session:'tu sesión venció · entra de nuevo',too_big:'tus datos no caben en la nube',empty:'no hay nada que subir',corrupt:'la copia de la nube no se puede leer',busy:'la nube está ocupada · intenta de nuevo',email_address_not_authorized:'la app todavía no puede mandar códigos a ese correo',down:'la nube no responde · intenta en un rato',weak_pwned:'esa contraseña es muy común · usa otra',weak_chars:'usa letras y números en tu contraseña',reauthentication_needed:'por seguridad, entra de nuevo y repite el cambio',current_password_required:'falta tu contraseña actual'};   /* v362 */
+  return T[c]||'no se pudo · intenta de nuevo'; }   // v362 · nunca el mensaje crudo del servidor (en inglés)   // v352 · solo el motivo de la red, nunca un error de JS
+// fetch a Supabase (Auth REST y PostgREST rpc), sin SDK. Devuelve el JSON o lanza un error con `code` (el error_code de
+// Supabase) y `st` (HTTP). Sin red = code 'offline'. En 'fake' no sale ninguna petición: contesta FakeSB.
+async function sbFetch(path,o){ o=o||{}; const srv=cloudSrv(); if(!srv)throw cloudErr('off');
+  const h={'apikey':CLOUD_CFG.key||'fake','Content-Type':'application/json'}; if(o.token)h.Authorization='Bearer '+o.token;
+  let st=0, body=null;
+  if(srv==='fake'){ const r=await cloudFake().handle(o.method||'POST',path,o.body||{},h); st=r.status; body=r.body; }
+  else { try{ if(navigator.onLine===false)throw 0; }catch(_){ throw cloudErr('offline'); }
+    const ac=typeof AbortController==='function'?new AbortController():null, tm=setTimeout(()=>{ try{ if(ac)ac.abort(); }catch(_){} },o.ms||25000);
+    let res=null; try{ res=await fetch(srv+path,{method:o.method||'POST',headers:h,body:JSON.stringify(o.body||{}),signal:ac?ac.signal:undefined,cache:'no-store',credentials:'omit'}); }
+    catch(_){ throw cloudErr('offline'); } finally{ clearTimeout(tm); }
+    st=res.status; let tx=''; try{ tx=await res.text(); }catch(_){} try{ body=tx?JSON.parse(tx):null; }catch(_){ body=null; } }
+  if(st>=200&&st<300)return body;
+  const b=body||{}; let c=b.error_code||(typeof b.code==='string'?b.code:'')||b.error||(st>=400&&st<500&&st!==429&&body&&typeof body==='object'?o.code:'')||'';   // v362 · el código de reserva solo para un 4xx
+  if(st>=500)c='down';   // v362 · la nube no respondió (pausada, caída): nunca "contraseña incorrecta"
+  if(c==='weak_password'){ const rs=((b.weak_password||{}).reasons)||[]; if(rs.indexOf('pwned')>=0)c='weak_pwned'; else if(rs.indexOf('characters')>=0)c='weak_chars'; }
+  if(st===429&&!/rate_limit/.test(c))c='over_request_rate_limit'; if(!c)c='http'+st;
+  throw cloudErr(String(c),String(b.msg||b.message||b.error_description||''),st); }
+// ---- sesión ----
+function cloudTake(r,email){ if(!r||!r.access_token||!r.refresh_token||!r.user||!r.user.id)throw cloudErr('session');
+  const uid=String(r.user.id), k=(_cl&&_cl.uid===uid&&_cl.srv===cloudSrv())?_cl:null;   // la misma cuenta en el mismo teléfono conserva su base
+  _cl={srv:cloudSrv(),uid:uid,email:String(r.user.email||email||(k&&k.email)||''),at:r.access_token,rt:r.refresh_token,exp:+r.expires_at||Math.floor(Date.now()/1000)+(+r.expires_in||3600),rev:k?k.rev:0,sigs:k?k.sigs:null,mass:k?k.mass:0,cnt:k?k.cnt:null,t:k?k.t:0};
+  _clErr=''; _clHold=false; _clAskO=null; return cloudKvPut(_cl).then(()=>_cl); }
+// la sesión se cae (salir, token muerto): se van los tokens, se queda la base por si vuelve a entrar la misma cuenta
+function cloudDrop(why){ if(!_cl)return; _clGen++; const c=_cl; _cl={srv:c.srv,uid:c.uid,email:c.email,rev:c.rev||0,sigs:c.sigs||null,mass:c.mass||0,cnt:c.cnt||null,t:c.t||0}; _clHold=false; _clAskO=null; _clErr=why==='session'?'tu sesión venció':''; cloudKvPut(_cl); if(why==='session')cloudUi(); }
+function cloudForget(delAcct){ _clGen++; cloudBaseDel(); _cl=null; _clHold=false; _clAskO=null; _clErr=''; _clNote=0; cloudKvPut(null); if(delAcct&&db&&db.account)delete db.account; }
+function authSignUp(email,pw){ return sbFetch('/auth/v1/signup',{body:{email:email,password:pw,data:{privacy:CLOUD_PRIV}}}); }
+function authResend(email){ return sbFetch('/auth/v1/resend',{body:{type:'signup',email:email}}); }
+function authVerify(email,code,type){ return sbFetch('/auth/v1/verify',{body:{type:type||'email',email:email,token:String(code)},code:'otp_expired'}).then(r=>cloudTake(r,email)); }
+function authSignIn(email,pw){ return sbFetch('/auth/v1/token?grant_type=password',{body:{email:email,password:pw},code:'invalid_credentials'}).then(r=>cloudTake(r,email)); }
+function authRecover(email){ return sbFetch('/auth/v1/recover',{body:{email:email}}); }
+async function authSetPassword(pw){ const t=await cloudToken(); return sbFetch('/auth/v1/user',{method:'PUT',token:t,body:{password:pw}}); }
+async function authSignOut(){ const t=_cl&&_cl.at; cloudDrop('out'); if(t){ try{ await sbFetch('/auth/v1/logout?scope=local',{token:t}); }catch(_){} } return true; }
+// renovar el token: UN solo vuelo (dos llamadas a la vez comparten la misma promesa; el refresh token es de un solo uso)
+function authRefresh(){ if(_clRefP)return _clRefP;
+  _clRefP=(async()=>{ if(!_cl||!_cl.rt)throw cloudErr('session');
+      const o=await cloudKvGet(); if(o&&o.rt&&o.rt!==_cl.rt&&o.uid===_cl.uid&&o.srv===_cl.srv&&(o.exp||0)-Date.now()/1000>90){ _cl.at=o.at; _cl.rt=o.rt; _cl.exp=o.exp; return _cl.at; }   // otra pestaña ya lo renovó
+      let r=null; try{ r=await sbFetch('/auth/v1/token?grant_type=refresh_token',{body:{refresh_token:_cl.rt}}); }
+      catch(e){ if(e.code!=='offline'&&e.st>=400&&e.st<500&&e.st!==429){ cloudDrop('session'); throw cloudErr('session'); } throw e; }
+      return (await cloudTake(r)).at; })();
+  const p=_clRefP, done=()=>{ if(_clRefP===p)_clRefP=null; }; p.then(done,done); return p; }
+async function cloudToken(){ if(!cloudIn())throw cloudErr('session'); if((_cl.exp||0)-Date.now()/1000>90)return _cl.at; return authRefresh(); }
+async function cloudRpc(fn,args){ let t=await cloudToken();
+  try{ return await sbFetch('/rest/v1/rpc/'+fn,{body:args||{},token:t}); }
+  catch(e){ if(e.st!==401)throw e; t=await authRefresh(); return sbFetch('/rest/v1/rpc/'+fn,{body:args||{},token:t}); } }
+// ---- lo que viaja: el JSON de db sin la sesión viva ni la cuenta, en gzip → base64 (JSON plano si el navegador no comprime) ----
+function b64Enc(u){ let s=''; for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000)); return btoa(s); }
+function b64Dec(b){ const s=atob(b), u=new Uint8Array(s.length); for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i); return u; }
+async function cloudPack(str,plain){ if(!plain&&typeof CompressionStream==='function'&&typeof DecompressionStream==='function'){
+    try{ const buf=await new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer(); return {enc:'gz64',data:b64Enc(new Uint8Array(buf))}; }catch(_){} }
+  return {enc:'json',data:str}; }
+async function cloudUnpack(data,enc){ if(enc==='json')return String(data==null?'':data);
+  if(enc!=='gz64'||typeof DecompressionStream!=='function')throw cloudErr('corrupt');
+  const buf=await new Response(new Blob([b64Dec(String(data))]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  return new TextDecoder().decode(buf); }
+// v352 · `health.shortcut` es de ESTE teléfono (el plan del atajo, sus esperas y el último pegado): ni viaja ni se reemplaza
+function cloudOwn(k,v){ if(!v||typeof v!=='object'||Array.isArray(v))return v; const d=k==='health'?'shortcut':k==='settings'?'acInv':''; if(!d||!(d in v))return v; const o=Object.assign({},v); delete o[d]; return o; }   // v362 · settings.acInv (la invitación) también es de este teléfono
+function cloudPayload(){ const o=Object.assign({},db); delete o.activeWork; delete o.account; if(o.health)o.health=cloudOwn('health',o.health); if(o.settings)o.settings=cloudOwn('settings',o.settings); return JSON.stringify(o); }
+// firma por sección: una por cada clave de `db` (sessions, meals, split, settings…). Con ellas se sabe QUÉ cambió aquí y
+// qué cambió en la nube desde la última vez que quedaron iguales, sin guardar otra copia entera de la base.
+function sigStr(s){ let a=0xdeadbeef^s.length, b=0x41c6ce57^s.length; for(let i=0,c;i<s.length;i++){ c=s.charCodeAt(i); a=Math.imul(a^c,2654435761); b=Math.imul(b^c,1597334677); }
+  a=Math.imul(a^(a>>>16),2246822507)^Math.imul(b^(b>>>13),3266489909); b=Math.imul(b^(b>>>16),2246822507)^Math.imul(a^(a>>>13),3266489909);
+  return s.length.toString(36)+'.'+(4294967296*(2097151&b)+(a>>>0)).toString(36); }
+function cloudSigs(d){ const o={}; Object.keys(d||{}).forEach(k=>{ if(CLOUD_LOCAL[k])return; let s; try{ s=JSON.stringify(cloudOwn(k,d[k])); }catch(_){} if(s!==undefined)o[k]=sigStr(s); }); return o; }
+function cloudSame(a,b){ if(!a||!b)return false; const ka=Object.keys(a); return ka.length===Object.keys(b).length&&ka.every(k=>a[k]===b[k]); }
+function cloudAcct(){ const a=db&&db.account; if(!a||typeof a!=='object'||Array.isArray(a)||!a.uid)return null; if(/^fake-/.test(String(a.uid))&&cloudMode()!=='fake')return null; return a; }
+function cloudLink(){ if(cloudIn()&&!cloudAcct())db.account={email:_cl.email,uid:_cl.uid,rev:0,at:0}; }   // al entrar: esta base queda marcada con su cuenta
+function cloudBaseOk(){ const a=cloudAcct(); return !!(cloudIn()&&_cl.rev>0&&_cl.sigs&&a&&a.uid===_cl.uid&&+a.rev===_cl.rev); }
+function cloudForeign(){ const a=cloudAcct(); return !!(cloudIn()&&a&&a.uid!==_cl.uid); }
+function cloudDirty(){ return !cloudBaseOk()||!cloudSame(cloudSigs(db),_cl.sigs); }
+function cloudSetBase(rev,sigs,mass,json){ _cl.rev=rev; _cl.sigs=sigs; _cl.mass=mass; _cl.cnt=cloudCounts(db); _cl.t=Date.now(); db.account={email:_cl.email,uid:_cl.uid,rev:rev,at:_cl.t}; if(json!=null)cloudBasePut(rev,json); }
+function cloudSave(){ _clSelf=true; try{ return save(); } finally{ _clSelf=false; } }
+function cloudDevice(){ let s=''; try{ s=(isIOS()?'ios':'web')+' '+(NATIVE_APP?'nativa':isStandalone()?'icono':'navegador'); }catch(_){} return ((_sid||'')+' '+s).trim().slice(0,80); }
+function massDrop(a,b){ return a<b*0.5&&b-a>=10; }   // el mismo derrumbe que mide bootDecision
+// v362 · conteo por sección (el total esconde perder casi todas las sesiones si las comidas siguen): a = ahora, b = antes
+function cloudCounts(d){ d=d||{}; const n=o=>o&&typeof o==='object'?Object.keys(o).length:0; let ml=0; Object.keys(d.meals||{}).forEach(k=>{ ml+=((d.meals[k])||[]).length; });
+  return {sessions:(d.sessions||[]).length,meals:ml,bodyweight:n(d.bodyweight),sleep:n(d.sleep)}; }
+function sectDrop(a,b){ if(!a||!b)return false; return Object.keys(b).some(k=>(b[k]||0)>=10&&massDrop(a[k]||0,b[k]||0)); }
+// v362 · ¿la unión pierde de golpe una sección (o el total) que algún lado tenía? Entonces no se sube: pregunta.
+function cloudMergeDrop(m,l,r,b){ const mx={}; [l,r,b].forEach(x=>{ if(!x)return; const c=cloudCounts(x); Object.keys(c).forEach(k=>{ mx[k]=Math.max(mx[k]||0,c[k]||0); }); });
+  return sectDrop(cloudCounts(m),mx)||massDrop(dbMass(m),Math.max.apply(null,[l,r,b].filter(Boolean).map(dbMass))); }
+// el aviso nombra la sección que se cayó: los totales se parecen aunque falten 41 sesiones
+const CLOUD_SEC={sessions:'sesiones',meals:'comidas',bodyweight:'pesos',sleep:'noches'};
+function cloudAskDetail(o,head,when){ const lc=cloudCounts(db), cc=(head&&head.inc)?cloudCounts(head.inc):(_cl&&_cl.cnt)||null; let x='';
+  if(cc)Object.keys(CLOUD_SEC).forEach(k=>{ const a=lc[k]||0, b=cc[k]||0; if(!x&&Math.max(a,b)>=10&&(massDrop(a,b)||massDrop(b,a)))x=CLOUD_SEC[k]+' · nube '+b+' · este teléfono '+a; });
+  return (x?x+when:'nube · '+(o.cmass||o.bmass||0)+' registros'+when+'\neste teléfono · '+o.lmass+' registros')+'\nla que no elijas queda guardada como copia'; }
+// v352 · qué hacer con la copia de la nube (hermana de bootDecision). o = {localSeed, foreign, cloudHas, same, base,
+// cloudNew, dirty, lmass, cmass, bmass}. 'push' sube · 'adopt' toma la nube · 'merge' une y sube · 'link' ya son iguales ·
+// 'ask' pregunta · 'none' nada.
+function cloudDecision(o){
+  if(o.localSeed)return o.cloudHas?'adopt':'none';                         // teléfono nuevo: adopta; su semilla jamás sube
+  if(o.foreign)return 'ask';                                               // esta base se sincronizaba con OTRA cuenta
+  if(!o.cloudHas)return 'push';                                            // una nube vacía nunca vacía un teléfono: lo recibe
+  if(o.same)return 'link';
+  if(!o.base)return 'ask';                                                 // datos en los dos lados sin historia común
+  if(!o.cloudNew)return !o.dirty?'none':(massDrop(o.lmass,o.bmass)||o.ldrop)?'ask':'push';   // v362 · también por sección
+  if(!o.dirty)return (massDrop(o.cmass,o.lmass)||o.cdrop)?'ask':'adopt';
+  return 'merge'; }
+// v352 · unir de 3 vías contra la BASE, registro por registro: los objetos por clave y las listas de registros con id, por id.
+// Lo que cambió de un solo lado gana ese lado; lo que un lado borró y el otro no tocó, se borra; si uno borró y el otro corrigió,
+// se queda lo corregido; si los dos cambiaron lo mismo, gana este teléfono y la copia de la nube queda guardada (`pre-nube`).
+// Lo que es de este teléfono (CLOUD_LOCAL y health.shortcut) no se toca. Una lista sin ids (p. ej. `when`) es un solo valor.
+const M3X={};   // "no está"
+function m3J(v){ if(v===M3X||v===undefined)return '\u0000'; try{ return JSON.stringify(v); }catch(_){ return '\u0001'; } }
+function m3Obj(v){ return !!v&&typeof v==='object'&&!Array.isArray(v); }
+// la clave de cada elemento de una lista: su id si es único en ESA lista; si no, su contenido + cuántas veces va (así una lista
+// con un registro sin id o con un id repetido se sigue uniendo registro por registro)
+function m3Keys(a){ const n=new Map(), occ=new Map(), idOf=x=>(m3Obj(x)&&x.id!=null&&x.id!=='')?String(x.id):null; a.forEach(x=>{ const i=idOf(x); if(i!=null)n.set(i,(n.get(i)||0)+1); });
+  return a.map(x=>{ const i=idOf(x); if(i!=null&&n.get(i)===1)return 'i:'+i; const j='j:'+m3J(x), c=occ.get(j)||0; occ.set(j,c+1); return j+'#'+c; }); }
+// ¿el orden relativo de lo que X comparte con la base es el de la base?
+function m3Same(X,B){ const inB=new Set(B), x=X.filter(k=>inB.has(k)), inX=new Set(x), b=B.filter(k=>inX.has(k)); return x.length===b.length&&x.every((k,i)=>k===b[i]); }
+// orden final: el de P, y lo que solo trae S entra junto a su vecino de S
+function m3Order(P,S,keep){ const out=P.filter(k=>keep.has(k)), at=new Set(out);
+  S.forEach((k,i)=>{ if(!keep.has(k)||at.has(k))return; let j=i-1; while(j>=0&&!at.has(S[j]))j--; out.splice(j<0?0:out.indexOf(S[j])+1,0,k); at.add(k); });
+  keep.forEach(k=>{ if(!at.has(k)){ out.push(k); at.add(k); } }); return out; }
+function merge3(b,l,r,st){ const jl=m3J(l), jr=m3J(r); if(jl===jr)return l; const jb=m3J(b);
+  if(jl===jb){ st.took++; return r; } if(jr===jb)return l;
+  if(l===M3X||r===M3X){ st.kept++; return l===M3X?r:l; }   // uno borró y el otro corrigió: se queda lo corregido
+  if(m3Obj(l)&&m3Obj(r)){ const bb=m3Obj(b)?b:{}, o={}; new Set(Object.keys(l).concat(Object.keys(r),Object.keys(bb))).forEach(k=>{ const v=merge3(k in bb?bb[k]:M3X,k in l?l[k]:M3X,k in r?r[k]:M3X,st); if(v!==M3X)o[k]=v; }); return o; }
+  if(Array.isArray(l)&&Array.isArray(r)&&(l.some(m3Obj)||r.some(m3Obj))){ const bA=Array.isArray(b)?b:[], kb=m3Keys(bA), kl=m3Keys(l), kr=m3Keys(r), val=new Map();
+    const mb=new Map(kb.map((k,i)=>[k,bA[i]])), ml=new Map(kl.map((k,i)=>[k,l[i]])), mr=new Map(kr.map((k,i)=>[k,r[i]]));
+    new Set(kl.concat(kr,kb)).forEach(k=>{ const v=merge3(mb.has(k)?mb.get(k):M3X,ml.has(k)?ml.get(k):M3X,mr.has(k)?mr.get(k):M3X,st); if(v!==M3X)val.set(k,v); });
+    const keep=new Set(val.keys()), lr=!m3Same(kl,kb), rr=!m3Same(kr,kb); if(lr&&rr&&!m3Same(kl,kr))st.both++;   // los dos reordenaron distinto: gana el orden de este teléfono
+    return ((!lr&&rr)?m3Order(kr,kl,keep):m3Order(kl,kr,keep)).map(k=>val.get(k)); }   // si solo el otro reordenó, su orden
+  st.both++; return l; }   // un valor suelto (o una lista sin registros) que cambió distinto en los dos lados: gana este teléfono
+// una comida o un extra que un lado MOVIÓ de día y el otro corrigió: queda uno solo, en su día nuevo y con la corrección
+function m3Moves(o,b,l,r,st){ if(!m3Obj(o))return o; const W=x=>{ const m=new Map(); if(m3Obj(x))Object.keys(x).forEach(d=>{ if(Array.isArray(x[d]))x[d].forEach(it=>{ if(m3Obj(it)&&it.id!=null&&it.id!==''){ const k=String(it.id); if(!m.has(k))m.set(k,[]); m.get(k).push(d); } }); }); return m; };
+  const F=(x,d,id)=>((m3Obj(x)&&Array.isArray(x[d]))?x[d]:[]).find(it=>m3Obj(it)&&String(it.id)===id), wb=W(b), wl=W(l), wr=W(r); let c=null;
+  W(o).forEach((ds,id)=>{ if(ds.length<2)return; const B1=wb.get(id)||[], L1=wl.get(id)||[], R1=wr.get(id)||[]; if(B1.length!==1||L1.length!==1||R1.length!==1)return; const from=B1[0];
+    const to=(L1[0]!==from&&R1[0]===from)?L1[0]:(R1[0]!==from&&L1[0]===from)?R1[0]:''; if(!to)return;
+    const v=merge3(F(b,from,id),F(l,L1[0],id),F(r,R1[0],id),st); if(!c)c=Object.assign({},o);
+    c[from]=(c[from]||[]).filter(it=>!(m3Obj(it)&&String(it.id)===id)); c[to]=(c[to]||[]).map(it=>(m3Obj(it)&&String(it.id)===id)?v:it); });
+  return c||o; }
+function cloudMerge(loc,inc,base){ const st={took:0,both:0,kept:0}, out={}, B=base||{}, N=v=>typeof v==='number'&&isFinite(v);
+  new Set(Object.keys(loc).concat(Object.keys(inc),Object.keys(B))).forEach(k=>{ if(CLOUD_LOCAL[k]){ if(k in loc)out[k]=loc[k]; return; }
+    if(k==='rotIdx'&&N(loc[k])&&N(inc[k])&&N(B[k])&&loc[k]!==B[k]&&inc[k]!==B[k]){ out[k]=Math.max(0,loc[k]+inc[k]-B[k]); st.took++; return; }   // las dos sesiones avanzan la rotación
+    let v=merge3(k in B?cloudOwn(k,B[k]):M3X,k in loc?cloudOwn(k,loc[k]):M3X,k in inc?cloudOwn(k,inc[k]):M3X,st); if(v===M3X)return;
+    if(k==='meals'||k==='adhoc')v=m3Moves(v,B[k],loc[k],inc[k],st);
+    if(k==='sessions'&&Array.isArray(v)&&v!==loc.sessions){ const d=s=>String((s&&s.date)||''); v=v.map((s,i)=>[s,i]).sort((a,b)=>d(a[0])<d(b[0])?-1:d(a[0])>d(b[0])?1:a[1]-b[1]).map(x=>x[0]); }   // por fecha, estable
+    out[k]=(k==='health'&&m3Obj(v)&&loc.health&&loc.health.shortcut)?Object.assign({},v,{shortcut:loc.health.shortcut}):(k==='settings'&&m3Obj(v)&&loc.settings&&loc.settings.acInv)?Object.assign({},v,{acInv:loc.settings.acInv}):v; });
+  return {db:out,took:st.took,both:st.both,kept:st.kept}; }
+async function cloudPull(have){ const r=(await cloudRpc('state_pull',{have_rev:have==null?-1:have}))||{};
+  const out={has:!!(r.found&&r.rev>0&&r.size>0),raw:+r.rev||0,rev:+r.rev||0,t:r.updated_at||'',inc:null};
+  if(out.has&&r.data){ let d=null; try{ d=JSON.parse(await cloudUnpack(r.data,r.enc)); }catch(_){ throw cloudErr('corrupt'); }
+    if(!d||typeof d!=='object'||Array.isArray(d)||!d.profile)throw cloudErr('corrupt'); out.inc=d; }
+  return out; }
+// sube la base de ESTE momento; la firma y la masa se toman en el mismo instante que el JSON (si tecleas mientras sube,
+// eso queda como cambio pendiente, no como "ya sincronizado")
+async function cloudPush(expRev){ const g=_clGen, sigs=cloudSigs(db), mass=dbMass(db), seq=seqOf(db), json=cloudPayload(), pk=await cloudPack(json);
+  if(pk.data.length>CLOUD_MAX)throw cloudErr('too_big');
+  const r=(await cloudRpc('state_push',{expected_rev:expRev||0,seq:seq,data:pk.data,enc:pk.enc,size:json.length,device:cloudDevice()}))||{};
+  if(g!==_clGen||!_cl)throw cloudErr('gone');   // v352 · saliste o borraste mientras subía: no se toca nada
+  if(r.ok){ cloudSetBase(+r.rev,sigs,mass,json); return {ok:true}; }
+  if(r.conflict)return {ok:false,rev:+r.rev||0};
+  throw cloudErr(r.error||'busy'); }
+// tomar la copia de la nube: foto `pre-cloud` de lo que había, y la sesión viva de este teléfono se conserva
+async function cloudAdopt(inc,rev){ const aw=db.activeWork, sc=db.health&&db.health.shortcut, ai=db.settings&&db.settings.acInv, snap=idbSnap('cloud',db);   // v352 · la foto, sin esperar: entre medir y reemplazar no hay pausa
+  db=inc; if(aw)db.activeWork=aw; if(sc)db.health=Object.assign({},db.health,{shortcut:sc}); if(ai)db.settings=Object.assign({},db.settings,{acInv:ai});   // la sesión viva y el atajo de este teléfono se quedan
+  cloudSetBase(rev,cloudSigs(db),dbMass(db),cloudPayload()); _idbForceNext=true; cloudSave(); await snap; await cloudKvPut(_cl);
+  if(!_sbx){ const s=state.screen; if(s==='landing'||s==='login'||s==='onboard')state.screen='home'; render(); } }
+function cloudUiBusy(){ if(_sbx)return false; const a=document.activeElement; return !!(document.getElementById('bootov')||document.getElementById('modal')||document.getElementById('asklayer')||(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))); }
+// una pasada: lee la nube (sin bajar la copia si la versión es la misma), decide y actúa. Un push rechazado (otra copia
+// llegó antes) vuelve a leer y decidir. Con una sesión viva, una hoja abierta o un campo en foco no reemplaza nada: espera.
+async function cloudRun(opt){ const g=_clGen; let d0=db; const gone=()=>g!==_clGen||db!==d0||!_cl;   // v352 · saliste, borraste o cambió la base durante una espera: se retira
+  for(let i=0;i<4;i++){ const base=cloudBaseOk(), head=await cloudPull(base?_cl.rev:-1); if(gone())return 'skip';
+    let inc=null; if(head.inc){ inc=migrate(head.inc); if(!(inc.profile&&inc.profile.username)){ inc=null; head.has=false; } }
+    const o={localSeed:!(db.profile&&db.profile.username),foreign:cloudForeign(),cloudHas:head.has,base:base,cloudNew:head.has&&(!base||head.rev!==_cl.rev),dirty:!base||cloudDirty(),lmass:dbMass(db),cmass:inc?dbMass(inc):0,bmass:_cl.mass||0,ldrop:base&&!!_cl.cnt&&sectDrop(cloudCounts(db),_cl.cnt),cdrop:!!inc&&sectDrop(cloudCounts(inc),cloudCounts(db)),same:!!inc&&cloudSame(cloudSigs(inc),cloudSigs(db))};
+    const dec=cloudDecision(o);
+    if(opt.only==='push'&&dec!=='push'&&dec!=='none'&&dec!=='link')return 'skip';
+    if((dec==='adopt'||dec==='merge'||dec==='ask')&&!opt.ui&&(db.activeWork||cloudUiBusy()))return 'wait';
+    if(dec==='none'){ _cl.t=Date.now(); const a=cloudAcct(); if(a&&a.uid===_cl.uid)a.at=_cl.t; await cloudKvPut(_cl); return 'ok'; }
+    if(dec==='link'){ cloudSetBase(head.rev,cloudSigs(db),dbMass(db),cloudPayload()); cloudSave(); await cloudKvPut(_cl); return 'ok'; }
+    if(dec==='adopt'){ await cloudAdopt(inc,head.rev); return 'adopt'; }
+    if(dec==='ask'){ cloudAsk(o,head); return 'ask'; }
+    if(dec==='merge'){ const bj=await cloudBaseGet(); if(gone())return 'skip'; let bo=null; try{ bo=bj?JSON.parse(bj.json):null; if(bo&&bj.app!==APP_V)bo=migrate(bo); }catch(_){ bo=null; }   // una base de otra versión de la app pasa por migrate, como la nube y este teléfono
+      if(!bo){ cloudAsk(o,head); return 'ask'; }   // sin la base no se une a ciegas: tú eliges (la otra queda guardada)
+      const m=cloudMerge(db,inc,bo); idbSnap('nube',head.inc);   // v362 · la copia de la nube queda guardada siempre antes de unir
+      if(cloudMergeDrop(m.db,db,inc,bo)){ cloudAsk(o,head); return 'ask'; }   // v362 · un derrumbe que llega por la unión: tú eliges, nada sube
+      const snap=idbSnap('cloud',db);   // se une la base de ESTE instante (sin pausa antes de reemplazar)
+      db=m.db; bumpIdx(); cloudSave(); d0=db; if(!_sbx)reRender(); await snap; if(gone())return 'skip'; }
+    const r=await cloudPush(head.raw);
+    if(r.ok){ cloudSave(); await cloudKvPut(_cl); return dec==='merge'?'merge':'ok'; } }
+  throw cloudErr('busy'); }
+// la entrada única. Nunca lanza: devuelve 'ok' | 'adopt' | 'merge' | 'ask' | 'wait' | 'hold' | 'clean' | 'skip' | 'off' | 'err'
+// (el motivo de 'err' queda en _clErr). Sin red no pasa nada: la app sigue y se reintenta al volver.
+function cloudSync(why,opt){ opt=opt||{}; if(cloudMode()==='off'||!cloudIn())return Promise.resolve('off');
+  if(_clBusy)return _clBusy;
+  if(_clHold&&!opt.ui)return Promise.resolve('hold');
+  if(!opt.ui&&(why==='hide'||why==='tick'||why==='save')&&cloudBaseOk()&&!cloudDirty()){ _clNote=0; return Promise.resolve('clean'); }
+  _clTry=Date.now(); const n0=_clNote; clearInterval(_clWaitT); _clWaitT=null;
+  const p=_clBusy=cloudRun(opt).then(r=>{ _clErr=''; if((r==='ok'||r==='merge'||r==='adopt')&&_clNote===n0)_clNote=0; if(r==='wait')cloudWait(); return r; },e=>{ if(e&&e.code==='gone')return 'skip'; _clErr=cloudErrTxt(e); return 'err'; })
+    .then(r=>{ if(_clBusy===p)_clBusy=null; cloudUi(); return r; });
+  return p; }
+// quedó pendiente porque estabas a media sesión o con una hoja abierta: se reintenta en cuanto se desocupa (sin red de por medio)
+function cloudWait(){ if(_sbx||_clWaitT)return; _clWaitT=setInterval(()=>{ if(!cloudIn()){ clearInterval(_clWaitT); _clWaitT=null; return; } if(db.activeWork||cloudUiBusy()||document.hidden)return; clearInterval(_clWaitT); _clWaitT=null; cloudSync('retry'); },3000); }
+// tú eliges qué copia manda (las dos tienen datos y no hay historia común, o una se desplomó)
+function cloudChoose(which){ if(_clBusy)return _clBusy; if(!cloudIn())return Promise.resolve('off'); _clTry=Date.now();
+  const g=_clGen, p=_clBusy=(async()=>{ const h=await cloudPull(-1); if(g!==_clGen||!_cl)throw cloudErr('gone');
+      if(which==='cloud'){ const inc=h.inc?migrate(h.inc):null; if(!h.has||!inc||!(inc.profile&&inc.profile.username))throw cloudErr('corrupt'); await cloudAdopt(inc,h.rev); }
+      else { if(h.inc)idbSnap('nube',h.inc);   // v352 · la de la nube, que no elegiste, queda guardada aquí (`de la nube · no elegida`)
+        let rev=h.raw, ok=false; for(let i=0;i<3&&!ok;i++){ const r=await cloudPush(rev); if(r.ok){ ok=true; cloudSave(); await cloudKvPut(_cl); } else rev=r.rev; } if(!ok)throw cloudErr('busy'); }
+      _clHold=false; _clAskO=null; _clErr=''; return 'ok'; })().then(r=>r,e=>{ if(e&&e.code==='gone')return 'skip'; _clErr=cloudErrTxt(e); return 'err'; })
+    .then(r=>{ if(_clBusy===p)_clBusy=null; cloudUi(); return r; });
+  return p; }
+function cloudAsk(o,head){ _clHold=true; _clAskO={o:o,head:head}; if(_sbx)return;
+  const a=cloudAcct(), when=(head&&head.t&&Date.parse(head.t))?' · '+fmtShort(todayISO(new Date(head.t)))+' '+hhmm(Date.parse(head.t)):'';
+  const run=(p,msg)=>{ const tk=toastTask('sincronizando'); p.then(r=>{ if(r==='err')tk.fail('⚠ '+_clErr); else tk.done(msg); }); };
+  if(o.foreign&&!o.cloudHas)trkAsk({title:'estos datos son de otra cuenta',detail:((a&&a.email)||'otra cuenta')+' · '+o.lmass+' registros\n'+_cl.email+' todavía no tiene datos en la nube',ok:'subirlos aquí',cancel:'salir',dismiss:()=>{}},
+    ()=>run(cloudChoose('local'),'✓ datos en tu nube'),()=>{ authSignOut().then(cloudUi); });
+  else trkAsk({title:'tu nube y este teléfono no coinciden',detail:cloudAskDetail(o,head,when),ok:'usar la nube',cancel:'subir esta',dismiss:()=>{}},
+    ()=>run(cloudChoose('cloud'),'✓ datos de tu nube'),()=>run(cloudChoose('local'),'✓ datos en tu nube')); }
+async function cloudDelete(){ await cloudRpc('delete_my_account',{}); cloudForget(true); cloudSave(); return true; }
+// "reset data" con la sesión abierta: la base quedó en semilla y sin cuenta → este teléfono sale de la cuenta (si no, la
+// nube devolvería lo que acabas de borrar). La copia de la nube se queda: entra de nuevo para traerla, o borra la cuenta.
+function cloudResetCheck(){ if(cloudIn()&&db&&!db.account&&!(db.profile&&db.profile.username)){ cloudForget(); return true; } return false; }
+// lo llama save(): anota que hay cambios y, si se acaba de guardar una sesión, sube pronto
+function cloudNote(){ try{ if(_sbx||_clSelf||!_cl)return; if(cloudResetCheck()){ cloudUi(); return; } if(!cloudIn())return;   // v352 · el guardia va dentro del try: antes de declararse las variables, no hace nada
+    _clNote=Date.now(); const n=(db.sessions||[]).length; if(_clSess!=null&&n>_clSess)cloudSoon(2500,'save'); _clSess=n; }catch(_){} }
+function cloudSoon(ms,why){ clearTimeout(_clT); _clT=setTimeout(()=>{ _clT=null; cloudSync(why); },ms); }
+function cloudStatusTxt(){ if(_clBusy)return 'sincronizando…'; if(_clHold)return 'falta elegir qué copia usar'; const t=_cl&&_cl.t;
+  if(_clErr)return '⚠ '+_clErr+(t?' · último '+agoTxt(t):''); return t?'sincronizado '+agoTxt(t):'sin sincronizar'; }
+function cloudUi(){ if(_sbx)return; try{ const el=document.getElementById('ac_st'); if(el&&cloudIn()){ el.textContent=cloudStatusTxt(); return; }
+    if((state.screen==='settings'||state.screen==='landing')&&!cloudUiBusy())reRender(); }catch(_){} }
+// arranque: nada si está apagada. Espera a que el arranque elija su copia (idbBootCheck) y a que se cierre la portada;
+// después sincroniza al volver a la app, al recuperar conexión, al ocultarse y, como mucho, cada 5 min con cambios.
+function cloudBoot(){ if(cloudMode()==='off')return;
+  try{ const s=ONB_STEPS.find(x=>x.k==='body'); if(s)s.why='para calcular tus calorías de mantenimiento'; }catch(_){}   // con cuenta ya no "se queda en tu teléfono"
+  const t0=Date.now(), go1=()=>{ if((_idbHold||document.getElementById('bootov'))&&Date.now()-t0<15000){ setTimeout(go1,300); return; }
+    cloudKvGet().then(v=>{ if(v&&v.uid&&v.srv===cloudSrv())_cl=v; _clSess=(db.sessions||[]).length; if(cloudResetCheck())return; if(cloudIn()){ cloudUi(); cloudSync('boot'); } else acctInviteMaybe(); }).catch(()=>{}); };   /* v362 · AC-INV */
+  go1();
+  document.addEventListener('visibilitychange',()=>{ if(!cloudIn())return;
+    if(document.hidden){ try{ flushSave(); }catch(_){} if(_clNote)cloudSync('hide'); }
+    else if(_clNote||Date.now()-_clTry>60000)cloudSoon(800,'show'); });
+  window.addEventListener('online',()=>{ if(cloudIn())cloudSoon(1500,'online'); });
+  setInterval(()=>{ if(cloudIn()&&!document.hidden&&_clNote&&Date.now()-_clTry>=300000)cloudSync('tick'); },60000); }
+// ---- FakeSB · el mismo contrato que Supabase Auth (GoTrue) y PostgREST rpc, en memoria. Solo para `?cloud=fake` y
+// self-check de v362 (AC-INV). Base de juguete; nada llega a disco; todo se restaura en finally.
+function _v362SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v362: '+nm); }; const real=db, f0=_clForce, cl0=_cl;
+  try{ _clForce='fake'; _cl=null; const N=Date.now(), D=864e5;
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',weightKg:70,heightCm:175,age:26,sex:'M'},gyms:['g'],activeGym:'g',settings:{}});
+    A('AC-INV · quien ya usa la app sin cuenta: toca invitar', acctInviteDue(N));
+    db.settings.acInv={n:1,t:N-3*D}; A('AC-INV · no antes de 7 días', !acctInviteDue(N));
+    db.settings.acInv={n:1,t:N-8*D}; A('AC-INV · sí pasados 7 días', acctInviteDue(N));
+    db.settings.acInv={n:3,t:N-30*D}; A('AC-INV · nunca más de 3 veces', !acctInviteDue(N));
+    acctInviteMark(N); A('AC-INV · cada vez que sale cuenta', db.settings.acInv.n===4&&db.settings.acInv.t===N);
+    delete db.settings.acInv; db.account={email:'a@b.c',uid:'fake-u'}; A('AC-INV · ni a quien ya ligó una cuenta (aunque haya salido)', !acctInviteDue(N)); delete db.account;
+    db.profile.username=''; A('AC-INV · ni a quien no tiene datos', !acctInviteDue(N)); db.profile.username='t';
+    _clForce='off'; A('AC-INV · ni con la nube apagada', !acctInviteDue(N)); _clForce='fake';
+    // el aviso: tres salidas, el principal a la derecha
+    let got=''; trkAsk({title:'x',ok:'crear cuenta',cancel:'ahora no',alt:{label:'entrar',fn:()=>{ got='alt'; }}},()=>{ got='ok'; },()=>{ got='no'; });
+    let L=document.getElementById('asklayer'); const bs=L?[...L.querySelectorAll('[data-ask]')].map(b=>b.dataset.ask+':'+b.textContent).join('|'):'';
+    A('AC-INV · el aviso trae crear cuenta, entrar y ahora no', bs==='ok:crear cuenta|alt:entrar|no:ahora no');
+    L.querySelector('[data-ask="alt"]').click(); A('AC-INV · entrar abre la hoja de entrar', got==='alt'&&!document.getElementById('asklayer'));
+    got=''; trkAsk({title:'x'},()=>{ got='ok'; },()=>{ got='no'; }); L=document.getElementById('asklayer'); A('TRKAsk sin alt queda igual que siempre', !!L&&L.querySelectorAll('[data-ask]').length===2);
+    L.querySelector('[data-ask="no"]').click(); A('TRKAsk sin alt · cancelar', got==='no');
+    A('derrumbe por sección: perder 41 de 44 sesiones con las comidas intactas pregunta', sectDrop({sessions:3,meals:400,bodyweight:60,sleep:58},{sessions:44,meals:400,bodyweight:60,sleep:58})&&!sectDrop({sessions:40,meals:400},{sessions:44,meals:400})&&!sectDrop({sessions:2},{sessions:6}));
+    A('…y la decisión pregunta en vez de subir', cloudDecision({cloudHas:true,base:true,cloudNew:false,dirty:true,lmass:1342,bmass:1383,ldrop:true})==='ask'&&cloudDecision({cloudHas:true,base:true,cloudNew:false,dirty:true,lmass:1342,bmass:1383,ldrop:false})==='push');
+    A('un 5xx no se lee como contraseña incorrecta', cloudErrTxt({code:'down'})==='la nube no responde · intenta en un rato'&&cloudErrTxt({code:'algo_raro',message:'Something went wrong'})==='no se pudo · intenta de nuevo');
+    A('_dataLog es del teléfono', !('_dataLog' in cloudSigs({_dataLog:[{v:1,t:1}],sessions:[]})));
+    { const a={settings:{restSec:90,acInv:{n:1,t:5}},sessions:[]}, b={settings:{restSec:90},sessions:[]}; A('r2 · el contador de la invitación es del teléfono: dos teléfonos iguales salvo eso coinciden', cloudSame(cloudSigs(a),cloudSigs(b)));
+      db.settings.acInv={n:2,t:7}; A('r2 · …y no viaja', !/acInv/.test(cloudPayload()));
+      const m=cloudMerge({settings:{restSec:1,acInv:{n:2,t:9}}},{settings:{restSec:2}},{settings:{restSec:1}}).db; A('r2 · …y la unión conserva el de aquí', m.settings.restSec===2&&m.settings.acInv&&m.settings.acInv.n===2); }
+    { const S=n=>Array.from({length:n},(_,i)=>({id:'s'+i,date:'2026-09-'+String(1+i%28).padStart(2,'0')})), mk=(n,x)=>({profile:{username:'t'},sessions:S(n),settings:{x:x}});
+      A('r2 · una unión que deja 3 de 44 sesiones es derrumbe', cloudMergeDrop(mk(3,2),mk(3,1),mk(44,2),mk(44,1))&&cloudMergeDrop(mk(3,2),mk(44,2),mk(3,1),mk(44,1)));
+      A('r2 · …una unión normal no', !cloudMergeDrop(mk(45,2),mk(45,1),mk(44,2),mk(44,1))); }
+    A('r2 · el aviso de vocabulario', cloudErrTxt({code:'validation_failed'})==='ese correo no es válido'&&cloudErrTxt({code:'too_big'})==='tus datos no caben en la nube');
+    A('r2 · un alta nueva no vuelve a poner la contraseña; una repetida o sin fechas, sí', !acctRepeat({created_at:'2026-10-16T10:00:00Z',confirmation_sent_at:'2026-10-16T10:00:01Z'})&&acctRepeat({created_at:'2026-10-15T10:00:00Z',confirmation_sent_at:'2026-10-16T10:00:00Z'})&&acctRepeat({}));
+    console.log('v362 self-check OK');
+  } finally { try{ closeAsk(true); }catch(_){} _clForce=f0; _cl=cl0; db=real; }
+}
+// _cuentasSelfCheck: mismas rutas, mismos cuerpos y mismos códigos de error que el servidor real (schema.sql). ----
+function FakeSB(){ this.users={}; this.rows={}; this.hist={}; this.tok={}; this.rt={}; this.n=0; this.refreshes=0; this.conflicts=0; this.hook=null; this.gap=60000; }   // v352 · como Supabase: un correo por minuto
+FakeSB.prototype.byId=function(id){ return Object.keys(this.users).map(k=>this.users[k]).find(u=>u.id===id)||null; };
+FakeSB.prototype.code=function(email){ const u=this.users[String(email||'').toLowerCase()]; return (u&&u.otp)||''; };
+FakeSB.prototype.expire=function(){ Object.keys(this.tok).forEach(k=>{ this.tok[k].exp=0; }); };
+FakeSB.prototype.handle=async function(method,path,b,h){ b=b||{}; const J=(s,x)=>({status:s,body:x}), now=Date.now(), E=(s,c,m)=>J(s,{code:s,error_code:c,msg:m});
+  const em=String(b.email||'').trim().toLowerCase(), u=this.users[em];
+  const pub=x=>({id:x.id,aud:'authenticated',role:'authenticated',email:x.email,email_confirmed_at:x.ok?new Date(x.t).toISOString():null,identities:[{id:x.id,provider:'email'}],user_metadata:x.meta||{}});
+  const sess=x=>{ const k=(++this.n)+'-'+Math.random().toString(36).slice(2), at='fake-at-'+k, rt='fake-rt-'+k; this.rt[rt]=x.id; this.tok[at]={uid:x.id,exp:now+3600000,rt:rt};
+    return J(200,{access_token:at,token_type:'bearer',expires_in:3600,expires_at:Math.floor(now/1000)+3600,refresh_token:rt,user:pub(x)}); };
+  const otp=(x,kind)=>{ x.otp=String(Math.floor(100000+Math.random()*900000)); x.otpT=now; x.kind=kind; };
+  const who=()=>{ const s=this.tok[String(h.Authorization||'').replace(/^Bearer /,'')]; return (s&&s.exp>now)?this.byId(s.uid):null; };
+  if(path==='/auth/v1/signup'){ if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return E(400,'validation_failed','Unable to validate email address: invalid format');
+    if(String(b.password||'').length<8)return E(422,'weak_password','Password should be at least 8 characters.');
+    if(u&&u.ok)return J(200,Object.assign(pub({id:'fake-'+uid(),email:em,t:now}),{identities:[]}));   // ya existe: usuario disfrazado y NO se manda correo
+    if(u&&!u.ok){ if(this.gap&&now-u.otpT<this.gap)return E(429,'over_email_send_rate_limit','For security purposes, you can only request this after 60 seconds.'); otp(u,'signup'); return J(200,Object.assign(pub(u),{confirmation_sent_at:new Date(now).toISOString()})); }   // v352 · como Supabase: sin confirmar se reenvía el código y se queda la PRIMERA contraseña
+    const x=this.users[em]={id:(u&&u.id)||('fake-'+uid()),email:em,pw:String(b.password),ok:false,t:now,meta:b.data||{}}; otp(x,'signup');
+    return J(200,Object.assign(pub(x),{confirmation_sent_at:new Date(now).toISOString()})); }
+  if(path==='/auth/v1/resend'){ if(u&&!u.ok){ if(this.gap&&now-u.otpT<this.gap)return E(429,'over_email_send_rate_limit','For security purposes, you can only request this after 60 seconds.'); otp(u,'signup'); } return J(200,{}); }
+  if(path==='/auth/v1/verify'){ const kind=b.type==='recovery'?'recovery':'signup';
+    if(!u||!u.otp||u.otp!==String(b.token)||(kind==='recovery'&&u.kind!=='recovery')||now-u.otpT>3600000)return E(403,'otp_expired','Token has expired or is invalid');
+    u.otp=null; u.ok=true; u.t=now; return sess(u); }
+  if(path==='/auth/v1/token?grant_type=password'){ if(!u||u.pw!==String(b.password))return E(400,'invalid_credentials','Invalid login credentials');
+    if(!u.ok)return E(400,'email_not_confirmed','Email not confirmed'); return sess(u); }
+  if(path==='/auth/v1/token?grant_type=refresh_token'){ const x=this.byId(this.rt[b.refresh_token]);   // cada dispositivo tiene su propio refresh token, de un solo uso
+    if(!x)return E(400,'refresh_token_not_found','Invalid Refresh Token: Refresh Token Not Found'); delete this.rt[b.refresh_token]; this.refreshes++; return sess(x); }
+  if(path==='/auth/v1/recover'){ if(u&&u.ok)otp(u,'recovery'); return J(200,{}); }
+  if(path==='/auth/v1/user'){ const x=who(); if(!x)return E(401,'bad_jwt','invalid JWT'); const p=String(b.password||'');
+    if(p.length<8)return E(422,'weak_password','Password should be at least 8 characters.'); if(p===x.pw)return E(422,'same_password','New password should be different from the old password.'); x.pw=p; return J(200,pub(x)); }
+  if(path.indexOf('/auth/v1/logout')===0){ const k=String(h.Authorization||'').replace(/^Bearer /,''), s=this.tok[k]; if(s&&s.rt)delete this.rt[s.rt]; delete this.tok[k]; return J(204,null); }   // v352 · como Supabase: salir revoca el refresh token
+  if(path.indexOf('/rest/v1/rpc/')===0){ const x=who(); if(!x)return J(401,{code:'PGRST301',message:'JWT expired'}); const fn=path.slice(13), row=this.rows[x.id];
+    if(fn==='state_pull')return J(200,row?{found:true,rev:row.rev,seq:row.seq,enc:row.enc,size:row.size,device:row.device,updated_at:row.updated_at,data:(b.have_rev!=null&&b.have_rev===row.rev)?null:row.data}:{found:false,rev:0});
+    if(fn==='delete_my_account'){ delete this.rows[x.id]; delete this.hist[x.id]; delete this.users[x.email]; Object.keys(this.tok).forEach(k=>{ if(this.tok[k].uid===x.id)delete this.tok[k]; }); Object.keys(this.rt).forEach(k=>{ if(this.rt[k]===x.id)delete this.rt[k]; }); return J(200,{ok:true}); }
+    if(fn==='state_push'){ if(this.hook){ const f=this.hook; this.hook=null; await f(this,x); }
+      const d=b.data, cur=this.rows[x.id], exp=+b.expected_rev||0;
+      if(d==null||!String(d).length)return J(200,{ok:false,error:'empty'}); if(String(d).length>CLOUD_MAX)return J(200,{ok:false,error:'too_big',max:CLOUD_MAX}); if(b.enc!=='gz64'&&b.enc!=='json')return J(200,{ok:false,error:'bad_enc'});
+      const nu=rev=>({rev:rev,seq:+b.seq||0,data:String(d),enc:b.enc,size:+b.size||0,device:String(b.device||'').slice(0,80),updated_at:new Date(now).toISOString()});
+      if(!cur){ if(exp!==0){ this.conflicts++; return J(200,{ok:false,conflict:true,rev:0}); } this.rows[x.id]=nu(1); return J(200,{ok:true,rev:1}); }
+      if(cur.rev!==exp){ this.conflicts++; return J(200,{ok:false,conflict:true,rev:cur.rev}); }
+      const hs=this.hist[x.id]=this.hist[x.id]||{}; hs[cur.updated_at.slice(0,10)]=cur; Object.keys(hs).sort().reverse().slice(7).forEach(k=>{ delete hs[k]; });   // la versión anterior, una por día, 7 días
+      this.rows[x.id]=nu(cur.rev+1); return J(200,{ok:true,rev:cur.rev+1}); } }
+  return J(404,{code:404,msg:'not found'}); };
+// v352 · self-check de cuentas y nube (ASÍNCRONO). Corre contra FakeSB, con bases de juguete y dentro del sandbox que él
+// mismo abre (_sbx): nada llega a disco, a IndexedDB ni a la red, y al terminar restaura la base y la cuenta reales.
+// Devuelve true, o el texto del fallo (y lo deja en la consola).
+async function _cuentasSelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK cuentas: '+n); };
+  const real=db, R={cl:_cl,mem:_clMem,base:_clBaseMem,fake:_clFake,force:_clForce,hold:_clHold,err:_clErr,note:_clNote,ask:_clAskO,sess:_clSess,tr:_clTry,sbx:_sbx,lc:_lastClosed};
+  let rawLive=null, rawMain=null; try{ rawLive=localStorage.getItem(LS_LIVE); rawMain=localStorage.getItem(LS_KEY); }catch(_){}
+  const dev=d=>({db:d,cl:null,mem:null,base:null}), keep=d=>{ d.db=db; d.cl=_cl; d.mem=_clMem; d.base=_clBaseMem; }, use=d=>{ db=d.db; _cl=d.cl; _clMem=d.mem; _clBaseMem=d.base; _clHold=false; _clAskO=null; bumpIdx(); };
+  const S=(id,date)=>({id:id,date:date,dayId:'d1',dayName:'A',type:'training',exercises:[{name:'press',muscle:'chest',type:'machine',unilateral:false,sets:[{w:'100',r:'8',rir:'1',unit:'lbs',side:null,done:true}]}]});
+  const mk=(name,ids)=>migrate({profile:{username:name},split:{name:'s',days:[{id:'d1',name:'A',exercises:[]}]},sessions:ids.map((id,i)=>S(id,'2026-09-0'+(i+1))),meals:{'2026-09-05':[{id:'m1',name:'huevo',kcal:90,tag:'breakfast'}]},bodyweight:{'2026-09-05':70}});
+  const fails=async f=>{ try{ await f(); }catch(e){ return e; } return null; };
+  try{ _sbx=true; _clForce='fake'; const F=_clFake=new FakeSB(); _cl=null; _clMem=null; _lastClosed=null;
+    const em='ana@example.test', pw='t'+uid()+'A9', pw2='n'+uid()+'B7';
+    // la configuración
+    A('sin url ni llave la nube está apagada', cloudModeOf({url:'',key:''},'')==='off'&&cloudModeOf({url:'https://x.supabase.co',key:''},'')==='off');
+    A('la demo (?cloud=fake) solo en tu compu, nunca en gymtrk.app', cloudModeOf({url:'',key:''},'?cloud=fake','gymtrk.app')==='off'&&cloudModeOf({url:'',key:''},'?cloud=fake','localhost')==='fake');
+    A('con url y llave publicable se enciende; ?cloud=fake fuerza el servidor falso', cloudModeOf({url:'https://x.supabase.co',key:'sb_publishable_x'},'')==='on'&&cloudModeOf({url:'',key:''},'?cloud=fake')==='fake');
+    { const m=document.querySelector('meta[http-equiv="Content-Security-Policy"]'), csp=m?m.getAttribute('content'):''; let o=''; try{ o=CLOUD_CFG.url?new URL(CLOUD_CFG.url).origin:''; }catch(_){ o='?'; }
+      A('con la nube configurada, la CSP deja hablar con su proyecto (y solo con él)', !CLOUD_CFG.url||(o!=='?'&&csp.indexOf(o)>=0)); }
+    A('una llave secreta nunca enciende la nube', cloudModeOf({url:'https://x.supabase.co',key:'sb_secret_x'},'')==='off'&&!cloudKeyOk('eyJhbGciOiJIUzI1NiJ9.'+btoa(JSON.stringify({role:'service_role'}))+'.x'));
+    // comprimir y descomprimir, exacto, sobre la base real
+    const raw=JSON.stringify(real), pk=await cloudPack(raw), pj=await cloudPack(raw,true);
+    A('la base real va y vuelve exacta, comprimida', (await cloudUnpack(pk.data,pk.enc))===raw&&(pk.enc==='json'||(pk.enc==='gz64'&&pk.data.length<raw.length)));
+    A('…y también en JSON plano (navegador sin compresión)', pj.enc==='json'&&(await cloudUnpack(pj.data,pj.enc))===raw);
+    const odd=JSON.stringify({a:'ñ 🥀 "x"   '+String.fromCharCode(0xD83D)+' fin'}), po=await cloudPack(odd);
+    A('acentos, emoji y caracteres raros sobreviven', (await cloudUnpack(po.data,po.enc))===odd);
+    // crear cuenta: código de 6 dígitos
+    const A1=dev(mk('ana',['s1','s2','s3'])); use(A1); db.activeWork={id:'w1',date:'2026-09-30',exercises:[]}; const m0=dbMass(db);
+    const su=await authSignUp(em,pw); A('crear cuenta no abre sesión hasta confirmar el código', !cloudIn()&&!!su.id&&!su.access_token&&/^\d{6}$/.test(F.code(em)));
+    A('contraseña corta o correo mal escrito se rechazan', ((await fails(()=>authSignUp('b@example.test','corta')))||{}).code==='weak_password'&&((await fails(()=>authSignUp('sin-arroba',pw)))||{}).code==='validation_failed');
+    const bad=await fails(()=>authVerify(em,F.code(em)==='000000'?'111111':'000000','email')); A('un código equivocado se rechaza', !!bad&&bad.code==='otp_expired'&&!cloudIn());
+    F.gap=60000; A('reenviar antes de tiempo avisa que esperes', ((await fails(()=>authResend(em)))||{}).code==='over_email_send_rate_limit'); F.gap=0;
+    { const e3='r@example.test'; F.gap=60000; await authSignUp(e3,pw); A('re-registrarse sin confirmar antes de un minuto: espera (como Supabase)', ((await fails(()=>authSignUp(e3,pw2)))||{}).code==='over_email_send_rate_limit');
+      F.gap=0; await authSignUp(e3,pw2); await authVerify(e3,F.code(e3),'email'); await authSignOut();
+      A('…y se queda la PRIMERA contraseña (por eso la app pone la nueva al confirmar el código)', !!(await fails(()=>authSignIn(e3,pw2)))&&!!(await authSignIn(e3,pw))); await authSignOut(); }
+    await authVerify(em,F.code(em),'email'); cloudLink(); A('con el código correcto entra', cloudIn()&&_cl.email===em&&db.account.uid===_cl.uid);
+    const dup=await authSignUp(em,pw); A('un correo que ya tiene cuenta no recibe código (se le manda a entrar)', Array.isArray(dup.identities)&&!dup.identities.length);
+    // nube vacía + teléfono con datos → sube todo
+    A('nube vacía + teléfono con datos → sube', (await cloudSync('t',{ui:true}))==='ok');
+    const uA=_cl.uid, up=JSON.parse(await cloudUnpack(F.rows[uA].data,F.rows[uA].enc));
+    A('sube todo', F.rows[uA].rev===1&&up.sessions.length===3&&up.profile.username==='ana'&&dbMass(up)===m0&&dbMass(db)===m0);
+    A('la sesión viva y la cuenta no viajan', !('activeWork' in up)&&!('account' in up)&&!!db.activeWork);
+    A('lo del atajo de este teléfono no viaja', !!db.health&&!!db.health.shortcut&&!!up.health&&!('shortcut' in up.health));
+    A('db.account guarda solo correo, uid, rev y fecha', Object.keys(db.account).sort().join()==='at,email,rev,uid'&&db.account.rev===1);
+    const exp=JSON.stringify(db); let ls=''; try{ for(let i=0;i<localStorage.length;i++)ls+=localStorage.getItem(localStorage.key(i)); }catch(_){}
+    A('los tokens no están en localStorage ni en el respaldo exportado', [_cl.at,_cl.rt,pw].every(t=>!!t&&exp.indexOf(t)<0&&ls.indexOf(t)<0));
+    db.activeWork=null; keep(A1);
+    // teléfono nuevo + nube con datos → adopta, y su semilla no sube
+    const B=dev(seed()); use(B); await authSignIn(em,pw); cloudLink();
+    A('teléfono nuevo + nube con datos → adopta', (await cloudSync('t',{ui:true}))==='adopt'&&db.profile.username==='ana'&&db.sessions.length===3);
+    A('…y su semilla no sube', F.rows[uA].rev===1&&cloudBaseOk()&&!cloudDirty());
+    A('…y el atajo de este teléfono se queda el suyo', !!db.health&&!!db.health.shortcut);
+    { const s0=JSON.stringify(cloudSigs(db)); H().shortcut.wait=Date.now(); A('correr el atajo aquí no cuenta como cambio para la nube', JSON.stringify(cloudSigs(db))===s0&&!cloudDirty()); } keep(B);
+    // local más nueva → sube · nube más nueva sin cambios locales → se adopta · con sesión viva espera
+    use(A1); db.sessions.push(S('s4','2026-09-07')); db.settings.restSec=120;
+    A('local más nueva → sube', cloudDirty()&&(await cloudSync('t'))==='ok'&&F.rows[uA].rev===2&&!cloudDirty()); keep(A1);
+    A('la versión anterior queda en el historial de la nube', Object.keys(F.hist[uA]||{}).length===1);
+    use(B); db.activeWork={id:'w2',date:'2026-09-30',exercises:[]};
+    A('con una sesión viva no se reemplaza nada: espera', (await cloudSync('t'))==='wait'&&db.sessions.length===3); db.activeWork=null;
+    A('nube más nueva y sin cambios aquí → se adopta', (await cloudSync('t'))==='adopt'&&db.sessions.length===4&&db.settings.restSec===120); keep(B);
+    // las dos cambiaron → se une y se sube
+    use(A1); db.sessions.push(S('s5','2026-09-09')); db.settings.restSec=150; keep(A1);
+    use(B); db.sessions.push(S('s6','2026-09-10')); db.meals['2026-09-10']=[{id:'m9',name:'arroz',kcal:200,tag:'lunch'}]; db.split.name='nuevo';
+    A('el otro teléfono sube primero', (await cloudSync('t'))==='ok'&&F.rows[uA].rev===3); keep(B);
+    use(A1); A('las dos cambiaron → se une y se sube', (await cloudSync('t'))==='merge'&&F.rows[uA].rev===4);
+    A('…sin perder nada de ningún lado', ['s1','s2','s3','s4','s5','s6'].every(id=>db.sessions.some(s=>s.id===id))&&(db.meals['2026-09-10']||[]).some(m=>m.id==='m9'));
+    A('…lo que cambió aquí se queda y lo que solo cambió allá se toma', db.settings.restSec===150&&db.split.name==='nuevo'); keep(A1);
+    use(B); A('el otro teléfono adopta la unión', (await cloudSync('t'))==='adopt'&&db.sessions.length===6&&db.settings.restSec===150); keep(B);
+    // una versión vieja se rechaza; si otra copia llega en medio, se reintenta
+    use(A1); const tk=await cloudToken(), old=await sbFetch('/rest/v1/rpc/state_push',{token:tk,body:{expected_rev:1,seq:1,data:'x',enc:'json',size:1,device:'t'}});
+    A('una versión vieja se rechaza y dice cuál es la vigente', old.ok===false&&old.conflict===true&&old.rev===4&&F.rows[uA].rev===4);
+    const big=await sbFetch('/rest/v1/rpc/state_push',{token:tk,body:{expected_rev:4,seq:1,data:'x'.repeat(CLOUD_MAX+1),enc:'json',size:1,device:'t'}});
+    A('una copia desmedida se rechaza', big.ok===false&&big.error==='too_big'&&F.rows[uA].rev===4);
+    db.sessions.push(S('s7','2026-09-11')); F.conflicts=0;
+    F.hook=async(srv,x)=>{ const row=srv.rows[x.id], d=JSON.parse(await cloudUnpack(row.data,row.enc)); d.sessions.push(S('s8','2026-09-12')); const q=await cloudPack(JSON.stringify(d)); row.data=q.data; row.enc=q.enc; row.rev++; };
+    A('otra copia llegó en medio: se rechaza una vez, se une y sube', (await cloudSync('t'))==='merge'&&F.conflicts===1&&F.rows[uA].rev===6&&['s7','s8'].every(id=>db.sessions.some(s=>s.id===id)));
+    // v352 · unir de 3 vías: cada clase de registro, borrar y corregir (los dos teléfonos cambian entre dos syncs)
+    keep(A1); use(B); A('B se pone al día', (await cloudSync('t'))==='adopt'); keep(B);
+    { const T0='2026-09-05', sw=d=>d.sessions.find(s=>s.id==='s1').exercises[0].sets[0];
+      use(A1); (db.adhoc=db.adhoc||{})[T0]=[{id:'ad1',name:'creatina'}]; db.mealMeta=Object.assign({},db.mealMeta,{[T0]:{breakfast:{time:'08:10'}}}); db.mamarre=[{id:'mmA',from:'2026-09-01',to:'2026-09-02'}]; db.settings.restSec=170;
+      db.meals[T0]=(db.meals[T0]||[]).filter(m=>m.id!=='m1'); A('A sube lo suyo (y borra una comida)', (await cloudSync('t'))==='ok'); keep(A1);
+      use(B); (db.adhoc=db.adhoc||{})['2026-09-06']=[{id:'ad2',name:'cafeína'}]; db.settings.progLayout='y'; (db.meals['2026-09-10']=db.meals['2026-09-10']||[]).push({id:'m10',name:'pan',kcal:80,tag:'lunch'}); sw(db).w='105';
+      A('B une de 3 vías', (await cloudSync('t'))==='merge');
+      A('…los extras de los dos', !!db.adhoc&&(db.adhoc[T0]||[]).some(x=>x.id==='ad1')&&(db.adhoc['2026-09-06']||[]).some(x=>x.id==='ad2'));
+      A('…la hora de comida, el periodo mamarre y el ajuste de A, con el de B', !!((db.mealMeta||{})[T0]||{}).breakfast&&db.mealMeta[T0].breakfast.time==='08:10'&&(db.mamarre||[]).some(p=>p.id==='mmA')&&db.settings.restSec===170&&db.settings.progLayout==='y');
+      A('…lo que A borró no revive; la corrección de B y su comida se quedan', !(db.meals[T0]||[]).some(m=>m.id==='m1')&&sw(db).w==='105'&&(db.meals['2026-09-10']||[]).some(m=>m.id==='m10')); keep(B);
+      use(A1); A('A toma la unión sin perder nada', (await cloudSync('t'))==='adopt'&&sw(db).w==='105'&&(db.adhoc[T0]||[]).length===1&&(db.adhoc['2026-09-06']||[]).length===1&&!(db.meals[T0]||[]).some(m=>m.id==='m1')&&db.settings.progLayout==='y'&&(db.mamarre||[]).length===1);
+      db.settings.restSec=180; keep(A1); use(B); db.settings.restSec=190; A('B sube', (await cloudSync('t'))==='ok'); keep(B);
+      use(A1); _clBaseMem=null; A('sin la base guardada no une a ciegas: pregunta', (await cloudSync('t',{ui:true}))==='ask'&&db.settings.restSec===180);
+      const sk=[], is0=idbSnap; idbSnap=k=>{ sk.push(k); return Promise.resolve(); };
+      try{ A('elegir este teléfono guarda antes la copia de la nube', (await cloudChoose('local'))==='ok'&&sk.indexOf('nube')>=0&&db.settings.restSec===180&&cloudBaseOk()); } finally{ idbSnap=is0; } }
+    { const b={sessions:[{date:'2026-09-01',x:1},{id:'s2',date:'2026-09-02'}],split:{days:[{id:'d1'},{id:'d2'},{id:'d3',n:0}]},meals:{'2026-09-01':[{id:'m1',kcal:100}]},rotIdx:3}, J=x=>JSON.parse(JSON.stringify(x));
+      const l=J(b), r=J(b); l.sessions.push({id:'sa',date:'2026-09-03'}); r.sessions.push({id:'sb',date:'2026-09-02'}); l.split.days.reverse(); r.split.days[2].n=1;
+      l.meals['2026-09-02']=[l.meals['2026-09-01'][0]]; l.meals['2026-09-01']=[]; r.meals['2026-09-01'][0].kcal=150; l.rotIdx=4; r.rotIdx=4; const m=cloudMerge(l,r,b).db;
+      A('unir: una lista con un registro sin id también se une registro por registro', ['sa','sb'].every(id=>m.sessions.some(s=>s.id===id))&&m.sessions.some(s=>!s.id&&s.x===1)&&m.sessions.length===4);
+      A('…las sesiones quedan por fecha', m.sessions.every((s,i,a)=>!i||String(a[i-1].date)<=String(s.date)));
+      A('…el orden que cambió un lado se queda aunque el otro edite', m.split.days.map(d=>d.id).join()==='d3,d2,d1'&&m.split.days[0].n===1);
+      A('…una comida movida de día en un lado y corregida en el otro queda una sola, en su día nuevo y corregida', !(m.meals['2026-09-01']||[]).some(x=>x.id==='m1')&&(m.meals['2026-09-02']||[]).filter(x=>x.id==='m1').length===1&&m.meals['2026-09-02'][0].kcal===150);
+      A('…dos sesiones nuevas avanzan la rotación dos veces', m.rotIdx===5);
+      const r2=J(b); r2.split.days.reverse(); const l2=J(b); l2.split.days[0].n=7; const m2=cloudMerge(l2,r2,b).db; A('…si solo el otro reordenó, queda su orden con lo de aquí', m2.split.days.map(d=>d.id).join()==='d3,d2,d1'&&m2.split.days[2].n===7); }
+    // v362 r2 · un derrumbe que llega por la unión (los dos lados cambiaron) también pregunta
+    { keep(A1); use(A1); for(let i=0;i<14;i++)db.sessions.push(S('sx'+i,'2026-09-'+String(13+i).padStart(2,'0'))); A('r2 · A sube 14 sesiones', (await cloudSync('t',{ui:true}))==='ok'); keep(A1);
+      use(B); A('r2 · B las toma', (await cloudSync('t',{ui:true}))==='adopt'); db.settings.restSec=200; A('r2 · B sube un cambio chico', (await cloudSync('t'))==='ok'); const rv=F.rows[uA].rev; keep(B);
+      use(A1); const nA=db.sessions.length; db.sessions=db.sessions.slice(0,2);
+      A('r2 · A perdió casi todas sus sesiones y B cambió algo: pregunta, no sube', (await cloudSync('t'))==='ask'&&F.rows[uA].rev===rv&&db.sessions.length===2&&_clHold===true);
+      A('r2 · …elegir la nube las devuelve', (await cloudChoose('cloud'))==='ok'&&db.sessions.length===nA); keep(A1);
+      const row=F.rows[uA], d=JSON.parse(await cloudUnpack(row.data,row.enc)); d.sessions=d.sessions.slice(0,2); const q=await cloudPack(JSON.stringify(d)); row.data=q.data; row.enc=q.enc; row.rev++;
+      use(A1); db.settings.restSec=210; A('r2 · la nube perdió casi todas y aquí cambió algo: pregunta, este teléfono no pierde nada', (await cloudSync('t'))==='ask'&&db.sessions.length===nA);
+      A('r2 · …elegir este teléfono lo sube entero', (await cloudChoose('local'))==='ok'&&db.sessions.length===nA&&JSON.parse(await cloudUnpack(F.rows[uA].data,F.rows[uA].enc)).sessions.length===nA); keep(A1); }
+    // una nube vacía nunca vacía un teléfono
+    const mA=dbMass(db); delete F.rows[uA];
+    A('una nube vacía no vacía el teléfono: lo recibe', (await cloudSync('t'))==='ok'&&dbMass(db)===mA&&db.profile.username==='ana'&&F.rows[uA].rev===1);
+    [true,false].forEach(sd=>[true,false].forEach(bs=>[true,false].forEach(dr=>[true,false].forEach(fo=>{ const d=cloudDecision({localSeed:sd,foreign:fo,cloudHas:false,base:bs,dirty:dr,cloudNew:false,lmass:50,cmass:0,bmass:80,same:false}); A('sin datos en la nube nunca se adopta ni se une', d==='push'||d==='none'||d==='ask'); }))));
+    A('una semilla nunca sube; con datos en la nube, adopta', cloudDecision({localSeed:true,cloudHas:false})==='none'&&cloudDecision({localSeed:true,cloudHas:true})==='adopt');
+    A('ante un derrumbe de registros, pregunta', cloudDecision({cloudHas:true,base:true,cloudNew:true,dirty:false,lmass:100,cmass:10})==='ask'&&cloudDecision({cloudHas:true,base:true,cloudNew:false,dirty:true,lmass:5,bmass:100})==='ask');
+    // el token vencido se renueva en un solo vuelo
+    F.expire(); F.refreshes=0; const two=await Promise.all([cloudRpc('state_pull',{have_rev:-1}),cloudRpc('state_pull',{have_rev:-1})]);
+    A('token vencido: una sola renovación para dos llamadas', F.refreshes===1&&two.every(x=>x&&x.found)); keep(A1);
+    // cuenta nueva con el teléfono vacío: nada sube
+    const C=dev(seed()); use(C); await authSignUp('nueva@example.test',pw); await authVerify('nueva@example.test',F.code('nueva@example.test'),'email'); cloudLink();
+    A('teléfono vacío + nube vacía → no sube nada', (await cloudSync('t',{ui:true}))==='ok'&&!F.rows[_cl.uid]&&!db.profile.username);
+    // datos aquí y en la nube sin historia común → pregunta
+    const D=dev(mk('otro',['x1'])); use(D); await authSignIn(em,pw); cloudLink();
+    A('datos en los dos lados sin historia común → pregunta y no toca nada', (await cloudSync('t',{ui:true}))==='ask'&&_clHold===true&&db.profile.username==='otro'&&F.rows[uA].rev===1);
+    A('mientras no elijas, no sincroniza sola', (await cloudSync('t'))==='hold');
+    A('elegir la nube la adopta', (await cloudChoose('cloud'))==='ok'&&db.profile.username==='ana'&&!_clHold&&cloudBaseOk());
+    const E2=dev(mk('otro',['x1'])); use(E2); await authSignIn(em,pw); cloudLink(); await cloudSync('t',{ui:true});
+    A('elegir este teléfono lo sube', (await cloudChoose('local'))==='ok'&&F.rows[uA].rev===2&&db.profile.username==='otro'&&cloudBaseOk());
+    // datos de otra cuenta nunca se suben solos
+    const G=dev(mk('zoe',['z1'])); G.db.account={email:'zoe@example.test',uid:'fake-otra',rev:3,at:1}; use(G);
+    await authSignUp('g@example.test',pw); await authVerify('g@example.test',F.code('g@example.test'),'email'); cloudLink();
+    A('datos de otra cuenta nunca se suben solos', (await cloudSync('t',{ui:true}))==='ask'&&!F.rows[_cl.uid]&&db.account.uid==='fake-otra');
+    // salir no borra · recuperar contraseña · volver a entrar conserva el enlace
+    use(A1); await cloudSync('t',{ui:true}); await cloudChoose('cloud'); const nS=db.sessions.length, mS=dbMass(db);
+    await authSignOut(); A('salir no borra nada y se lleva los tokens', !cloudIn()&&db.sessions.length===nS&&dbMass(db)===mS&&!!db.account&&!!_clMem&&!_clMem.at&&!_clMem.rt);
+    await authRecover(em); A('un código de recuperar equivocado se rechaza', !!(await fails(()=>authVerify(em,F.code(em)==='000000'?'111111':'000000','recovery')))&&!cloudIn());
+    await authVerify(em,F.code(em),'recovery'); await authSetPassword(pw2); await authSignOut();
+    A('la contraseña vieja ya no entra', ((await fails(()=>authSignIn(em,pw)))||{}).code==='invalid_credentials');
+    await authSignIn(em,pw2); A('la nueva sí, y este teléfono conserva su enlace con la nube', cloudIn()&&cloudBaseOk());
+    // "reset data" con la sesión abierta
+    const keepDb=db; db=seed(); A('reset con la sesión abierta: este teléfono sale de la cuenta', cloudResetCheck()===true&&!cloudIn()&&_clMem===null); db=keepDb;
+    { const Z=dev(seed()); use(Z); await authSignIn(em,pw2); cloudLink(); const pr=cloudSync('t',{ui:true}); cloudForget(); const rr=await pr;
+      A('borrar todo o salir a media sincronización: la nube no regresa al teléfono', (rr==='skip'||rr==='err')&&!(db.profile&&db.profile.username)&&!cloudIn()); db=keepDb; }
+    // borrar mi cuenta
+    await authSignIn(em,pw2); const mD=dbMass(db); await cloudDelete();
+    A('borrar la cuenta borra la nube y el acceso, no el teléfono', !F.rows[uA]&&!F.hist[uA]&&!F.byId(uA)&&!cloudIn()&&!db.account&&dbMass(db)===mD&&db.profile.username==='otro');
+    A('…y ya no se puede entrar', !!(await fails(()=>authSignIn(em,pw2))));
+    console.log('cuentas self-check OK'); return true;
+  }catch(e){ console.error(e); return String((e&&e.message)||e); }
+  finally{ db=real; _cl=R.cl; _clMem=R.mem; _clBaseMem=R.base; _clFake=R.fake; _clForce=R.force; _clHold=R.hold; _clErr=R.err; _clNote=R.note; _clAskO=R.ask; _clSess=R.sess; _clTry=R.tr; _lastClosed=R.lc; _clBusy=null; _clRefP=null;
+    try{ if(rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,rawLive); }catch(_){}
+    _sbx=R.sbx; bumpIdx(); let after=null; try{ after=localStorage.getItem(LS_KEY); }catch(_){} if(after!==rawMain)console.error(new Error('SELFCHECK cuentas: una base de juguete llegó a tu disco')); } }
 
 // ---------- helpers ----------
 const dayCount=()=>db.split.days.length;
@@ -5888,7 +6391,7 @@ function _onbSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK al
     A('quien ya tiene perfil nunca ve el alta', (()=>{ const x=migrate({profile:{username:'dani'},sessions:[]}); return !!(x.onb&&x.onb.done); })());
     db=migrate({_idfix:true,_fsfix:true,profile:{},sessions:[],settings:{}}); state.screen='landing';
     const d=onbD(); db.onb.step=1;
-    A('sin nombre no avanza', onbCheck('name',d)==='pon tu nombre');
+    A('sin nombre no avanza', onbCheck('name',d)==='escribe tu nombre');
     Object.assign(d,{name:'dani',bwu:'lbs',w:'150',h:'175',age:'24'});
     A('el peso se revisa en tu unidad', onbCheck('body',Object.assign({},d,{w:'20'}))!==''&&onbCheck('body',d)===''&&onbCheck('body',Object.assign({},d,{w:'150',bwu:'kg'}))==='');
     A('150 lbs = 68.04 kg', Math.abs(onbProfile(d).wKg-68.04)<0.01);
@@ -10191,10 +10694,11 @@ function openMealSummary(tag){
 }
 // ---------- render: landing (log in / create account) ----------
 function renderLanding(){
+  if(cloudMode()!=='off')return cloudLandingHTML();   // v352 · con la nube encendida la portada pide la cuenta primero
   return `<div class="u-pt96 u-tc">
     <div class="u-hero u-w8">gym<span class="u-o40">//</span>TRK<span class="cur"></span></div>
     <div class="u-data u-o50 u-mt10 u-mb8 u-mx0 u-lsui">gym · comida · hábitos</div>
-    <div class="submeta" style="margin:0 auto 48px;max-width:280px">tu tracker simple, todo en uno. registra tu entreno y tu comida en segundos.</div>
+    <div class="submeta" style="margin:0 auto 48px;max-width:280px">registra tu entreno y tu comida en segundos.</div>
     <button class="start" data-act="lcreate">empezar →</button>
     <div class="submeta u-mt32">¿ya usabas la app en otro dispositivo?<br/><a data-act="llogin" class="u-o60 u-tap u-ul">restaurar respaldo</a></div>
     ${(!NATIVE_APP&&isIOS()&&!isStandalone())?'<div class="submeta u-mt16">¿ya la usas desde el ícono de tu pantalla de inicio? ábrela desde ahí · Safari guarda sus datos aparte</div>':''}
@@ -10204,7 +10708,7 @@ function renderLogin(){
   return `<div class="u-pt32">
     <div class="u-w8 u-disp u-lsnum">gym<span class="u-o50">//</span>TRK</div>
     <div class="u-data u-o50 u-mt6 u-mb16 u-mx0">restaurar respaldo</div>
-    <div class="submeta u-mb10">esto es solo si guardaste un respaldo de tu cuenta en otro dispositivo. si no, regresa y dale <b class="u-o60">empezar</b>.</div>
+    <div class="submeta u-mb10">carga el archivo de respaldo que exportaste en otro teléfono.</div>
     <button class="b u-w100 u-mb10" data-act="loginfile">elegir archivo de respaldo</button>
     <div class="submeta u-mb6">o pega el texto del respaldo:</div>
     <textarea id="li_txt" class="ta lg" placeholder="{ ... }"></textarea>
@@ -10214,9 +10718,115 @@ function renderLogin(){
   </div>`;
 }
 
+// ---------- v352 · cuenta: portada, hojas (crear · código · entrar · recuperar) y //ACCOUNT ----------
+// Solo existen con la nube encendida (cloudMode() ≠ 'off'). El código llega por correo y se teclea aquí: en una PWA de iOS
+// un enlace abriría Safari, que guarda sus datos aparte. La contraseña nunca se guarda: vive en la casilla hasta enviarla.
+// v352 · en la app instalada la privacidad se abre ahí mismo: con target=_blank iOS la abre en Safari, que guarda sus datos aparte
+function cloudPrivTgt(){ let st=false; try{ st=!!NATIVE_APP||isStandalone(); }catch(_){} return st?'':' target="_blank" rel="noopener"'; }
+function cloudLandingHTML(){ const inn=cloudIn();
+  return `<div class="u-pt96 u-tc">
+    <div class="u-hero u-w8">gym<span class="u-o40">//</span>TRK<span class="cur"></span></div>
+    <div class="u-data u-o50 u-mt10 u-mb8 u-mx0 u-lsui">gym · comida · hábitos</div>
+    <div class="submeta acland">registra tu entreno y tu comida en segundos.</div>
+    <button class="start" data-act="ac_new">${inn?'▶ seguir':'▶ crear cuenta'}</button>
+    <div class="secondary acrow">${inn?'<button class="b" data-act="ac_out">salir</button>':'<button class="b" data-act="ac_in">entrar</button><button class="b" data-act="lcreate">usar sin cuenta</button>'}<button class="b" data-act="llogin">restaurar respaldo</button></div>
+    ${inn?`<div class="submeta">${escTxt(_cl.email)}</div>`:''}
+    ${(!NATIVE_APP&&isIOS()&&!isStandalone())?'<div class="submeta u-mt16">¿ya la usas desde el ícono de tu pantalla de inicio? ábrela desde ahí · Safari guarda sus datos aparte</div>':''}
+  </div>`; }
+function accountSecHTML(){ if(cloudMode()==='off')return ''; const inn=cloudIn(), a=cloudAcct();
+  const priv='<a class="b" href="privacy.html"'+cloudPrivTgt()+'>privacidad</a>';
+  let s=`<hr class="rule"/><div class="section"><div class="h"><span class="s">//</span>ACCOUNT</div>${cloudMode()==='fake'?'<div class="meta">demo</div>':''}</div>`;
+  if(inn)s+=`<div class="line"><span class="k">correo</span><span class="dots"></span><span class="v acem">${escTxt(_cl.email)}</span></div>`
+    +`<div class="line"><span class="k">nube</span><span class="dots"></span><span class="v" id="ac_st">${escTxt(cloudStatusTxt())}</span></div>`
+    +`<div class="cta"><div class="secondary"><button class="b" data-act="ac_sync">sincronizar</button><button class="b" data-act="ac_out">salir</button><button class="b" data-act="ac_del">borrar mi cuenta</button>${priv}</div></div>`;
+  else s+=`<div class="submeta u-mb8">${a&&a.email?'saliste · '+escTxt(a.email):'sin cuenta · tus datos están solo en este teléfono'}</div>`
+    +(a&&a.email?`<div class="cta"><button class="start" data-act="ac_in">▶ entrar</button><div class="secondary"><button class="b" data-act="ac_new">crear cuenta</button>${priv}</div></div>`   // v362 · ya tuvo cuenta: el principal es entrar
+      :`<div class="cta"><button class="start" data-act="ac_new">▶ crear cuenta</button><div class="secondary"><button class="b" data-act="ac_in">entrar</button>${priv}</div></div>`);
+  return s; }
+// ---- la hoja de cuenta: una vista a la vez. _acS = {v, email, kind:'signup'|'recovery', t:último envío, busy, ok:código ya validado} ----
+let _acS={}, _acT=null, _acPw='', _acRep=true;
+// v362 · ¿este correo ya tenía un alta sin confirmar? (Supabase se queda la contraseña del PRIMER intento). Un alta nueva trae
+// created_at ≈ confirmation_sent_at; si falta alguno, se asume que sí (y se pone la contraseña, como antes).
+function acctRepeat(r){ const a=Date.parse((r&&r.created_at)||''), b=Date.parse((r&&r.confirmation_sent_at)||''); return !(a>0&&b>0&&Math.abs(b-a)<60000); }   // v352 · _acPw: la contraseña de este intento, solo en memoria hasta confirmar el código
+function acctField(id,label,type,ac,o){ o=o||{}; return `<label class="obr"><span class="obk">${label}</span><span class="obv"><input class="obi" id="${id}" type="${type}" autocomplete="${ac}" autocapitalize="off" autocorrect="off" spellcheck="false"${o.im?` inputmode="${o.im}"`:''}${o.max?` maxlength="${o.max}"`:''} enterkeyhint="${o.ek||'next'}" placeholder="${escTxt(o.ph||'')}" value="${escTxt(o.v||'')}"/></span></label>`; }   /* v362 · AC-COPY · la fila del alta */
+function acctBtns(act,txt,more){ return `<div id="ac_msg" class="acmsg" role="alert"></div><div class="sheetbtns"><button class="ok" data-act="${act}">${txt}</button>${more||''}</div>`; }
+function acctMsg(t){ const m=document.getElementById('ac_msg'); if(m)m.textContent=t||''; else if(t)toast(t,/^⚠/.test(t)?'err':''); }
+function openAcct(v,o){ if(v!=='code')_acPw=''; _acS=Object.assign({email:''},_acS,o||{},{v:v,busy:false}); const em=_acS.email||(cloudAcct()||{}).email||'', X=(a,t)=>`<button type="button" class="cancel" data-act="${a}">${t}</button>`;
+  const resend=`<button type="button" class="cancel" id="ac_rs" data-act="ac_resend">reenviar</button>`, sent=`<div class="submeta gap">te mandamos un código de 6 dígitos a ${escTxt(em)}${cloudMode()==='fake'?' · demo: '+escTxt(cloudFake().code(em)):''}</div>`;
+  let h='';
+  if(v==='new')h=`<h3>crear cuenta</h3>`+acctField('ac_email','correo','email','username',{v:em,im:'email',ph:'tu@correo.com'})+acctField('ac_pw','contraseña','password','new-password',{ek:'go',ph:'mínimo 8 caracteres'})
+    +`<div class="acchk"><button type="button" class="acok" id="ac_ok" data-act="ac_okt" role="checkbox" aria-checked="false"><span class="g">○</span>acepto el aviso de privacidad</button><a class="vb" href="privacy.html"${cloudPrivTgt()}>leer</a></div>`
+    +acctBtns('ac_donew','crear cuenta',X('closemodal','cancelar'));
+  else if(v==='in')h=`<h3>entrar</h3>`+acctField('ac_email','correo','email','username',{v:em,im:'email',ph:'tu@correo.com'})+acctField('ac_pw','contraseña','password','current-password',{ek:'go'})
+    +`<div class="u-tr"><button type="button" class="b" data-act="ac_forgot">olvidé mi contraseña</button></div>`+acctBtns('ac_doin','entrar',X('closemodal','cancelar'));
+  else if(v==='code')h=`<h3>revisa tu correo</h3>`+sent+acctField('ac_code','código','text','one-time-code',{im:'numeric',max:6,ek:'done',ph:'6 dígitos'})
+    +`<div id="ac_msg" class="acmsg" role="alert"></div><div class="sheetbtns">${resend}${X('ac_back','cambiar correo')}</div>`;
+  else if(v==='forgot')h=`<h3>recuperar contraseña</h3><div class="submeta gap">te enviaremos un código para crear una nueva</div>`+acctField('ac_email','correo','email','username',{v:em,im:'email',ek:'go',ph:'tu@correo.com'})+acctBtns('ac_dorecover','enviar código',X('ac_in','‹ entrar'));
+  else h=`<h3>contraseña nueva</h3>`+sent+acctField('ac_code','código','text','one-time-code',{im:'numeric',max:6,ph:'6 dígitos'})+acctField('ac_pw','nueva','password','new-password',{ek:'go',ph:'mínimo 8 caracteres'})+'<div class="u-tr">'+resend.replace('class="cancel"','class="b"')+'</div>'+acctBtns('ac_doreset','guardar',X('ac_back','cambiar correo'));   // v352 · se puede salir (antes quedabas atrapado)
+  openModal(`<form id="ac_form" novalidate>${h}</form>`,(v==='code'||v==='reset')?'nodismiss':'');
+  const f=document.getElementById('ac_form'); if(f)f.addEventListener('submit',e=>e.preventDefault());
+  const c=document.getElementById('ac_code'); if(c)c.addEventListener('input',()=>{ const d=c.value.replace(/\D/g,'').slice(0,6); if(d!==c.value)c.value=d; if(d.length===6&&_acS.v==='code')acctAct('ac_docode'); });
+  clearInterval(_acT); if(document.getElementById('ac_rs')){ acctTick(); _acT=setInterval(acctTick,1000); }
+  const first=f&&[...f.querySelectorAll('input')].find(i=>!i.value); if(first)try{ first.focus({preventScroll:true}); }catch(_){} }
+// [reenviar · 42s]: el correo incluido de Supabase no deja pedir otro código antes de un minuto
+function acctTick(){ const b=document.getElementById('ac_rs'); if(!b){ clearInterval(_acT); _acT=null; return; } const left=Math.max(0,60-Math.floor((Date.now()-(_acS.t||0))/1000));
+  b.textContent=left?'reenviar · '+left+'s':'reenviar'; b.classList.toggle('u-o40',left>0); b.setAttribute('aria-disabled',left>0?'true':'false'); }
+function acctEmail(){ const e=val('ac_email').toLowerCase(); if(!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(e))throw cloudErr('v','escribe un correo válido'); _acS.email=e; return e; }
+function acctPw(){ const p=(document.getElementById('ac_pw')||{}).value||''; if(p.length<8)throw cloudErr('v','la contraseña necesita mínimo 8 caracteres'); return p; }
+function acctCode(){ const c=val('ac_code').replace(/\D/g,''); if(c.length!==6)throw cloudErr('v','el código tiene 6 dígitos'); return c; }
+// un paso con red: una sola vez a la vez, con "▖ un momento… 3s" en la hoja y el motivo si falla
+function acctRun(fn){ if(_acS.busy)return; _acS.busy=true; const m=document.getElementById('ac_msg'); if(m)m.innerHTML=trkSpinHTML('un momento');
+  Promise.resolve().then(fn).then(()=>{ _acS.busy=false; },e=>{ _acS.busy=false; acctMsg('⚠ '+cloudErrTxt(e)); }); }
+// ya hay sesión: la base queda marcada con su cuenta, se sincroniza y, si el teléfono está vacío, sigue el alta
+async function acctDone(k){ closeModal(); _acS={}; cloudLink(); cloudSave(); const tk=toastTask('sincronizando'), r=await cloudSync('login',{ui:true}), has=!!(db.profile&&db.profile.username);
+  if(r==='err')tk.fail('⚠ '+_clErr); else tk.done(r==='adopt'?'✓ datos de tu nube':r==='ask'?'entraste · elige qué copia usar':k!=='new'?'✓ entraste':has?'✓ cuenta lista · datos en tu nube':'✓ cuenta lista');
+  if(has||r==='ask'){ reRender(); return; } acctOnb(); }
+// v362 · AC-INV · quien ya usa la app sin cuenta: al abrirla se le ofrece guardar sus datos en una cuenta (correo + contraseña).
+// Nunca obliga: sin cuenta todo sigue igual. Hasta 3 veces, con 7 días entre una y otra; después solo queda //ACCOUNT en ajustes.
+// No sale a quien ya ligó una cuenta (aunque haya salido), sin datos, con la nube apagada ni con una sesión de gym abierta.
+const AC_INV={max:3,gapD:7};
+function acctInviteDue(now){ now=now||Date.now(); if(cloudMode()==='off'||cloudIn()||cloudAcct())return false; if(!(db&&db.profile&&db.profile.username))return false;
+  const s=(db.settings&&db.settings.acInv)||{}; if((s.n||0)>=AC_INV.max)return false; return !s.t||now-s.t>=AC_INV.gapD*864e5; }
+function acctInviteMark(now){ db.settings=db.settings||{}; const s=db.settings.acInv||{}; db.settings.acInv={n:(s.n||0)+1,t:now||Date.now()}; }
+// sale pasados 4.6 s del arranque (antes, una versión nueva todavía puede recargar la app sola) y cuenta como vista solo cuando se ve
+function acctInviteBusy(){ return !!(db.activeWork||state.screen==='onboard'||state.screen==='workout'); }
+function acctInviteMaybe(){ if(_sbx||!acctInviteDue()||acctInviteBusy())return; let now=0; try{ now=performance.now(); }catch(_){}
+  let tries=0; const fire=()=>{ if(!acctInviteDue()||acctInviteBusy())return;
+    { const a=document.activeElement; if(document.getElementById('modal')||document.getElementById('asklayer')||document.getElementById('bootov')||(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))){ if(++tries<40)setTimeout(fire,2000); return; } }   // nunca encima de una hoja abierta o mientras escribes: espera a que te desocupes
+    bootAsk({title:'guarda tus datos',detail:'con tu correo y una contraseña, tus datos no se pierden si cambias de teléfono y entras desde otro.\nsin cuenta, todo sigue igual.',ok:'crear cuenta',cancel:'ahora no',alt:{label:'entrar',fn:()=>openAcct('in')}},()=>openAcct('new'));
+    let k=0; const iv=setInterval(()=>{ const L=document.getElementById('asklayer'); if(L&&/guarda tus datos/.test(L.textContent)){ clearInterval(iv); acctInviteMark(); save(); } else if(++k>150)clearInterval(iv); },200);
+  }; setTimeout(fire,Math.max(0,4600-now)); }
+function acctOnb(){ onbD(); db.onb.done=false; if(!(db.onb.step>0))db.onb.step=1; state.screen='onboard'; cloudSave(); render(); try{ history.pushState({onb:db.onb.step},''); }catch(_){} }
+function acctAct(a,el){
+  if(a==='ac_new'){ if(cloudIn()){ if(db.profile&&db.profile.username)reRender(); else acctOnb(); } else openAcct('new'); }
+  else if(a==='ac_okt'){ const on=el.getAttribute('aria-checked')!=='true'; el.setAttribute('aria-checked',String(on)); const g=el.querySelector('.g'); if(g)g.textContent=on?'✓':'○'; if(on)acctMsg(''); }   // v362 · aceptar el aviso: una línea que se marca
+  else if(a==='ac_in'){ openAcct('in',{email:val('ac_email')||_acS.email||''}); }
+  else if(a==='ac_forgot'){ openAcct('forgot',{email:val('ac_email')||_acS.email||''}); }
+  else if(a==='ac_back'){ openAcct(_acS.kind==='recovery'?'forgot':'new'); }
+  else if(a==='ac_donew'){ acctRun(async()=>{ const em=acctEmail(), pw=acctPw(), ok=document.getElementById('ac_ok');
+      if(!ok||ok.getAttribute('aria-checked')!=='true')throw cloudErr('v','acepta el aviso de privacidad para seguir');
+      const r=await authSignUp(em,pw)||{};
+      if(r.access_token){ await cloudTake(r,em); return acctDone('new'); }                                  // proyecto sin confirmación por correo
+      if(Array.isArray(r.identities)&&!r.identities.length){ openAcct('in',{email:em}); acctMsg('⚠ ese correo ya tiene cuenta · entra'); return; }
+      _acPw=pw; _acRep=acctRepeat(r); openAcct('code',{email:em,kind:'signup',t:Date.now(),ok:false}); }); }   // v352 · Supabase se queda la contraseña del PRIMER intento sin confirmar: al confirmar se pone la de este
+  else if(a==='ac_docode'){ acctRun(async()=>{ await authVerify(_acS.email,acctCode(),'email'); const p=_acPw; _acPw=''; if(p&&_acRep){ try{ await authSetPassword(p); }catch(_){} } await acctDone('new'); }); }
+  else if(a==='ac_doin'){ acctRun(async()=>{ const em=acctEmail(), pw=acctPw();
+      try{ await authSignIn(em,pw); }catch(e){ if(e.code!=='email_not_confirmed')throw e; try{ await authResend(em); }catch(_){} openAcct('code',{email:em,kind:'signup',t:Date.now(),ok:false}); return; }
+      await acctDone('in'); }); }
+  else if(a==='ac_dorecover'){ acctRun(async()=>{ const em=acctEmail(); await authRecover(em); openAcct('reset',{email:em,kind:'recovery',t:Date.now(),ok:false}); }); }
+  else if(a==='ac_doreset'){ acctRun(async()=>{ const pw=acctPw(); if(!_acS.ok){ await authVerify(_acS.email,acctCode(),'recovery'); _acS.ok=true; }   // el código es de un solo uso: si la contraseña rebota, no se vuelve a pedir
+      await authSetPassword(pw); await acctDone('in'); }); }
+  else if(a==='ac_resend'){ if(Date.now()-(_acS.t||0)<60000||!_acS.email)return;
+      acctRun(async()=>{ await (_acS.kind==='recovery'?authRecover(_acS.email):authResend(_acS.email)); _acS.t=Date.now(); acctTick(); acctMsg('✓ código reenviado'); if(cloudMode()==='fake')openAcct(_acS.v); }); }
+  else if(a==='ac_sync'){ const tk=toastTask('sincronizando'); cloudSync('manual',{ui:true}).then(r=>{ if(r==='err')tk.fail('⚠ '+_clErr); else if(r==='off')tk.fail('⚠ entra a tu cuenta'); else tk.done(r==='ask'?'elige qué copia usar':'✓ sincronizado'); }); }
+  else if(a==='ac_out'){ trkAsk({title:'salir de tu cuenta',detail:'tus datos se quedan en este teléfono',ok:'salir'},()=>{ const tk=toastTask('saliendo');
+      withTO(cloudSync('out',{only:'push'}),8000).catch(()=>{}).then(()=>authSignOut()).then(()=>{ tk.done('✓ saliste · tus datos siguen aquí'); cloudUi(); }); }); }
+  else if(a==='ac_del'){ holdConfirm({title:'borrar tu cuenta',detail:'se borran tu acceso y tu copia en la nube · no se puede deshacer\nlo que está en este teléfono se queda',verb:'borrar cuenta'},()=>{ const tk=toastTask('borrando');
+      cloudDelete().then(()=>{ tk.done('✓ cuenta borrada'); cloudUi(); },e=>tk.fail('⚠ '+cloudErrTxt(e))); }); } }
+
 // ---------- render: onboarding ----------
 // v268 · perfil en filas de terminal (.obr/.obk/.obi y las listas .oblist): v277 las reusa, un paso por pantalla.
-const OB_ACT=[['1.2','sedentario','oficina y carro · casi no caminas'],['1.375','ligero','caminas algo o entrenas 1-3×/sem'],['1.55','moderado','gym 4-5×/sem o trabajo de pie'],['1.725','alto','trabajo físico o 6-7×/sem']];
+const OB_ACT=[['1.2','sedentario','oficina y carro · caminas poco'],['1.375','ligero','caminas o entrenas 1–⁠3 días a la semana'],['1.55','moderado','entrenas 4–⁠5 días o trabajas de pie'],['1.725','alto','trabajo físico o entrenas 6–⁠7 días']];
 const OB_GOAL=[['cut','déficit','perder grasa · ~20 % bajo tu mantenimiento'],['maintain','mantener','recomposición · comes tu mantenimiento'],['bulk','volumen','ganar masa · ~10 % sobre tu mantenimiento']];
 // ---- v277 · alta paso a paso ----
 // El dueño: "pantalla por pantalla: usuario → biométricos → objetivo → split (ahora o después) → dieta (ahora o después) →
@@ -10224,16 +10834,16 @@ const OB_GOAL=[['cut','déficit','perder grasa · ~20 % bajo tu mantenimiento'],
 // se cierra, vuelve al mismo paso) y nada del perfil se escribe hasta [▶ ir al gym]. "Cómo entrenas" (v273) va antes de la
 // rutina. La cuenta (correo y código) entra con v279 y el plan de pago con v280.
 const ONB_STEPS=[
-  {k:'name', q:'¿cómo te llamamos?', why:'tu nombre va arriba; el gym, para separar tus máquinas'},
-  {k:'units', q:'¿en qué pesas?', why:'va antes del cuerpo: el peso que escribas sale en tu unidad · se cambia en ajustes'},
-  {k:'body', q:'tu cuerpo', why:'para calcular tu mantenimiento · se queda en tu teléfono'},
-  {k:'act', q:'¿qué tan activo eres?', why:'tu día normal, sin contar lo que vas a registrar aquí'},
-  {k:'goal', q:'tu objetivo', why:'las kcal salen de tu mantenimiento · se cambia cuando quieras'},
-  {k:'train', q:'¿cómo entrenas?', why:'para saber qué día te toca y cuándo descansas', opt:1},
-  {k:'split', q:'tu rutina', why:'una base para empezar · la editas después', opt:1},
-  {k:'goals', q:'tus metas del día', why:'calculadas con lo anterior · cambia el número que quieras', opt:1},
-  {k:'health', q:'conecta Salud', why:'pasos, sueño, peso y más, sin escribirlos', opt:1},
-  {k:'ready', q:'listo', why:'esto quedó · todo se cambia después'}];
+  {k:'name', q:'nombre y gym', why:'cada gym guarda sus propias máquinas · el gym es opcional'},   /* v362 · AC-COPY */
+  {k:'units', q:'unidades', why:'para tu peso y para las pesas del gym · se cambian en ajustes'},
+  {k:'body', q:'tus datos', why:'para calcular tus calorías de mantenimiento'},
+  {k:'act', q:'actividad diaria', why:'con tus entrenos'},
+  {k:'goal', q:'objetivo', why:'define tus calorías · lo cambias cuando quieras'},
+  {k:'train', q:'días de entreno', why:'para saber qué día toca y cuándo descansas', opt:1},
+  {k:'split', q:'rutina', why:'elige una base · la editas después', opt:1},
+  {k:'goals', q:'metas diarias', why:'calculadas con tus datos · ajusta las que quieras', opt:1},
+  {k:'health', q:'datos de salud', why:'pasos, sueño y peso sin escribirlos', opt:1},
+  {k:'ready', q:'listo', why:'todo se puede cambiar después'}];
 function onbDefaults(){ return {name:'',gym:'',bwu:'kg',unit:'lbs',sex:'M',age:'',h:'',w:'',act:'1.375',goal:'maintain',mode:'daily',on:3,off:1,blocked:[],metric:'rir',tpl:'',goals:null,skip:[]}; }
 function onbD(){ db.onb=db.onb||{step:1,done:false}; db.onb.d=Object.assign(onbDefaults(),db.onb.d||{}); return db.onb.d; }
 function onbNum(v){ const x=parseFloat(String(v==null?'':v).replace(',','.')); return isFinite(x)&&x>0?x:null; }
@@ -10242,7 +10852,7 @@ function onbProfile(d){ const w=onbNum(d.w), k0=w?(d.bwu==='lbs'?Math.round(w*LB
   return {sex:d.sex==='F'?'F':'M', age:age||25, heightCm:h||175, weightKg:wKg||70, activity:parseFloat(d.act)||1.375, goal:d.goal||'maintain', typed:!!(age&&wKg&&h), wKg}; }
 // lo que impide seguir (vacío = se puede): nombre obligatorio; el cuerpo, en rango y en tu unidad
 function onbCheck(k,d){ const n=v=>parseFloat(String(v==null?'':v).replace(',','.'));
-  if(k==='name'&&!String(d.name||'').trim())return 'pon tu nombre';
+  if(k==='name'&&!String(d.name||'').trim())return 'escribe tu nombre';
   if(k==='body'){ const a=n(d.age), h=n(d.h), w=n(d.w), lb=d.bwu==='lbs';
     if(String(d.age)!==''&&!(a>=13&&a<=99))return 'edad entre 13 y 99 años';
     if(String(d.h)!==''&&!(h>=120&&h<=230))return 'estatura en cm, entre 120 y 230';
@@ -10358,21 +10968,21 @@ function renderOnboard(){ const d=onbD(), N=ONB_STEPS.length, i=Math.max(1,Math.
   const on=(f,v)=>String(d[f])===String(v);
   const T=(f,opts)=>`<div class="toggles">${opts.map(([v,l])=>`<button type="button" class="t${on(f,v)?' on':''}" data-act="onbpick" data-f="${f}" data-v="${v}" aria-pressed="${on(f,v)}">${l}</button>`).join('')}</div>`;
   const L=(f,opts)=>`<div class="toggles oblist" role="radiogroup">${opts.map(([v,l,x])=>`<button type="button" class="t${on(f,v)?' on':''}" data-act="onbpick" data-f="${f}" data-v="${v}" role="radio" aria-checked="${on(f,v)}"><span class="obn">${l}</span><span class="obd">${x}</span></button>`).join('')}</div>`;
-  const I=(f,k,o)=>`<label class="obr"><span class="obk">${k}</span><span class="obv"><input class="obi${o.n?' sm':''}" data-od="${f}" value="${escTxt(d[f]==null?'':String(d[f]))}" placeholder="${o.ph||''}"${o.n?' type="number" inputmode="'+(o.dec?'decimal':'numeric')+'"':' autocomplete="off" autocapitalize="off"'} enterkeyhint="${o.last?'done':'next'}"/>${o.u?`<span class="obu">${o.u}</span>`:''}</span></label>`;
+  const I=(f,k,o)=>`<label class="obr"><span class="obk">${k}</span><span class="obv"><input class="obi${o.n?' sm':''}" data-od="${f}" value="${escTxt(d[f]==null?'':String(d[f]))}" placeholder="${o.ph||''}"${o.n?' type="number" inputmode="'+(o.dec?'decimal':'numeric')+'"':' autocapitalize="off" autocorrect="off" spellcheck="false"'} autocomplete="trk-${f}" enterkeyhint="${o.last?'done':'next'}"/>${o.u?`<span class="obu">${o.u}</span>`:''}</span></label>`;
   const P=onbProfile(d); let body='';
-  if(S.k==='name') body=I('name','nombre',{ph:'dani'})+I('gym','gym',{ph:'opcional · ej. smart fit centro',last:1});
+  if(S.k==='name') body=I('name','nombre',{ph:'tu nombre'})+I('gym','gym',{ph:'opcional',last:1});
   else if(S.k==='units') body=`<div class="obr"><span class="obk">peso corporal</span>${T('bwu',[['kg','kg'],['lbs','lbs']])}</div><div class="obr"><span class="obk">pesas del gym</span>${T('unit',[['lbs','lbs'],['kg','kg']])}</div>`;
   else if(S.k==='body') body=`<div class="obr"><span class="obk">sexo</span>${T('sex',[['M','hombre'],['F','mujer']])}</div>`+I('age','edad',{n:1,ph:'25',u:'años'})+I('h','estatura',{n:1,ph:'175',u:'cm'})+I('w','peso',{n:1,dec:1,ph:d.bwu==='lbs'?'155':'70',u:d.bwu==='lbs'?'lbs':'kg',last:1})+`<div class="obprev" id="onb_prev">${onbPrevTxt(d)}</div>`;
   else if(S.k==='act') body=L('act',OB_ACT);
   else if(S.k==='goal') body=L('goal',OB_GOAL.map(([v,l])=>[v,l,Math.round(recalcGoals(Object.assign({},P,{goal:v})).kcal).toLocaleString('en-US')+' kcal · '+(v==='cut'?'~20 % abajo de tu mantenimiento':v==='bulk'?'~10 % arriba':'tu mantenimiento')]));
   else if(S.k==='train') body=`<div class="obr"><span class="obk">modo</span>${T('mode',[['daily','diario'],['weekly','días fijos'],['cycle','rotativo']])}</div>`
       +(d.mode==='cycle'?`<div class="obr obstack"><span class="obk">días on</span>${T('on',[[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']]).replace('class="toggles"','class="toggles dow"')}</div><div class="obr"><span class="obk">días off</span>${T('off',[[1,'1'],[2,'2'],[3,'3']])}</div>`:'')
-      +(d.mode==='weekly'?`<div class="submeta u-mb6">qué rutina toca cada día lo eliges en el editor de split</div>`:'')
+      +(d.mode==='weekly'?`<div class="submeta u-mb6">qué rutina toca cada día se elige en el editor de split</div>`:'')
       +`<div class="obr obstack"><span class="obk">días sin gym</span><div class="toggles dow">${DOW_ORDER.map(w=>{ const b=(d.blocked||[]).map(Number).indexOf(w)>=0; return `<button type="button" class="t${b?' on':''}" data-act="onbday" data-v="${w}" aria-pressed="${b}" aria-label="${DOW_LONG[w]}">${DOW_INI[w]}</button>`; }).join('')}</div></div>`
       +`<div class="obr"><span class="obk">intensidad</span>${T('metric',[['rir','RIR'],['rpe','RPE']])}</div><div class="submeta">${d.metric==='rpe'?'RPE: 10 = no salía otra · 9 = te quedaba 1':'RIR: cuántas repeticiones te quedaban · 0 = al fallo'}</div>`;
-  else if(S.k==='split'){ const tp=SPLIT_TEMPLATES(); body=L('tpl',tp.map(t=>[t.key,escTxt(t.name),escTxt(t.desc)]).concat([['blank','desde cero','un día vacío y armas el tuyo']]))+`<div class="submeta u-mt6">¿ya la tienes en tus notas? la pegas después en el editor de split</div>`; }
+  else if(S.k==='split'){ const tp=SPLIT_TEMPLATES(); body=L('tpl',tp.map(t=>[t.key,escTxt(t.name),escTxt(t.desc)]).concat([['blank','desde cero','un día vacío y armas el tuyo']]))+`<div class="submeta u-mt6">si ya la tienes escrita, la pegas después en el editor de split</div>`; }
   else if(S.k==='goals'){ const g=Object.assign({},recalcGoals(P),d.goals||{}); body=[['kcal','kcal','kcal'],['protein','proteína','g'],['carbs','carbos','g'],['fat','grasa','g'],['water','agua','L']].map(([f,l,u])=>`<label class="obr"><span class="obk">${l}</span><span class="obv"><input class="obi sm" type="number" inputmode="decimal" data-og="${f}" value="${g[f]!=null?g[f]:''}" enterkeyhint="next"/><span class="obu">${u}</span></span></label>`).join('')+`<div class="submeta u-mt6" id="onb_gk">${onbGoalsNote(d)}</div>`; }
-  else if(S.k==='health') body=`<div class="submeta u-mb8">${isIOS()?'aún no somos app nativa: el iPhone no deja que una página lea Salud. Un Atajo copia tus datos y aquí los pegas de un toque.':'en Android o en la computadora, por ahora se registran a mano; la app de tienda con Health Connect llega después.'}</div>`+(isIOS()?`<button type="button" class="b" data-act="onbshortcut">instalar atajo</button>`:'');
+  else if(S.k==='health') body=`<div class="submeta u-mb8">${isIOS()?'el iPhone no deja que una página web lea Salud: un atajo copia tus datos y aquí se pegan de un toque.':'en Android y en la computadora, por ahora, se registran a mano.'}</div>`+(isIOS()?`<button type="button" class="b" data-act="onbshortcut">instalar atajo</button>`:'');
   else body=onbSummaryHTML(d);
   const err=state._onbErr||'';
   return `<div class="ob onb">
@@ -10382,7 +10992,7 @@ function renderOnboard(){ const d=onbD(), N=ONB_STEPS.length, i=Math.max(1,Math.
     <div class="onbq">${escTxt(S.q)}</div><div class="submeta u-mb10">${escTxt(S.why)}</div>
     ${body}
     ${err?`<div class="onberr" role="alert"><span class="u-warn">⚠</span> ${escTxt(err)}</div>`:''}
-    <div class="onbfoot">${S.k==='ready'?'<button class="start" data-act="onbfinish">▶ ir al gym</button>':'<button class="start" data-act="onbnext">▶ seguir</button>'}${S.opt?'<button type="button" class="b" data-act="onblater">más adelante</button>':''}</div>
+    <div class="onbfoot">${S.k==='ready'?'<button class="start" data-act="onbfinish">▶ empezar</button>':'<button class="start" data-act="onbnext">▶ seguir</button>'}${S.opt?'<button type="button" class="b" data-act="onblater">más adelante</button>':''}</div>
   </div>`;
 }
 
@@ -13462,10 +14072,11 @@ function renderSettings(){
     +`<div class="line lnav u-tap" role="button" tabindex="0" data-act="tourreplay"><span class="k">guías de cada sección</span><span class="dots"></span><span class="v">${db.tour&&db.tour.skipped?'apagadas · prender':'repetir'} ›</span></div>`   // v278
     +(db.settings.suppHide?`<div class="line u-tap" data-act="supphideoff"><span class="k">supps en intake</span><span class="dots"></span><span class="v">ocultos · mostrar ›</span></div>`:'')
     +healthSettingsHTML()
+    +accountSecHTML()   // v352 · //ACCOUNT (nada si la nube está apagada)
     +`<hr class="rule"/><div class="cta">`
     +`<div class="secondary"><button class="b" data-act="storage">espacio</button><button class="b" data-act="export">export file</button><button class="b" data-act="exportmd">export .md</button><button class="b" data-act="import">import file</button></div>`
     +`<div class="secondary u-mt10"><button class="b" data-act="reset">reset data</button></div></div>`
-    +`<div class="submeta u-mt12">tus datos se guardan solos en este dispositivo (con respaldo automático). para no perderlos: <b class="u-o60">agrega la app a inicio</b> y ábrela seguido. si vas a cambiar de teléfono, usa export.</div>`;
+    +`<div class="submeta u-mt12">${cloudIn()?'tus datos se guardan en este teléfono y en tu nube.':'tus datos se guardan solos en este teléfono (con respaldo automático). para no perderlos: <b class="u-o60">agrega la app a inicio</b> y ábrela seguido. si vas a cambiar de teléfono, usa export.'}</div>`;   /* v352 */
 }
 
 // ---------- main render ----------
@@ -14312,7 +14923,8 @@ document.getElementById('app').addEventListener('click',e=>{
     toast('✓ saltado · sigue '+(nx?nx.name:'el siguiente'),'ok',{undo:()=>{ db.rotIdx=rot0; save(); render(); }}); }
   else if(a==='changegym'){ openGymPicker(); }
   else if(a==='pickgym'){ db.activeGym=el.dataset.g; if(db.activeWork)db.activeWork.gym=el.dataset.g; save(); closeModal(); reRender(); }
-  else if(a==='lcreate'){ onbD(); db.onb.done=false; if(!(db.onb.step>0))db.onb.step=1; state.screen='onboard'; save(); render(); try{ history.pushState({onb:db.onb.step},''); }catch(_){} }
+  else if(a==='lcreate'){ if(cloudMode()!=='off'){ db.settings=db.settings||{}; if(!db.settings.acInv)db.settings.acInv={n:1,t:Date.now()}; }   /* v362 · AC-INV: «sin cuenta» = la primera vez que dijo que no */
+    onbD(); db.onb.done=false; if(!(db.onb.step>0))db.onb.step=1; state.screen='onboard'; save(); render(); try{ history.pushState({onb:db.onb.step},''); }catch(_){} }
   else if(a==='onbnext'){ onbNext(); }
   else if(a==='onbback'){ onbBack(); }
   else if(a==='onblater'){ const d=onbD(), k=ONB_STEPS[(db.onb.step||1)-1].k; if((d.skip||[]).indexOf(k)<0)(d.skip=d.skip||[]).push(k); onbGo((db.onb.step||1)+1); }
@@ -14328,6 +14940,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='loginfile'){ doImport(); }
   else if(a==='dologin'){ try{ const d=JSON.parse(val('li_txt')); if(!d.split||!d.profile||!d.profile.username) throw 0; const _go16=()=>{ db=migrate(d); kcalFix354(db); save(); state.screen='home'; render(); }; return confirmReplace(d,_go16);}catch(e){ const m=document.getElementById('li_msg'); if(m)m.textContent='texto inválido · revisa que sea el backup completo'; } }
   else if(a==='optflip'){ const _was=el.classList.contains('on'); el.parentElement.querySelectorAll('.t').forEach(x=>x.classList.remove('on')); if(!_was)el.classList.add('on'); }   // C3 · una opción que se puede quitar: tocar la elegida la apaga
+  else if(a.indexOf('ac_')===0){ acctAct(a,el); }   // v352 · cuenta: crear, entrar, código, recuperar, sync, salir, borrar
   else if(a==='optpick'){ el.parentElement.querySelectorAll('.t').forEach(x=>{ x.classList.remove('on'); if(x.hasAttribute('aria-checked'))x.setAttribute('aria-checked','false'); }); el.classList.add('on'); if(el.hasAttribute('aria-checked'))el.setAttribute('aria-checked','true'); }
   // v277: el viejo onboardgo se fue; el alta paso a paso termina en onbFinish()
   else if(a==='changesplit'||a==='schedule'){ go('splitedit'); }
@@ -14744,7 +15357,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='stfree'){ const f=freeOrphanBackups(); closeModal(); if(f>0){ toast('✓ '+Math.round(f/1024)+' KB liberados'); if(!_saveErr||save())saveOK(); } else toast('no había nada que liberar'); }
   else if(a==='exportmd'){ exportMarkdown(db); }
   else if(a==='import'){ doImport(); }
-  else if(a==='reset'){ holdConfirm({title:'borrar TODOS los datos',detail:'sesiones, comidas, split y ajustes de este dispositivo · queda una copia interna por si fue un error',verb:'borrar todo'},()=>{ idbSnap('reset',db).then(()=>idbDel('latest')).catch(()=>{}); localStorage.removeItem(LS_KEY); try{localStorage.removeItem(LS_BACKUP);}catch(_){} try{ localStorage.removeItem(LS_LIVE); localStorage.removeItem(LS_LIVE_PENDING); localStorage.removeItem(LS_GROWTH); freeOrphanBackups(); }catch(_){} db=seed(); save(); go('home'); }); }
+  else if(a==='reset'){ holdConfirm({title:'borrar TODOS los datos',detail:'sesiones, comidas, split y ajustes de este dispositivo · queda una copia interna por si fue un error'+(cloudIn()?'\nsales de tu cuenta en este teléfono · tu copia en la nube se queda (para borrarla: borrar mi cuenta)':''),verb:'borrar todo'},()=>{ idbSnap('reset',db).then(()=>idbDel('latest')).catch(()=>{}); localStorage.removeItem(LS_KEY); try{localStorage.removeItem(LS_BACKUP);}catch(_){} try{ localStorage.removeItem(LS_LIVE); localStorage.removeItem(LS_LIVE_PENDING); localStorage.removeItem(LS_GROWTH); freeOrphanBackups(); }catch(_){} db=seed(); save(); go('home'); }); }
   else if(a==='restminus'){ const w=db.activeWork; if(w&&w.restEnd){ w.restEnd-=15000; save(); updateRestBar(); } }
   else if(a==='restplus'){ const w=db.activeWork; if(w&&w.restEnd){ w.restEnd+=15000; save(); updateRestBar(); } }
   else if(a==='restskip'){ const w=db.activeWork; if(w){ w.restEnd=null; _restFinT=0; save(); updateRestBar(); } }
@@ -18463,11 +19076,11 @@ function closeAsk(now){ const m=document.getElementById('asklayer'); if(!m)retur
   if(now||reducedMotion()){ m.remove(); return; } m.classList.remove('in'); m.classList.add('out'); setTimeout(()=>{ try{m.remove();}catch(_){} },200); }
 // TRKAsk: decisión reversible o de flujo. o = {title, detail, ok, cancel, danger, dismiss}
 // (v259: `dismiss` = qué pasa al tocar fuera; sin él, tocar fuera = cancelar, como siempre)
-function trkAsk(o,onOk,onCancel){ const danger=!!o.danger;
+function trkAsk(o,onOk,onCancel){ const danger=!!o.danger, alt=o.alt&&o.alt.label?'<button class="cancel" data-ask="alt">'+escTxt(o.alt.label)+'</button>':'';   /* v362 · o.alt = {label, fn}: una tercera salida */
   const btnOk=danger?'<button class="cancel danger" data-ask="ok">'+escTxt(o.ok||'borrar')+'</button>':'<button class="ok" data-ask="ok">'+escTxt(o.ok||'continuar')+'</button>';
-  const m=askLayer('<h3>'+escTxt(o.title||'¿seguro?')+'</h3>'+(o.detail?'<div class="submeta gap u-preline">'+escTxt(o.detail)+'</div>':'')+'<div class="sheetbtns">'+btnOk+'<button class="cancel" data-ask="no">'+escTxt(o.cancel||'cancelar')+'</button></div>',o.dismiss||onCancel);
+  const m=askLayer('<h3>'+escTxt(o.title||'¿seguro?')+'</h3>'+(o.detail?'<div class="submeta gap u-preline">'+escTxt(o.detail)+'</div>':'')+'<div class="sheetbtns">'+btnOk+alt+'<button class="cancel" data-ask="no">'+escTxt(o.cancel||'cancelar')+'</button></div>',o.dismiss||onCancel);
   m.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-ask]'); if(!b)return; ev.stopPropagation(); closeAsk();
-    if(b.dataset.ask==='ok'){ if(onOk)onOk(); } else if(onCancel)onCancel(); }); }
+    if(b.dataset.ask==='ok'){ if(onOk)onOk(); } else if(b.dataset.ask==='alt'){ if(o.alt.fn)o.alt.fn(); if(o.dismiss)o.dismiss(); } else if(onCancel)onCancel(); }); }
 // v259 · los avisos del arranque (sesión por recuperar, respaldo más completo) van en cola: uno tras otro. Antes el de
 // IndexedDB (900 ms) reemplazaba al del espejo (700 ms) sin avisar a nadie. Si otro aviso los tapa, la cola se vacía:
 // lo pendiente sigue guardado y se vuelve a ofrecer en el siguiente arranque.
@@ -19055,8 +19668,9 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // adopta sola solo si es seguro (base vacía, o el mismo almacén con una copia más reciente y sin derrumbe) y deja el
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
+try{ cloudBoot(); }catch(_){}   // v352 · cuentas y nube: apagada (CLOUD_CFG vacío) no hace nada
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
