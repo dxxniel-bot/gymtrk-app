@@ -310,15 +310,56 @@
 .chrt{display:block; overflow:hidden; white-space:nowrap;}
 button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; left:0; right:0; top:0; height:44px;}
 .chrail .chrs:nth-child(even){border-top-color:var(--o20);} .chrs.nm{color:var(--o70);} .chrs.mm{color:var(--o70);}
-  /* v352 · SP3 · //COVERAGE: músculo | veces | series | un día por columna (19 px; 24 desde 360; 27 desde 390: nueve días caben con adductor entero). Con más columnas de las que caben, la tabla se
-     desliza dentro de su recuadro y la columna del músculo se queda fija: la página nunca se desliza de lado. */
-  .cvwrap{overflow-x:auto; margin:var(--s2) 0 var(--s4);} .cvg{--cvw:19px; display:grid; grid-template-columns:minmax(max-content,1fr) 3.5ch 3.5ch repeat(var(--cvn,8),var(--cvw)); width:max-content; min-width:100%; font-size:var(--t-data); font-variant-numeric:tabular-nums;}
-  @media (max-width:359px){ .cvg>.cvd:not(.cvn){font-size:var(--t-label);} } @media (min-width:360px){ .cvg{--cvw:24px;} } @media (min-width:390px){ .cvg{--cvw:27px;} }
-  .cvg>div{display:flex; align-items:center; justify-content:center; min-height:26px; border-top:var(--bw-sep) solid var(--o10); color:var(--fg);} .cvg>.cvh,.cvg>.cvh0:first-child{border-top:0;}
-  .cvg>.cvm{display:block; line-height:26px; position:sticky; left:0; z-index:1; background:var(--bg); color:var(--o70); white-space:nowrap; padding-right:var(--s2);} .cvg>.cvh0:first-child{align-self:stretch; display:flex; align-items:flex-end; justify-content:flex-start;}   /* sin elipsis: la columna mide lo que su nombre más largo (B-12) */
-  .cvg>.cvh0{font-size:var(--t-label); color:var(--o40); align-self:end;} .cvg>.cvn{color:var(--fg);} .cvg>.cvc{color:var(--o70);} .cvg>.cvt{color:var(--fg);}   /* veces y series (lo que pidió) arriba en jerarquía; las celdas un paso abajo, el objetivo arriba */ .cvg>.cvd{font-weight:700;} .cvg>.cvz{color:var(--o40);}
-  .cvg>.cvh{align-items:flex-end; padding-bottom:var(--s1);} .cvh>span{writing-mode:vertical-rl; transform:rotate(180deg); font-size:var(--t-label); color:var(--o50); white-space:nowrap; letter-spacing:var(--ls-ui);}
-  .cvg>.cvr{background:var(--track);} .cvg>.cvt>span{font-weight:800; text-decoration:underline; text-underline-offset:3px;} .cvg>.cvf>span{background:var(--o20); border-radius:var(--r-sm); padding:0 var(--s1);}
+  /* v358 · SP9 · //COVERAGE = mapa con cajón. Renglón de 44: todo el renglón es el toque (B-11). Bloque = series de ese día por opacidad
+     (1 · 2 · 3-4 · 5-6 · 7-8 · 9+) con su número si cabe (si la celda es muy angosta se calla: @container); el reparto, en el cajón.
+     Descanso = franja --track. Objetivo del día = raya bajo el bloque (su negrita subrayada); primer ejercicio = punto (su verde, sin
+     color: B-07); cambiado sin aplicar = punteado y ▲▼ en los totales. */
+  .cvx{margin:var(--s2) 0 var(--s4); font-size:var(--t-data); font-variant-numeric:tabular-nums;}
+  .cvx .cvxg{display:grid; grid-template-columns:var(--cvxc,1fr); column-gap:var(--s2);}
+  .cvx .cvxg>span{display:flex; align-items:center; align-self:stretch; min-width:0;}
+  .cvxh{min-height:var(--h-pri);} .cvxh>span{justify-content:center; align-items:flex-end; padding-bottom:var(--s2);}
+  .cvxh>span>b{writing-mode:vertical-rl; transform:rotate(180deg); font-size:var(--t-label); font-weight:400; color:var(--o50); white-space:nowrap; letter-spacing:var(--ls-ui);}
+  .cvxh>.cvxl{justify-content:flex-start; font-size:var(--t-label); color:var(--o50); cursor:help;} .cvxh>[data-gloss]{border-bottom:0;}
+  .cvxh>.cvxz>b{color:var(--o40);}
+  .cvxt{min-height:var(--s7); border-top:var(--bw-sep) solid var(--o10);} .cvxt>span{justify-content:center; color:var(--o70);}
+  .cvxt>.cvxl{justify-content:flex-start; font-size:var(--t-label); color:var(--o40);}
+  .cvxr{min-height:var(--h-pri); border-top:var(--bw-sep) solid var(--o10); cursor:pointer; -webkit-tap-highlight-color:transparent;} .cvxr:active{opacity:var(--op-press);}
+  .cvx .cvxl{white-space:normal; overflow-wrap:normal; color:var(--o70);}   /* un nombre largo baja de renglón en sus espacios; no se corta */
+  .cvx .cvxn{justify-content:flex-end; color:var(--o70);} .cvx .cvxn.s{color:var(--fg); font-weight:700;}
+  .cvxt>.cvxn{justify-content:flex-end;}
+  .cvxu{font-style:normal; font-size:var(--t-label); font-weight:400; color:var(--o50); margin-right:1px;}
+  .cvxc{justify-content:center;} .cvxc>i{position:relative; font-style:normal; display:flex; align-items:center; justify-content:center; width:100%; height:var(--s6); border-radius:var(--r-sm); container-type:inline-size;}
+  .cvxc>i>b{font-size:var(--t-data); font-weight:700; line-height:1; color:var(--fg);}
+  .cvxc>i.l4>b,.cvxc>i.l5>b,.cvxc>i.l6>b{color:var(--on-fill);}
+  @container (max-width:17px){ .cvxc>i>b{font-size:var(--t-label);} }   /* angosta (2/1 a 320): el número baja a 10 px; solo se calla si ya no cabe */
+  @container (max-width:11px){ .cvxc>i>b{display:none;} }
+  .cvxc>i.l1{background:var(--o20);} .cvxc>i.l2{background:var(--o30);} .cvxc>i.l3{background:var(--o40);}   /* 1 serie ya no se pierde contra el negro ni contra el descanso */
+  .cvxc>i.l4{background:var(--o50);} .cvxc>i.l5{background:var(--o70);} .cvxc>i.l6{background:var(--fg);}
+  .cvxc>i.t::after{content:''; position:absolute; left:0; right:0; bottom:calc(-1 * (var(--s2) + var(--s1))); height:var(--s1); background:var(--fg);}
+  .cvxc>i.f::before{content:''; position:absolute; top:var(--s1); left:var(--s1); width:var(--s2); height:var(--s2); border-radius:50%; background:var(--fg);}
+  .cvxc>i.f.l4::before,.cvxc>i.f.l5::before,.cvxc>i.f.l6::before{background:var(--bg);}
+  .cvxc>i.c{outline:var(--bw-dash) dashed var(--fg); outline-offset:var(--s1);}
+  .cvx .cvxz{background:var(--track);}
+  /* el cajón: día (con su total y el ejercicio que cambia) · [−] n [+] · % de la carga del día ▾. Cada renglón 44; > el que tocaste. */
+  .cvxk,.cvxe{display:grid; grid-template-columns:minmax(0,1fr) var(--h-pri) var(--s6) var(--h-pri) var(--h-pri); column-gap:var(--s2); align-items:center;}   /* en px (no ch): la cabecera va a 10 px y los renglones a 12, y sus columnas deben coincidir */
+  .cvxe{align-items:start;} .cvxe .cvxv{line-height:var(--h-pri);}   /* arriba: si el nombre crece (lo que cambia), [−] n [+] no se mueven */
+  .cvxk{margin-top:var(--s3); padding-bottom:var(--s1); font-size:var(--t-label); color:var(--o40);} .cvxk>:nth-child(2){grid-column:2 / span 3; text-align:center;} .cvxk>:last-child{text-align:right; white-space:nowrap;}
+  .cvxe{min-height:var(--h-pri); border-top:var(--bw-sep) solid var(--o10); font-variant-numeric:tabular-nums;}
+  .cvxen{position:relative; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:1px; min-height:var(--h-pri); padding:var(--s1) 0; border:0; background:none; font-family:inherit; font-size:var(--t-data); color:var(--o70); text-align:left; cursor:pointer;}
+  .cvxen .cvxsb{font-size:var(--t-label); font-weight:400; color:var(--o50);}
+  .cvxen:active{color:var(--fg);} .cvxe.on .cvxen{color:var(--fg);} .cvxe.on .cvxnm{font-weight:700;} .cvxe.on .cvxen::before{content:'>'; position:absolute; left:calc(-1 * var(--s4)); top:50%; transform:translateY(-50%); color:var(--fg); font-weight:400;}
+  .cvxnm.t{text-decoration:underline; text-underline-offset:var(--s1);}
+  .cvxe.z .cvxen{color:var(--o50);} .cvxe.z .cvxv,.cvxe.z .cvxpc{color:var(--o40);}
+  .cvxst{width:var(--h-pri); height:var(--h-pri); padding:0; border:0; background:none; font-family:inherit; font-size:var(--t-section); color:var(--o60); cursor:pointer;}
+  .cvxst:active{color:var(--fg);} .cvxst:disabled{visibility:hidden;}
+  .cvxv{text-align:center; font-weight:700; color:var(--fg);}
+  .cvxpc{height:var(--h-pri); padding:0; border:0; background:none; font-family:inherit; font-size:var(--t-data); color:var(--o60); text-align:right; white-space:nowrap; cursor:pointer;} .cvxpc:active{color:var(--fg);}
+  .cvxrest{display:flex; align-items:center; min-height:var(--s5); padding:0 var(--s2); border-top:var(--bw-sep) solid var(--o10); background:var(--track); font-size:var(--t-label); color:var(--o40);}
+  .cvxa{display:flex; flex-wrap:wrap; gap:0 var(--s4); margin-top:var(--s2);} .cvxa .b[aria-disabled="true"]{opacity:var(--op-dim);}
+  .cvxs .line .v{white-space:nowrap;}   /* los totales en vivo no cambian de renglón al crecer */
+  .cvxfoot{position:sticky; bottom:0; z-index:1; margin-top:var(--s3); padding-top:var(--s1); background:var(--sheet-bg); border-top:var(--bw-sep) solid var(--o10); box-shadow:0 var(--s6) 0 var(--sheet-bg);}
+  .cvxfoot .sheetbtns{margin-top:var(--s2);}
+  .sheetbtns .ok[aria-disabled="true"]{opacity:var(--op-dim);}
   .cvuse .k{color:var(--o50);}
   .sph{min-height:44px; align-items:center; border:0; background:none; font-family:inherit; text-align:left; padding:0; cursor:pointer;}   /* v355 · SP6 · cada tanda del historial es un toque de 44 */
   /* v356 · SP8 · el editor de split: cada ejercicio una fila de 44 (⠿ + nombre y su resumen); el día con su ··· */
@@ -649,8 +690,8 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .stqh{display:flex; align-items:baseline; justify-content:space-between; gap:var(--s3);}
   .stqn{font-size:var(--t-data); font-weight:700; color:var(--fg); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;} .stqv{font-size:var(--t-data); font-weight:800; color:var(--fg); white-space:nowrap;}
   .stq .vbar{margin-top:6px;} .stq .vbar.vbm{margin:var(--s3) 0 var(--s2);}
-  .vbar.vbm>i{position:relative; z-index:1;}   /* .sgb es la barra σ de cada serie (v301): no se toca */ .vbar .vbh{position:absolute; top:-2px; height:7px; min-width:10px; background:var(--o20); border-radius:var(--r-sm);}   /* v353 · E10 · tu habitual: franja detrás */
-  .vbar .vbg{position:absolute; top:0; height:3px; background:var(--o40);} .vbar .vbgt{position:absolute; top:-3px; width:2px; height:9px; margin-left:-1px; background:var(--o70); z-index:2;}   /* tu meta: un tramo más claro de la misma línea y la raya que la cruza */
+  .vbar.vbm>i{position:relative; z-index:1;}   /* .sgb es la barra σ de cada serie (v301): no se toca */ .vbar .vbh{position:absolute; top:-4px; height:11px; min-width:10px; background:var(--o30); border-radius:var(--r-sm);}   /* v353 · E10 · tu habitual: franja detrás · v358 · E12: 11 px a --o30 (antes 7 a --o20 no se veía) */
+  .vbar .vbg{position:absolute; top:0; height:3px; background:var(--o40);} .vbar .vbgt{position:absolute; top:-5px; width:2px; height:13px; margin-left:-1px; background:var(--o70); z-index:2;}   /* tu meta: un tramo más claro de la misma línea y la raya que la cruza */
   .mdbar.sgm{flex-direction:column; align-items:stretch; gap:var(--s2);} .mdbar.sgm .vbar{flex:none; margin:var(--s1) 0 var(--s2);} .mdbar.sgm .mdbc{align-self:flex-end;} .stqs{margin-top:var(--s1); font-size:var(--t-label); color:var(--o50);}   /* v347 · E9 */
   /* estímulo · columnas alineadas (el dueño, 1-oct: "como terminal… que tenga jerarquía"): c2 = músculo | σ | recovery, con una sola cabecera (v285) · stw = fila clave | valor · md3 = las filas del detalle en clave | valor | nota */
   .stqh.c2{display:grid; grid-template-columns:minmax(0,1fr) 6ch 9ch; column-gap:var(--s3); font-size:var(--t-data);} .stqh.c2 .stqv{text-align:right; font-variant-numeric:tabular-nums;} .stqh.c2 .stqv.p{font-weight:400; color:var(--o70);} .stqh.c2.hd{padding-bottom:var(--s2);} .stqh.c2.hd .stqn,.stqh.c2.hd .stqv{font-size:var(--t-label); font-weight:400; color:var(--o40);}
@@ -1508,7 +1549,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v357';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v358';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -3977,13 +4018,6 @@ function splitSigGoals(dr){ dr=+dr||0; const key=todayISO()+'|'+JSON.stringify([
     Object.keys(per).forEach(id=>{ const hb=muscleHabit(id), s=sigAtRir(Math.max(0,(hb&&hb.rir!=null?hb.rir:1)+dr)); g[id]=(g[id]||0)+f*sigSat(per[id]*s); }); });
   C[dr]={k:key,db,g}; return g; }
 function splitSigGoal(id){ const v=splitSigGoals()[id]; return v>0?Math.round(v*10)/10:null; }
-function plannedVolumeSection(){
-  // v352 · SP3 · músculos × días de una vuelta (covMatrix), abierta de entrada y plegable como antes; SP4 · otro patrón sin guardarlo
-  const P=splitPlan(), pv=covPreview(), M=covMatrix(pv); if(!M||!M.rows.length)return '';
-  const open=state._covOpen!==false;
-  const h=`<hr class="rule"/><div class="section sefoldh" role="button" tabindex="0" data-act="sd_cov" aria-expanded="${open}"><div class="h"><span class="s">//</span>COVERAGE</div><div class="meta">${M.rows.length} ${M.rows.length===1?'músculo':'músculos'} <span class="sefx">${open?'▾':'›'}</span></div></div>`;
-  return open?h+covControlsHTML(P,pv)+covMatrixHTML(M):h;
-}
 // ---- v285 · //STIMULUS = solo σ + recovery, por músculo, en columnas ----
 // El dueño (1-oct): "que sea nomás la pura tensión mecánica, y ya si le das clic a cada grupo muscular, que te salga más
 // detalle" · "lo de músculos, tensión, recuperación [//MUSCLES de Progress]… es lo que me gustaría que estuviera en estímulo"
@@ -7017,7 +7051,7 @@ function _v347SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     db.split.plan={mode:'cycle',on:3,off:1,blocked:[0]}; bumpIdx(); A('E9 · rotativo: los días de entreno por semana de tu plan entre tus días', Math.abs(splitDayFreq()[0]-ccShare().p*7/2)<1e-9);
     // //COVERAGE en días fijos: un día que la semana tiene dos veces cuenta dos (antes una)
     db.split.plan={mode:'weekly',week:{1:'a',3:'a',5:'b'},blocked:[0]}; bumpIdx(); const o0=state._covOpen, u0=state._covUnit, p0=state._covPlan; state._covOpen=true; state._covUnit='semana'; state._covPlan=null; const cv=plannedVolumeSection(); state._covOpen=o0; state._covUnit=u0; state._covPlan=p0;
-    A('E9 · //COVERAGE cuenta las veces que cada día toca en la semana', /<div class="cvm">chest<\/div><div class="cvn">2<\/div><div class="cvn">6<\/div>/.test(cv)&&/<div class="cvm">lats<\/div><div class="cvn">1<\/div><div class="cvn">3<\/div>/.test(cv));   /* v352 · la tabla */
+    A('E9 · //COVERAGE cuenta las veces que cada día toca en la semana', /data-k="chest"[^>]*><span class="cvxl">chest<\/span><span class="cvxn">2<\/span><span class="cvxn s">6<\/span>/.test(cv)&&/data-k="lats"[^>]*><span class="cvxl">lats<\/span><span class="cvxn">1<\/span><span class="cvxn s">3<\/span>/.test(cv));   /* v352 · la tabla */
     const st=stimulusSection(); A('E9 · //STIMULUS: los músculos de tu split salen aunque no los entrenaras, con su meta', /data-id="chest"/.test(st)&&/class="vbgt"/.test(st));   /* v353 · la meta es una marca, no un texto */
     console.log('v347 self-check OK');
   } finally { db=real; bumpIdx(); }
@@ -7456,19 +7490,178 @@ function covControlsHTML(P,pv){ const ck=covKeyOf(P), sel=pv?covKeyOf(pv):ck, u=
   const row=(k,v)=>'<div class="line sch"><span class="k">'+k+'</span><span class="dots"></span>'+v+'</div>';
   return row('ver con',tog('cv_pat',opts,sel))+row('cuenta',tog('cv_unit',[['vuelta','vuelta'],['semana','semana']],u))
     +(pv?'<div class="line sch cvuse"><span class="k">previa · el tuyo: '+escTxt({daily:'diario',weekly:'fijos'}[ck]||ck)+'</span><span class="dots"></span><button type="button" class="b" data-act="cv_use">usar este</button></div>':''); }
-function covMatrixHTML(M){ const u=state._covUnit==='semana';
-  let h='<div class="cvwrap"><div class="cvg" style="--cvn:'+M.cols.length+'">'
-    +'<div class="cvm cvh0" data-gloss="cov"><span class="u-dash">músculo</span></div><div class="cvh"><span>'+(u?'veces/sem':'veces')+'</span></div><div class="cvh"><span>'+(u?'series/sem':'series')+'</span></div>';
-  const dw=c=>c.dow!=null?DOW_INI[c.dow]+' ':'';   // en días fijos, la inicial del día de la semana
-  M.cols.forEach(c=>{ h+=c.idx<0?'<div class="cvh cvr"><span>'+dw(c)+(c.dow!=null&&M.plan.blocked.indexOf(c.dow)>=0?'sin gym':'rest')+'</span></div>':'<div class="cvh"><span>'+escTxt(dw(c)+covShort(M.days[c.idx].name))+'</span></div>'; });
-  h+='<div class="cvm cvh0">por día</div><div class="cvn"></div><div class="cvn cvd">'+(u?M.totw:M.tot)+'</div>';
-  M.cols.forEach(c=>{ h+=c.idx<0?'<div class="cvr cvz">—</div>':'<div class="cvd">'+M.days[c.idx].tot+'</div>'; });
-  M.rows.forEach(r=>{ h+='<div class="cvm">'+escTxt(r.m)+'</div><div class="cvn">'+(u?r.fw:r.f)+'</div><div class="cvn">'+(u?r.sw:r.s)+'</div>';
-    M.cols.forEach(c=>{ if(c.idx<0){ h+='<div class="cvr"></div>'; return; } const d=M.days[c.idx], v=d.per.get(r.k)||0; if(!v){ h+='<div></div>'; return; }
-      h+='<div class="cvc'+(d.tgt===r.k?' cvt':'')+(d.first===r.k?' cvf':'')+'"><span>'+v+'</span></div>'; }); });
-  return h+'</div></div>'; }
+// ---- v358 · SP9 · //COVERAGE para gestionar tu volumen: el mapa con cajón ----
+// El dueño (15-oct), de la tabla de v352: "no me gustó cómo quedó… quedó todo muy apretado" · "el chiste es que se pueda editar desde ahí…
+// de deltoides tengo que hago 15 series. Poderla distribuir más o poner un porcentaje… que quede el 60% de la carga de ese día" · "si quieres
+// que se acomoden primero la frecuencia, si por el volumen de series" · "a la hora de modificarlo y aplicarlo, que se modifique en el split".
+// Se investigó cómo lo hacen las apps que planean volumen y se probaron tres formatos con su respaldo; ganó este (el juez: "su Excel sin
+// apretar"). Músculos × días de una vuelta: cada bloque, las series de ese día (más claro = más series, con su número si cabe); a la izquierda
+// veces y series. Tocar un músculo abre su CAJÓN: series por día [−] n [+], el % de la carga de ese día (▾ fija un %) y los totales en vivo;
+// el nombre de un día abre el cajón del día. Todo queda en un borrador (en memoria) hasta [aplicar], que lo escribe en tu split.
+// nivel del bloque por series de ese día (absoluto: un 6 se ve igual en cualquier split): 1 · 2 · 3-4 · 5-6 · 7-8 · 9+
+function cvxLv(n){ return n<=0?0:n<=1?1:n<=2?2:n<=4?3:n<=6?4:n<=8?5:6; }
+function cvxDayId(i){ const ds=(db.split&&db.split.days)||[]; return ds[i]?ds[i].id:null; }
+// el borrador: {idDelDía:{músculo:series}}, solo en memoria hasta [aplicar]; lo que vuelve a su número deja de ser cambio
+function cvxDraft(){ return state._cvxD||{}; }
+function cvxNChg(){ const D=cvxDraft(); return Object.keys(D).reduce((a,id)=>a+Object.keys(D[id]).length,0); }
+// el borrador se limpia contra tu split de ahora: días que ya no existen (cambiaste de split, restauraste del historial, borraste un día)
+// y números que ya son los de tu split dejan de contar
+function cvxClean(){ const D=state._cvxD; if(!D)return; const ds=(db.split&&db.split.days)||[], M=covMatrix(), out={};
+  Object.keys(D).forEach(id=>{ const i=ds.findIndex(d=>d&&d.id===id); if(i<0||!M||!M.days[i])return; const o={}; Object.keys(D[id]).forEach(k=>{ if(D[id][k]!==(M.days[i].per.get(k)||0))o[k]=D[id][k]; }); if(Object.keys(o).length)out[id]=o; });
+  state._cvxD=Object.keys(out).length?out:null; }
+// covMatrix + el borrador encima: los mismos días, columnas y renglones, con sus cuentas rehechas (y las de tu split al lado, para el ▲▼)
+function cvxModel(pv){ return covWith(pv,()=>{ const M=covMatrix(); if(!M)return null; const fr=splitDayFreq(), D=cvxDraft(), r1=x=>Math.round(x*10)/10;
+  const days=M.days.map((d,i)=>{ const per=new Map(d.per), o=D[cvxDayId(i)]||{};
+    Object.keys(o).forEach(k=>{ if(o[k]>0)per.set(k,o[k]); else per.delete(k); });
+    // el objetivo, con la regla de covMatrix: el que más series tiene; si empatan, el que nombra el día; si no, el primero
+    const nm=mNorm(d.name||''), named=m=>{ const k=mNorm(m); return !!k&&(nm===k||nm.indexOf(k+'/')===0||nm.indexOf(k+' ')===0); };
+    let tot=0, tgt=null, best=0; per.forEach((v,m)=>{ tot+=v; if(tgt==null||v>best||(v===best&&named(m)&&!named(tgt))){ tgt=m; best=v; } });
+    return {name:d.name, per, tot, tgt, first:d.first, base:d.per, tot0:d.tot, occ:M.cols.filter(c=>c.idx===i).length}; });
+  const rows=M.rows.map(r=>{ let f=0, s=0, fw=0, sw=0;
+    M.cols.forEach(c=>{ const n=c.idx>=0?(days[c.idx].per.get(r.k)||0):0; if(n){ f++; s+=n; } });
+    days.forEach((d,i)=>{ const n=d.per.get(r.k)||0; if(n){ fw+=fr[i]||0; sw+=n*(fr[i]||0); } });
+    return {k:r.k, m:r.m, f, s, fw:r1(fw), sw:Math.round(sw), f0:r.f, s0:r.s, fw0:r.fw, sw0:r.sw}; });
+  return {plan:M.plan, cols:M.cols, days, rows, tot:rows.reduce((a,r)=>a+r.s,0), totw:rows.reduce((a,r)=>a+r.sw,0), tot0:M.tot, totw0:M.totw}; }); }
+// orden de los renglones: split (push → pull → pierna, el de su hoja) · series (más primero) · veces (más primero); empates, por split.
+// Se ordena con los números de tu split, no con el borrador: mientras repartes, ningún renglón se mueve (se reacomodan al aplicar)
+function cvxSorted(X,u){ const by=state._cvxSort||'split', ix=new Map(X.rows.map((r,i)=>[r.k,i])), s=r=>u?r.sw0:r.s0, f=r=>u?r.fw0:r.f0, R=X.rows.slice();
+  if(by==='series')R.sort((a,b)=>s(b)-s(a)||f(b)-f(a)||ix.get(a.k)-ix.get(b.k));
+  else if(by==='veces')R.sort((a,b)=>f(b)-f(a)||s(b)-s(a)||ix.get(a.k)-ix.get(b.k));
+  return R; }
+function plannedVolumeSection(){
+  // v358 · SP9 · el mapa (abierto de entrada y plegable como antes); otro patrón se ve sin guardarlo (SP4)
+  cvxClean(); const P=splitPlan(), pv=covPreview(), X=cvxModel(pv); if(!X||!X.rows.length)return '';
+  const open=state._covOpen!==false;
+  const h=`<hr class="rule"/><div class="section sefoldh" role="button" tabindex="0" data-act="sd_cov" aria-expanded="${open}"><div class="h"><span class="s">//</span>COVERAGE</div><div class="meta">${X.rows.length} ${X.rows.length===1?'músculo':'músculos'} <span class="sefx">${open?'▾':'›'}</span></div></div>`;
+  return open?h+cvxControlsHTML(P,pv)+cvxMapHTML(X)+cvxPendHTML():h; }   // lo que falta aplicar va DEBAJO del mapa: si fuera arriba, al salir o quitarse empujaría el mapa bajo el dedo
+function cvxPendHTML(){ const n=cvxNChg(); return n?'<div class="line sch cvxpend"><span class="k">'+n+' sin aplicar</span><span class="dots"></span><button type="button" class="b" data-act="cvx_reset">descartar</button><button type="button" class="b" data-act="cvx_apply">aplicar</button></div>':''; }
+function cvxControlsHTML(P,pv){ const ck=covKeyOf(P), sel=pv?covKeyOf(pv):ck, by=state._cvxSort||'split';
+  const opts=[]; if(!COV_PATS.some(([a,b])=>a+'/'+b===ck))opts.push([ck,{daily:'diario',weekly:'fijos'}[ck]||ck]); COV_PATS.forEach(([a,b])=>opts.push([a+'/'+b,a+'/'+b]));
+  const tog=(act,list,cur)=>'<div class="toggles">'+list.map(([v,l])=>'<button type="button" class="t'+(v===cur?' on':'')+'" data-act="'+act+'" data-v="'+escTxt(v)+'">'+escTxt(l)+'</button>').join('')+'</div>';
+  const row=(k,v,c)=>'<div class="line sch'+(c?' '+c:'')+'"><span class="k">'+k+'</span><span class="dots"></span>'+v+'</div>';
+  return row('ver con',tog('cv_pat',opts,sel))
+    +row('orden',tog('cvx_sort',[['split','split'],['series','series'],['veces','veces']],by))
+    +(pv?row('previa · el tuyo: '+escTxt({daily:'diario',weekly:'fijos'}[ck]||ck),'<button type="button" class="b" data-act="cv_use">usar este</button>','cvuse'):''); }
+// ▲ / ▼ junto a un total que cambió con el borrador (contra tu split)
+function cvxMk(a,b){ return a===b?'':'<i class="cvxu">'+(a>b?'▲':'▼')+'</i>'; }
+function cvxMapHTML(X){ const u=state._covUnit==='semana', R=cvxSorted(X,u), di=c=>c.dow!=null?DOW_INI[c.dow]:'';
+  // la columna del músculo mide su nombre más largo (sin cortar, B-12); los días se reparten el resto; el descanso es una franja
+  // con un nombre muy largo, la columna se topa al 32 % y el nombre baja de renglón en sus espacios (no se corta); cada día conserva un mínimo
+  const lw=Math.max(7,...X.rows.map(r=>[...String(r.m)].length))+1, tpl='minmax(7ch,min('+lw+'ch,32%)) 3ch 4ch '+X.cols.map(c=>c.idx<0?'var(--s4)':'minmax(var(--s4),1fr)').join(' ');
+  let h='<div class="cvx" data-n="'+X.cols.length+'" style="--cvxc:'+tpl+'"><div class="cvxg cvxh"><span class="cvxl" data-gloss="cov"><span class="u-dash">músculo</span></span><span class="cvxn"><b>'+(u?'veces/sem':'veces')+'</b></span><span class="cvxn"><b>'+(u?'series/sem':'series')+'</b></span>';
+  // la cabecera de cada día con su nombre completo (B-12), de abajo hacia arriba
+  X.cols.forEach(c=>{ h+=c.idx<0?'<span class="cvxz">'+(c.dow!=null?'<b>'+di(c)+'</b>':'')+'</span>':'<span><b>'+escTxt((c.dow!=null?di(c)+' ':'')+(X.days[c.idx].name||'día'))+'</b></span>'; });
+  h+='</div><div class="cvxg cvxt"><span class="cvxl">por día</span><span class="cvxn"></span><span class="cvxn s">'+cvxMk(u?X.totw:X.tot,u?X.totw0:X.tot0)+(u?X.totw:X.tot)+'</span>';
+  X.cols.forEach(c=>{ h+=c.idx<0?'<span class="cvxz"></span>':'<span>'+cvxMk(X.days[c.idx].tot,X.days[c.idx].tot0)+X.days[c.idx].tot+'</span>'; });
+  h+='</div>';
+  R.forEach(r=>{ h+='<div class="cvxg cvxr" role="button" tabindex="0" data-act="cvx_m" data-k="'+escTxt(r.k)+'" data-rk="cvx:'+escTxt(r.k)+'" aria-label="'+escTxt(r.m)+'"><span class="cvxl">'+escTxt(r.m)+'</span><span class="cvxn">'+cvxMk(u?r.fw:r.f,u?r.fw0:r.f0)+(u?r.fw:r.f)+'</span><span class="cvxn s">'+cvxMk(u?r.sw:r.s,u?r.sw0:r.s0)+(u?r.sw:r.s)+'</span>';
+    X.cols.forEach(c=>{ if(c.idx<0){ h+='<span class="cvxz"></span>'; return; } const d=X.days[c.idx], v=d.per.get(r.k)||0, chg=v!==(d.base.get(r.k)||0);
+      h+='<span class="cvxc" data-i="'+c.idx+'">'+(v||chg?'<i class="l'+cvxLv(v)+(v&&d.tgt===r.k?' t':'')+(v&&d.first===r.k?' f':'')+(chg?' c':'')+'">'+(v?'<b>'+v+'</b>':'')+'</i>':'')+'</span>'; });
+    h+='</div>'; });
+  return h+'</div>'; }
+// ---- el cajón ----
+function cvxDelta(a,b){ const d=Math.round((a-b)*10)/10; return d?' <span class="u-o50">'+(d>0?'▲ +':'▼ −')+Math.abs(d)+'</span>':''; }
+function cvxLine(k,v){ return '<div class="line"><span class="k">'+k+'</span><span class="dots"></span><span class="v">'+v+'</span></div>'; }
+// los días en el orden de la vuelta (y al final los que tu plan no usa), con cuántos descansos van antes de cada uno
+function cvxOrder(X){ const o=[]; X.cols.forEach(c=>{ if(c.idx>=0&&o.indexOf(c.idx)<0)o.push(c.idx); }); X.days.forEach((d,i)=>{ if(o.indexOf(i)<0)o.push(i); }); return o; }
+function cvxRests(X){ const r={}; let n=0, seen=new Set(); X.cols.forEach(c=>{ if(c.idx<0){ n++; return; } if(!seen.has(c.idx)){ if(n)r[c.idx]=n; seen.add(c.idx); } n=0; }); return r; }
+// qué ejercicio recibiría un día que hoy no tiene ese músculo: el mismo de otro día de tu split (el más repetido) o, si no, uno de tu catálogo
+function cvxPick(k,i){ const days=(db.split&&db.split.days)||[], cnt=new Map();   // (un día que ya tiene uno de ese músculo en 0 series lo usa: ver cvxWrites)
+  days.forEach((d,j)=>{ if(j===i)return; (d.exercises||[]).forEach(e=>{ if(e&&!isCardio(e)&&mNorm(String(e.muscle||'').trim()||'otro')===k){ const n=nameKey(e.name); const c=cnt.get(n)||{e,n:0}; c.n++; cnt.set(n,c); } }); });
+  if(cnt.size){ const best=[...cnt.values()].sort((a,b)=>b.n-a.n)[0].e; const c=JSON.parse(JSON.stringify(best)); delete c.mt; c.id='e'+uid(); return c; }
+  const kx=(typeof knownExercises==='function'?knownExercises():[]).find(x=>x&&mNorm(String(x.muscle||'').trim())===k&&!isCardio(x));
+  return kx?{id:'e'+uid(),name:kx.name,muscle:kx.muscle,type:kx.type||'free',unilateral:!!kx.unilateral,machine:kx.machine||'',sets:1}:null; }
+// lo que [aplicar] escribe, por día y músculo. Sube → el último ejercicio de ese músculo en el día; baja → del último hacia el primero sin dejar
+// uno en 0 mientras alcance (en 0 sale del día); un día sin ese músculo → se agrega el ejercicio de cvxPick con esas series
+function cvxWrites(){ const D=cvxDraft(), out=[]; ((db.split&&db.split.days)||[]).forEach((d,di)=>{ const o=D[d.id]; if(!o)return;
+  Object.keys(o).forEach(k=>{ const to=o[k], ex=(d.exercises||[]).map((e,ei)=>({e,ei})).filter(x=>x.e&&!isCardio(x.e)&&(mNorm(String(x.e.muscle||'').trim()||'otro')||'otro')===k);   // también uno en 0 series: subir lo usa en vez de agregar otro
+    if(!ex.length){ if(to>0){ const p=cvxPick(k,di); out.push({di,day:d.name,k,add:true,to,pick:p,ex:p?p.name:null}); } return; }
+    const ch=ex.map(x=>({di,day:d.name,k,ei:x.ei,ex:x.e.name,from:Math.max(0,parseInt(x.e.sets,10)||0)})); ch.forEach(c=>{ c.to=c.from; });
+    let diff=to-ch.reduce((a,c)=>a+c.from,0);
+    if(diff>0)ch[ch.length-1].to+=diff;
+    else { const keep=to>=ch.length?1:0; for(let j=ch.length-1;j>=0&&diff<0;j--){ const t=Math.min(ch[j].to-keep,-diff); if(t>0){ ch[j].to-=t; diff+=t; } }
+      for(let j=ch.length-1;j>=0&&diff<0;j--){ const t=Math.min(ch[j].to,-diff); ch[j].to-=t; diff+=t; } }
+    ch.forEach(c=>{ if(c.to!==c.from)out.push(c); }); }); });
+  return out; }
+// el texto de lo que pasará en un día (para el cajón): → ejercicio que cambia · + el que se agrega · sin el que sale
+function cvxWhat(W,i,k){ const w=W.filter(x=>x.di===i&&x.k===k); if(!w.length)return ''; return w.map(x=>x.add?(x.pick?'+\u00a0'+x.ex:'falta un ejercicio'):(x.to===0?'sin\u00a0'+x.ex:'→\u00a0'+x.ex)).join(' · '); }   // la flecha no se separa de su ejercicio
+function cvxRowHTML(o){ const ka=' data-k="'+escTxt(o.k)+'" data-i="'+o.i+'"';
+  return '<div class="cvxe'+(o.on?' on':'')+(o.v?'':' z')+'"><button type="button" class="cvxen" '+o.nav+'><span class="cvxnm'+(o.t?' t':'')+'">'+o.label+'</span>'+(o.sub?'<span class="cvxsb">'+o.sub+'</span>':'')+'</button>'
+    +'<button type="button" class="cvxst" data-act="cvx_dec"'+ka+' aria-label="una serie menos"'+(o.v?'':' disabled')+'>−</button><span class="cvxv">'+o.v+'</span>'
+    +'<button type="button" class="cvxst" data-act="cvx_inc"'+ka+' aria-label="una serie más"'+(o.noadd?' disabled':'')+'>+</button>'
+    +'<button type="button" class="cvxpc" data-act="cvx_pct"'+ka+'>'+(o.v?o.pct+'% ▾':'—')+'</button></div>'; }
+// el pie: cuántos cambios lleva el borrador (y cuántas series de más o de menos) y el único primario
+function cvxFoot(){ const n=cvxNChg(), X=n?cvxModel(covPreview()):null, d=X?X.tot-X.tot0:0;
+  // el renglón de cambios siempre está (con "ninguno") y va fijo abajo con los botones: la hoja no cambia de alto al repartir y nada lo tapa
+  return '<div class="cvxfoot">'+cvxLine('cambios',n?n+' · '+(d>0?'+':d<0?'−':'')+Math.abs(d)+' '+(Math.abs(d)===1?'serie':'series'):'<span class="u-o40">ninguno</span>')
+    +'<div class="sheetbtns"><button type="button" class="ok" data-act="cvx_apply"'+(n?'':' aria-disabled="true"')+'>✓ aplicar al split</button><button type="button" class="cancel" data-act="cvx_close">cerrar</button></div></div>'; }
+// el cajón del músculo: sus totales (vuelta y semana, con su ▲▼ contra tu split) y, por día, sus series y su % de la carga de ese día
+function cvxSheetMHTML(k,fi){ const X=cvxModel(covPreview()); if(!X)return ''; const r=X.rows.find(x=>x.k===k); if(!r)return ''; const W=cvxWrites(), RS=cvxRests(X);
+  let h='<h3>'+escTxt(r.m)+'</h3>'+cvxLine('vuelta',r.s+' series'+cvxDelta(r.s,r.s0)+' · '+r.f+' '+(r.f===1?'vez':'veces')+cvxDelta(r.f,r.f0))+cvxLine('semana','~'+r.sw+' series'+cvxDelta(r.sw,r.sw0)+' · ~'+r.fw+' veces'+cvxDelta(r.fw,r.fw0))
+    +'<div class="cvxk"><span>día</span><span>series</span><span>del día</span></div>';
+  cvxOrder(X).forEach(i=>{ const d=X.days[i], v=d.per.get(k)||0, what=cvxWhat(W,i,k), noadd=!v&&!(d.base.get(k)||0)&&!cvxPick(k,i);
+    if(RS[i])h+='<div class="cvxrest">descanso'+(RS[i]>1?' ×'+RS[i]:'')+'</div>';
+    h+=cvxRowHTML({k,i,v,on:i===fi,noadd,pct:d.tot?Math.round(v/d.tot*100):0,label:cvxDayNm(d.name)+(d.occ>1?' <span class="u-o50">×'+d.occ+'</span>':''),sub:d.tot+' en el día'+(what?' · '+escTxt(what):''),nav:'data-act="cvx_d" data-i="'+i+'" data-k="'+escTxt(k)+'"'}); });
+  const chg=X.days.some(d=>(d.per.get(k)||0)!==(d.base.get(k)||0));
+  return h+'<div class="cvxa"><button type="button" class="b" data-act="cvx_even" data-k="'+escTxt(k)+'">repartir parejo</button>'+'<button type="button" class="b" data-act="cvx_undo1" data-k="'+escTxt(k)+'"'+(chg?'':' aria-disabled="true"')+'>como estaba</button></div>'+cvxFoot(); }   // siempre está (apagado sin cambios): al aparecer o irse no movería nada
+// el cajón del día: su total y cada músculo con sus series y su % del día (el que más trabaja, subrayado; > el músculo de donde vienes)
+function cvxSheetDHTML(i,fk){ const X=cvxModel(covPreview()); if(!X)return ''; const d=X.days[i]; if(!d)return ''; const W=cvxWrites();
+  const ks=[...d.base.keys()]; d.per.forEach((v,m)=>{ if(ks.indexOf(m)<0)ks.push(m); }); const lbl=new Map(X.rows.map(r=>[r.k,r.m]));
+  let h='<h3>'+escTxt(d.name||'día')+'</h3>'+cvxLine('día',d.tot+' series'+cvxDelta(d.tot,d.tot0)+' · '+d.per.size+' '+(d.per.size===1?'músculo':'músculos'))
+    +'<div class="cvxk"><span>músculo</span><span>series</span><span>del día</span></div>';
+  ks.forEach(k=>{ const v=d.per.get(k)||0, what=cvxWhat(W,i,k); h+=cvxRowHTML({k,i,v,on:k===fk,t:!!v&&d.tgt===k,pct:d.tot?Math.round(v/d.tot*100):0,label:escTxt(lbl.get(k)||k),sub:what?escTxt(what):'',nav:'data-act="cvx_m" data-k="'+escTxt(k)+'" data-i="'+i+'"'}); });
+  return h+cvxFoot(); }
+function cvxHTML(S){ return S.t==='d'?cvxSheetDHTML(S.i,S.k):cvxSheetMHTML(S.k,S.i); }
+// abre el cajón y le fija el alto con el que abrió: si al repartir un renglón crece (el ejercicio que cambia), la hoja corre por dentro y nada
+// de lo de arriba se mueve (una hoja de abajo crece hacia arriba)
+function cvxOpen(S){ const html=cvxHTML(S); if(!html)return; state._cvxS=S; openModal(html,'cvxs'); const sh=document.querySelector('#modal .sheet.cvxs'); if(sh)sh.style.height=Math.ceil(sh.getBoundingClientRect().height)+'px'; }
+// el nombre de un día no se parte a media frase: se junta con espacios duros y solo puede bajar después de "/"
+function cvxDayNm(n){ return escTxt(n||'día').replace(/ /g,'\u00a0').replace(/\//g,'/<wbr>'); }
+// en vivo: la hoja se repinta en su sitio (mismos renglones, mismo alto: nada se mueve bajo el dedo)
+function cvxRefresh(){ const S=state._cvxS, sh=document.querySelector('#modal .sheet.cvxs'); if(!S||!sh)return; const html=cvxHTML(S); if(html)sh.innerHTML=html; }
+function cvxVal(k,i){ const X=cvxModel(covPreview()), d=X&&X.days[i]; return d?(d.per.get(k)||0):0; }
+function cvxSet(k,i,n){ const id=cvxDayId(i), M=covMatrix(); if(id==null||!M||!M.days[i])return; n=Math.max(0,Math.min(99,Math.round(+n||0)));
+  const b=M.days[i].per.get(k)||0, D=Object.assign({},cvxDraft()), o=Object.assign({},D[id]||{});
+  if(n===b)delete o[k]; else o[k]=n; if(Object.keys(o).length)D[id]=o; else delete D[id]; state._cvxD=Object.keys(D).length?D:null; }
+// repartir parejo: el mismo total del músculo entre los días que ya lo tienen (lo que sobra, a los que más tenían)
+function cvxEven(k){ const X=cvxModel(covPreview()); if(!X)return; const on=cvxOrder(X).filter(i=>(X.days[i].per.get(k)||0)>0);
+  if(on.length<2){ toast('está en un solo día · nada que repartir'); return; }
+  const T=on.reduce((a,i)=>a+X.days[i].per.get(k),0), b=Math.floor(T/on.length), extra=new Set(on.slice().sort((a,c)=>X.days[c].per.get(k)-X.days[a].per.get(k)).slice(0,T-b*on.length));
+  on.forEach(i=>cvxSet(k,i,b+(extra.has(i)?1:0))); }
+function cvxUndo1(k){ const D=Object.assign({},cvxDraft()); Object.keys(D).forEach(id=>{ if(k in D[id]){ const o=Object.assign({},D[id]); delete o[k]; if(Object.keys(o).length)D[id]=o; else delete D[id]; } }); state._cvxD=Object.keys(D).length?D:null; }
+// el % de la carga del día: cuántas series le tocan para llegar a ese %, sin mover a los demás músculos del día (el día crece o baja)
+function cvxPctMenu(k,i){ const X=cvxModel(covPreview()), d=X&&X.days[i]; if(!d)return; const v=d.per.get(k)||0, oth=d.tot-v, lbl=(X.rows.find(r=>r.k===k)||{}).m||k;
+  if(!(oth>0)){ toast(v>0?'es el único músculo del día · ya es el 100%':'ese día no tiene series · dale con +'); return; }
+  // cada opción dice el % que de verdad queda (en un día chico, 1 serie ya es más del 10 %)
+  const seen=new Set(), items=[]; [10,20,30,40,50,60,70].forEach(p=>{ const n=Math.max(1,Math.round(p*oth/(100-p))); if(seen.has(n))return; seen.add(n);
+    items.push([Math.round(n/(oth+n)*100)+'% → '+n+' '+(n===1?'serie':'series')+' · día '+(oth+n),()=>{ cvxSet(k,i,n); cvxRefresh(); }]); });
+  trkMenu(lbl+' · % de '+(d.name||'día'),items); }
+// aplicar: escribe en el split (series de cada ejercicio, el que se agrega, el que sale en 0). Pasa por splitWatch (v355): el día gana su
+// hora (Start sale con tu split) y la tanda queda en el historial. [deshacer] lo deja como estaba.
+function cvxApply(){ cvxClean(); const n=cvxNChg(), W=cvxWrites(); if(!W.length){ state._cvxD=null; toast('sin cambios'); return false; }
+  const miss=W.filter(w=>w.add&&!w.pick); if(miss.length){ toast('⚠ no hay ejercicio de '+miss[0].k+' para agregar','err'); return false; }
+  const prev=JSON.stringify(db.split), days=db.split.days;
+  W.forEach(w=>{ const d=days[w.di]; if(!d)return; if(w.add){ const e=w.pick; e.sets=w.to; (d.exercises=d.exercises||[]).push(e); } else { const e=d.exercises[w.ei]; if(e){ if(w.to>0)e.sets=w.to; else e._cvx0=1; } } });
+  days.forEach(d=>{ if((d.exercises||[]).some(e=>e&&e._cvx0))d.exercises=d.exercises.filter(e=>!(e&&e._cvx0)); });
+  state._cvxD=null; const ok=save(); reRender();
+  if(ok)toast('✓ tu split · '+n+' '+(n===1?'cambio':'cambios'),'ok',{undo:()=>{ db.split=JSON.parse(prev); }}); else toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err');
+  return ok; }
+function cvxAct(a,el,e){ const k=el.dataset.k, i=el.dataset.i!=null&&el.dataset.i!==''?+el.dataset.i:null, inSheet=!!(el.closest&&el.closest('#modal'));
+  if(a==='cvx_sort'){ const v=el.dataset.v; state._cvxSort=v==='series'||v==='veces'?v:'split'; reRender(); return; }
+  if(a==='cvx_m'){ let fi=i; if(!inSheet){ fi=null; const x=e&&e.clientX; if(x){ const c=[...el.querySelectorAll('.cvxc[data-i]')].find(c=>{ const R=c.getBoundingClientRect(); return x>=R.left-2&&x<=R.right+2; }); if(c)fi=+c.dataset.i; } }
+    cvxOpen({t:'m',k,i:fi}); return; }   // tocar el renglón abre su cajón; si caíste en una celda, ese día va marcado con >
+  if(a==='cvx_d'){ cvxOpen({t:'d',i,k}); return; }
+  if(a==='cvx_inc'||a==='cvx_dec'){ if(el.disabled)return; cvxSet(k,i,cvxVal(k,i)+(a==='cvx_inc'?1:-1)); cvxRefresh(); return; }
+  if(a==='cvx_pct'){ cvxPctMenu(k,i); return; }
+  if(a==='cvx_even'){ cvxEven(k); cvxRefresh(); return; }
+  if(a==='cvx_undo1'){ if(el.getAttribute('aria-disabled')==='true')return; cvxUndo1(k); cvxRefresh(); return; }
+  if(a==='cvx_close'){ state._cvxS=null; closeModal(); reRender(); return; }
+  if(a==='cvx_reset'){ const old=state._cvxD; state._cvxD=null; reRender(); toast('reparto descartado','ok',{undo:()=>{ state._cvxD=old; }}); return; }
+  if(a==='cvx_apply'){ if(el.getAttribute('aria-disabled')==='true')return; if(inSheet){ state._cvxS=null; closeModal(); }
+    { const r=[...document.querySelectorAll('#view .cvxr')].find(x=>x.getBoundingClientRect().top>=0); if(r)rkAnchor(r.dataset.rk); }   // el mapa se queda donde estaba aunque arriba aparezca el historial (v355)
+    cvxApply(); return; } }
 // self-check de v352 (SP3 · SP4 · E11). Base de juguete; nada llega a disco; todo se restaura en finally.
-function _v352SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v352: '+nm); }; const real=db, K=['_covOpen','_covUnit','_covPlan'], s0={}; K.forEach(k=>s0[k]=state[k]);
+function _v352SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v352: '+nm); }; const real=db, K=['_covOpen','_covUnit','_covPlan','_cvxD','_cvxSort','_cvxS'], s0={}; K.forEach(k=>s0[k]=state[k]);
   try{ const ex=(id,name,muscle,sets,type)=>({id,name,muscle,type:type||'machine',sets});
     db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',sessions:[],split:{name:'s',days:[
       {id:'a',name:'chest/push A',exercises:[ex('x1','pushdown','triceps',1,'cable'),ex('x2','press banca','chest',4),ex('x3','sentadilla','quads',2),ex('x4','pantorrilla','calfs',3)]},
@@ -7495,24 +7688,39 @@ function _v352SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
       A('SP3 · empate de series: gana el que nombra el día (quads/legs A)', Mt.days[4].tgt==='quads'); days0[4].exercises[0].sets=2; bumpIdx(); }
     A('SP3 · el primer ejercicio, aunque no sea el objetivo', M.days[0].first==='triceps'&&M.days[1].first==='lats');
     A('SP3 · por semana: las veces de tu plan', Math.abs(R('chest').fw-Math.round(2*ccShare().p*7/6*10)/10)<0.05);
-    // lo que se ve
-    state._covOpen=undefined; state._covUnit=undefined; state._covPlan=null; let h=plannedVolumeSection();
-    A('SP3 · //COVERAGE abre desplegada, con la tabla', /data-act="sd_cov" aria-expanded="true"/.test(h)&&/class="cvg" style="--cvn:8"/.test(h));
-    A('SP3 · descanso sombreado (2 columnas) y su guion', (h.match(/class="cvh cvr"/g)||[]).length===2&&(h.match(/class="cvr cvz">—/g)||[]).length===2);
-    A('SP3 · el objetivo y el primer ejercicio, marcados (sin color)', /class="cvc cvt"><span>4<\/span>/.test(h)&&/class="cvc cvf"><span>1<\/span>/.test(h)&&/class="cvc cvt"><span>5<\/span>/.test(h));
-    A('SP3 · cabecera con el nombre corto del día', /<div class="cvh"><span>push A<\/span>/.test(h)&&/<div class="cvh"><span>legs B<\/span>/.test(h));
-    A('SP3 · la fila de pecho: veces 2 · series 6', /<div class="cvm">chest<\/div><div class="cvn">2<\/div><div class="cvn">6<\/div>/.test(h));
-    state._covOpen=false; A('SP3 · se pliega', !/class="cvg"/.test(plannedVolumeSection())); state._covOpen=undefined;
+    // lo que se ve (v358 · el mapa con cajón)
+    state._covOpen=undefined; state._covUnit=undefined; state._covPlan=null; state._cvxD=null; state._cvxSort=undefined; let h=plannedVolumeSection();
+    A('SP3 · //COVERAGE abre desplegada, con el mapa de 8 columnas', /data-act="sd_cov" aria-expanded="true"/.test(h)&&/class="cvx" data-n="8"/.test(h));
+    A('SP3 · descanso: una franja por renglón en cada descanso', (h.match(/class="cvxz"/g)||[]).length===2*(2+M.rows.length));
+    A('SP3 · objetivo (raya) y primer ejercicio (punto), sin color, con su número', /<i class="l3 t"><b>4<\/b><\/i>/.test(h)&&/<i class="l1 f"><b>1<\/b><\/i>/.test(h)&&/<i class="l4 t"><b>5<\/b><\/i>/.test(h)&&/<i class="l2 f"><b>2<\/b><\/i>/.test(h));
+    A('SP3 · cabecera con el nombre completo del día (B-12)', /<b>chest\/push A<\/b>/.test(h)&&/<b>hams\/legs B<\/b>/.test(h));
+    A('SP3 · el renglón de pecho: veces 2 · series 6, y el renglón entero es el toque', /data-act="cvx_m" data-k="chest"[^>]*><span class="cvxl">chest<\/span><span class="cvxn">2<\/span><span class="cvxn s">6<\/span>/.test(h));
+    state._covOpen=false; A('SP3 · se pliega', !/class="cvx"/.test(plannedVolumeSection())); state._covOpen=undefined;
     state._covUnit='semana'; h=plannedVolumeSection(); A('SP3 · semana: veces/sem', /veces\/sem/.test(h)); state._covUnit=undefined;
+    // el cajón: reparte en memoria con los totales en vivo; nada llega al split hasta [aplicar]
+    { const sp0=JSON.stringify(db.split); cvxSet('chest',0,6); const X=cvxModel(), R2=X.rows.find(r=>r.k==='chest');
+      A('SP9 · pecho a 6 en push A: 8 en la vuelta y el día en 12', R2.s===8&&R2.s0===6&&X.days[0].tot===12&&X.days[0].tot0===10&&cvxNChg()===1);
+      h=plannedVolumeSection(); A('SP9 · el mapa marca la celda cambiada y dice que falta aplicar', /<i class="l4 t c"><b>6<\/b><\/i>/.test(h)&&/>1 sin aplicar</.test(h));
+      A('SP9 · el cajón del músculo: el total con su cambio y el % del día', /8 series <span class="u-o50">▲ \+2<\/span>/.test(cvxSheetMHTML('chest',0))&&/data-act="cvx_pct" data-k="chest" data-i="0">50% ▾</.test(cvxSheetMHTML('chest',0)));
+      A('SP9 · el cajón del día: su total con su cambio y el objetivo subrayado', /12 series <span class="u-o50">▲ \+2<\/span>/.test(cvxSheetDHTML(0,'chest'))&&/data-act="cvx_m" data-k="chest"[^>]*><span class="cvxnm t">/.test(cvxSheetDHTML(0,'chest')));
+      A('SP9 · nada llega al split sin aplicar', JSON.stringify(db.split)===sp0);
+      const W=cvxWrites(); A('SP9 · aplicar: el cambio cae en el último ejercicio de pecho del día', W.length===1&&W[0].ei===1&&W[0].from===4&&W[0].to===6);
+      cvxSet('chest',0,4); A('SP9 · volver al número de tu split = sin cambio', cvxNChg()===0&&state._cvxD==null);
+      cvxSet('uback',1,4); cvxEven('uback'); const Xe=cvxModel(); A('SP9 · repartir parejo: mismo total, días que ya lo tenían', [1,3,5].map(i=>Xe.days[i].per.get('uback')).join()==='3,3,2'&&Xe.rows.find(r=>r.k==='uback').s===8);
+      cvxUndo1('uback'); A('SP9 · como estaba', cvxNChg()===0);
+      const keys=x=>(x.match(/data-act="cvx_m" data-k="[^"]+"/g)||[]).map(t=>t.slice(t.indexOf('data-k="')+8,-1));
+      state._cvxSort='series'; let ks=keys(plannedVolumeSection()); A('SP9 · ordenar por series: el de más series primero', ks.length===M.rows.length&&M.rows.find(r=>r.k===ks[0]).s===Math.max(...M.rows.map(r=>r.s)));
+      state._cvxSort='veces'; ks=keys(plannedVolumeSection()); A('SP9 · ordenar por veces: el de más veces primero', M.rows.find(r=>r.k===ks[0]).f===Math.max(...M.rows.map(r=>r.f)));
+      state._cvxSort=undefined; }
     // SP4 · otro patrón sin guardarlo
     const plan0=JSON.stringify(db.split.plan); state._covPlan='2/1'; h=plannedVolumeSection();
-    A('SP4 · ver con 2/1: 9 columnas y tres descansos, sin tocar tu plan', /--cvn:9/.test(h)&&(h.match(/class="cvh cvr"/g)||[]).length===3&&JSON.stringify(db.split.plan)===plan0&&/data-act="cv_use"/.test(h));
+    A('SP4 · ver con 2/1: 9 columnas y tres descansos, sin tocar tu plan', /data-n="9"/.test(h)&&(h.match(/class="cvxz"/g)||[]).length===3*(2+M.rows.length)&&JSON.stringify(db.split.plan)===plan0&&/data-act="cv_use"/.test(h));
     state._covPlan='3/1'; A('SP4 · ver con el tuyo no es vista previa', covPreview()==null&&!/data-act="cv_use"/.test(plannedVolumeSection()));
     state._covPlan=null; db.split.plan={mode:'daily'}; bumpIdx(); h=plannedVolumeSection(); A('SP4 · en diario, la opción "diario" es la tuya', /data-v="daily">diario<\/button>/.test(h)&&/class="t on" data-act="cv_pat" data-v="daily"/.test(h));
     { const days1=JSON.parse(JSON.stringify(db.split.days)); days1[4].exercises[0].muscle='Chest'; db.split.days=days1; bumpIdx(); const Mc=covMatrix();
       A('SP3 · "Chest" y "chest" son la misma fila (con la etiqueta que escribiste primero)', Mc.rows.filter(r=>mNorm(r.m)==='chest').length===1&&Mc.rows.find(r=>r.k==='chest').s===6&&Mc.rows.find(r=>r.k==='chest').m==='chest'); days1[4].exercises[0].muscle='chest'; bumpIdx(); }
     db.split.plan={mode:'weekly',week:{1:'a',3:'b'},blocked:[0]}; bumpIdx(); state._covPlan=null; h=plannedVolumeSection();
-    A('SP3 · días fijos: la inicial del día y sin gym distinto de rest', /<span>L push A<\/span>/.test(h)&&/<span>X legs B<\/span>/.test(h)&&/<span>D sin gym<\/span>/.test(h)&&/<span>M rest<\/span>/.test(h)&&/data-v="weekly">fijos<\/button>/.test(h));
+    A('SP3 · días fijos: la inicial del día en cada columna, también en las franjas', /<b>L chest\/push A<\/b>/.test(h)&&/<b>X hams\/legs B<\/b>/.test(h)&&/<span class="cvxz"><b>D<\/b><\/span>/.test(h)&&/<span class="cvxz"><b>M<\/b><\/span>/.test(h)&&/data-v="weekly">fijos<\/button>/.test(h));
     A('SP3 · "músculo" lleva su punteado (se toca para saber qué es cada marca)', /data-gloss="cov"><span class="u-dash">músculo<\/span>/.test(h));
     console.log('v352 self-check OK');
   } finally { db=real; K.forEach(k=>state[k]=s0[k]); bumpIdx(); }
@@ -7702,7 +7910,7 @@ function openSplitHist(){ const L=db.splitLog||[]; if(!L.length)return; const cu
 function splitRestoreObj(J){ const o=JSON.parse(J), now=Date.now(), cur=new Map(((db.split&&db.split.days)||[]).map(d=>[d&&d.id,d]));
   (o.days||[]).forEach(d=>{ if(!d)return; const c=cur.get(d.id); if(!c||splitSig(c)!==splitSig(d))d.mt=now; else if(c.mt!=null)d.mt=c.mt; }); return o; }
 function splitRestore(i){ const L=db.splitLog||[], F=splitLogFulls(); if(!L[i]||!F[i])return; const cur=splitJSON(db.split), mts=new Map(((db.split&&db.split.days)||[]).map(d=>[d&&d.id,d&&d.mt])); let nx=null; try{ nx=splitRestoreObj(F[i]); }catch(_){ return; }
-  const last=L[L.length-1], lf=last&&last.fixed, n0=L.length; if(last)last.fixed=true; db.split=nx; closeModal(); const ok=save(); reRender();
+  const last=L[L.length-1], lf=last&&last.fixed, n0=L.length; if(last)last.fixed=true; db.split=nx; state._cvxD=null; closeModal(); const ok=save(); reRender();
   // deshacer: el split exacto de antes, con las horas de cada día como estaban, y sin la tanda de "volver"
   if(ok)toast('✓ el split como estaba · '+fmtShort(todayISO(new Date(L[i].t))),'ok',{undo:()=>{ const sp=JSON.parse(cur); (sp.days||[]).forEach(d=>{ const v=d&&mts.get(d.id); if(v!=null)d.mt=v; }); db.split=sp;
     const L2=db.splitLog||[]; if(L2.length>n0)splitLogPop(L2); if(last){ if(lf)last.fixed=lf; else delete last.fixed; } splitWatchReset(); }}); else toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err'); }
@@ -7771,7 +7979,7 @@ function splitSet(next,list,msg){ if(db.activeWork){ toast('⚠ termina o guarda
   const prev=splitClone(db.split), prevL=splitClone(splitsSaved()), prevR=db.rotIdx, hadL=Array.isArray(db.splits), prevLog=Array.isArray(db.splitLog)?db.splitLog:null, drop=_spDropped; try{ idbSnap('split',db); }catch(_){}
   const log=Array.isArray(next.log)?next.log:[], rot=+next.rotIdx||0; delete next.log; delete next.rotIdx; delete next.savedAt;
   db.splits=list; db.split=next; db.splitLog=log; db.rotIdx=rot<(next.days||[]).length?rot:0; splitWatchReset(); const nextJ=splitJSON(next);
-  state.selDay=null; state._covPlan=null; state._sdOpen={}; closeModal(); const ok=save(); reRender();
+  state.selDay=null; state._covPlan=null; state._cvxD=null; state._sdOpen={}; closeModal(); const ok=save(); reRender();
   // deshacer: vuelve el de antes con su historial y su día; si ya editaste el nuevo, ese se queda guardado en tus splits
   if(ok)toast(msg+(drop?' · se borró «'+drop+'» (guardas 12)':''),'ok',{undo:()=>{ const now=db.split, keep=!!now&&splitJSON(now)!==nextJ&&(now.days||[]).some(d=>(d.exercises||[]).length), kept=keep?splitArchived(now):null;
       db.split=prev; if(hadL)db.splits=prevL; else delete db.splits; if(kept)db.splits=splitsSaved().concat([kept]).slice(-12);
@@ -7901,6 +8109,49 @@ function _v357SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('MC2 · prendido (vista normal), su renglón compacto sigue en el panel para apagarlo', !!q('.kpanel [data-act="mmmenu"]'));
     console.log('v357 self-check OK');
   } finally { try{ closeAsk(true); }catch(_){} try{ closeModal(); }catch(_){} db=real; bumpIdx(); K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; window._swipeGuard=sg0; _sbx=sb0; try{ render(); }catch(_){} }
+}
+// self-check de v358 (SP9 · E12): el mapa con números, el orden quieto, el cajón, aplicar de verdad (y su deshacer) y la franja visible.
+// Base de juguete; nada llega a disco; todo se restaura en finally.
+function _v358SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v358: '+nm); }; const real=db, K=['_covOpen','_covUnit','_covPlan','_cvxD','_cvxSort','_cvxS','_spw'], s0={}; K.forEach(k=>s0[k]=state[k]);
+  const sv=save, st=toast, rr=reRender; let U=null;
+  try{ const ex=(id,name,muscle,sets,type)=>({id,name,muscle,type:type||'machine',sets});
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',sessions:[],split:{name:'s',days:[
+      {id:'a',name:'chest/push A',exercises:[ex('x1','pushdown','triceps',1,'cable'),ex('x2','press banca','chest',4),ex('x3','sentadilla','quads',2),ex('x4','pantorrilla','calfs',3)]},
+      {id:'b',name:'hams/legs B',exercises:[ex('x5','pulldown','lats',2,'cable'),ex('x6','curl femoral','hams',5),ex('x7','abductor','abduc',1),ex('x8','hip thrust','glutes',2),ex('x9','remo','uback',2,'cable')]},
+      {id:'c',name:'delts/push B',exercises:[ex('y1','lateral','delts',4),ex('y2','extension','triceps',2),ex('y3','cardio','cardio',9,'cardio')]},
+      {id:'d',name:'pull B',exercises:[ex('y4','remo pecho apoyado','uback',3),ex('y5','jalón','lats',1),ex('y6','curl','bicep',2)]},
+      {id:'e',name:'quads/legs A',exercises:[ex('y8','press','chest',2),ex('y7','hack','quads',4)]},
+      {id:'f',name:'pull A',exercises:[ex('y9','jalón','lats',3),ex('z1','remo','uback',1)]}],plan:{mode:'cycle',on:3,off:1,blocked:[]}}}); bumpIdx();
+    K.forEach(k=>{ state[k]=undefined; }); state._spw=true; splitWatchReset(); save=()=>{ splitWatch(); return true; }; reRender=()=>{}; toast=(m,ty,o)=>{ if(o&&o.undo)U=o.undo; return null; };
+    let h=plannedVolumeSection();
+    A('SP9 · cada bloque lleva su número y la cabecera el nombre completo del día (B-12)', /<i class="l3 t"><b>4<\/b><\/i>/.test(h)&&/<b>chest\/push A<\/b>/.test(h)&&/<b>hams\/legs B<\/b>/.test(h));
+    A('SP9 · arriba solo ver con y orden (lo semanal vive en el cajón)', /data-act="cv_pat"/.test(h)&&/data-act="cvx_sort"/.test(h)&&!/data-act="cv_unit"/.test(h));
+    // el orden no se mueve mientras repartes
+    state._cvxSort='series'; const keys=x=>(x.match(/data-act="cvx_m" data-k="[^"]+"/g)||[]).map(t=>t.slice(t.indexOf('data-k="')+8,-1)); const k0=keys(plannedVolumeSection()).join();
+    cvxSet('bicep',3,20); A('SP9 · ordenado por series, repartir no reacomoda los renglones', keys(plannedVolumeSection()).join()===k0&&/data-rk="cvx:bicep"/.test(plannedVolumeSection())); cvxUndo1('bicep'); state._cvxSort=undefined;
+    // ronda 2: lo que falta aplicar va debajo del mapa; el borrador se limpia contra tu split de ahora; un nombre largo no aplasta el mapa
+    cvxSet('chest',0,6); h=plannedVolumeSection(); A('SP9 · "N sin aplicar" va DEBAJO del mapa (no lo empuja al salir o quitarse)', h.indexOf('class="cvx"')>=0&&h.indexOf('cvxpend')>h.indexOf('class="cvx"'));
+    state._cvxD=Object.assign({},state._cvxD,{zzz:{chest:9}}); plannedVolumeSection(); A('SP9 · un día que ya no existe sale del borrador', !state._cvxD.zzz&&cvxNChg()===1); cvxSet('chest',0,4);
+    A('SP9 · la columna del músculo se topa al 32 % y cada día conserva su mínimo', /--cvxc:minmax\(7ch,min\(\d+ch,32%\)\) 3ch 4ch minmax\(var\(--s4\),1fr\)/.test(plannedVolumeSection()));
+    // el cajón
+    cvxSet('chest',0,6); h=cvxSheetMHTML('chest',0);
+    A('SP9 · el cajón: % con ▾, el total del día bajo su nombre, el ejercicio que cambia y los descansos de tu plan', /data-act="cvx_pct" data-k="chest" data-i="0">50% ▾</.test(h)&&/12 en el día · → press banca/.test(h)&&/<div class="cvxrest">descanso<\/div>/.test(h)&&/~\d+ series/.test(h));
+    A('SP9 · el pie dice cuántos cambios y cuántas series, y aplicar está prendido', /cambios<\/span><span class="dots"><\/span><span class="v">1 · \+2 series/.test(h)&&!/data-act="cvx_apply" aria-disabled/.test(h));
+    h=plannedVolumeSection(); A('SP9 · el mapa: ▲ en los totales que cambiaron', /<span class="cvxn s"><i class="cvxu">▲<\/i>8<\/span>/.test(h));
+    // aplicar: sube, agrega y quita; el día gana su hora y la tanda queda en el historial; deshacer lo deja como estaba
+    cvxSet('delts',0,3); cvxSet('calfs',0,0); const sp0=JSON.stringify(db.split);
+    A('SP9 · a un día sin ese músculo se le agrega el de otro día de tu split', (W=>W.some(w=>w.add&&w.k==='delts'&&w.pick&&w.pick.name==='lateral'&&w.pick.id!=='y1'))(cvxWrites())&&cvxPick('zzz',0)==null);
+    cvxApply(); const d0=db.split.days[0], nm=d0.exercises.map(e=>e.name+':'+e.sets).join();
+    A('SP9 · aplicar escribe en tu split: press 4→6, + lateral 3, pantorrilla fuera', nm==='pushdown:1,press banca:6,sentadilla:2,lateral:3'&&state._cvxD==null);
+    A('SP9 · …el día gana su hora (Start sale con tu split) y la tanda queda en el historial', d0.mt>1&&(db.splitLog||[]).length===1&&!db.split.days[1].mt);
+    A('SP9 · …y el mapa ya lo trae sin borrador', !/sin aplicar/.test(plannedVolumeSection())&&cvxModel().rows.find(r=>r.k==='delts').s===7);
+    U(); save(); A('SP9 · deshacer: el split como estaba, sin hora ni tanda', JSON.stringify(db.split)===sp0&&!db.split.days[0].mt&&(db.splitLog||[]).length===0);
+    A('SP9 · sin cambios, aplicar está apagado', /data-act="cvx_apply" aria-disabled="true"/.test(cvxSheetMHTML('chest',0)));
+    // E12 · la franja de tu habitual se ve: 11 px, --o30, asomando arriba y abajo de la línea
+    { const b=document.createElement('div'); b.className='vbar vbm'; b.innerHTML='<i></i><span class="vbh" style="left:10%;width:40%"></span>'; document.body.appendChild(b); const cs=getComputedStyle(b.querySelector('.vbh'));
+      A('E12 · la franja: 11 px y más opaca', cs.height==='11px'&&parseFloat(cs.top)<=-4); b.remove(); }
+    console.log('v358 self-check OK');
+  } finally { save=sv; toast=st; reRender=rr; try{ closeModal(); }catch(_){} db=real; K.forEach(k=>{ state[k]=s0[k]; }); bumpIdx(); splitWatchReset(); }
 }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
@@ -14009,7 +14260,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='sp_allowf'){ db.split.allowF=el.dataset.v==='1'; save(); reRender(); }
   else if(a==='sd_addday'){ const _nd={id:'d'+uid(),name:sdNewDayName(),tag:'@ RIR · F',metric:'rir',allowFailure:true,exercises:[]}; db.split.days.push(_nd); (state._sdOpen=state._sdOpen||{})[_nd.id]=true; state._enter={sel:'.seday[data-id="'+_nd.id+'"]'}; save(); reRender(); }
   else if(a==='sd_fold'){ const _d=db.split.days[+el.dataset.di]; if(_d){ const _op=!sdOpen(_d,db.split); (state._sdOpen=state._sdOpen||{})[_d.id]=_op; if(_op)state._enter={sel:'.seday[data-id="'+(window.CSS&&CSS.escape?CSS.escape(_d.id):_d.id)+'"] > :not(.sehead)'}; reRender(); } }   // v285 · SP1
-  else if(a==='sd_cov'){ state._covOpen=!(state._covOpen!==false); if(state._covOpen)state._enter={sel:'.sefoldh ~ .line.sch, .sefoldh ~ .cvwrap'}; reRender(); }   // v285 · SP2 · v352: abre desplegada
+  else if(a==='sd_cov'){ state._covOpen=!(state._covOpen!==false); if(state._covOpen)state._enter={sel:'.sefoldh ~ .line.sch, .sefoldh ~ .cvx'}; reRender(); }   // v285 · SP2 · v352: abre desplegada
   else if(a==='sd_exmenu'){ sdExMenu(+el.dataset.di,+el.dataset.ei); }   // v356 · SP8
   else if(a==='sd_daymenu'){ sdDayMenu(+el.dataset.di); }
   else if(a==='sp_new'){ closeModal(); openNewSplit(); }   // v356 · SP7
@@ -14024,6 +14275,7 @@ document.getElementById('app').addEventListener('click',e=>{
     { const v=document.getElementById('view'), b=v&&v.querySelector('[data-act="cv_pat"].on'); if(b)_lastTap={sig:tapSig(b),sel:sigSel(b),el:b,sheet:null,view:true,off:b.getBoundingClientRect().top-v.getBoundingClientRect().top,rk:'',rkOff:0}; }   // el patrón que elegiste no se mueve aunque //SCHEDULE crezca arriba (v285)
     const ok=save(); reRender();
     if(ok)toast('✓ tu plan · '+pv.on+' on / '+pv.off+' off','ok',{undo:()=>{ if(had)db.split.plan=old; else delete db.split.plan; }}); else toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err'); }
+  else if(a.indexOf('cvx_')===0){ cvxAct(a,el,e); }   // v358 · SP9 · el mapa con cajón
   else if(a==='exdirectory'){ window._mgSel=[]; openExerciseDirectory(); }
   else if(a==='muscledetail'){ openMuscleDetail(el.dataset.id); }
   else if(a==='mdmore'){ const bx=document.getElementById('mdmore'); if(bx)keepUnder(el,()=>{ const op=bx.hidden; bx.hidden=!op; el.textContent=op?'menos':'más'; el.setAttribute('aria-expanded',op?'true':'false'); }); if(bx&&bx.hidden===false)revealAnim(bx); }   // estímulo · detalle de músculo: [más]/[menos]
@@ -18205,7 +18457,7 @@ const GLOSS={
   rirjump:'fallo anotado · tus series a F o RIR 0: si con el mismo peso suben 2 reps o más de una sesión a la siguiente, probablemente quedaba alguna.',
   racha:'racha: días seguidos con comida o gym registrados a mano. Solo se corta el día sin ninguno de los dos; hoy cuenta hasta medianoche.',
   stim:'σ · unidades de tensión mecánica: una medida propia de gym//TRK que estima el estímulo de cada serie, sumado por músculo en 7 días. Cada serie cuenta según su peso relativo y su cercanía al fallo; las indirectas, con su peso. Es un cálculo de la app, no una medida de laboratorio. En cada músculo, la línea llena es tu σ de 7 días; la franja de atrás, tu habitual (de tus 8 semanas anteriores, del cuartil bajo al alto); el tramo más claro de la línea, tu meta (lo que pide tu split, con 1 RIR más o 1 menos que el tuyo), y la raya que lo cruza, la meta exacta.',   // v353 · E10
-  cov:'cada columna es un día de una vuelta de tu plan (rest = descanso); cada celda, las series que ese día le da al músculo principal de sus ejercicios. Subrayado: el músculo que más trabaja ese día. En recuadro: el del primer ejercicio. Veces y series: en una vuelta, o por semana con tu plan (cuenta tus días sin gym).',   // v352 · SP3
+  cov:'columnas: los días de una vuelta (franja = descanso); bloque: las series de ese día (más claro, más). Raya: el que más trabaja ese día. Punto: el primer ejercicio. Punteado y ▲▼: sin aplicar. Toca un músculo para repartirlo; aplicar lo escribe en tu split.',   // v358 · SP9
   stimh:'series duras de 7 días por músculo: las que quedaron a RIR 4 o menos (o sin RIR anotado). Par unilateral = 1, drop = 0.5; las indirectas cuentan con su peso.',
   stima:'series totales de 7 días por músculo: todas las registradas, a cualquier RIR. Par unilateral = 1, drop = 0.5; las indirectas cuentan con su peso.',
 };
@@ -18598,7 +18850,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
