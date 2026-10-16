@@ -1508,7 +1508,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v356';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v357';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -3854,7 +3854,7 @@ function renderNav(){
   if(n.dataset.built!=='1'){ // construir UNA vez; luego solo toggle .active → la transición CSS anima (innerHTML cada render mataría la animación)
     // v226: stack y agenda salen de la barra (el dueño no las usaba: "ni siquiera me incentiva meterme").
     // Ningún dato se borra — db.stack/db.adhoc siguen, el check diario vive en macros y el ABM en el menú u/.
-    const tabs=[['progress','progress'],['home','gym'],['macros','macros']];
+    const tabs=[['progress','progress'],['home','gym'],['macros','intake']];   // v357 · MC1 · "macros es un apartado del intake" (el id sigue siendo macros)
     n.innerHTML=tabs.map(t=>`<a data-act="nav" data-screen="${t[0]}" role="link">${t[1]}</a>`).join('');   // v267: solo texto; el > lo pone el CSS
     n.dataset.built='1';
   }
@@ -5930,7 +5930,7 @@ function _v291SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     db=real; K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; _sheetMem=null; bumpIdx(); _sbx=sb0; try{ render(); }catch(_){} }
 }
 function _v290SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v290: '+nm); };
-  const real=db, sb0=_sbx, K=['screen','_scroll','_paintedKey','_viewScroll','macroDate','macroOpen','macroPct','previewDay','selDay','work','_lfold','_lfoldD','_mealOpen'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
+  const real=db, sb0=_sbx, K=['screen','_scroll','_paintedKey','_viewScroll','macroDate','macroOpen','nutOpen','macroPct','previewDay','selDay','work','_lfold','_lfoldD','_mealOpen'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
   const v=document.getElementById('view'), md=()=>document.getElementById('modal'), el=id=>document.getElementById(id), fa0=window._faCtx, fl0=window._faLock, lg0=window._log;
   const tap=e=>e.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})), fs=e=>getComputedStyle(e).fontSize, R=e=>e.getBoundingClientRect();
   const T=todayISO(), Y=shiftDate(T,-1), S=(w,r)=>({w:String(w),r:String(r),rir:'1',unit:'lbs',side:null,done:true});
@@ -5957,7 +5957,7 @@ function _v290SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
       A('recovery / readiness a 10 px, con el número en negrita', Array.from(v.querySelectorAll('.ready.rec')).every(e=>fs(e)==='10px'&&+getComputedStyle(e.querySelector('b')).fontWeight>=700));
       A('el nombre del día sigue en 20 px y ▶ start workout es el único primario', fs(v.querySelector('.wname'))==='20px'&&v.querySelectorAll('button.start').length===1); }
     // 2 · glifos que la fuente no trae: ya no salen en gym, macros ni en las hojas de comida
-    { const BAD=/[▴▸←↻⎘✎↺]/; state.screen='macros'; state.macroDate=null; state.macroOpen=true; state._lfold=null; render();
+    { const BAD=/[▴▸←↻⎘✎↺]/; state.screen='macros'; state.macroDate=null; state.macroOpen=true; state.nutOpen=true; state._lfold=null; render();
       A('gym y macros sin ▴ ▸ ← ↻ ⎘ ✎ ↺', !BAD.test(renderHome())&&!BAD.test(v.innerHTML));
       // 3 · M6 · aros de "te queda"
       const num=()=>Array.from(document.querySelectorAll('#frings .frc .num')).map(e=>e.textContent).join(' | ');
@@ -5989,11 +5989,11 @@ function _macroVizSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHE
   const t={kcal:1850,protein:142,carbs:200,fat:60}, s=macroSplit(t);
   A('el reparto por kcal suma 100', s.p+s.c+s.f===100&&s.p===30&&s.c===42&&!macroSplit({}));
   // v290 · solo aros + radar plegable (en sandbox: nada de esto llega al almacenamiento)
-  const sb0=_sbx, K=['screen','macroOpen','macroPct','macroDate','_scroll','_paintedKey'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
+  const sb0=_sbx, K=['screen','macroOpen','nutOpen','macroPct','macroDate','_scroll','_paintedKey'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
   db.settings=db.settings||{}; const had=Object.prototype.hasOwnProperty.call(db.settings,'radarOpen'), r0=db.settings.radarOpen, v=document.getElementById('view');
   const tap=el=>el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})), q=s=>v.querySelector(s);
   _sbx=true;
-  try{ delete db.settings.radarOpen; state.screen='macros'; state.macroOpen=true; state.macroPct=false; state.macroDate=null; render();
+  try{ delete db.settings.radarOpen; state.screen='macros'; state.macroOpen=true; state.nutOpen=false; state.macroPct=false; state.macroDate=null; render();
     A('el panel abierto trae los tres aros y ninguna pestaña ni carrusel', v.querySelectorAll('.kpanel .rings .cell').length===3&&!q('.mvtabs')&&!q('#mvtrack')&&!/barras|medidor|reparto|tabla/.test(q('.kpanel').textContent));
     const row=q('[data-act="radarfold"]');
     A('el radar viene plegado, en una fila de 44 que dice `radar`', !!row&&row.getAttribute('aria-expanded')==='false'&&!q('.kpanel .macro-rad')&&/^radar/.test(row.textContent)&&row.getBoundingClientRect().height>=44);
@@ -6003,7 +6003,7 @@ function _macroVizSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHE
     const y1=row2.getBoundingClientRect().top; tap(row2);
     A('…y otra vez la pliega, también sin moverse', !q('.kpanel .macro-rad')&&db.settings.radarOpen===false&&Math.abs(q('[data-act="radarfold"]').getBoundingClientRect().top-y1)<=1);
     const order=Array.from(q('.kpanel').children).map(e=>e.className.split(' ')[0]).join(',');
-    A('orden: anillo de kcal → balance → (carb day · mamarre) → aros → [ver %] → radar → INTAKE', /^hero(,hbal)?(,line)*,rule,rings,kp-unit,line,rule,grp-label/.test(order));
+    A('orden: anillo de kcal → balance → (carb day · mamarre) → aros → [ver %] → radar → nutrients (v357)', /^hero(,hbal)?(,line)*,rule,rings,kp-unit,line(,rule,line)?$/.test(order));
     A('la tarjeta para compartir sigue trayendo radar y aros', /macro-rad/.test(renderShareMacros())&&/class="rings"/.test(renderShareMacros()));
   } finally { if(had)db.settings.radarOpen=r0; else delete db.settings.radarOpen; K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; _sbx=sb0; try{ render(); }catch(_){} }
   console.log('macro viz self-check OK'); }
@@ -6642,7 +6642,7 @@ function _v333SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     console.log('v333 self-check OK');
   } finally { try{ closeModal(); }catch(_){} ghost(); window._volWeeks=vw0; db=real; _sbx=sb0; bumpIdx(); } }
 // self-check de v334 (D4 · D4b · S-DOSIS b): agua contra líquidos, despertares, la hora que propone el reloj y una toma con su propio periodo. Base de juguete; no guarda nada.
-function _v334SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v334: '+nm); }; const real=db, sb0=_sbx, _sv=save, _rr=reRender, _t=toast, K=['screen','macroDate','macroOpen','_lfold','_lfoldD','_mealOpen'], st0={}, tab0=window._stackTab; K.forEach(k=>{ st0[k]=state[k]; });
+function _v334SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v334: '+nm); }; const real=db, sb0=_sbx, _sv=save, _rr=reRender, _t=toast, K=['screen','macroDate','macroOpen','nutOpen','_lfold','_lfoldD','_mealOpen'], st0={}, tab0=window._stackTab; K.forEach(k=>{ st0[k]=state[k]; });
   const ghost=()=>{ const g=window._modalGhost; if(g){ try{ g.remove(); }catch(_){} window._modalGhost=null; } };
   try{ _sbx=true; save=()=>true; reRender=()=>{}; toast=()=>null; try{ closeModal(); }catch(_){} ghost(); const T=todayISO(), D=k=>shiftDate(T,-k);
     db=migrate({_idfix:true,_fsfix:true,_dataVer:3,profile:{username:'t'},settings:{goals:{kcal:2400,protein:180,carbs:250,fat:70,water:3}},split:{name:'t',days:[]},sessions:[],
@@ -6673,7 +6673,7 @@ function _v334SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     const md=buildExportMd(db);
     A('D4b · el export trae los despertares de la noche que los tiene y raya en la que no', /\| despierto \| despertares \| REM \|/.test(md)&&/\| 30 min \| 3 \| 1 h 35 min \|/.test(md)&&/\| — \| — \| — \| — \| — \| — \| 7 h 30 min \| a mano \|/.test(md));
     A('D4 · el export separa agua (contra la meta) de líquidos (agua + bebidas)', /\| fecha \| peso \| pasos \| agua \| líquidos \| FC reposo \| HRV \|/.test(md)&&/\| — \| — \| 0\.5L \| 0\.7L \| — \| — \|/.test(md)&&/agua = solo agua/.test(md)&&/- leche — 120kcal .* · líquido 0\.2L/.test(md)&&/- agua — 0kcal .* · agua 0\.5L/.test(md));
-    state.screen='macros'; state.macroDate=T; state.macroOpen=true; const h=renderMacros();
+    state.screen='macros'; state.macroDate=T; state.macroOpen=true; state.nutOpen=true; const h=renderMacros();   // v357 · el agua vive en nutrients
     A('D4 · en macros la fila es `water` (solo agua, contra su meta) y los líquidos van aparte', /<span class="ml">water<\/span>/.test(h)&&/<span class="g mlq">liquids 0\.7 L<\/span>/.test(h)&&!/<span class="ml">liquids<\/span>/.test(h)&&/>0\.5 <span class="g">\/ \d/.test(h));
     db.meals[T]=[{id:'w1',tag:'drink',name:'agua',kcal:0,water:0.75},{id:'l1',tag:'breakfast',name:'té',kcal:5,water:0.04}]; bumpIdx(); A('D4 · si agua y líquidos se leen igual (0.8 y 0.8), no se repite', renderMacros().indexOf('mlq')<0);
     { const el=document.createElement('input'); el.type='time'; el.dataset.mt='breakfast'; const n0=nowHM(); mealClockArm(el,true); const n1=nowHM(); A('D4b · el reloj de una comida de hoy propone la hora de este momento (desde v317)', el.value===n0||el.value===n1);
@@ -7258,7 +7258,7 @@ function mmRefresh(){ if(window._mdKey&&document.getElementById('modal')&&docume
 function mmTagHTML(date){ const k='<span class="k">mamarre</span><span class="dots"></span>';
   if(date!==todayISO())return !mamarreOn(date)?'':state._mmNormal===date?'<button type="button" class="line stat tap kp-rad kp-cc" data-act="mmback">'+k+'<span class="v">vista mamarre ›</span></button>':'<div class="line stat kp-rad">'+k+'<span class="v">sí</span></div>';
   const p=mmCur(); return p?'<button type="button" class="line stat tap kp-rad kp-cc" data-act="mmmenu" aria-label="mamarre prendido desde '+escTxt(fmtShort(p.from))+' · opciones">'+k+'<span class="v">on · desde '+escTxt(fmtShort(p.from))+' ›</span></button>'
-    :'<button type="button" class="line stat tap kp-rad kp-cc" data-act="mmtog" aria-label="mamarre apagado · prender">'+k+'<span class="v">off ›</span></button>'; }
+    :'';   /* v357 · MC2 · apagado no sale en el panel: se prende desde u/ */ }
 // el carril: los periodos van juntos en UN renglón (`row`), sólido. Van antes que las sustancias: el carril tiene 4 renglones.
 function mmRail(fromISO,toISO){ const T=todayISO(); return mmList().filter(p=>p.from<=toISO&&(p.to||T)>=fromISO).map(p=>{ const to=p.to||T; return {from:p.from<fromISO?fromISO:p.from,to:to>toISO?toISO:to,label:'mamarre',cut:true,cls:'mm',row:'mm',id:p.id}; }); }
 // cuántos renglones ocupa un carril de abajo (las entradas con el mismo `row` comparten renglón)
@@ -7268,7 +7268,7 @@ function _v350SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
   try{ const T=todayISO(), D=k=>shiftDate(T,-k);
     db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',weightKg:61},gyms:['g'],activeGym:'g',sessions:[],meals:{[D(1)]:[{id:'m1',tag:'lunch',name:'x',qty:1,kcal:800,protein:40,carbs:80,fat:30,alcohol:0}]}}); bumpIdx();
     const g0=JSON.stringify(goalsFor(T)), h0=JSON.stringify(db.goalHist), t0=JSON.stringify(macroTotals());
-    A('MM1 · apagado: el panel dice mamarre off y se toca', /data-act="mmtog"[^>]*><span class="k">mamarre<\/span><span class="dots"><\/span><span class="v">off ›/.test(mmTagHTML(T))&&!mamarreOn(T));
+    A('MM1 · apagado: el panel no dice nada (v357 · se prende desde u/)', mmTagHTML(T)===''&&!mamarreOn(T));
     mmStart(); A('MM1 · prender abre un periodo desde hoy', mamarreOn(T)&&!!mmCur()&&mmCur().from===T&&mmCur().to===null&&/on · desde/.test(mmTagHTML(T)));
     A('MM1 · no toca metas, su historial ni los totales', JSON.stringify(goalsFor(T))===g0&&JSON.stringify(db.goalHist)===h0&&JSON.stringify(macroTotals())===t0);
     mmStop(); A('MM1 · apagar lo cierra hoy y sigue contando hoy', !mmCur()||mmCur().to===T); A('MM1 · …hoy fue mamarre', mamarreOn(T)&&db.mamarre.length===1&&db.mamarre[0].to===T);
@@ -7402,7 +7402,7 @@ function _v351SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     mmItemMenu(F.id); [...document.querySelectorAll('#asklayer .nvm')].find(x=>/quitar/.test(x.textContent)).click(); A('MM2 · quitar desde la lista', !(db.meals[T]||[]).some(m=>m.id===F.id));
     // vista normal sin apagar
     state._mmNormal=T; h=renderMacros(); A('MM2 · vista normal: macros de siempre, mamarre sigue prendido', /class="card kpanel/.test(h)&&mamarreOn(T)&&/data-act="mmmenu"/.test(h));
-    state._mmNormal=null; mmStop(); h=renderMacros(); A('MM2 · apagarlo hoy vuelve a la vista normal (hoy sigue siendo día mamarre)', /class="card kpanel/.test(h)&&mamarreOn(T)&&!mmCur()&&/data-act="mmtog"/.test(h));
+    state._mmNormal=null; mmStop(); h=renderMacros(); A('MM2 · apagarlo hoy vuelve a la vista normal (hoy sigue siendo día mamarre) y el panel ya no lo dice (v357)', /class="card kpanel/.test(h)&&mamarreOn(T)&&!mmCur()&&!/data-act="mmtog"/.test(h));
     mmStart(); h=renderMacros(); A('MM2 · prendido, la vista mamarre trae su renglón para apagarlo', /\/\/<\/span>MAMARRE/.test(h)&&/data-act="mmmenu"/.test(h));
     { const dk=(db.meals[T]||[]).find(m=>m.mmk==='beer'); A('MM2 · un trago no se reconstruye en gramos al editarlo: abre su menú', !!dk&&dk.mm===1&&!dk._food); }
     { const md=buildExportMd(db); A('MM3 · el export dice el alcohol y la ~ de lo aproximado', /- \d\d:\d\d · ~ cerveza[^\n]* A14/.test(md)||/~ cerveza[^\n]* A14/.test(md)); }
@@ -7861,6 +7861,46 @@ function _v356SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
       A('SP8 · duplicar un día no cambia el día que toca', db.split.days.length===3&&db.rotIdx===2&&db.split.days[2].id==='b'); }
     console.log('v356 self-check OK');
   } finally { db=real; state.screen=sc; state._sdOpen=so; holdConfirm=hc; bumpIdx(); }
+}
+// ---- v357 · MC1 · MC2 · MC3 · intake ----
+// El dueño (15-oct): "macros es un apartado del intake" → la pestaña dice `intake` (el id interno sigue siendo `macros`: guías, pruebas y
+// datos no se migran). "Dos desplegables, uno para los anillos y otro para el intake" → el panel tiene dos pliegues: los aros (con [ver %]
+// y su radar; se abren tocando el anillo de kcal) y `nutrients` (lo que antes era INTAKE: sodio… agua, los micros de suplementos y la
+// retención). Cada uno se recuerda en db.settings (aditivo; sin el campo, plegado). Y mamarre "está muy a la vista": apagado ya no sale en
+// el panel (se prende desde `u/`); prendido, su renglón compacto sigue ahí para apagarlo.
+function mFoldInit(){ const s=(db&&db.settings)||{}; if(state.macroOpen==null)state.macroOpen=!!s.foldRings; if(state.nutOpen==null)state.nutOpen=!!s.foldNut; }
+function mFoldSet(k,v){ db.settings=db.settings||{}; v=!!v; if(k==='r'){ state.macroOpen=v; db.settings.foldRings=v; } else { state.nutOpen=v; db.settings.foldNut=v; } save(); reRender(); }
+// self-check de v357 (MC1 · MC2 · MC3). Base de juguete; nada llega a disco; todo se restaura en finally.
+function _v357SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v357: '+nm); }; const real=db, sb0=_sbx, K=['screen','macroOpen','nutOpen','macroPct','macroDate','_scroll','_paintedKey','_mmNormal'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
+  const v=document.getElementById('view'), q=s=>v.querySelector(s), sg0=window._swipeGuard, tap=el=>{ window._swipeGuard=0; _lastTap=null; el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})); };   // sin el freno de 350 ms que deja la prueba anterior al cerrar su hoja
+  _sbx=true;
+  try{ const T=todayISO();
+    // MC1 · la pestaña y las guías dicen intake
+    A('MC1 · la pestaña dice intake (el id sigue siendo macros)', TOUR_LBL.macros==='intake'&&TOUR_STEPS.home.concat(TOUR_STEPS.homeEmpty).filter(s=>/progress · gym · intake/.test(s.t)).length===2&&!TOUR_STEPS.home.some(s=>/· macros;/.test(String(s.t))));
+    { const nv=document.querySelector('#nav a[data-screen="macros"]'); A('MC1 · la barra de abajo: progress · gym · intake', !nv||nv.textContent==='intake'); }
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',weightKg:61},gyms:['g'],activeGym:'g',sessions:[],settings:{goals:{kcal:2404,protein:150,carbs:343,fat:48,sodium:2300,potassium:3500,sugar:50,fiber:30,water:3,caffeine:400,alcohol:14}},meals:{[T]:[{id:'m1',tag:'lunch',name:'x',qty:1,kcal:800,protein:40,carbs:80,fat:30,sodium:900,potassium:400,fiber:6,sugar:10,water:0}]}}); bumpIdx();
+    // MC3 · dos pliegues, los dos cerrados de inicio
+    state.screen='macros'; state.macroDate=T; state._mmNormal=null; state.macroOpen=null; state.nutOpen=null; state.macroPct=false; render();
+    let row=q('[data-act="nutfold"]');
+    A('MC3 · sin nada guardado, los dos pliegues vienen cerrados', state.macroOpen===false&&state.nutOpen===false&&!q('.kpanel .rings')&&!q('.kpanel .mrow'));
+    A('MC2 · la fila del segundo pliegue dice nutrients, mide 44 y no hay INTAKE', !!row&&/^nutrients/.test(row.textContent.trim())&&row.getAttribute('aria-expanded')==='false'&&row.getBoundingClientRect().height>=44&&!/INTAKE/.test(q('.kpanel').textContent));
+    let y0=row.getBoundingClientRect().top; tap(row); row=q('[data-act="nutfold"]');
+    A('MC3 · nutrients se abre solo (los aros siguen cerrados), sin moverse, y se recuerda', !!q('.kpanel .mrow')&&!q('.kpanel .rings')&&row.getAttribute('aria-expanded')==='true'&&db.settings.foldNut===true&&Math.abs(row.getBoundingClientRect().top-y0)<=1);
+    tap(q('[data-act="togglemacros"]'));
+    A('MC3 · el anillo abre los aros sin cerrar nutrients, y se recuerda', !!q('.kpanel .rings')&&!!q('.kpanel .mrow')&&db.settings.foldRings===true);
+    { const order=Array.from(q('.kpanel').children).map(e=>e.className.split(' ')[0]).join(',');
+      A('MC3 · orden: anillo → aros → [ver %] → radar → nutrients → sus renglones', /^hero(,hbal)?(,line)*,rule,rings,kp-unit,line,rule,line,mrow/.test(order)); }
+    state.macroOpen=null; state.nutOpen=null; render();
+    A('MC3 · al volver, los dos pliegues se acuerdan de cómo los dejaste', state.macroOpen===true&&state.nutOpen===true&&!!q('.kpanel .rings')&&!!q('.kpanel .mrow'));
+    row=q('[data-act="nutfold"]'); y0=row.getBoundingClientRect().top; tap(row);
+    A('MC3 · cerrar nutrients deja los aros y no mueve la fila', !q('.kpanel .mrow')&&!!q('.kpanel .rings')&&db.settings.foldNut===false&&Math.abs(q('[data-act="nutfold"]').getBoundingClientRect().top-y0)<=1);
+    // MC2 · mamarre apagado no sale en el panel; se prende desde u/
+    A('MC2 · mamarre apagado no sale en el panel', !mamarreOn(T)&&!/mamarre/.test(q('.kpanel').textContent)&&!q('[data-act="mmtog"]'));
+    openNavMenu(); { const it=[...document.querySelectorAll('#modal .nvm')].find(x=>/^mamarre/.test(x.textContent.trim())); A('MC2 · …se prende desde u/', !!it&&/off/.test(it.textContent)); } closeModal();
+    mmStart(); state._mmNormal=T; render();
+    A('MC2 · prendido (vista normal), su renglón compacto sigue en el panel para apagarlo', !!q('.kpanel [data-act="mmmenu"]'));
+    console.log('v357 self-check OK');
+  } finally { try{ closeAsk(true); }catch(_){} try{ closeModal(); }catch(_){} db=real; bumpIdx(); K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; window._swipeGuard=sg0; _sbx=sb0; try{ render(); }catch(_){} }
 }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
@@ -9198,7 +9238,7 @@ function suppQuickTick(id,iso,tk){
 function renderMacros(){
   const g=goalsFor(curDate()); const {items,t,micros}=macroTotals(); const _mmv=mmView(curDate());   // v351 · MM2
   const left=Math.round(g.kcal-t.kcal); const pct=g.kcal?t.kcal/g.kcal*100:0; const kStat=macroStatus(t.kcal,g.kcal);
-  const open=state.macroOpen;
+  mFoldInit(); const open=!!state.macroOpen, nopen=!!state.nutOpen;   // v357 · MC3 · aros · nutrients
   const mkcal=(t.protein*4+t.carbs*4+t.fat*9)||1;
   state.ringRem=state.ringRem||{};
   const macroRing=(key,lbl,val,goal,unit,kpg)=>{
@@ -9210,25 +9250,30 @@ function renderMacros(){
     return `<div class="cell ${macroStatus(val,goal)}" data-act="ringtog" data-k="${key}">${ringHTML(p,'<div class="num" data-nk="m-'+key+'-'+(state.macroPct?'pct':isRem?'rem':'val')+'" data-nv="'+parseFloat(ctr)+'">'+ctr+'</div>',null,isRem)}<div class="cap">${lbl}</div><div class="sub">${sub}</div></div>`;
   };
   const intakeRow=(lbl,val,goal,unit,extra,dec)=>{const p=goal?val/goal*100:0;const ov=goal&&val>goal*1.05;const disp=dec?(+val).toFixed(dec):Math.round(val);return `<div class="mrow"><span class="ml">${lbl}</span><div class="bar">${trkBarI('in:'+lbl,Math.min(100,p),ov?'over':'')}</div><span class="mv ${ov?'ovr':''}">${disp} <span class="g">/ ${goal} ${unit}</span>${extra||''}</span></div>`;};
-  const bl=bloating(t,g);
+  const bl=bloating(t,g), _retV=bl.label==='high'?'<span class="u-bad">'+bl.sc+'</span>':'';   // v357
   const _wo=items.filter(isWaterItem).reduce((a,m)=>a+(+m.water||0),0);   // v334 · D4 · agua = solo agua (lo que cuenta contra su meta, igual que //WATER); los líquidos (agua + lo que traen bebidas y alimentos) van aparte
   // v290 · el panel abierto ("lo único que me sigue gustando son los aros… que se pudiera colapsar esta gráfica heptagonal"):
-  // regla a sangre → aros P · C · F → [ver gramos | ver %] → fila `radar` que despliega la gráfica de 7 ejes → INTAKE
+  // regla a sangre → aros P · C · F → [ver gramos | ver %] → fila `radar` que despliega la gráfica de 7 ejes · v357: aparte, la fila `nutrients` (antes INTAKE) es su propio pliegue
   const _ro=radarOpen();
   let details = !open?'' : `<hr class="rule"/>`
     +`<div class="rings">${macroRing('protein','protein',t.protein,g.protein,'g',4)+macroRing('carbs','carbs',t.carbs,g.carbs,'g',4)+macroRing('fat','fat',t.fat,g.fat,'g',9)}</div>`
     +`<div class="kp-unit"><button type="button" class="b" data-act="toggleMacroUnit">${state.macroPct?'ver gramos':'ver %'}</button></div>`
     +`<div class="line stat tap kp-rad" role="button" tabindex="0" data-act="radarfold" aria-expanded="${_ro}"><span class="k">radar</span><span class="dots"></span><span class="v">${_ro?'▾':'›'}</span></div>`
     +(_ro?`<div class="macro-rad">${dayRadar(t,g)}</div>`:'')
-    +`<hr class="rule"/><div class="grp-label">INTAKE</div>`
+    ;
+  // v357 · MC3 · el segundo pliegue: NUTRIENTS (antes INTAKE) con los micros de suplementos y la retención
+  const nutBody=''
     +(goalSecHidden('electro')?'':intakeRow('sodium',t.sodium,g.sodium,'mg')+intakeRow('potassium',t.potassium,g.potassium,'mg'))
     +(goalSecHidden('sugarfiber')?'':intakeRow('sugar',t.sugar,g.sugar,'g')+intakeRow('fiber',t.fiber,g.fiber,'g'))
     +(goalSecHidden('minor')?'':intakeRow('caffeine',t.caffeine,g.caffeine,'mg')+intakeRow('alcohol',t.alcohol,g.alcohol||0,'g')+intakeRow('water',_wo,g.water,'L',(+t.water).toFixed(1)!==(+_wo).toFixed(1)?'<span class="g mlq">liquids '+(+t.water).toFixed(1)+' L</span>':'',1))
     +(function(){ const r=MICROS.map(mi=>{ const v=(micros&&micros[mi.k])||0; return v>0?intakeRow(mi.l,v,mi.rda,mi.u):''; }).join(''); return r?'<hr class="rule"/><div class="grp-label">MICRONUTRIENTS <span class="u-o40 u-w4">· de suplementos</span></div>'+r:''; })()
     // v262 · retención (look "1", opción B): una línea de diagnóstico SOLO si se sale de rango — el número en rojo y el
     // Na:K del día; tocarla abre sus consejos. En rango no ocupa renglón (BRAND §4).
-    +(bl.label==='high'?`<hr class="rule"/><div class="mrow mret" role="button" tabindex="0" data-act="rettips"><span class="ml">${items.some(m=>m&&m.approx)?'~ ':''}retention</span><span class="mv"><span class="u-bad">${bl.sc}</span>${t.potassium>0?` <span class="u-o50">· Na:K ${Math.round(t.sodium/t.potassium*10)/10}</span>`:''} <span class="u-o50">${state._retTips?'▾':'→'}</span></span></div>`
+    +(bl.label==='high'?`<hr class="rule"/><div class="mrow mret" role="button" tabindex="0" data-act="rettips"><span class="ml">${items.some(m=>m&&m.approx)?'~ ':''}retention</span><span class="mv">${_retV}${t.potassium>0?` <span class="u-o50">· Na:K ${Math.round(t.sodium/t.potassium*10)/10}</span>`:''} <span class="u-o50">${state._retTips?'▾':'→'}</span></span></div>`
       +(state._retTips?`<div class="bltips">${bl.tips.map(tp=>`<div class="bltip">› ${tp}</div>`).join('')}</div>`:''):'');
+  // v357 · MC3 · la fila es un botón como `carb day` y `mamarre`; cerrada, la retención alta igual se ve (solo su número en rojo);
+  // abierta, su contenido entra sin una regla pegada a la fila (si empieza por la retención o los micros)
+  if(nutBody)details+=(open?'<hr class="rule"/>':'')+'<button type="button" class="line stat tap kp-rad kp-cc" data-act="nutfold" aria-expanded="'+nopen+'"><span class="k">nutrients</span><span class="dots"></span><span class="v">'+(!nopen&&bl.label==='high'?'<span class="u-o50">retention</span> '+_retV+' ':'')+(nopen?'▾':'›')+'</span></button>'+(nopen?nutBody.replace(/^<hr class="rule"\/>/,''):'');
 
   // v256 · debajo del anillo, tres secciones idénticas (TRKLog), en el orden que pidió el dueño: SUPPS · MEALS · WATER
   lfoldInit(curDate());
@@ -9819,12 +9864,12 @@ const TOUR_STEPS={
     {sel:'#view .arrow[data-act="nextday"]',t:'‹ › si hoy quieres otro día de tu split'},
     {sel:'#view [data-act="loglater"]',t:'¿entrenaste sin la app? regístralo aquí con su fecha'},
     {sel:'[data-act="navmenu"]',t:'tu menú: suplementos, historial, catálogo y ajustes'},
-    {sel:'#nav',t:'abajo: progress · gym · macros; el > marca dónde estás'}],
+    {sel:'#nav',t:'abajo: progress · gym · intake; el > marca dónde estás'}],
   homeEmpty:[{sel:'#view [data-act="newsplit"]',t:'arma tu split: los días de tu rutina con sus ejercicios'},
     {sel:'#view [data-act="workshop"]',t:'o empieza de una plantilla y la editas'},
     {sel:'#view [data-act="importsplit"]',t:'¿ya la tienes escrita en tus notas? pégala aquí'},
     {sel:'[data-act="navmenu"]',t:'tu menú: suplementos, historial, catálogo y ajustes'},
-    {sel:'#nav',t:'abajo: progress · gym · macros; el > marca dónde estás'}],
+    {sel:'#nav',t:'abajo: progress · gym · intake; el > marca dónde estás'}],
   workout:[{sel:()=>tourCurSet('input.inp.weight'),t:'escribe peso y reps; desde la segunda vez, lo gris es lo que hiciste la última vez'},
     {sel:()=>tourCurSet('.rirb'),t:()=>(db.activeWork&&db.activeWork.metric)==='rpe'?'RPE: 10 = no salía otra · 9 = te quedaba 1':'RIR: cuántas te quedaban · 0 o F = al fallo'},
     {sel:()=>tourCurSet('[data-act="done"]'),t:'✓ confirma la serie; en vivo también arranca el descanso'},
@@ -9842,7 +9887,7 @@ const TOUR_STEPS={
     {sel:'#view [data-act="tourreplay"]',t:'aquí vuelven a salir estas guías',swallow:1}]};   // swallow: tocarla aquí es "listo", no reinicia el tour
 // las anclas del entreno siguen a la serie que toca (la primera sin ✓): la primera de la página puede estar ya confirmada
 function tourCurSet(q){ const c=currentSetTarget(); return c?document.querySelector('#view '+q+'[data-exi="'+c.exi+'"][data-si="'+c.si+'"]'):null; }
-const TOUR_LBL={home:'gym',homeEmpty:'gym',workout:'entreno',macros:'macros',progress:'progress',settings:'ajustes'};
+const TOUR_LBL={home:'gym',homeEmpty:'gym',workout:'entreno',macros:'intake',progress:'progress',settings:'ajustes'};
 let _tourT=0, _tourPause={};
 function tourKey(){ if(!db.profile||!db.profile.username)return ''; const sc=state.screen;
   if(sc==='home')return dayCount()?'home':'homeEmpty'; if(sc==='workout')return (db.activeWork&&(db.activeWork.exercises||[]).length)?'workout':'';
@@ -12968,7 +13013,7 @@ function renderSettings(){
     +`<div class="line u-tap" role="button" tabindex="0" data-act="togglerestfocus"><span class="k">descanso en grande</span><span class="dots"></span><span class="v">${rfOn()?'on':'off'} ›</span></div>`
     +`<div class="line u-tap" role="button" tabindex="0" data-act="togglefootdone"><span class="k">confirmar serie desde el pie</span><span class="dots"></span><span class="v">${footDoneOn()?'on':'off'} ›</span></div>`
     +`<div class="line lnav u-tap" role="button" tabindex="0" data-act="tourreplay"><span class="k">guías de cada sección</span><span class="dots"></span><span class="v">${db.tour&&db.tour.skipped?'apagadas · prender':'repetir'} ›</span></div>`   // v278
-    +(db.settings.suppHide?`<div class="line u-tap" data-act="supphideoff"><span class="k">supps en macros</span><span class="dots"></span><span class="v">ocultos · mostrar ›</span></div>`:'')
+    +(db.settings.suppHide?`<div class="line u-tap" data-act="supphideoff"><span class="k">supps en intake</span><span class="dots"></span><span class="v">ocultos · mostrar ›</span></div>`:'')
     +healthSettingsHTML()
     +`<hr class="rule"/><div class="cta">`
     +`<div class="secondary"><button class="b" data-act="storage">espacio</button><button class="b" data-act="export">export file</button><button class="b" data-act="exportmd">export .md</button><button class="b" data-act="import">import file</button></div>`
@@ -12977,7 +13022,7 @@ function renderSettings(){
 }
 
 // ---------- main render ----------
-let state={screen:'home',work:null,macroOpen:false};
+let state={screen:'home',work:null,macroOpen:null};   // v357 · MC3 · null = aún no se lee de db.settings (mFoldInit)
 function render(){ try{ ccFreezeTick(); }catch(_){}   /* v331 · al cambiar el día, lo pasado queda fijo antes de que puedas tocar nada */ 
   const v=document.getElementById('view');
   const _want=state._scroll; state._scroll=null;   // v285 · se consume al entrar: si un renderer truena, la posición no se le queda a la pantalla siguiente
@@ -13894,7 +13939,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='suppreact'){ const it=(db.stack||[]).find(x=>x.id===el.dataset.id); if(it){ const sn=suppSnap(it); suppReactivate(it); save(); reRender(); toast(it.name+' de vuelta','',{undo:()=>suppRestore(it,sn)}); } }
   else if(a==='suppadd'){ openStackEdit(null,'supp'); }
   else if(a==='suppmenu'){ trkMenu('suplementos',[['+ agregar suplemento',()=>openStackEdit(null,'supp')],['ignorar por ahora',()=>{ db.settings.suppHide=true; save(); reRender(); toast('supps ocultos · vuelven en ajustes','',{undo:()=>{ delete db.settings.suppHide; save(); reRender(); }}); }]]); }
-  else if(a==='supphideoff'){ delete db.settings.suppHide; save(); reRender(); toast('✓ supps de vuelta en macros'); }
+  else if(a==='supphideoff'){ delete db.settings.suppHide; save(); reRender(); toast('✓ supps de vuelta en intake'); }
   else if(a==='deladhoc'){ const d=el.dataset.d||todayISO(), x=extraDel(d,el.dataset.id); if(x){ save(); reRender(); toast('✓ extra quitado','ok',{undo:()=>{ extraPut(d,x); }}); } }
   else if(a==='cctog'){ ccFlip(); }
   else if(a==='qtyall'){ openQtyAll(); }
@@ -14089,7 +14134,8 @@ document.getElementById('app').addEventListener('click',e=>{
     const _k=ex?exHistKey(ex):''; if(ex){ const it=[['editar ejercicio',()=>openExEdit(null,-1,exi)]]; if(_k&&exHistRows(_k).length)it.push(['historial',()=>openExHist(_k)]); it.push(['cambiar ejercicio',swap]); it.push(['quitar de la sesión',()=>delExAsk(exi)]); trkMenu(ex.name,it); } }   // v303 · quitar vive aquí, al final (antes era una ✕ a un roce en la orilla derecha de la cabecera)   // v288 · editar va primero (antes estaba al fondo de la lista de cambiar)
   else if(a==='editexnote'){ const w=db.activeWork; if(w&&w.exercises[exi]){ const cur=w.exercises[exi].note||''; trkPrompt({title:'nota · '+((w.exercises[exi].name)||'ejercicio'),label:'NOTA',value:cur,placeholder:'agarre, asiento, sensación…'},v=>{ w.exercises[exi].note=String(v).trim(); setExNote(w.exercises[exi]); save(); state._scroll=(document.getElementById('view')||{}).scrollTop||0; render(); toast('✓ nota guardada'); }); } }
   else if(a==='save'){ saveSession(); }
-  else if(a==='togglemacros'){ state.macroOpen=!state.macroOpen; reRender(); }   // v271 · reRender conserva el scroll (ver gramos/% subía hasta arriba)
+  else if(a==='togglemacros'){ if(!state.macroOpen)state._enter={sel:'.kpanel .rings, .kpanel .kp-unit, .kpanel [data-act="radarfold"]'}; mFoldSet('r',!state.macroOpen); }   // v357 · MC3 · se recuerda y entra con transición (reRender conserva el scroll: v271)
+  else if(a==='nutfold'){ if(!state.nutOpen)state._enter={sel:'.kpanel [data-act="nutfold"] ~ *'}; mFoldSet('n',!state.nutOpen); }   // v357 · MC3 · igual que radar
   else if(a==='toggleMacroUnit'){ state.macroPct=!state.macroPct; reRender(); }
   else if(a==='ringtog'){ const k=el.dataset.k; state.ringRem=state.ringRem||{}; state.ringRem[k]=!state.ringRem[k]; reRender(); }
   else if(a==='viewmeal'){ state.expandedMeal = state.expandedMeal===el.dataset.id ? null : el.dataset.id; if(state.expandedMeal)state._enter={sel:'.mdmeal'}; reRender(); }
@@ -14231,7 +14277,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='bakshare'){ doBackupShare(); }
   else if(a==='storage'){ openStorage(); }
   else if(a==='goalpick'){ openGoalPick(el); }
-  else if(a==='mmtog'){ mmStart(); } else if(a==='mmmenu'){ mmMenu(); }   // v350 · MM1
+  else if(a==='mmmenu'){ mmMenu(); }   // v350 · MM1 (v357: prender ya solo es desde u/)
   else if(a==='mmnormal'){ state._mmNormal=curDate(); reRender(); } else if(a==='mmback'){ state._mmNormal=null; reRender(); } else if(a==='mmdrink'){ openMmDrink(); } else if(a==='mmfood'){ openMmFood(); } else if(a==='mmfind'){ openMmFind(); } else if(a==='mmitem'){ mmItemMenu(el.dataset.id); }   // v351 · MM2 · MM3 · MM4
   else if(a==='streakcal'){ openStreakSheet(); }
   else if(a==='pf_sex'){ trkSelect(el,[{v:'M',t:'hombre'},{v:'F',t:'mujer'}],db.profile.sex||'',v=>setProfile('sex',v),{title:'sexo'}); }
@@ -18552,7 +18598,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
