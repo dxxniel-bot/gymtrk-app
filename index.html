@@ -320,6 +320,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .cvg>.cvh{align-items:flex-end; padding-bottom:var(--s1);} .cvh>span{writing-mode:vertical-rl; transform:rotate(180deg); font-size:var(--t-label); color:var(--o50); white-space:nowrap; letter-spacing:var(--ls-ui);}
   .cvg>.cvr{background:var(--track);} .cvg>.cvt>span{font-weight:800; text-decoration:underline; text-underline-offset:3px;} .cvg>.cvf>span{background:var(--o20); border-radius:var(--r-sm); padding:0 var(--s1);}
   .cvuse .k{color:var(--o50);}
+  .sph{min-height:44px; align-items:center; border:0; background:none; font-family:inherit; text-align:left; padding:0; cursor:pointer;}   /* v355 · SP6 · cada tanda del historial es un toque de 44 */
   .mmacts{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--s2); margin:var(--s3) 0 var(--s2);} .mmb{min-height:44px; padding:0 var(--s2); border:var(--bw-ctl) solid var(--border); border-radius:var(--r-ctl); background:none; color:var(--fg); font-family:inherit; font-size:var(--t-data); font-weight:700; cursor:pointer;}   /* v351 · MM2 · tres acciones grandes, una al lado de otra */
   .mmgrid{display:grid; grid-template-columns:minmax(0,1fr) repeat(3,auto); align-items:center; column-gap:var(--s3);} .mmgrid>.u-label{text-align:center;} .mmft{font-size:var(--t-data); color:var(--o70);} .mmgrid button.mmz{font-size:var(--t-data); color:var(--fg); font-weight:700;} .mmfoot{margin-top:var(--s3);} .mmit .v{white-space:nowrap; padding-left:var(--s2);} .mmit .k{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}   /* v351 · MM4 · tipo × tamaño, cada botón con sus kcal */ .chrail.sub.mm .chrs{border-top-style:solid; border-top-color:var(--o50);} .chrail.sub.mm .chrt{text-overflow:ellipsis;}   /* v350 · MM5 · mamarre: un renglón sólido (las sustancias van punteadas) */ .chrail.sub .chrs{border-top-width:var(--bw-sep); border-top-style:dashed;}
 .mdtrr{display:flex; margin:0 0 var(--s3);} .mdtrr[hidden]{display:none;}   /* sin esto display:flex le gana al atributo hidden y el pliegue no plegaba (verificador, 9-oct) */
@@ -1498,7 +1499,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v354';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v355';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -1924,7 +1925,7 @@ function stampMeta(){ if(!db)return; if(!db._meta||typeof db._meta!=='object')db
   const n=Math.max(+db._meta.seq||0,_seqFloor)+1; db._meta.seq=n; db._meta.t=Date.now(); _seqFloor=n; }
 let _idbForceNext=false;   // un solo uso: el siguiente respaldo a IndexedDB no espera el freno de 30 s
 function save(){ if(_saveT){ clearTimeout(_saveT); _saveT=null; }
-  bumpIdx(); stampMeta();
+  bumpIdx(); stampMeta(); splitWatch();   // v355 · SP5 · SP6
   let s=''; try{ s=JSON.stringify(db); }catch(e){ _saveErr=e; saveFailed(); return false; }
   let ok=writeDb(s);
   if(!ok&&!_sbx){ const freed=freeOrphanBackups(); try{ localStorage.removeItem(LS_BACKUP); }catch(_){}   // autorrescate: suelta lo prescindible y reintenta
@@ -2324,7 +2325,7 @@ let _shM='rir', _icM='rir';   // escala de la sesión que se está pintando en c
 function restToday(){ const t=todayISO(); return (db.sessions||[]).find(x=>x&&x.type==='rest'&&x.date===t)||null; }
 function trainedToday(){ const t=todayISO(); return (db.sessions||[]).some(x=>x&&x.type!=='rest'&&x.date===t&&(x.exercises||[]).length); }
 function selIdx(){ if(!dayCount())return 0; return state.selDay==null?curDayIdx():((state.selDay%dayCount())+dayCount())%dayCount(); }
-function lastSession(dayId){ const s=db.sessions.filter(x=>x.dayId===dayId&&x.type!=='rest').sort((a,b)=>b.date<a.date?-1:1); return s[0]||null; }
+function lastSession(dayId){ const s=db.sessions.filter(x=>x.dayId===dayId&&x.type!=='rest').sort((a,b)=>a.date===b.date?sessMsOf(b)-sessMsOf(a):(b.date<a.date?-1:1)); return s[0]||null; }   // v355 · mismo día: la más nueva
 function setsList(ex){ return ex.sets||[]; }
 // a set "has real data" for index/save — strength uses w/r; cardio uses its own fields
 // ---- v223: "pendiente" por CAMPO -------------------------------------------------------------
@@ -2562,8 +2563,8 @@ function fixLeakedFullStack(d,opts){
 // preview can never promise something different from what starting the day would actually produce.
 function daySource(day){
   const prior=day?lastSession(day.id):null;
-  const fromPrior=!!(prior&&prior.exercises&&prior.exercises.length);
-  return {prior,fromPrior,list:fromPrior?prior.exercises:((day&&day.exercises)||[])};
+  const fromPrior=!!(prior&&prior.exercises&&prior.exercises.length)&&!splitWins(day,prior);   // v355 · SP5 · editado después de tu última sesión: manda el split
+  return {prior,fromPrior,list:fromPrior?prior.exercises:((day&&day.exercises)||[]),split:!fromPrior&&!!prior};
 }
 // Per-exercise variant fields (type/unilateral/assisted/weighted/muscle/machine) still re-resolve
 // LIVE from the current split entry via exId when it still exists there — "lo que hiciste es
@@ -2582,6 +2583,7 @@ function newWorkSession(){
     ex.note=exNoteFor(ex,base.note);   // v279 · la nota es del ejercicio, no del día
     const fallbackN=(sp&&typeof sp.sets==='number')?sp.sets:((pe.sets&&pe.sets.length)||1);
     ex.sets=seedSets(ex,fallbackN,{dayId:day?day.id:null,occ:exOccurrence(list,ei),nSame:exNameCount(list,name,variant),orderIdx:ei,fromKey});
+    if(!fromPrior&&typeof pe.sets==='number')ex.sets=fitSets(ex,ex.sets,pe.sets); else ex.sets=dropOrphanFix(ex,ex.sets);   // v355 · SP5 · las series del split (y nunca un drop sin su serie)
     { const up=exUnitPref(ex,db.activeGym); if(up)pinUnit(ex,up); }   // v289 · la unidad que elegiste para este ejercicio en este gym
     return ex;
   });
@@ -7612,6 +7614,138 @@ function _v354SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     console.log('v354 self-check OK');
   } finally { db=real; state.macroDate=sd; bumpIdx(); }
 }
+// ---- v355 · SP5 · SP6 · Start sigue tu split editado, y el split tiene historial ----
+// El dueño (15-oct): "directamente del catálogo en Days, en Chest, había cambiado el orden de ejercicios y demás, y a la hora de darle
+// Start Workout no estaba ese orden ni esos ejercicios que agregué, no se quedó" · "hace falta como que haya como un historial dentro
+// del split para que se vayan viendo las modificaciones". Su regla de v213 sigue ("al repetir un día tiene que salir como se entrenó
+// la última vez"), salvo cuando editas ese día del split DESPUÉS de tu última sesión: entonces salen del split los ejercicios, su orden
+// y cuántas series (los pesos y reps sugeridos siguen saliendo de tu historial). Cualquier edición se detecta al guardar (`splitWatch`):
+// el día editado gana su hora (`mt`) y cada tanda de cambios queda en el historial con el split de antes (`db.splitLog`, las últimas 15).
+let _splitPrev=null, _splitPrevDb=null, _splitSigs={}, _splitBase={};   // las firmas viven en memoria: el split guardado solo cambia cuando tú lo editas
+function splitJSON(sp){ return JSON.stringify(sp||{},(k,v)=>k==='mt'?undefined:v); }
+// la firma de un día: qué ejercicios, en qué orden y cuántas series. Un ejercicio con id se reconoce por su id (renombrarlo o unirlo en
+// //CATALOG no es editar el día: Start toma su nombre por id); uno sin id, por su nombre.
+function splitSig(d){ return JSON.stringify([(d&&d.exercises||[]).map(e=>e&&e.id?[e.id,+e.sets||0]:['',nameKey(e&&e.name),+(e&&e.sets)||0])]); }
+function splitWatchReset(){ _splitPrevDb=db; _splitPrev=(db&&db.split)?splitJSON(db.split):null; _splitSigs={}; _splitBase={}; ((db&&db.split&&db.split.days)||[]).forEach(d=>{ if(d)_splitSigs[d.id]=splitSig(d); }); }
+// el historial guarda completa solo la tanda más nueva; las demás guardan lo que cambió contra la siguiente (días y datos del split)
+function splitDelta(fullJ,nextJ){ let a,b; try{ a=JSON.parse(fullJ); b=JSON.parse(nextJ); }catch(_){ return null; } const nb=new Map((b.days||[]).map(d=>[d.id,JSON.stringify(d)])), o={keys:Object.keys(a),top:{},order:[],dd:{}};
+  Object.keys(a).forEach(k=>{ if(k!=='days')o.top[k]=a[k]; }); (a.days||[]).forEach(d=>{ o.order.push(d.id); if(nb.get(d.id)!==JSON.stringify(d))o.dd[d.id]=d; }); return o; }
+function splitUndelta(next,dl){ const o={}, by=new Map((next.days||[]).map(d=>[d.id,d])), days=(dl.order||[]).map(id=>dl.dd[id]||by.get(id)).filter(Boolean);   // en el mismo orden de llaves: la tanda reconstruida se compara tal cual
+  (dl.keys||Object.keys(dl.top||{}).concat('days')).forEach(k=>{ o[k]=k==='days'?days:(dl.top||{})[k]; }); return o; }
+function splitLogFulls(){ const L=db.splitLog||[], out=new Array(L.length); let nx=null;
+  for(let i=L.length-1;i>=0;i--){ const e=L[i]; try{ if(e.before){ out[i]=e.before; nx=JSON.parse(e.before); } else if(e.delta&&nx){ nx=splitUndelta(nx,e.delta); out[i]=JSON.stringify(nx); } else out[i]=null; }catch(_){ out[i]=null; } } return out; }
+function splitLogPush(L,e){ const last=L[L.length-1]; if(last&&last.before){ const dl=splitDelta(last.before,e.before); if(dl){ last.delta=dl; delete last.before; } }
+  L.push(e); if(L.length>15)L.splice(0,L.length-15); }
+function splitLogPop(L){ const p=L.pop(), nl=L[L.length-1]; if(p&&p.before&&nl&&nl.delta){ try{ nl.before=JSON.stringify(splitUndelta(JSON.parse(p.before),nl.delta)); delete nl.delta; }catch(_){} } return p; }
+function splitWatch(){ try{ if(_sbx&&!state._spw)return; if(db!==_splitPrevDb)splitWatchReset(); const sp=db.split; if(!sp||!Array.isArray(sp.days))return; const now=Date.now();
+    const cur=splitJSON(sp); if(_splitPrev==null||_splitPrev===cur){ _splitPrev=cur; return; }
+    const L=db.splitLog=Array.isArray(db.splitLog)?db.splitLog:[], last=L[L.length-1], cont=!!(last&&!last.fixed&&now-(last.t2||last.t)<120000);   // una tanda = 2 min
+    if(!cont)_splitBase={};
+    // el día que cambia gana su hora; si en la misma tanda vuelve a como estaba, recupera la de antes (deshacer no lo deja "editado")
+    sp.days.forEach(d=>{ if(!d)return; const s=splitSig(d), o=_splitSigs[d.id]; _splitSigs[d.id]=s; if(o==null||o===s)return;
+      const b=_splitBase[d.id]||(_splitBase[d.id]={sig:o,mt:d.mt}); if(s===b.sig){ if(b.mt==null)delete d.mt; else d.mt=b.mt; } else d.mt=now; });
+    if(cont){ if(last.before&&cur===last.before)splitLogPop(L); else last.t2=now; }   // la tanda se deshizo entera: no queda en el historial
+    else splitLogPush(L,{t:now,before:_splitPrev});
+    _splitPrev=cur; }catch(_){} }
+// la hora de una sesión contra la de una edición: una sesión en vivo cuenta desde que empezó (editar el split a media sesión no se pierde
+// al guardarla); una registrada después, desde que se guardó
+function sessMsOf(s){ return +(s&&(s.loggedAfter?(s.savedMs||s.endMs||s.startMs):(s.startMs||s.savedMs||s.endMs)))||(s&&s.date?Date.parse(s.date+'T23:59:00'):0); }
+// ¿este día se editó después de su última sesión?
+function splitWins(day,prior){ return !!(day&&day.mt>1&&(!prior||day.mt>sessMsOf(prior))); }
+// las series que pide el split, con las sugerencias de tu historial: sobran → fuera (con sus drops); faltan → como la última.
+// Si de la última vez solo quedó un drop (sin su serie), ese drop pasa a ser la serie de trabajo sugerida.
+function dropOrphanFix(ex,rows){ const u=uniOf(ex); return rows&&rows.length&&!rows.some(s=>s&&!s.isDrop)?rows.slice(-(u?2:1)).map(s=>emptySet(ex,u?(s&&s.side||null):null,false,s)):rows; }
+function fitSets(ex,rows,n){ n=Math.max(1,parseInt(n,10)||1); rows=dropOrphanFix(ex,rows||[]); const u=uniOf(ex), want=n*(u?2:1);
+  const main=()=>rows.filter(s=>s&&!s.isDrop).length;
+  if(!rows.length||main()===want)return rows;
+  if(main()>want){ let k=0, cut=rows.length; for(let i=0;i<rows.length;i++){ if(rows[i]&&!rows[i].isDrop){ if(k===want){ cut=i; break; } k++; } } return rows.slice(0,cut); }
+  const out=rows.slice(), src=rows.filter(s=>s&&!s.isDrop), tpl=u?src.slice(-2):src.slice(-1); let guard=0;
+  while(out.filter(s=>s&&!s.isDrop).length<want&&guard++<40)tpl.forEach(t=>{ if(out.filter(s=>s&&!s.isDrop).length<want)out.push(emptySet(ex,u?(t.side||null):null,false,t)); });
+  return out; }
+// ¿hay que preguntar una vez? (un día que ya difiere de lo entrenado y nunca se marcó)
+function splitAsk(day){ return !!(day&&!day.mt&&dayDrift(day)); }
+// historial: qué cambió en cada tanda (contra la siguiente o contra el split de ahora)
+function splitDiffTxt(aJ,bJ){ let a,b; try{ a=JSON.parse(aJ); b=JSON.parse(bJ); }catch(_){ return 'cambios'; } const out=[], da=a.days||[], dn=b.days||[], byId=new Map(da.map(d=>[d.id,d]));
+  if((a.name||'')!==(b.name||''))out.push('nombre del split');
+  if(JSON.stringify(a.plan||{})!==JSON.stringify(b.plan||{}))out.push('horario');
+  if((a.metric||'rir')!==(b.metric||'rir')||!!a.allowF!==!!b.allowF)out.push('intensidad');
+  dn.forEach(d=>{ const o=byId.get(d.id); if(!o){ out.push('+ día '+(d.name||'')); return; } const xs=[], oi=new Map((o.exercises||[]).map(e=>[e.id,e])), ni=new Map((d.exercises||[]).map(e=>[e.id,e]));
+    (d.exercises||[]).forEach(e=>{ const p=oi.get(e.id); if(!p){ xs.push('+ '+(e.name||'')); return; } const nm=e.name||'', n0=xs.length;
+      if((p.name||'')!==nm)xs.push((p.name||'')+' → '+nm);
+      if((+p.sets||0)!==(+e.sets||0))xs.push(nm+' '+(+p.sets||0)+'→'+(+e.sets||0));
+      if((p.type||'')!==(e.type||''))xs.push(nm+' · tipo');
+      if(!!p.unilateral!==!!e.unilateral)xs.push(nm+' · '+(e.unilateral?'uni':'bi'));
+      if((p.muscle||'')!==(e.muscle||'')||JSON.stringify(p.muscles2||p.secondary||null)!==JSON.stringify(e.muscles2||e.secondary||null))xs.push(nm+' · músculo');
+      if(xs.length===n0&&JSON.stringify(p)!==JSON.stringify(e))xs.push(nm+' · detalles'); });
+    (o.exercises||[]).forEach(e=>{ if(!ni.has(e.id))xs.push('− '+(e.name||'')); });
+    const ord=(arr,keep)=>arr.filter(e=>keep.has(e.id)).map(e=>e.id).join(); if(ord(o.exercises||[],ni)!==ord(d.exercises||[],oi))xs.push('orden');
+    if((o.name||'')!==(d.name||''))xs.push('nombre');
+    if(xs.length)out.push((d.name||'día')+': '+xs.join(' · ')); });
+  da.forEach(o=>{ if(!dn.some(d=>d.id===o.id))out.push('− día '+(o.name||'')); });
+  { const oa=da.map(d=>d.id).filter(id=>dn.some(d=>d.id===id)).join(), on=dn.map(d=>d.id).filter(id=>byId.has(id)).join(); if(oa!==on)out.push('orden de los días'); }
+  return out.join(' · ')||(aJ!==bJ?'detalles':'sin cambios'); }
+function splitHistRowHTML(){ const n=(db.splitLog||[]).length; return n?'<div class="line lnav u-tap" role="button" tabindex="0" data-act="sp_hist"><span class="k">historial</span><span class="dots"></span><span class="v">'+n+' '+(n===1?'cambio':'cambios')+' ›</span></div>':''; }
+function openSplitHist(){ const L=db.splitLog||[]; if(!L.length)return; const cur=splitJSON(db.split), F=splitLogFulls();
+  const rows=L.map((e,i)=>({i,t:e.t2||e.t,txt:F[i]==null?'cambios':splitDiffTxt(F[i],i<L.length-1?(F[i+1]||cur):cur)})).reverse();
+  openModal('<h3>historial del split</h3>'+rows.map(r=>'<button type="button" class="line stat tap u-w100 sph" data-act="sp_histpick" data-i="'+r.i+'"><span class="k">'+escTxt(fmtShort(todayISO(new Date(r.t)))+' · '+hhmm(r.t))+'</span><span class="dots"></span><span class="v">›</span></button><div class="submeta u-mb8">'+escTxt(r.txt)+'</div>').join('')
+    +'<div class="sheetbtns"><button class="cancel" data-act="closemodal">cerrar</button></div>'); }
+// volver a como estaba ANTES de una tanda: solo los días que cambian ganan su hora (Start los usa); los demás se quedan como estaban
+function splitRestoreObj(J){ const o=JSON.parse(J), now=Date.now(), cur=new Map(((db.split&&db.split.days)||[]).map(d=>[d&&d.id,d]));
+  (o.days||[]).forEach(d=>{ if(!d)return; const c=cur.get(d.id); if(!c||splitSig(c)!==splitSig(d))d.mt=now; else if(c.mt!=null)d.mt=c.mt; }); return o; }
+function splitRestore(i){ const L=db.splitLog||[], F=splitLogFulls(); if(!L[i]||!F[i])return; const cur=splitJSON(db.split), mts=new Map(((db.split&&db.split.days)||[]).map(d=>[d&&d.id,d&&d.mt])); let nx=null; try{ nx=splitRestoreObj(F[i]); }catch(_){ return; }
+  const last=L[L.length-1], lf=last&&last.fixed, n0=L.length; if(last)last.fixed=true; db.split=nx; closeModal(); const ok=save(); reRender();
+  // deshacer: el split exacto de antes, con las horas de cada día como estaban, y sin la tanda de "volver"
+  if(ok)toast('✓ el split como estaba · '+fmtShort(todayISO(new Date(L[i].t))),'ok',{undo:()=>{ const sp=JSON.parse(cur); (sp.days||[]).forEach(d=>{ const v=d&&mts.get(d.id); if(v!=null)d.mt=v; }); db.split=sp;
+    const L2=db.splitLog||[]; if(L2.length>n0)splitLogPop(L2); if(last){ if(lf)last.fixed=lf; else delete last.fixed; } splitWatchReset(); }}); else toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err'); }
+// self-check de v355 (SP5 · SP6). Base de juguete; nada llega a disco; todo se restaura en finally.
+function _v355SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v355: '+nm); }; const real=db, spw=state._spw, aw=db.activeWork;
+  try{ const T=todayISO(), Y=shiftDate(T,-1), ex=(id,name,sets)=>({id,name,muscle:'chest',type:'machine',sets});
+    const S=(n)=>Array.from({length:n},()=>({w:'100',r:'8',rir:'1',unit:'lbs',side:null,done:true}));
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',rotIdx:0,
+      split:{name:'s',days:[{id:'a',name:'chest/push A',exercises:[ex('x1','press',3),ex('x2','apertura',2)]}]},
+      sessions:[{id:'s1',date:Y,dayId:'a',dayName:'chest/push A',type:'training',savedMs:Date.parse(Y+'T19:00:00'),exercises:[{exId:'x2',name:'apertura',muscle:'chest',type:'machine',sets:S(2)},{exId:'x1',name:'press',muscle:'chest',type:'machine',sets:S(3)}]}]}); bumpIdx();
+    state._spw=true; splitWatchReset(); splitWatch();
+    const day=db.split.days[0]; A('SP5 · sin editar: como lo entrenaste la última vez (regla v213)', newWorkSession().exercises.map(e=>e.name).join()==='apertura,press'&&!splitWins(day,lastSession('a')));
+    A('SP5 · un día que ya difiere y nunca se marcó: se pregunta una vez', splitAsk(day));
+    // editas el split: otro orden, uno nuevo y 4 series de press
+    day.exercises=[ex('x2','apertura',2),ex('x3','inclinado',3),ex('x1','press',4)]; splitWatch();
+    const w=newWorkSession(), p=w.exercises.find(e=>e.name==='press');
+    A('SP5 · editado después de tu última sesión: sale tu split (orden y el nuevo)', w.exercises.map(e=>e.name).join()==='apertura,inclinado,press'&&day.mt>sessMsOf(lastSession('a'))&&!splitAsk(day));
+    A('SP5 · …con las series que pusiste y las sugerencias de tu historial', p.sets.length===4&&p.sets.every(s=>!s.done));
+    A('SP5 · …y ya no sale el aviso de [adoptar]', dayDrift(day)==null);
+    A('SP6 · la tanda queda en el historial con el split de antes', (db.splitLog||[]).length===1&&/apertura/.test(db.splitLog[0].before)&&!/inclinado/.test(db.splitLog[0].before));
+    day.exercises[2].sets=5; splitWatch(); A('SP6 · cambios seguidos son una sola tanda', db.splitLog.length===1);
+    A('SP6 · el historial dice qué cambió', /\+ inclinado/.test(splitDiffTxt(db.splitLog[0].before,splitJSON(db.split)))&&/press 3→5/.test(splitDiffTxt(db.splitLog[0].before,splitJSON(db.split)))&&/orden/.test(splitDiffTxt(db.splitLog[0].before,splitJSON(db.split))));
+    openSplitHist(); A('SP6 · la hoja del historial: una fila por tanda', document.querySelectorAll('#modal [data-act="sp_histpick"]').length===1); closeModal();
+    const sv=save; save=()=>{ splitWatch(); return true; };
+    try{ splitRestore(0); A('SP6 · volver a como estaba: los días vuelven y Start los usa', db.split.days[0].exercises.map(e=>e.name).join()==='press,apertura'&&newWorkSession().exercises.map(e=>e.name).join()==='press,apertura'&&db.splitLog.length===2); } finally{ save=sv; }
+    // una sesión nueva después de editar: vuelve a mandar lo entrenado
+    db.sessions.push({id:'s2',date:T,dayId:'a',dayName:'chest/push A',type:'training',savedMs:Date.now()+1000,exercises:[{exId:'x2',name:'apertura',muscle:'chest',type:'machine',sets:S(2)}]}); bumpIdx();
+    A('SP5 · entrenar después de editar: vuelve a salir como lo entrenaste', newWorkSession().exercises.map(e=>e.name).join()==='apertura');
+    A('SP5 · fitSets: sobran fuera, faltan como la última', fitSets({type:'machine'},[{w:'1',isDrop:false},{w:'2'},{w:'3',isDrop:true}],1).length===1&&fitSets({type:'machine',name:'x'},[{w:'1',r:'8'}],3).length===3);
+    // ronda 2 (su verificador): la tanda vieja guarda solo lo que cambió y se reconstruye igual
+    A('SP6 · el historial: la tanda más nueva completa, las viejas solo lo que cambió', !db.splitLog[0].before&&!!db.splitLog[0].delta&&!!db.splitLog[1].before&&JSON.parse(splitLogFulls()[0]).days[0].exercises.map(e=>e.name).join()==='press,apertura');
+    A('SP5 · fitSets: si de la última vez solo quedó un drop, ese drop es la serie de trabajo', (r=>r.length===1&&!r[0].isDrop)(fitSets({type:'machine',name:'x'},[{w:'50',r:'8',isDrop:true}],1))&&fitSets({type:'machine',name:'x'},[{w:'50',r:'8',isDrop:true}],3).filter(s=>!s.isDrop).length===3);
+    A('SP5 · una sesión en vivo cuenta desde que empezó; una registrada después, desde que se guardó', sessMsOf({startMs:1000,savedMs:5000})===1000&&sessMsOf({loggedAfter:true,startMs:1000,savedMs:5000})===5000);
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',rotIdx:0,
+      split:{name:'s',days:[{id:'a',name:'A',exercises:[ex('x1','press',3),ex('x2','apertura',2)]},{id:'b',name:'B',exercises:[ex('y1','remo',3)]}]},
+      sessions:[{id:'s1',date:Y,dayId:'a',dayName:'A',type:'training',savedMs:Date.parse(Y+'T19:00:00'),exercises:[{exId:'x1',name:'press',muscle:'chest',type:'machine',sets:S(3)}]},
+        {id:'s2',date:Y,dayId:'a',dayName:'A',type:'training',savedMs:Date.parse(Y+'T21:00:00'),exercises:[{exId:'x2',name:'apertura',muscle:'chest',type:'machine',sets:S(2)}]}]}); bumpIdx(); splitWatchReset();
+    A('SP5 · dos sesiones del mismo día: manda la que se guardó después', lastSession('a').id==='s2');
+    { const d0=db.split.days[0]; d0.exercises.reverse(); splitWatch(); const m1=d0.mt; d0.exercises.reverse(); splitWatch();
+      A('SP5 · un cambio que deshaces no deja el día editado ni una tanda vacía', m1>1&&d0.mt==null&&(db.splitLog||[]).length===0); }
+    db.split.days[1].exercises[0].name='remo T'; splitWatch();
+    A('SP5 · renombrar un ejercicio (con su id) no es editar el día; el historial lo dice', db.split.days[1].mt==null&&db.splitLog.length===1&&/remo → remo T/.test(splitDiffTxt(db.splitLog[0].before,splitJSON(db.split))));
+    db.split.days[0].exercises.push(ex('x3','inclinado',2)); splitWatch();
+    { const pre=splitJSON(db.split), mA=db.split.days[0].mt, mB=db.split.days[1].mt; db.splitLog[db.splitLog.length-1].fixed=true; db.split.days[1].exercises[0].sets=4; splitWatch();
+      const n1=db.splitLog.length, sv=save, st=toast; let U=null; save=()=>{ splitWatch(); return true; }; toast=(m,ty,o)=>{ if(o&&o.undo)U=o.undo; return null; };
+      try{ splitRestore(n1-1); A('SP6 · volver a como estaba: solo el día que cambia gana su hora', db.split.days[1].exercises[0].sets===3&&db.split.days[1].mt>1&&db.split.days[0].mt===mA);
+        U(); splitWatch(); A('SP6 · …y su deshacer deja el split y las horas exactas, sin la tanda de volver', db.split.days[1].exercises[0].sets===4&&db.splitLog.length===n1&&db.split.days[0].mt===mA);
+        splitRestore(0); A('SP6 · volver a una tanda vieja deshace también las de después', db.split.days[0].exercises.length===2&&db.split.days[1].exercises[0].name==='remo'&&db.split.days[1].exercises[0].sets===3&&db.split.days[0].mt>1); }
+      finally{ save=sv; toast=st; } void pre; void mB; }
+    console.log('v355 self-check OK');
+  } finally { db=real; db.activeWork=aw; state._spw=spw; bumpIdx(); splitWatchReset(); }
+}
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
     put(60,60,2180); put(59,59,1740); put(58,42,2180); put(41,16,1470); put(12,9,1190); put(8,0,2380);   // 15–13: días sin meta guardada
@@ -12599,6 +12733,7 @@ function renderSplitEdit(){
   let body=statusBar(true)
    +`<hr class="rule"/><div class="section"><div class="h"><span class="s">//</span>SPLIT</div><div class="meta vb" role="button" data-act="exdirectory">catalog</div></div>`
    +`<div class="field u-mb16"><label>NOMBRE DEL SPLIT</label><input data-act="sd_splitname" value="${escTxt(sp.name||'')}" placeholder="ej. Push/Pull/Legs"/></div>`
+   +splitHistRowHTML()   // v355 · SP6
    +scheduleBlockHTML()
    +plannedVolumeSection()   // v352 · SP3 · la tabla del volumen, junto al plan
    +`<hr class="rule"/><div class="section u-mb6"><div class="h"><span class="s">//</span>DAYS</div><div class="meta">${(sp.days||[]).length} ${(sp.days||[]).length===1?'día':'días'}</div></div>`;
@@ -13545,7 +13680,9 @@ document.getElementById('app').addEventListener('click',e=>{
   if(a==='nav'){ go(el.dataset.screen); }
   // G2 · R-SESS: lo que CREA una sesión o mueve la rotación nunca corre con una sesión viva (antes reemplazaba la tuya)
   else if((a==='start'||a==='loglater'||a==='rest'||a==='skip'||a==='unrest')&&db.activeWork){ toast('⚠ sesión en curso · termínala o abórtala','err'); }
-  else if(a==='start'){ const _t0=ccCfg()?goalsFor(todayISO()).ccT:null; ccActDay(); db.activeWork=stampSessionPre(newWorkSession()); save(); state._autoScroll=true; go('workout'); if(_t0&&_t0!=='hi')toast('✓ hoy es on'+ccTxt().replace(/^ · on/,' ·')); }   // v339 · CC3 · entrenar manda sobre el cambio a mano de hoy
+  else if(a==='start'){ const _go=()=>{ const _t0=ccCfg()?goalsFor(todayISO()).ccT:null; ccActDay(); db.activeWork=stampSessionPre(newWorkSession()); save(); state._autoScroll=true; go('workout'); if(_t0&&_t0!=='hi')toast('✓ hoy es on'+ccTxt().replace(/^ · on/,' ·')); };
+    const _sd=db.split&&(db.split.days||[])[selIdx()]; if(_sd&&splitAsk(_sd)){ trkAsk({title:'tu split y tu última sesión no coinciden',detail:'este día del split no es como lo entrenaste la última vez · ¿empiezas con tu split o como lo entrenaste?',ok:'mi split',cancel:'como lo entrené',dismiss:()=>{}},()=>{ _sd.mt=Date.now(); _go(); },()=>{ _sd.mt=1; _go(); }); return; }   // v355 · SP5 · una vez por día
+    _go(); }   // v339 · CC3 · entrenar manda sobre el cambio a mano de hoy
   else if(a==='togglepreview'){ state.previewDay=!state.previewDay; reRender(); }
   else if(a==='loglater'){ const w=newWorkSession(); w.loggedAfter=true; w.startMs=null; const y=new Date(); y.setDate(y.getDate()-1); w.date=todayISO(y); db.activeWork=w; save(); go('workout'); }
   else if(a==='togglenoadv'){ if(db.activeWork){ db.activeWork.noAdvance=!db.activeWork.noAdvance; reRender(); } }
@@ -13712,6 +13849,8 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='sd_addday'){ const _nd={id:'d'+uid(),name:'new day',tag:'@ RIR · F',metric:'rir',allowFailure:true,exercises:[]}; db.split.days.push(_nd); (state._sdOpen=state._sdOpen||{})[_nd.id]=true; state._enter={sel:'.seday[data-id="'+_nd.id+'"]'}; save(); reRender(); }
   else if(a==='sd_fold'){ const _d=db.split.days[+el.dataset.di]; if(_d){ const _op=!sdOpen(_d,db.split); (state._sdOpen=state._sdOpen||{})[_d.id]=_op; if(_op)state._enter={sel:'.seday[data-id="'+(window.CSS&&CSS.escape?CSS.escape(_d.id):_d.id)+'"] > :not(.sehead)'}; reRender(); } }   // v285 · SP1
   else if(a==='sd_cov'){ state._covOpen=!(state._covOpen!==false); if(state._covOpen)state._enter={sel:'.sefoldh ~ .line.sch, .sefoldh ~ .cvwrap'}; reRender(); }   // v285 · SP2 · v352: abre desplegada
+  else if(a==='sp_hist'){ openSplitHist(); }   // v355 · SP6
+  else if(a==='sp_histpick'){ const _i=+el.dataset.i, _e=(db.splitLog||[])[_i]; if(_e){ const _n=(db.splitLog||[]).length-1-_i; trkMenu(fmtShort(todayISO(new Date(_e.t2||_e.t)))+' · '+hhmm(_e.t2||_e.t),[['volver a como estaba antes'+(_n>0?' · deshace también '+_n+(_n===1?' cambio después':' cambios después'):''),()=>splitRestore(_i)]]); } }
   else if(a==='cv_pat'){ const v=el.dataset.v; state._covPlan=v===covKeyOf(splitPlan())?null:v; reRender(); }   // v352 · SP4 · ver otro patrón (no se guarda)
   else if(a==='cv_unit'){ state._covUnit=el.dataset.v==='semana'?'semana':'vuelta'; reRender(); }
   else if(a==='cv_use'){ const pv=covPreview(); if(!pv)return; const had=Object.prototype.hasOwnProperty.call(db.split,'plan'), old=had?JSON.parse(JSON.stringify(db.split.plan)):null;
@@ -18285,7 +18424,7 @@ async function aiPhoto(file,barcode){ if(!file)return; window._faTag=window._faT
 // Pick AI when the proxy is configured, else on-device OCR.
 function labelPhoto(file,barcode){ if(AI_PROXY_URL) return aiPhoto(file,barcode); return ocrPhoto(file,barcode); }
 requestPersist();
-db=load();
+db=load(); try{ splitWatchReset(); }catch(_){}   /* v355 · el split de partida (no es un cambio) */
 try{ const _k354=kcalFix354(db); if(_k354)setTimeout(()=>{ try{ toast('✓ '+_k354+' registros: kcal = sus macros'); }catch(_){} },900); }catch(_){}   // v354 · K1 · una vez
 // v254 · al arrancar: suelta las fotos de reparaciones ya aplicadas (47 % del cupo) y ofrece recuperar una sesión
 // que se haya quedado sin guardar (el espejo chico de LS_LIVE sobrevive aunque la clave grande no se pueda escribir).
@@ -18299,7 +18438,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
