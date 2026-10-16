@@ -310,6 +310,16 @@
 .chrt{display:block; overflow:hidden; white-space:nowrap;}
 button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; left:0; right:0; top:0; height:44px;}
 .chrail .chrs:nth-child(even){border-top-color:var(--o20);} .chrs.nm{color:var(--o70);} .chrs.mm{color:var(--o70);}
+  /* v352 · SP3 · //COVERAGE: músculo | veces | series | un día por columna (19 px; 24 desde 360; 27 desde 390: nueve días caben con adductor entero). Con más columnas de las que caben, la tabla se
+     desliza dentro de su recuadro y la columna del músculo se queda fija: la página nunca se desliza de lado. */
+  .cvwrap{overflow-x:auto; margin:var(--s2) 0 var(--s4);} .cvg{--cvw:19px; display:grid; grid-template-columns:minmax(max-content,1fr) 3.5ch 3.5ch repeat(var(--cvn,8),var(--cvw)); width:max-content; min-width:100%; font-size:var(--t-data); font-variant-numeric:tabular-nums;}
+  @media (max-width:359px){ .cvg>.cvd:not(.cvn){font-size:var(--t-label);} } @media (min-width:360px){ .cvg{--cvw:24px;} } @media (min-width:390px){ .cvg{--cvw:27px;} }
+  .cvg>div{display:flex; align-items:center; justify-content:center; min-height:26px; border-top:var(--bw-sep) solid var(--o10); color:var(--fg);} .cvg>.cvh,.cvg>.cvh0:first-child{border-top:0;}
+  .cvg>.cvm{display:block; line-height:26px; position:sticky; left:0; z-index:1; background:var(--bg); color:var(--o70); white-space:nowrap; padding-right:var(--s2);} .cvg>.cvh0:first-child{align-self:stretch; display:flex; align-items:flex-end; justify-content:flex-start;}   /* sin elipsis: la columna mide lo que su nombre más largo (B-12) */
+  .cvg>.cvh0{font-size:var(--t-label); color:var(--o40); align-self:end;} .cvg>.cvn{color:var(--fg);} .cvg>.cvc{color:var(--o70);} .cvg>.cvt{color:var(--fg);}   /* veces y series (lo que pidió) arriba en jerarquía; las celdas un paso abajo, el objetivo arriba */ .cvg>.cvd{font-weight:700;} .cvg>.cvz{color:var(--o40);}
+  .cvg>.cvh{align-items:flex-end; padding-bottom:var(--s1);} .cvh>span{writing-mode:vertical-rl; transform:rotate(180deg); font-size:var(--t-label); color:var(--o50); white-space:nowrap; letter-spacing:var(--ls-ui);}
+  .cvg>.cvr{background:var(--track);} .cvg>.cvt>span{font-weight:800; text-decoration:underline; text-underline-offset:3px;} .cvg>.cvf>span{background:var(--o20); border-radius:var(--r-sm); padding:0 var(--s1);}
+  .cvuse .k{color:var(--o50);}
   .mmacts{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--s2); margin:var(--s3) 0 var(--s2);} .mmb{min-height:44px; padding:0 var(--s2); border:var(--bw-ctl) solid var(--border); border-radius:var(--r-ctl); background:none; color:var(--fg); font-family:inherit; font-size:var(--t-data); font-weight:700; cursor:pointer;}   /* v351 · MM2 · tres acciones grandes, una al lado de otra */
   .mmgrid{display:grid; grid-template-columns:minmax(0,1fr) repeat(3,auto); align-items:center; column-gap:var(--s3);} .mmgrid>.u-label{text-align:center;} .mmft{font-size:var(--t-data); color:var(--o70);} .mmgrid button.mmz{font-size:var(--t-data); color:var(--fg); font-weight:700;} .mmfoot{margin-top:var(--s3);} .mmit .v{white-space:nowrap; padding-left:var(--s2);} .mmit .k{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}   /* v351 · MM4 · tipo × tamaño, cada botón con sus kcal */ .chrail.sub.mm .chrs{border-top-style:solid; border-top-color:var(--o50);} .chrail.sub.mm .chrt{text-overflow:ellipsis;}   /* v350 · MM5 · mamarre: un renglón sólido (las sustancias van punteadas) */ .chrail.sub .chrs{border-top-width:var(--bw-sep); border-top-style:dashed;}
 .mdtrr{display:flex; margin:0 0 var(--s3);} .mdtrr[hidden]{display:none;}   /* sin esto display:flex le gana al atributo hidden y el pliegue no plegaba (verificador, 9-oct) */
@@ -1485,7 +1495,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v351';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v352';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2800,7 +2810,7 @@ const mNorm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'
 const LABEL_CANON=(function(){ const m={}; const put=(id,arr)=>arr.forEach(k=>{ m[mNorm(k)]=id; });
   put('chest',['chest','pecho','pectoral','pectorales','pecs','pec']);
   put('lats',['lats','lat','dorsal','dorsales','latissimus']);
-  put('upper_back',['mback','mid back','midback','middle back','upper back','espalda media','espalda alta','rhomboids','romboides']);
+  put('upper_back',['mback','uback','u back','upback','mid back','midback','middle back','upper back','espalda media','espalda alta','rhomboids','romboides']);
   put('traps',['traps','trap','trapecio','trapecios']);
   put('front_delts',['front delts','front delt','anterior delts','deltoides anterior','deltoide anterior','hombro frontal']);
   put('side_delts',['side delts','side delt','lateral delts','lateral delt','deltoides lateral','deltoide lateral','hombro lateral']);
@@ -2810,7 +2820,7 @@ const LABEL_CANON=(function(){ const m={}; const put=(id,arr)=>arr.forEach(k=>{ 
   put('forearms',['forearms','forearm','antebrazo','antebrazos','grip']);
   put('quads',['quads','quad','quadriceps','cuadriceps','cuádriceps']);
   put('hamstrings',['hams','ham','hamstring','hamstrings','femoral','femorales','isquios','isquiotibiales','isquiosurales']);
-  put('glutes',['glutes','glute','gluteo','gluteos','glúteo','glúteos','abductor','abductors','abductores']);
+  put('glutes',['glutes','glute','gluteo','gluteos','glúteo','glúteos','abductor','abductors','abductores','abduc','abduct','abduccion','abducciones','hip abduction','hip abductor']);   // v352 · E11
   put('adductors',['adductor','adductors','aductor','aductores']);
   put('calves',['calves','calfs','calf','pantorrilla','pantorrillas','gemelos','soleo','sóleo']);
   put('abs',['abs','ab','abdominales','abdomen','core','obliques','oblicuos']);
@@ -3953,17 +3963,11 @@ function splitSigGoals(){ const key=todayISO()+'|'+JSON.stringify([(db.split&&db
   _sgGoalC={k:key,db,g}; return g; }
 function splitSigGoal(id){ const v=splitSigGoals()[id]; return v>0?Math.round(v*10)/10:null; }
 function plannedVolumeSection(){
-  // cobertura del split por músculo (sets/vuelta). La tensión real no se planea — se mide al loguear.
-  const byM={}, fr=splitDayFreq(); (db.split&&db.split.days||[]).forEach((d,i)=>(d.exercises||[]).forEach(e=>{ const m=e.muscle||'other'; byM[m]=(byM[m]||0)+Math.max(0,parseInt(e.sets,10)||0)*(fr[i]||0); }));   // v347 · E9 · por semana con tu plan
-  const muscles=Object.keys(byM).sort((a,b)=>byM[b]-byM[a]);
-  if(!muscles.length)return '';
-  // v285 · SP2 · "no sé a qué se refiere la barra que está a mitad… no sé qué pretendes decirme con eso" (el dueño, 1-oct): era
-  // "sets por semana sobre 20" con una marca en 10, un número general. Ahora es una lista con el número, plegada.
-  const open=!!state._covOpen;
-  let h=`<hr class="rule"/><div class="section sefoldh" role="button" tabindex="0" data-act="sd_cov" aria-expanded="${open}"><div class="h"><span class="s">//</span>COVERAGE</div><div class="meta">${muscles.length} ${muscles.length===1?'músculo':'músculos'} <span class="sefx">${open?'▾':'›'}</span></div></div>`;
-  if(!open)return h;
-  muscles.forEach(m=>{ const sets=Math.round(byM[m]*10)/10; h+=`<div class="line"><span class="k">${escTxt(m)}</span><span class="dots"></span><span class="v">${sets} <span class="u">sets/sem</span></span></div>`; });
-  return h+`<div class="submeta u-mt4 u-mb8">sets por semana con tu plan</div>`;
+  // v352 · SP3 · músculos × días de una vuelta (covMatrix), abierta de entrada y plegable como antes; SP4 · otro patrón sin guardarlo
+  const P=splitPlan(), pv=covPreview(), M=covMatrix(pv); if(!M||!M.rows.length)return '';
+  const open=state._covOpen!==false;
+  const h=`<hr class="rule"/><div class="section sefoldh" role="button" tabindex="0" data-act="sd_cov" aria-expanded="${open}"><div class="h"><span class="s">//</span>COVERAGE</div><div class="meta">${M.rows.length} ${M.rows.length===1?'músculo':'músculos'} <span class="sefx">${open?'▾':'›'}</span></div></div>`;
+  return open?h+covControlsHTML(P,pv)+covMatrixHTML(M):h;
 }
 // ---- v285 · //STIMULUS = solo σ + recovery, por músculo, en columnas ----
 // El dueño (1-oct): "que sea nomás la pura tensión mecánica, y ya si le das clic a cada grupo muscular, que te salga más
@@ -6997,8 +7001,8 @@ function _v347SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('E9 · un músculo que el split no tiene, sin meta', splitSigGoal('calves')==null);
     db.split.plan={mode:'cycle',on:3,off:1,blocked:[0]}; bumpIdx(); A('E9 · rotativo: los días de entreno por semana de tu plan entre tus días', Math.abs(splitDayFreq()[0]-ccShare().p*7/2)<1e-9);
     // //COVERAGE en días fijos: un día que la semana tiene dos veces cuenta dos (antes una)
-    db.split.plan={mode:'weekly',week:{1:'a',3:'a',5:'b'},blocked:[0]}; bumpIdx(); state._covOpen=true; const cv=plannedVolumeSection(); state._covOpen=false;
-    A('E9 · //COVERAGE cuenta las veces que cada día toca en la semana', /chest<\/span><span class="dots"><\/span><span class="v">6 /.test(cv)&&/lats<\/span><span class="dots"><\/span><span class="v">3 /.test(cv));
+    db.split.plan={mode:'weekly',week:{1:'a',3:'a',5:'b'},blocked:[0]}; bumpIdx(); const o0=state._covOpen, u0=state._covUnit, p0=state._covPlan; state._covOpen=true; state._covUnit='semana'; state._covPlan=null; const cv=plannedVolumeSection(); state._covOpen=o0; state._covUnit=u0; state._covPlan=p0;
+    A('E9 · //COVERAGE cuenta las veces que cada día toca en la semana', /<div class="cvm">chest<\/div><div class="cvn">2<\/div><div class="cvn">6<\/div>/.test(cv)&&/<div class="cvm">lats<\/div><div class="cvn">1<\/div><div class="cvn">3<\/div>/.test(cv));   /* v352 · la tabla */
     const st=stimulusSection(); A('E9 · //STIMULUS: los músculos de tu split salen aunque no los entrenaras, con su meta', /data-id="chest"/.test(st)&&/meta ~[\d.]+/.test(st));
     console.log('v347 self-check OK');
   } finally { db=real; bumpIdx(); }
@@ -7390,6 +7394,113 @@ function _v351SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('MM2 · tragos y comida cuentan como comida con hora (MEALS n / m)', !!mealTime(T,'tragos'));
     console.log('v351 self-check OK');
   } finally { try{ closeAsk(true); }catch(_){} try{ closeModal(); }catch(_){} db=real; state.macroDate=sm; state.screen=ss; state._mmNormal=sn; bumpIdx(); }
+}
+// ---- v352 · SP3 · SP4 · //COVERAGE es una tabla: músculos × días de una vuelta ----
+// El dueño (15-oct), con la hoja de cuando arrancó su split: "me gustaría tener como que una visualización así, dentro del edit split
+// o del coverage, para poder visualizar y gestionar de mejor manera… cuál es el volumen total dentro de toda la rotación del split,
+// tanto el volumen y la frecuencia". Cada celda = las series que ese día le da a ese músculo (su músculo PRINCIPAL, como en su hoja);
+// arriba, las series del día; a la izquierda, cuántas veces se toca y sus series (en una vuelta o por semana con su plan). El músculo
+// que más trabaja el día va en negrita y subrayado; el del primer ejercicio, en su recuadro; el descanso, sombreado.
+// Orden de las filas: push → pull → pierna → core (su hoja). Lo que no se reconoce va al final, en el orden en que aparece.
+const COV_ORDER=['chest','front_delts','side_delts','rear_delts','grp:delts','triceps','upper_back','traps','lats','grp:back','biceps','forearms','grp:arms','lower_back','quads','hamstrings','calves','glutes','adductors','grp:legs','abs','neck'];
+const COV_PATS=[[2,1],[3,1],[4,1]];
+// con OTRO plan, solo para calcular (vista previa): el de verdad vuelve en finally, pase lo que pase
+function covWith(plan,fn){ if(!plan||!db.split)return fn(); const sp=db.split, had=Object.prototype.hasOwnProperty.call(sp,'plan'), old=sp.plan; sp.plan=plan;
+  try{ return fn(); } finally{ if(had)sp.plan=old; else delete sp.plan; } }
+// una vuelta: rotativo = tus días con `off` descansos tras cada `on` de entreno (6 días a 3/1 = 8 columnas; a 2/1 = 9); días fijos = la
+// semana de lunes a domingo; diario = tus días seguidos
+function planCycle(P,days){ const N=(days||[]).length, cols=[]; if(!N)return cols;
+  if(P.mode==='weekly'){ DOW_ORDER.forEach(d=>{ const i=P.blocked.indexOf(d)>=0?-1:days.findIndex(x=>x.id===P.week[d]); cols.push({idx:i,dow:d}); }); return cols; }
+  for(let i=0;i<N;i++){ cols.push({idx:i}); if(P.mode==='cycle'&&((i+1)%P.on===0||i===N-1))for(let k=0;k<P.off;k++)cols.push({idx:-1}); }
+  return cols; }
+function covKeyOf(P){ return P.mode==='cycle'?P.on+'/'+P.off:P.mode; }
+// el patrón que estás viendo sin guardarlo (null = el tuyo)
+function covPreview(){ const k=state._covPlan, P=splitPlan(); if(!k||k===covKeyOf(P))return null; const m=/^(\d)\/(\d)$/.exec(k); if(!m)return null;
+  return Object.assign({},P,{mode:'cycle',on:+m[1],off:+m[2]}); }
+// el nombre corto de un día en la cabecera (vertical): lo que va tras la última "/" ("chest/push A" → "push A")
+function covShort(n){ let s=String(n||'').trim(); const i=s.lastIndexOf('/'); if(i>=0&&i<s.length-1)s=s.slice(i+1).trim(); return s||'día'; }
+function covMatrix(plan){ return covWith(plan,()=>{ const days=(db.split&&db.split.days)||[]; if(!days.length)return null;
+  const P=splitPlan(), cols=planCycle(P,days), fr=splitDayFreq(), seen=new Map(), lbl=new Map();
+  const D=days.map(d=>{ const per=new Map(), nm=mNorm(d.name||''); let tot=0, first=null;
+    (d.exercises||[]).forEach(e=>{ if(!e||isCardio(e))return; const raw=String(e.muscle||'').trim()||'otro', m=mNorm(raw)||'otro'; if(!lbl.has(m))lbl.set(m,raw); if(first==null)first=m;
+      const n=Math.max(0,parseInt(e.sets,10)||0); if(!n)return; per.set(m,(per.get(m)||0)+n); tot+=n; if(!seen.has(m))seen.set(m,seen.size); });
+    // el objetivo del día: el que más series tiene; si empatan, el que nombra el día ("hams/legs B"); si no, el primero
+    const named=m=>{ const k=mNorm(m); return !!k&&(nm===k||nm.indexOf(k+'/')===0||nm.indexOf(k+' ')===0); }; let tgt=null, best=0;
+    per.forEach((v,m)=>{ if(tgt==null||v>best||(v===best&&named(m)&&!named(tgt))){ tgt=m; best=v; } });
+    return {name:d.name||'',per,tot,tgt,first}; });
+  const ord=m=>{ const c=muscleCanon(m), k=c.id?(c.group?'grp:'+c.id:c.id):null, i=k?COV_ORDER.indexOf(k):-1; return i>=0?i:COV_ORDER.length; };
+  const r1=x=>Math.round(x*10)/10;
+  const rows=[...seen.keys()].sort((a,b)=>ord(a)-ord(b)||seen.get(a)-seen.get(b)).map(m=>{ let f=0, s=0, fw=0, sw=0;
+    cols.forEach(c=>{ const n=c.idx>=0?(D[c.idx].per.get(m)||0):0; if(n){ f++; s+=n; } });
+    D.forEach((d,i)=>{ const n=d.per.get(m)||0; if(n){ fw+=fr[i]||0; sw+=n*(fr[i]||0); } });
+    return {k:m,m:lbl.get(m)||m,f,s,fw:r1(fw),sw:Math.round(sw)}; });   // por semana: las veces con un decimal, las series enteras (caben a 320)
+  return {plan:P,cols,days:D,rows,tot:rows.reduce((a,r)=>a+r.s,0),totw:rows.reduce((a,r)=>a+r.sw,0)}; }); }
+function covControlsHTML(P,pv){ const ck=covKeyOf(P), sel=pv?covKeyOf(pv):ck, u=state._covUnit==='semana'?'semana':'vuelta';
+  const opts=[]; if(!COV_PATS.some(([a,b])=>a+'/'+b===ck))opts.push([ck,{daily:'diario',weekly:'fijos'}[ck]||ck]); COV_PATS.forEach(([a,b])=>opts.push([a+'/'+b,a+'/'+b]));
+  const tog=(act,list,cur)=>'<div class="toggles">'+list.map(([v,l])=>'<button type="button" class="t'+(v===cur?' on':'')+'" data-act="'+act+'" data-v="'+escTxt(v)+'">'+escTxt(l)+'</button>').join('')+'</div>';
+  const row=(k,v)=>'<div class="line sch"><span class="k">'+k+'</span><span class="dots"></span>'+v+'</div>';
+  return row('ver con',tog('cv_pat',opts,sel))+row('cuenta',tog('cv_unit',[['vuelta','vuelta'],['semana','semana']],u))
+    +(pv?'<div class="line sch cvuse"><span class="k">previa · el tuyo: '+escTxt({daily:'diario',weekly:'fijos'}[ck]||ck)+'</span><span class="dots"></span><button type="button" class="b" data-act="cv_use">usar este</button></div>':''); }
+function covMatrixHTML(M){ const u=state._covUnit==='semana';
+  let h='<div class="cvwrap"><div class="cvg" style="--cvn:'+M.cols.length+'">'
+    +'<div class="cvm cvh0" data-gloss="cov"><span class="u-dash">músculo</span></div><div class="cvh"><span>'+(u?'veces/sem':'veces')+'</span></div><div class="cvh"><span>'+(u?'series/sem':'series')+'</span></div>';
+  const dw=c=>c.dow!=null?DOW_INI[c.dow]+' ':'';   // en días fijos, la inicial del día de la semana
+  M.cols.forEach(c=>{ h+=c.idx<0?'<div class="cvh cvr"><span>'+dw(c)+(c.dow!=null&&M.plan.blocked.indexOf(c.dow)>=0?'sin gym':'rest')+'</span></div>':'<div class="cvh"><span>'+escTxt(dw(c)+covShort(M.days[c.idx].name))+'</span></div>'; });
+  h+='<div class="cvm cvh0">por día</div><div class="cvn"></div><div class="cvn cvd">'+(u?M.totw:M.tot)+'</div>';
+  M.cols.forEach(c=>{ h+=c.idx<0?'<div class="cvr cvz">—</div>':'<div class="cvd">'+M.days[c.idx].tot+'</div>'; });
+  M.rows.forEach(r=>{ h+='<div class="cvm">'+escTxt(r.m)+'</div><div class="cvn">'+(u?r.fw:r.f)+'</div><div class="cvn">'+(u?r.sw:r.s)+'</div>';
+    M.cols.forEach(c=>{ if(c.idx<0){ h+='<div class="cvr"></div>'; return; } const d=M.days[c.idx], v=d.per.get(r.k)||0; if(!v){ h+='<div></div>'; return; }
+      h+='<div class="cvc'+(d.tgt===r.k?' cvt':'')+(d.first===r.k?' cvf':'')+'"><span>'+v+'</span></div>'; }); });
+  return h+'</div></div>'; }
+// self-check de v352 (SP3 · SP4 · E11). Base de juguete; nada llega a disco; todo se restaura en finally.
+function _v352SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v352: '+nm); }; const real=db, K=['_covOpen','_covUnit','_covPlan'], s0={}; K.forEach(k=>s0[k]=state[k]);
+  try{ const ex=(id,name,muscle,sets,type)=>({id,name,muscle,type:type||'machine',sets});
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',sessions:[],split:{name:'s',days:[
+      {id:'a',name:'chest/push A',exercises:[ex('x1','pushdown','triceps',1,'cable'),ex('x2','press banca','chest',4),ex('x3','sentadilla','quads',2),ex('x4','pantorrilla','calfs',3)]},
+      {id:'b',name:'hams/legs B',exercises:[ex('x5','pulldown','lats',2,'cable'),ex('x6','curl femoral','hams',5),ex('x7','abductor','abduc',1),ex('x8','hip thrust','glutes',2),ex('x9','remo','uback',2,'cable')]},
+      {id:'c',name:'delts/push B',exercises:[ex('y1','lateral','delts',4),ex('y2','extension','triceps',2),ex('y3','cardio','cardio',9,'cardio')]},
+      {id:'d',name:'pull B',exercises:[ex('y4','remo pecho apoyado','uback',3),ex('y5','jalón','lats',1),ex('y6','curl','bicep',2)]},
+      {id:'e',name:'quads/legs A',exercises:[ex('y8','press','chest',2),ex('y7','hack','quads',4)]},
+      {id:'f',name:'pull A',exercises:[ex('y9','jalón','lats',3),ex('z1','remo','uback',1)]}],plan:{mode:'cycle',on:3,off:1,blocked:[]}}}); bumpIdx();
+    // E11 · sus etiquetas cuentan (nunca se renombran)
+    A('E11 · uback es espalda alta y abduc es glúteo (solo lookup)', muscleCanon('uback').id==='upper_back'&&muscleCanon('abduc').id==='glutes'&&db.split.days[1].exercises[4].muscle==='uback');
+    // la vuelta
+    const ix=c=>c.map(x=>x.idx).join();
+    A('SP3 · 3/1 con 6 días = 8 columnas, descanso tras cada 3', ix(planCycle(splitPlan(),db.split.days))==='0,1,2,-1,3,4,5,-1');
+    A('SP3 · 2/1 con 6 días = 9 columnas', ix(planCycle(Object.assign({},splitPlan(),{on:2}),db.split.days))==='0,1,-1,2,3,-1,4,5,-1');
+    A('SP3 · días fijos = lunes a domingo, con descanso y sin gym', ix(planCycle({mode:'weekly',on:3,off:1,week:{1:'a',2:'b',4:'c'},blocked:[0]},db.split.days))==='0,1,-1,2,-1,-1,-1');
+    A('SP3 · diario = tus días seguidos', ix(planCycle({mode:'daily',on:3,off:1,week:{},blocked:[]},db.split.days))==='0,1,2,3,4,5');
+    // las cuentas
+    const M=covMatrix(); const R=m=>M.rows.find(r=>r.m===m)||{};
+    A('SP3 · filas en su orden (push → pull → pierna) y sin cardio', M.rows.map(r=>r.m).join()==='chest,delts,triceps,uback,lats,bicep,quads,hams,calfs,abduc,glutes'&&!M.rows.some(r=>r.m==='cardio'));
+    A('SP3 · por vuelta: veces y series de cada músculo', R('chest').f===2&&R('chest').s===6&&R('triceps').f===2&&R('triceps').s===3&&R('uback').f===3&&R('uback').s===6&&R('lats').s===6);
+    A('SP3 · series del día', M.days.map(d=>d.tot).join()==='10,12,6,6,6,4'&&M.tot===44);
+    A('SP3 · el objetivo: el que más series tiene; empate → el que nombra el día', M.days[0].tgt==='chest'&&M.days[1].tgt==='hams'&&M.days[2].tgt==='delts'&&M.days[3].tgt==='uback'&&M.days[4].tgt==='quads'&&M.days[5].tgt==='lats');
+    { const days0=JSON.parse(JSON.stringify(db.split.days)); days0[4].exercises[0].sets=4; db.split.days=days0; bumpIdx(); const Mt=covMatrix();
+      A('SP3 · empate de series: gana el que nombra el día (quads/legs A)', Mt.days[4].tgt==='quads'); days0[4].exercises[0].sets=2; bumpIdx(); }
+    A('SP3 · el primer ejercicio, aunque no sea el objetivo', M.days[0].first==='triceps'&&M.days[1].first==='lats');
+    A('SP3 · por semana: las veces de tu plan', Math.abs(R('chest').fw-Math.round(2*ccShare().p*7/6*10)/10)<0.05);
+    // lo que se ve
+    state._covOpen=undefined; state._covUnit=undefined; state._covPlan=null; let h=plannedVolumeSection();
+    A('SP3 · //COVERAGE abre desplegada, con la tabla', /data-act="sd_cov" aria-expanded="true"/.test(h)&&/class="cvg" style="--cvn:8"/.test(h));
+    A('SP3 · descanso sombreado (2 columnas) y su guion', (h.match(/class="cvh cvr"/g)||[]).length===2&&(h.match(/class="cvr cvz">—/g)||[]).length===2);
+    A('SP3 · el objetivo y el primer ejercicio, marcados (sin color)', /class="cvc cvt"><span>4<\/span>/.test(h)&&/class="cvc cvf"><span>1<\/span>/.test(h)&&/class="cvc cvt"><span>5<\/span>/.test(h));
+    A('SP3 · cabecera con el nombre corto del día', /<div class="cvh"><span>push A<\/span>/.test(h)&&/<div class="cvh"><span>legs B<\/span>/.test(h));
+    A('SP3 · la fila de pecho: veces 2 · series 6', /<div class="cvm">chest<\/div><div class="cvn">2<\/div><div class="cvn">6<\/div>/.test(h));
+    state._covOpen=false; A('SP3 · se pliega', !/class="cvg"/.test(plannedVolumeSection())); state._covOpen=undefined;
+    state._covUnit='semana'; h=plannedVolumeSection(); A('SP3 · semana: veces/sem', /veces\/sem/.test(h)); state._covUnit=undefined;
+    // SP4 · otro patrón sin guardarlo
+    const plan0=JSON.stringify(db.split.plan); state._covPlan='2/1'; h=plannedVolumeSection();
+    A('SP4 · ver con 2/1: 9 columnas y tres descansos, sin tocar tu plan', /--cvn:9/.test(h)&&(h.match(/class="cvh cvr"/g)||[]).length===3&&JSON.stringify(db.split.plan)===plan0&&/data-act="cv_use"/.test(h));
+    state._covPlan='3/1'; A('SP4 · ver con el tuyo no es vista previa', covPreview()==null&&!/data-act="cv_use"/.test(plannedVolumeSection()));
+    state._covPlan=null; db.split.plan={mode:'daily'}; bumpIdx(); h=plannedVolumeSection(); A('SP4 · en diario, la opción "diario" es la tuya', /data-v="daily">diario<\/button>/.test(h)&&/class="t on" data-act="cv_pat" data-v="daily"/.test(h));
+    { const days1=JSON.parse(JSON.stringify(db.split.days)); days1[4].exercises[0].muscle='Chest'; db.split.days=days1; bumpIdx(); const Mc=covMatrix();
+      A('SP3 · "Chest" y "chest" son la misma fila (con la etiqueta que escribiste primero)', Mc.rows.filter(r=>mNorm(r.m)==='chest').length===1&&Mc.rows.find(r=>r.k==='chest').s===6&&Mc.rows.find(r=>r.k==='chest').m==='chest'); days1[4].exercises[0].muscle='chest'; bumpIdx(); }
+    db.split.plan={mode:'weekly',week:{1:'a',3:'b'},blocked:[0]}; bumpIdx(); state._covPlan=null; h=plannedVolumeSection();
+    A('SP3 · días fijos: la inicial del día y sin gym distinto de rest', /<span>L push A<\/span>/.test(h)&&/<span>X legs B<\/span>/.test(h)&&/<span>D sin gym<\/span>/.test(h)&&/<span>M rest<\/span>/.test(h)&&/data-v="weekly">fijos<\/button>/.test(h));
+    A('SP3 · "músculo" lleva su punteado (se toca para saber qué es cada marca)', /data-gloss="cov"><span class="u-dash">músculo<\/span>/.test(h));
+    console.log('v352 self-check OK');
+  } finally { db=real; K.forEach(k=>state[k]=s0[k]); bumpIdx(); }
 }
 function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fases: '+nm); }; const real=db;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), gh={}; const put=(a,b,k)=>{ for(let i=a;i>=b;i--)gh[D(i)]={kcal:k}; };
@@ -12379,6 +12490,7 @@ function renderSplitEdit(){
    +`<hr class="rule"/><div class="section"><div class="h"><span class="s">//</span>SPLIT</div><div class="meta vb" role="button" data-act="exdirectory">catalog</div></div>`
    +`<div class="field u-mb16"><label>NOMBRE DEL SPLIT</label><input data-act="sd_splitname" value="${escTxt(sp.name||'')}" placeholder="ej. Push/Pull/Legs"/></div>`
    +scheduleBlockHTML()
+   +plannedVolumeSection()   // v352 · SP3 · la tabla del volumen, junto al plan
    +`<hr class="rule"/><div class="section u-mb6"><div class="h"><span class="s">//</span>DAYS</div><div class="meta">${(sp.days||[]).length} ${(sp.days||[]).length===1?'día':'días'}</div></div>`;
   // v285 · SP1 · "los días del split deben ser desplegables porque quedan súper largos" (el dueño, 1-oct). Cada día es una fila
   // (nombre · ejercicios · sets) que se abre al tocarla. Abierto de entrada si está vacío o si el split tiene un solo día.
@@ -12395,7 +12507,7 @@ function renderSplitEdit(){
       +((n=>n?`<div class="line u-tap seord" role="button" tabindex="0" data-act="sd_order" data-di="${di}"><span class="k">orden</span><span class="dots"></span><span class="v">${n} ${n===1?'sugerencia':'sugerencias'} ›</span></div>`:'')(dayOrderSugs(d).length))
       +(_drift?`<div class="sedrift"><span class="u-f1">lo que entrenas este día ya no es esto · <b>${escTxt(_drift.list.map(x=>x.name).join(' · '))}</b></span><button class="b" data-act="sd_adopt" data-di="${di}">adoptar</button></div>`:'')+`</div>`;   // v285 · el aviso va DEBAJO de la lista: al aparecer no empuja lo que tocaste
   });
-  return body+`<div class="secondary u-mt6"><button class="b" data-act="sd_addday">+ agregar día</button></div>`+plannedVolumeSection();   // v285 · el catálogo subió a la cabecera de //SPLIT y al menú u/; coverage, al final
+  return body+`<div class="secondary u-mt6"><button class="b" data-act="sd_addday">+ agregar día</button></div>`;   // v285 · el catálogo subió a la cabecera de //SPLIT y al menú u/; coverage, al final
 }
 // ---------- render: history ----------
 // R5 (D12): mini-calendario del mes arriba (TRKCal, ‹ › entre meses con sesiones; toque en un día → baja a esa sesión),
@@ -13481,15 +13593,22 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='sd_exdn'){ const di=+el.dataset.di,ei=+el.dataset.ei, ex=db.split.days[di].exercises; if(ei<ex.length-1){ const t=ex[ei+1];ex[ei+1]=ex[ei];ex[ei]=t; save(); reRender(); } }
   else if(a==='sd_ex'){ openExEdit(+el.dataset.di,+el.dataset.ei); }
   else if(a==='sd_adopt'){ adoptDaySource(+el.dataset.di); }
-  else if(a==='sp_mode'||a==='sp_on'||a==='sp_off'){ const P=Object.assign({},splitPlan()); if(a==='sp_mode'){ P.mode=el.dataset.v; if(P.mode==='weekly'&&!Object.keys(P.week).length){ db.split.plan=P; P.week=defaultWeek(); } } else if(a==='sp_on')P.on=+el.dataset.v; else P.off=+el.dataset.v; db.split.plan=P; state.selDay=null; save(); reRender(); }
-  else if(a==='sp_block'){ const P=Object.assign({},splitPlan()); const d=+el.dataset.d; P.blocked=P.blocked.indexOf(d)>=0?P.blocked.filter(x=>x!==d):P.blocked.concat([d]); if(P.week[d]){ P.week=Object.assign({},P.week); delete P.week[d]; } db.split.plan=P; save(); reRender(); }
+  else if(a==='sp_mode'||a==='sp_on'||a==='sp_off'){ state._covPlan=null; const P=Object.assign({},splitPlan()); if(a==='sp_mode'){ P.mode=el.dataset.v; if(P.mode==='weekly'&&!Object.keys(P.week).length){ db.split.plan=P; P.week=defaultWeek(); } } else if(a==='sp_on')P.on=+el.dataset.v; else P.off=+el.dataset.v; db.split.plan=P; state.selDay=null; save(); reRender(); }
+  else if(a==='sp_block'){ state._covPlan=null; const P=Object.assign({},splitPlan()); const d=+el.dataset.d; P.blocked=P.blocked.indexOf(d)>=0?P.blocked.filter(x=>x!==d):P.blocked.concat([d]); if(P.week[d]){ P.week=Object.assign({},P.week); delete P.week[d]; } db.split.plan=P; save(); reRender(); }
   else if(a==='sp_wday'){ const d=+el.dataset.d; const pick=id=>{ const P=Object.assign({},splitPlan()); P.week=Object.assign({},P.week); if(id)P.week[d]=id; else delete P.week[d]; db.split.plan=P; save(); reRender(); };
     trkMenu(DOW_LONG[d],[['descanso',()=>pick('')]].concat((db.split.days||[]).map(x=>[x.name,()=>pick(x.id)]))); }
   else if(a==='sp_metric'){ db.split.metric=el.dataset.v==='rpe'?'rpe':'rir'; save(); reRender(); }
   else if(a==='sp_allowf'){ db.split.allowF=el.dataset.v==='1'; save(); reRender(); }
   else if(a==='sd_addday'){ const _nd={id:'d'+uid(),name:'new day',tag:'@ RIR · F',metric:'rir',allowFailure:true,exercises:[]}; db.split.days.push(_nd); (state._sdOpen=state._sdOpen||{})[_nd.id]=true; state._enter={sel:'.seday[data-id="'+_nd.id+'"]'}; save(); reRender(); }
   else if(a==='sd_fold'){ const _d=db.split.days[+el.dataset.di]; if(_d){ const _op=!sdOpen(_d,db.split); (state._sdOpen=state._sdOpen||{})[_d.id]=_op; if(_op)state._enter={sel:'.seday[data-id="'+(window.CSS&&CSS.escape?CSS.escape(_d.id):_d.id)+'"] > :not(.sehead)'}; reRender(); } }   // v285 · SP1
-  else if(a==='sd_cov'){ state._covOpen=!state._covOpen; if(state._covOpen)state._enter={sel:'.sefoldh ~ .line'}; reRender(); }   // v285 · SP2
+  else if(a==='sd_cov'){ state._covOpen=!(state._covOpen!==false); if(state._covOpen)state._enter={sel:'.sefoldh ~ .line.sch, .sefoldh ~ .cvwrap'}; reRender(); }   // v285 · SP2 · v352: abre desplegada
+  else if(a==='cv_pat'){ const v=el.dataset.v; state._covPlan=v===covKeyOf(splitPlan())?null:v; reRender(); }   // v352 · SP4 · ver otro patrón (no se guarda)
+  else if(a==='cv_unit'){ state._covUnit=el.dataset.v==='semana'?'semana':'vuelta'; reRender(); }
+  else if(a==='cv_use'){ const pv=covPreview(); if(!pv)return; const had=Object.prototype.hasOwnProperty.call(db.split,'plan'), old=had?JSON.parse(JSON.stringify(db.split.plan)):null;
+    db.split.plan=Object.assign({},db.split.plan||{},{mode:'cycle',on:pv.on,off:pv.off}); state._covPlan=null; state.selDay=null;
+    { const v=document.getElementById('view'), b=v&&v.querySelector('[data-act="cv_pat"].on'); if(b)_lastTap={sig:tapSig(b),sel:sigSel(b),el:b,sheet:null,view:true,off:b.getBoundingClientRect().top-v.getBoundingClientRect().top,rk:'',rkOff:0}; }   // el patrón que elegiste no se mueve aunque //SCHEDULE crezca arriba (v285)
+    const ok=save(); reRender();
+    if(ok)toast('✓ tu plan · '+pv.on+' on / '+pv.off+' off','ok',{undo:()=>{ if(had)db.split.plan=old; else delete db.split.plan; }}); else toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err'); }
   else if(a==='exdirectory'){ window._mgSel=[]; openExerciseDirectory(); }
   else if(a==='muscledetail'){ openMuscleDetail(el.dataset.id); }
   else if(a==='mdmore'){ const bx=document.getElementById('mdmore'); if(bx)keepUnder(el,()=>{ const op=bx.hidden; bx.hidden=!op; el.textContent=op?'menos':'más'; el.setAttribute('aria-expanded',op?'true':'false'); }); if(bx&&bx.hidden===false)revealAnim(bx); }   // estímulo · detalle de músculo: [más]/[menos]
@@ -17673,6 +17792,7 @@ const GLOSS={
   rirjump:'fallo anotado · tus series a F o RIR 0: si con el mismo peso suben 2 reps o más de una sesión a la siguiente, probablemente quedaba alguna.',
   racha:'racha: días seguidos con comida o gym registrados a mano. Solo se corta el día sin ninguno de los dos; hoy cuenta hasta medianoche.',
   stim:'σ · unidades de tensión mecánica: una medida propia de gym//TRK que estima el estímulo de cada serie, sumado por músculo en 7 días. Cada serie cuenta según su peso relativo y su cercanía al fallo; las indirectas, con su peso. Es un cálculo de la app, no una medida de laboratorio.',
+  cov:'cada columna es un día de una vuelta de tu plan (rest = descanso); cada celda, las series que ese día le da al músculo principal de sus ejercicios. Subrayado: el músculo que más trabaja ese día. En recuadro: el del primer ejercicio. Veces y series: en una vuelta, o por semana con tu plan (cuenta tus días sin gym).',   // v352 · SP3
   stimh:'series duras de 7 días por músculo: las que quedaron a RIR 4 o menos (o sin RIR anotado). Par unilateral = 1, drop = 0.5; las indirectas cuentan con su peso.',
   stima:'series totales de 7 días por músculo: todas las registradas, a cualquier RIR. Par unilateral = 1, drop = 0.5; las indirectas cuentan con su peso.',
 };
@@ -18064,7 +18184,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 // diario de arranque. Mientras decide, los respaldos se retienen para no pisar `latest`.
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ _idbSelfCheck(); },800); setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
