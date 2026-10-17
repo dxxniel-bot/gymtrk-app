@@ -1561,7 +1561,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v362';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v363';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2525,26 +2525,65 @@ async function cloudAdopt(inc,rev){ const aw=db.activeWork, sc=db.health&&db.hea
 function cloudUiBusy(){ if(_sbx)return false; const a=document.activeElement; return !!(document.getElementById('bootov')||document.getElementById('modal')||document.getElementById('asklayer')||(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))); }
 // una pasada: lee la nube (sin bajar la copia si la versión es la misma), decide y actúa. Un push rechazado (otra copia
 // llegó antes) vuelve a leer y decidir. Con una sesión viva, una hoja abierta o un campo en foco no reemplaza nada: espera.
+// v363 · juntar sin perder: cuando la nube y este teléfono no tienen historia común, o una unión derrumbaría una sección, ya no se
+// pregunta cuál usar. Se junta REGISTRO POR REGISTRO Y ENTERO (nunca se mezclan los campos de un registro: una serie o un sueño corregidos
+// no se duplican). Manda la copia más reciente (_meta.t), salvo que esté casi vacía (un alta recién hecha nunca manda): de ella salen los
+// registros que están en las dos y todo lo que no es registro (split, ajustes, perfil, metas, rotación). Quién manda: nunca una copia casi
+// vacía; si no, la nube cuando este teléfono entra por primera vez a la cuenta, y este teléfono si ya sincronizaba con ella (perdió la base). Lo de este teléfono (sesión viva,
+// cuenta, atajo, invitación) se queda. Las dos copias quedan guardadas ('antes de traer la nube' y 'de la nube'). Solo se pregunta si los
+// datos de este teléfono son de OTRA cuenta.
+const CU_ARR={sessions:1,foods:1,mamarre:1,splits:1,splitLog:1,gyms:1,mealTags:1}, CU_DAYS={meals:1,adhoc:1},
+  CU_MAP={steps:1,bodyweight:1,sleep:1,mealMeta:1,goalHist:1,lastUsed:1,machines:1,exCat:1,ccDay:1,exNotes:1,muscleMap:1,muscleNames:1};
+function cuJ(x){ try{ return JSON.stringify(x); }catch(_){ return ''; } }
+function cuArr(w,l,st){ w=Array.isArray(w)?w:[]; l=Array.isArray(l)?l:[]; const ids=new Set(w.filter(x=>x&&typeof x==='object'&&x.id!=null).map(x=>String(x.id))), js=new Set(w.map(cuJ)), out=w.slice();
+  l.forEach(x=>{ if(x&&typeof x==='object'&&x.id!=null){ if(!ids.has(String(x.id))){ out.push(x); ids.add(String(x.id)); st.n++; } } else if(!js.has(cuJ(x))){ out.push(x); js.add(cuJ(x)); st.n++; } }); return out; }
+function cuMap(w,l,st){ const isO=x=>!!x&&typeof x==='object'&&!Array.isArray(x); w=isO(w)?w:{}; l=isO(l)?l:{}; const o=Object.assign({},w); Object.keys(l).forEach(k=>{ if(!(k in o)){ o[k]=l[k]; st.n++; } }); return o; }
+function cuDays(w,l,st){ const isO=x=>!!x&&typeof x==='object'&&!Array.isArray(x); w=isO(w)?w:{}; l=isO(l)?l:{}; const ids=new Set(), o={};
+  Object.keys(w).forEach(d=>{ o[d]=Array.isArray(w[d])?w[d].slice():w[d]; (Array.isArray(w[d])?w[d]:[]).forEach(x=>{ if(x&&x.id!=null)ids.add(String(x.id)); }); });
+  Object.keys(l).forEach(d=>{ (Array.isArray(l[d])?l[d]:[]).forEach(x=>{ if(x&&x.id!=null){ if(ids.has(String(x.id)))return; ids.add(String(x.id)); } else if((Array.isArray(o[d])?o[d]:[]).some(y=>cuJ(y)===cuJ(x)))return;
+    o[d]=Array.isArray(o[d])?o[d]:[]; o[d].push(x); st.n++; }); }); return o; }   // una comida que una copia movió de día queda una sola vez, donde la dejó la que manda
+function cuStack(w,l,st){ const out=cuArr(w,l,st), lm={}; (Array.isArray(l)?l:[]).forEach(x=>{ if(x&&x.id!=null)lm[String(x.id)]=x; });
+  return out.map(x=>{ const y=x&&x.id!=null?lm[String(x.id)]:null; if(!y||y===x)return x; const z=Object.assign({},x);
+    ['ticks','tickTimes','tickEdited'].forEach(k=>{ if(y[k]&&typeof y[k]==='object')z[k]=Object.assign({},y[k],x[k]||{}); }); return z; }); }   // las tomas marcadas de las dos
+function cuHealth(w,l,st){ const isO=x=>!!x&&typeof x==='object'&&!Array.isArray(x); w=isO(w)?w:{}; l=isO(l)?l:{}; const o=Object.assign({},l,w);
+  Object.keys(o).forEach(k=>{ if(k==='shortcut')return; const a=w[k], b=l[k]; if(a===undefined||b===undefined)return; if(Array.isArray(a)&&Array.isArray(b))o[k]=cuArr(a,b,st); else if(isO(a)&&isO(b))o[k]=cuMap(a,b,st); }); return o; }
+function cloudWinner(loc,inc){ const ml=dbMass(loc), mi=dbMass(inc);
+  if(mi>=20&&ml<mi*0.25)return 'inc'; if(ml>=20&&mi<ml*0.25)return 'loc';   // una copia casi vacía nunca manda
+  const a=loc&&loc.account; return (a&&+a.rev>0)?'loc':'inc'; }   // la hora de la copia no sirve: la mueven los guardados de mantenimiento (entrar, migrar)
+function cloudUnion(loc,inc){ const st={n:0}, who=cloudWinner(loc,inc), W=who==='inc'?inc:loc, L=who==='inc'?loc:inc, out={};
+  new Set(Object.keys(W).concat(Object.keys(L))).forEach(k=>{ if(CLOUD_LOCAL[k]){ if(k in loc)out[k]=loc[k]; return; }
+    const a=cloudOwn(k,W[k]), b=cloudOwn(k,L[k]); if(a===undefined){ if(b!==undefined)out[k]=b; return; } if(b===undefined){ out[k]=a; return; }
+    out[k]=k==='stack'?cuStack(a,b,st):CU_ARR[k]?cuArr(a,b,st):CU_DAYS[k]?cuDays(a,b,st):CU_MAP[k]?cuMap(a,b,st):k==='health'?cuHealth(a,b,st):a; });
+  if(Array.isArray(out.sessions)){ const d=s=>String((s&&s.date)||''); out.sessions=out.sessions.map((s,i)=>[s,i]).sort((p,q)=>d(p[0])<d(q[0])?-1:d(p[0])>d(q[0])?1:p[1]-q[1]).map(x=>x[0]); }
+  if(loc.health&&loc.health.shortcut)out.health=Object.assign({},out.health||{},{shortcut:loc.health.shortcut});
+  if(out.settings&&typeof out.settings==='object'){ out.settings=Object.assign({},out.settings); if(loc.settings&&loc.settings.acInv)out.settings.acInv=loc.settings.acInv; else delete out.settings.acInv; }
+  return {db:out,kept:st.n,who}; }
 async function cloudRun(opt){ const g=_clGen; let d0=db; const gone=()=>g!==_clGen||db!==d0||!_cl;   // v352 · saliste, borraste o cambió la base durante una espera: se retira
   for(let i=0;i<4;i++){ const base=cloudBaseOk(), head=await cloudPull(base?_cl.rev:-1); if(gone())return 'skip';
     let inc=null; if(head.inc){ inc=migrate(head.inc); if(!(inc.profile&&inc.profile.username)){ inc=null; head.has=false; } }
     const o={localSeed:!(db.profile&&db.profile.username),foreign:cloudForeign(),cloudHas:head.has,base:base,cloudNew:head.has&&(!base||head.rev!==_cl.rev),dirty:!base||cloudDirty(),lmass:dbMass(db),cmass:inc?dbMass(inc):0,bmass:_cl.mass||0,ldrop:base&&!!_cl.cnt&&sectDrop(cloudCounts(db),_cl.cnt),cdrop:!!inc&&sectDrop(cloudCounts(inc),cloudCounts(db)),same:!!inc&&cloudSame(cloudSigs(inc),cloudSigs(db))};
-    const dec=cloudDecision(o);
+    let dec=cloudDecision(o); if(dec==='ask'&&!o.foreign)dec='union';   // v363 · sin preguntar: se juntan
     if(opt.only==='push'&&dec!=='push'&&dec!=='none'&&dec!=='link')return 'skip';
-    if((dec==='adopt'||dec==='merge'||dec==='ask')&&!opt.ui&&(db.activeWork||cloudUiBusy()))return 'wait';
+    if((dec==='adopt'||dec==='merge'||dec==='ask'||dec==='union')&&!opt.ui&&(db.activeWork||cloudUiBusy()))return 'wait';
     if(dec==='none'){ _cl.t=Date.now(); const a=cloudAcct(); if(a&&a.uid===_cl.uid)a.at=_cl.t; await cloudKvPut(_cl); return 'ok'; }
     if(dec==='link'){ cloudSetBase(head.rev,cloudSigs(db),dbMass(db),cloudPayload()); cloudSave(); await cloudKvPut(_cl); return 'ok'; }
     if(dec==='adopt'){ await cloudAdopt(inc,head.rev); return 'adopt'; }
     if(dec==='ask'){ cloudAsk(o,head); return 'ask'; }
     if(dec==='merge'){ const bj=await cloudBaseGet(); if(gone())return 'skip'; let bo=null; try{ bo=bj?JSON.parse(bj.json):null; if(bo&&bj.app!==APP_V)bo=migrate(bo); }catch(_){ bo=null; }   // una base de otra versión de la app pasa por migrate, como la nube y este teléfono
-      if(!bo){ cloudAsk(o,head); return 'ask'; }   // sin la base no se une a ciegas: tú eliges (la otra queda guardada)
-      const m=cloudMerge(db,inc,bo); idbSnap('nube',head.inc);   // v362 · la copia de la nube queda guardada siempre antes de unir
-      if(cloudMergeDrop(m.db,db,inc,bo)){ cloudAsk(o,head); return 'ask'; }   // v362 · un derrumbe que llega por la unión: tú eliges, nada sube
-      const snap=idbSnap('cloud',db);   // se une la base de ESTE instante (sin pausa antes de reemplazar)
-      db=m.db; bumpIdx(); cloudSave(); d0=db; if(!_sbx)reRender(); await snap; if(gone())return 'skip'; }
+      const m=bo?cloudMerge(db,inc,bo):null; if(m)idbSnap('nube',head.inc);   // v362 · la copia de la nube queda guardada siempre antes de unir
+      if(!m||cloudMergeDrop(m.db,db,inc,bo))dec='union';   // v363 · sin base, o un derrumbe que llega por la unión: se juntan (nada se pierde)
+      else { const snap=idbSnap('cloud',db);   // se une la base de ESTE instante (sin pausa antes de reemplazar)
+        db=m.db; bumpIdx(); cloudSave(); d0=db; if(!_sbx)reRender(); await snap; if(gone())return 'skip'; } }
+    if(dec==='union'){ let U=inc; if(!U){ const bj=await cloudBaseGet(); if(gone())return 'skip'; try{ U=bj?JSON.parse(bj.json):null; if(U&&bj.app!==APP_V)U=migrate(U); }catch(_){ U=null; } }   // la nube sin cambios = la base
+      if(!U&&head.has){ const h2=await cloudPull(-1); if(gone())return 'skip'; if(h2.inc){ try{ U=migrate(h2.inc); head.inc=h2.inc; head.t=h2.t; head.raw=h2.raw; }catch(_){ U=null; } } }   // sin la base guardada: se baja la de la nube
+      if(!U){ cloudAsk(o,head); return 'ask'; }
+      const m=cloudUnion(db,U), n0=(db.sessions||[]).length, snap=idbSnap('cloud',db); if(head.inc)idbSnap('nube',head.inc);
+      db=m.db; bumpIdx(); cloudSave(); d0=db; if(!_sbx)reRender(); await snap; if(gone())return 'skip'; _clJoin={n:m.kept,s:(db.sessions||[]).length-n0}; }
     const r=await cloudPush(head.raw);
-    if(r.ok){ cloudSave(); await cloudKvPut(_cl); return dec==='merge'?'merge':'ok'; } }
+    if(r.ok){ cloudSave(); await cloudKvPut(_cl); if(dec==='union'&&!_sbx&&!opt.ui)toast(cloudJoinTxt()); return dec==='merge'?'merge':dec==='union'?'union':'ok'; } }
   throw cloudErr('busy'); }
+let _clJoin=null;
+function cloudJoinTxt(){ const j=_clJoin||{}; return '✓ juntamos tu nube y este teléfono'+(j.s>0?' · +'+j.s+(j.s===1?' sesión':' sesiones'):''); }
 // la entrada única. Nunca lanza: devuelve 'ok' | 'adopt' | 'merge' | 'ask' | 'wait' | 'hold' | 'clean' | 'skip' | 'off' | 'err'
 // (el motivo de 'err' queda en _clErr). Sin red no pasa nada: la app sigue y se reintenta al volver.
 function cloudSync(why,opt){ opt=opt||{}; if(cloudMode()==='off'||!cloudIn())return Promise.resolve('off');
@@ -2552,7 +2591,7 @@ function cloudSync(why,opt){ opt=opt||{}; if(cloudMode()==='off'||!cloudIn())ret
   if(_clHold&&!opt.ui)return Promise.resolve('hold');
   if(!opt.ui&&(why==='hide'||why==='tick'||why==='save')&&cloudBaseOk()&&!cloudDirty()){ _clNote=0; return Promise.resolve('clean'); }
   _clTry=Date.now(); const n0=_clNote; clearInterval(_clWaitT); _clWaitT=null;
-  const p=_clBusy=cloudRun(opt).then(r=>{ _clErr=''; if((r==='ok'||r==='merge'||r==='adopt')&&_clNote===n0)_clNote=0; if(r==='wait')cloudWait(); return r; },e=>{ if(e&&e.code==='gone')return 'skip'; _clErr=cloudErrTxt(e); return 'err'; })
+  const p=_clBusy=cloudRun(opt).then(r=>{ _clErr=''; if((r==='ok'||r==='merge'||r==='adopt'||r==='union')&&_clNote===n0)_clNote=0; if(r==='wait')cloudWait(); return r; },e=>{ if(e&&e.code==='gone')return 'skip'; _clErr=cloudErrTxt(e); return 'err'; })
     .then(r=>{ if(_clBusy===p)_clBusy=null; cloudUi(); return r; });
   return p; }
 // quedó pendiente porque estabas a media sesión o con una hoja abierta: se reintenta en cuanto se desocupa (sin red de por medio)
@@ -2587,10 +2626,40 @@ function cloudUi(){ if(_sbx)return; try{ const el=document.getElementById('ac_st
     if((state.screen==='settings'||state.screen==='landing')&&!cloudUiBusy())reRender(); }catch(_){} }
 // arranque: nada si está apagada. Espera a que el arranque elija su copia (idbBootCheck) y a que se cierre la portada;
 // después sincroniza al volver a la app, al recuperar conexión, al ocultarse y, como mucho, cada 5 min con cambios.
-function cloudBoot(){ if(cloudMode()==='off')return;
+// v363 · rescate: las copias 'antes de traer la nube' que dejó la v362 (anteriores al primer arranque de esta versión, de los últimos 5 días)
+// se revisan juntas: lo que tengan y tu base no se ofrece UNA vez, sin salir encima de una sesión viva ni de una hoja. Si es una sesión que
+// volviste a registrar ese día, se ofrece devolverla tal como la registraste (con la hora de cada ✓, la que cruza el TCX de Fitbit) y quitar
+// la de a mano, que queda en una copia. Solo agrega; tu base de antes queda guardada ('antes de rescatar').
+function cloudRescueOffer(){ if(_sbx)return; let seen='', t0=0; try{ seen=localStorage.getItem('gymtrk_rescue_seen')||''; t0=+localStorage.getItem('gymtrk_v363_t')||0; }catch(_){ return; } if(!t0)return;
+  if(db.activeWork||cloudUiBusy()||state.screen==='workout'){ setTimeout(cloudRescueOffer,5000); return; }
+  idbIdx().then(ix=>{ const ks=Object.keys(ix||{}).filter(x=>/^pre-cloud-/.test(x)&&ix[x]&&ix[x].t<t0&&t0-ix[x].t<5*864e5&&seen.indexOf(x)<0); if(!ks.length)return;
+    return Promise.all(ks.map(k=>idbGet(k).then(rec=>{ try{ return migrate(JSON.parse(rec&&rec.s)); }catch(_){ return null; } },()=>null))).then(cs=>{
+      const mark=()=>{ try{ localStorage.setItem('gymtrk_rescue_seen',(seen+' '+ks.join(' ')).trim().slice(-900)); }catch(_){} };
+      const calc=()=>{ const mi={sessions:[],meals:[],days:[]}, a=new Set(), b=new Set(), c=new Set(); cs.forEach(x=>{ if(!x)return; const m=missingFrom(x,db);
+          m.sessions.forEach(s=>{ if(!a.has(s.id)){ a.add(s.id); mi.sessions.push(s); } }); m.meals.forEach(o=>{ const k=String(o.m.id); if(!b.has(k)){ b.add(k); mi.meals.push(o); } }); m.days.forEach(o=>{ const k=o.f+'|'+o.d; if(!c.has(k)){ c.add(k); mi.days.push(o); } }); }); return mi; };
+      const mi=calc(), n=mi.sessions.length+mi.meals.length+mi.days.length; if(!n){ mark(); return; }
+      const R=rescuePlan(mi), s0=R.pairs[0];
+      const doIt=swap=>{ mark(); const m2=calc(), R2=rescuePlan(m2), n2=m2.sessions.length+m2.meals.length+m2.days.length; if(!n2)return;
+        idbSnap('rescue',db).then(()=>{ if(swap){ const out=new Set(R2.pairs.map(p=>p.dup.id)); db.sessions=(db.sessions||[]).filter(s=>!out.has(s.id)); if(H().sessHR)R2.pairs.forEach(p=>{ delete H().sessHR[p.dup.id]; }); }
+          applyMissing(m2); bumpIdx(); _idbForceNext=true; if(savedToast(swap&&R2.pairs.length?'✓ tu sesión original de vuelta':'✓ recuperado · '+n2+' registros'))reRender(); }); };
+      if(s0)bootAsk({title:'encontré tu sesión como la registraste',detail:(s0.s.dayName||'sesión')+' · '+fmtShort(s0.s.date)+' · '+((s0.s.exercises||[]).length)+' ejercicios · '+rescueWhen(s0.s)
+          +'\nla que volviste a registrar ('+((s0.dup.exercises||[]).length)+' ejercicios) sale de tu historial y queda en una copia'+(R.pairs.length>1?'\n+ '+(R.pairs.length-1)+' más':'')+(n>R.pairs.length?'\n+ '+(n-R.pairs.length)+' registros que faltaban':''),
+          ok:'recuperarla',cancel:'no',alt:{label:'dejar las dos',fn:()=>doIt(false)}},()=>doIt(true),()=>mark());
+      else { const L=mi.sessions.slice(0,6).map(s=>fmtShort(s.date||todayISO())+' · '+(s.type==='rest'?'descanso':(s.dayName||'sesión')+' · '+((s.exercises||[]).length)+' ejercicios'));
+        bootAsk({title:'esto se quedó fuera al traer tu nube',detail:[mi.sessions.length?mi.sessions.length+(mi.sessions.length===1?' sesión':' sesiones'):'',mi.meals.length?mi.meals.length+(mi.meals.length===1?' alimento':' alimentos'):'',mi.days.length?mi.days.length+' días de peso, pasos o sueño':''].filter(Boolean).join(' · ')+(L.length?'\n'+L.join('\n'):'')+'\nse agregan a lo que ya tienes · no se cambia ni se borra nada',ok:'recuperarlo',cancel:'no'},()=>doIt(false),()=>mark()); } }); }).catch(()=>{}); }
+// una sesión recuperada y la que volviste a registrar ese día, del mismo día del split, guardada después
+function rescuePlan(mi){ const span=x=>{ let a=0, b=0; ((x&&x.exercises)||[]).forEach(e=>((e&&e.sets)||[]).forEach(z=>{ const q=z&&z.doneAt; if(q){ if(!a||q<a)a=q; if(q>b)b=q; } })); return b-a; };   // lo que duró entre el primer ✓ y el último
+  const pairs=[], nm=x=>new Set(((x&&x.exercises)||[]).map(e=>String((e&&e.name)||'').toLowerCase()).filter(Boolean)), like=(a,b)=>{ const A=nm(a), B=nm(b); if(!A.size||!B.size)return false; let k=0; A.forEach(n=>{ if(B.has(n))k++; }); return k/Math.min(A.size,B.size)>=0.5; };
+  (mi.sessions||[]).forEach(s=>{ if(!s||s.type==='rest'||!s.savedMs||!(s.dayId!=null||s.dayName))return;
+    const dup=(db.sessions||[]).filter(x=>x&&x.id!==s.id&&x.type!=='rest'&&x.date===s.date&&(s.dayId!=null?x.dayId===s.dayId:x.dayName===s.dayName)&&x.savedMs>s.savedMs&&like(s,x)&&(x.loggedAfter||(span(s)>=15*60000&&span(x)<span(s)*0.3))&&!pairs.some(p=>p.dup.id===x.id)).sort((p,q)=>(q.savedMs||0)-(p.savedMs||0))[0];
+    if(dup)pairs.push({s,dup}); });
+  return {pairs}; }
+function rescueWhen(s){ let a=0, b=0; (s.exercises||[]).forEach(e=>(e.sets||[]).forEach(x=>{ const t=x&&x.doneAt; if(t){ if(!a||t<a)a=t; if(t>b)b=t; } }));
+  return a?'✓ de '+hhmm(a)+' a '+hhmm(b):(s.startTime?s.startTime+(s.endTime?'–'+s.endTime:''):''); }
+function cloudBoot(){ if(cloudMode()==='off')return; try{ if(!localStorage.getItem('gymtrk_v363_t'))localStorage.setItem('gymtrk_v363_t',String(Date.now())); }catch(_){}   // v363 · el sello del primer arranque de esta versión (el rescate solo mira copias de antes)
   try{ const s=ONB_STEPS.find(x=>x.k==='body'); if(s)s.why='para calcular tus calorías de mantenimiento'; }catch(_){}   // con cuenta ya no "se queda en tu teléfono"
   const t0=Date.now(), go1=()=>{ if((_idbHold||document.getElementById('bootov'))&&Date.now()-t0<15000){ setTimeout(go1,300); return; }
-    cloudKvGet().then(v=>{ if(v&&v.uid&&v.srv===cloudSrv())_cl=v; _clSess=(db.sessions||[]).length; if(cloudResetCheck())return; if(cloudIn()){ cloudUi(); cloudSync('boot'); } else acctInviteMaybe(); }).catch(()=>{}); };   /* v362 · AC-INV */
+    cloudKvGet().then(v=>{ if(v&&v.uid&&v.srv===cloudSrv())_cl=v; _clSess=(db.sessions||[]).length; if(cloudResetCheck())return; if(cloudIn()){ cloudUi(); cloudSync('boot'); setTimeout(cloudRescueOffer,5000); } else acctInviteMaybe(); }).catch(()=>{}); };   /* v362 · AC-INV */
   go1();
   document.addEventListener('visibilitychange',()=>{ if(!cloudIn())return;
     if(document.hidden){ try{ flushSave(); }catch(_){} if(_clNote)cloudSync('hide'); }
@@ -2599,6 +2668,40 @@ function cloudBoot(){ if(cloudMode()==='off')return;
   setInterval(()=>{ if(cloudIn()&&!document.hidden&&_clNote&&Date.now()-_clTry>=300000)cloudSync('tick'); },60000); }
 // ---- FakeSB · el mismo contrato que Supabase Auth (GoTrue) y PostgREST rpc, en memoria. Solo para `?cloud=fake` y
 // self-check de v362 (AC-INV). Base de juguete; nada llega a disco; todo se restaura en finally.
+// self-check de v363 (urgente): juntar sin perder, el rescate y "ya entrenaste hoy". Base de juguete; nada llega a disco; todo se restaura.
+function _v363hSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v363h: '+nm); }; const real=db, s0=state.screen, C=x=>JSON.parse(JSON.stringify(x));
+  try{ const S=(id,date,n,w)=>({id,date,dayId:'d1',dayName:'push A',type:'training',exercises:[{name:'press',muscle:'chest',type:'machine',sets:Array.from({length:n},()=>({w:String(w||100),r:'8',rir:'1',unit:'lbs',done:true}))}]});
+    const big={profile:{username:'real'},settings:{restSec:120},split:{days:[{id:'a'},{id:'b'},{id:'c'}]},rotIdx:2,sessions:Array.from({length:30},(_,i)=>S('s'+i,'2026-09-'+String(1+i%28).padStart(2,'0'),3)),
+      meals:{'2026-10-10':[{id:'m1',kcal:100}]},sleep:{'2026-10-10':[{start:'23:00',end:'07:00'}]},stack:[{id:'k1',name:'creatina',ticks:{'2026-10-10':'taken'}}],_meta:{t:1000}};
+    const fresh={profile:{username:'nuevo'},settings:{restSec:45},split:{days:[{id:'z'}]},rotIdx:0,sessions:[],meals:{},stack:[],_meta:{t:9e12}};
+    let m=cloudUnion(C(fresh),C(big)).db;   // fresh entra a la cuenta por primera vez
+    { const old=C(big); old._meta.t=9e12; old.settings.restSec=45; old.account={uid:'u',rev:0}; const cur=C(big); cur.settings.restSec=120; cur.sessions[3].exercises[0].sets[0].w='777';
+      const mm=cloudUnion(old,cur).db; A('una copia vieja pero completa que entra por primera vez no manda, aunque se haya guardado hace un segundo', mm.settings.restSec===120&&mm.sessions.find(s=>s.id==='s3').exercises[0].sets[0].w==='777'); }
+    A('un alta recién hecha nunca manda: split, ajustes, perfil y suplementos de la copia con tus datos', m.split.days.length===3&&m.settings.restSec===120&&m.profile.username==='real'&&m.stack.length===1&&m.sessions.length===30);
+    const inc=C(big); inc._meta.t=2000; inc.sessions[5].exercises[0].sets[0].w='105'; inc.sleep['2026-10-10']=[{start:'23:30',end:'07:00'}];
+    m=cloudUnion(C(big),inc).db;
+    A('registro por registro y entero: una serie y un sueño corregidos no se duplican (manda la copia más reciente)', m.sessions.length===30&&m.sessions.find(s=>s.id==='s5').exercises.length===1&&m.sessions.find(s=>s.id==='s5').exercises[0].sets.length===3&&m.sessions.find(s=>s.id==='s5').exercises[0].sets[0].w==='105'&&m.sleep['2026-10-10'].length===1&&m.sleep['2026-10-10'][0].start==='23:30');
+    const l2=C(big); l2._meta.t=3000; l2.account={uid:'u',rev:3};   /* ya sincronizaba (perdió la base): manda este teléfono */ l2.meals={'2026-10-11':[{id:'m1',kcal:100}]}; l2.stack[0].ticks={'2026-10-11':'taken'}; l2.sessions.push(S('hoy','2026-10-16',2));
+    m=cloudUnion(l2,C(big)).db;
+    A('una comida movida de día queda una vez; las tomas de las dos copias; lo nuevo de aquí se queda', !(m.meals['2026-10-10']||[]).length&&(m.meals['2026-10-11']||[]).length===1&&m.stack[0].ticks['2026-10-10']==='taken'&&m.stack[0].ticks['2026-10-11']==='taken'&&m.sessions.some(s=>s.id==='hoy')&&m.sessions.length===31);
+    const T=todayISO(); db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',split:{name:'s',days:[{id:'d1',name:'push A',exercises:[{id:'e1',name:'press',muscle:'chest',type:'machine',sets:3}]},{id:'d2',name:'pull A',exercises:[{id:'e2',name:'remo',muscle:'lats',type:'machine',sets:3}]}]},rotIdx:1,
+      sessions:[{id:'t1',date:T,dayId:'d1',dayName:'push A',type:'training',exercises:[{exId:'e1',name:'press',muscle:'chest',type:'machine',sets:[{w:'100',r:'8',rir:'1',unit:'lbs',done:true}]}]}]}); bumpIdx();
+    state.screen='home'; let v=document.createElement('div'); v.innerHTML=renderHome();
+    A('ya entrenaste hoy: gym lo dice y start no es el principal', /hoy ya entrenaste · push A/.test(v.textContent)&&!v.querySelector('button.start[data-act="start"]')&&!!v.querySelector('.secondary [data-act="start"]')&&!v.querySelector('[data-act="rest"]'));
+    db.sessions[0].exercises[0].sets=[]; bumpIdx(); v.innerHTML=renderHome(); A('una sesión sin series no cuenta como entrenada', !/hoy ya entrenaste/.test(v.textContent));
+    { const keep=db.sessions, t0=Date.parse(T+'T18:46:00');
+      db.sessions=[{id:'man',date:T,dayId:'d1',dayName:'push A',type:'training',savedMs:t0+9e6,exercises:[{name:'press',sets:[{w:'1',r:'1',rir:'1',done:true,doneAt:t0+9e6}]}]}];
+      const orig={id:'orig',date:T,dayId:'d1',dayName:'push A',type:'training',savedMs:t0+5.8e6,exercises:[{name:'press',sets:[{w:'1',r:'1',rir:'1',done:true,doneAt:t0+120000},{w:'1',r:'1',rir:'1',done:true,doneAt:t0+5.7e6}]}]};
+      db.sessions[0].exercises[0].sets.push({w:'1',r:'1',rir:'1',done:true,doneAt:t0+9e6+60000});
+      const R=rescuePlan({sessions:[orig],meals:[],days:[]});
+      A('rescate: la sesión original se empareja con la que volviste a registrar ese día y dice la hora de sus ✓', R.pairs.length===1&&R.pairs[0].dup.id==='man'&&rescueWhen(orig)==='✓ de '+hhmm(t0+120000)+' a '+hhmm(t0+5.7e6));
+      db.sessions=[{id:'tarde',date:T,dayId:'d1',dayName:'push A',type:'training',savedMs:t0+9e6,exercises:[{name:'press',sets:[{w:'1',r:'1',rir:'1',done:true,doneAt:t0+6e6},{w:'1',r:'1',rir:'1',done:true,doneAt:t0+9e6}]}]}];   /* otra sesión real, de 50 min, del mismo día del split */
+      A('rescate: dos sesiones reales distintas del mismo día no se emparejan', rescuePlan({sessions:[orig],meals:[],days:[]}).pairs.length===0);
+      db.sessions=[Object.assign({},db.sessions[0],{id:'sinhora',savedMs:undefined,exercises:orig.exercises})]; A('rescate: sin hora de guardado no se empareja', rescuePlan({sessions:[orig],meals:[],days:[]}).pairs.length===0);
+      db.sessions=keep; }
+    console.log('v363h self-check OK');
+  } finally { db=real; state.screen=s0; bumpIdx(); }
+}
 function _v362SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v362: '+nm); }; const real=db, f0=_clForce, cl0=_cl;
   try{ _clForce='fake'; _cl=null; const N=Date.now(), D=864e5;
     db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',weightKg:70,heightCm:175,age:26,sex:'M'},gyms:['g'],activeGym:'g',settings:{}});
@@ -2761,9 +2864,8 @@ async function _cuentasSelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELF
       A('…lo que A borró no revive; la corrección de B y su comida se quedan', !(db.meals[T0]||[]).some(m=>m.id==='m1')&&sw(db).w==='105'&&(db.meals['2026-09-10']||[]).some(m=>m.id==='m10')); keep(B);
       use(A1); A('A toma la unión sin perder nada', (await cloudSync('t'))==='adopt'&&sw(db).w==='105'&&(db.adhoc[T0]||[]).length===1&&(db.adhoc['2026-09-06']||[]).length===1&&!(db.meals[T0]||[]).some(m=>m.id==='m1')&&db.settings.progLayout==='y'&&(db.mamarre||[]).length===1);
       db.settings.restSec=180; keep(A1); use(B); db.settings.restSec=190; A('B sube', (await cloudSync('t'))==='ok'); keep(B);
-      use(A1); _clBaseMem=null; A('sin la base guardada no une a ciegas: pregunta', (await cloudSync('t',{ui:true}))==='ask'&&db.settings.restSec===180);
-      const sk=[], is0=idbSnap; idbSnap=k=>{ sk.push(k); return Promise.resolve(); };
-      try{ A('elegir este teléfono guarda antes la copia de la nube', (await cloudChoose('local'))==='ok'&&sk.indexOf('nube')>=0&&db.settings.restSec===180&&cloudBaseOk()); } finally{ idbSnap=is0; } }
+      use(A1); _clBaseMem=null; const sk=[], is0=idbSnap; idbSnap=k=>{ sk.push(k); return Promise.resolve(); };
+      try{ A('v363 · sin la base guardada se juntan sin preguntar y las dos copias quedan guardadas', (await cloudSync('t',{ui:true}))==='union'&&[180,190].indexOf(db.settings.restSec)>=0&&sk.indexOf('nube')>=0&&sk.indexOf('cloud')>=0&&cloudBaseOk()&&!_clHold); } finally{ idbSnap=is0; } }
     { const b={sessions:[{date:'2026-09-01',x:1},{id:'s2',date:'2026-09-02'}],split:{days:[{id:'d1'},{id:'d2'},{id:'d3',n:0}]},meals:{'2026-09-01':[{id:'m1',kcal:100}]},rotIdx:3}, J=x=>JSON.parse(JSON.stringify(x));
       const l=J(b), r=J(b); l.sessions.push({id:'sa',date:'2026-09-03'}); r.sessions.push({id:'sb',date:'2026-09-02'}); l.split.days.reverse(); r.split.days[2].n=1;
       l.meals['2026-09-02']=[l.meals['2026-09-01'][0]]; l.meals['2026-09-01']=[]; r.meals['2026-09-01'][0].kcal=150; l.rotIdx=4; r.rotIdx=4; const m=cloudMerge(l,r,b).db;
@@ -2777,11 +2879,9 @@ async function _cuentasSelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELF
     { keep(A1); use(A1); for(let i=0;i<14;i++)db.sessions.push(S('sx'+i,'2026-09-'+String(13+i).padStart(2,'0'))); A('r2 · A sube 14 sesiones', (await cloudSync('t',{ui:true}))==='ok'); keep(A1);
       use(B); A('r2 · B las toma', (await cloudSync('t',{ui:true}))==='adopt'); db.settings.restSec=200; A('r2 · B sube un cambio chico', (await cloudSync('t'))==='ok'); const rv=F.rows[uA].rev; keep(B);
       use(A1); const nA=db.sessions.length; db.sessions=db.sessions.slice(0,2);
-      A('r2 · A perdió casi todas sus sesiones y B cambió algo: pregunta, no sube', (await cloudSync('t'))==='ask'&&F.rows[uA].rev===rv&&db.sessions.length===2&&_clHold===true);
-      A('r2 · …elegir la nube las devuelve', (await cloudChoose('cloud'))==='ok'&&db.sessions.length===nA); keep(A1);
+      A('v363 · A perdió casi todas sus sesiones y B cambió algo: se juntan y vuelven todas, sin preguntar', (await cloudSync('t'))==='union'&&F.rows[uA].rev===rv+1&&db.sessions.length===nA&&!_clHold&&JSON.parse(await cloudUnpack(F.rows[uA].data,F.rows[uA].enc)).sessions.length===nA); keep(A1);
       const row=F.rows[uA], d=JSON.parse(await cloudUnpack(row.data,row.enc)); d.sessions=d.sessions.slice(0,2); const q=await cloudPack(JSON.stringify(d)); row.data=q.data; row.enc=q.enc; row.rev++;
-      use(A1); db.settings.restSec=210; A('r2 · la nube perdió casi todas y aquí cambió algo: pregunta, este teléfono no pierde nada', (await cloudSync('t'))==='ask'&&db.sessions.length===nA);
-      A('r2 · …elegir este teléfono lo sube entero', (await cloudChoose('local'))==='ok'&&db.sessions.length===nA&&JSON.parse(await cloudUnpack(F.rows[uA].data,F.rows[uA].enc)).sessions.length===nA); keep(A1); }
+      use(A1); db.settings.restSec=210; A('v363 · la nube perdió casi todas y aquí cambió algo: se juntan, este teléfono no pierde nada y la nube vuelve a tenerlas', (await cloudSync('t'))==='union'&&db.sessions.length===nA&&JSON.parse(await cloudUnpack(F.rows[uA].data,F.rows[uA].enc)).sessions.length===nA); keep(A1); }
     // una nube vacía nunca vacía un teléfono
     const mA=dbMass(db); delete F.rows[uA];
     A('una nube vacía no vacía el teléfono: lo recibe', (await cloudSync('t'))==='ok'&&dbMass(db)===mA&&db.profile.username==='ana'&&F.rows[uA].rev===1);
@@ -2796,11 +2896,10 @@ async function _cuentasSelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELF
     A('teléfono vacío + nube vacía → no sube nada', (await cloudSync('t',{ui:true}))==='ok'&&!F.rows[_cl.uid]&&!db.profile.username);
     // datos aquí y en la nube sin historia común → pregunta
     const D=dev(mk('otro',['x1'])); use(D); await authSignIn(em,pw); cloudLink();
-    A('datos en los dos lados sin historia común → pregunta y no toca nada', (await cloudSync('t',{ui:true}))==='ask'&&_clHold===true&&db.profile.username==='otro'&&F.rows[uA].rev===1);
-    A('mientras no elijas, no sincroniza sola', (await cloudSync('t'))==='hold');
-    A('elegir la nube la adopta', (await cloudChoose('cloud'))==='ok'&&db.profile.username==='ana'&&!_clHold&&cloudBaseOk());
-    const E2=dev(mk('otro',['x1'])); use(E2); await authSignIn(em,pw); cloudLink(); await cloudSync('t',{ui:true});
-    A('elegir este teléfono lo sube', (await cloudChoose('local'))==='ok'&&F.rows[uA].rev===2&&db.profile.username==='otro'&&cloudBaseOk());
+    A('v363 · datos en los dos lados sin historia común → se juntan sin preguntar (y la copia casi vacía no manda)', (await cloudSync('t',{ui:true}))==='union'&&!_clHold&&db.sessions.some(s=>s.id==='x1')&&db.sessions.some(s=>s.id==='s1')&&db.profile.username==='ana'&&cloudBaseOk()&&F.rows[uA].rev===2);
+    A('v363 · …y después sincroniza sola', (await cloudSync('t'))!=='hold');
+    const E2=dev(mk('otro',['x2'])); use(E2); await authSignIn(em,pw); cloudLink();
+    A('v363 · otro teléfono con lo suyo también se junta', (await cloudSync('t',{ui:true}))==='union'&&db.sessions.some(s=>s.id==='x2')&&db.sessions.some(s=>s.id==='x1')&&cloudBaseOk());
     // datos de otra cuenta nunca se suben solos
     const G=dev(mk('zoe',['z1'])); G.db.account={email:'zoe@example.test',uid:'fake-otra',rev:3,at:1}; use(G);
     await authSignUp('g@example.test',pw); await authVerify('g@example.test',F.code('g@example.test'),'email'); cloudLink();
@@ -2818,7 +2917,7 @@ async function _cuentasSelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELF
       A('borrar todo o salir a media sincronización: la nube no regresa al teléfono', (rr==='skip'||rr==='err')&&!(db.profile&&db.profile.username)&&!cloudIn()); db=keepDb; }
     // borrar mi cuenta
     await authSignIn(em,pw2); const mD=dbMass(db); await cloudDelete();
-    A('borrar la cuenta borra la nube y el acceso, no el teléfono', !F.rows[uA]&&!F.hist[uA]&&!F.byId(uA)&&!cloudIn()&&!db.account&&dbMass(db)===mD&&db.profile.username==='otro');
+    A('borrar la cuenta borra la nube y el acceso, no el teléfono', !F.rows[uA]&&!F.hist[uA]&&!F.byId(uA)&&!cloudIn()&&!db.account&&dbMass(db)===mD&&!!(db.profile&&db.profile.username));
     A('…y ya no se puede entrar', !!(await fails(()=>authSignIn(em,pw2))));
     console.log('cuentas self-check OK'); return true;
   }catch(e){ console.error(e); return String((e&&e.message)||e); }
@@ -2883,6 +2982,7 @@ function intensityTag(m){ return '@ '+((m||splitMetric())==='rpe'?'RPE':'RIR')+(
 function sessIctx(w){ return {m:(w&&w.metric)==='rpe'?'rpe':'rir', f:splitAllowF()}; }
 let _shM='rir', _icM='rir';   // escala de la sesión que se está pintando en compartir / historial / export
 function restToday(){ const t=todayISO(); return (db.sessions||[]).find(x=>x&&x.type==='rest'&&x.date===t)||null; }
+function trainedTodayDone(){ const t=todayISO(); return (db.sessions||[]).filter(x=>x&&x.type!=='rest'&&x.date===t&&(x.exercises||[]).some(e=>((e&&e.sets)||[]).some(s=>s&&(setReps(s)>0||(isCardio(e)&&s.done))))).pop()||null; }   // v363 · G18
 function trainedToday(){ const t=todayISO(); return (db.sessions||[]).some(x=>x&&x.type!=='rest'&&x.date===t&&(x.exercises||[]).length); }
 function selIdx(){ if(!dayCount())return 0; return state.selDay==null?curDayIdx():((state.selDay%dayCount())+dayCount())%dayCount(); }
 function lastSession(dayId){ const s=db.sessions.filter(x=>x.dayId===dayId&&x.type!=='rest').sort((a,b)=>a.date===b.date?sessMsOf(b)-sessMsOf(a):(b.date<a.date?-1:1)); return s[0]||null; }   // v355 · mismo día: la más nueva
@@ -4456,6 +4556,11 @@ function renderHome(){
   if(isCurrent&&inprog){
     // G2 · R-SESS: con una sesión viva solo existe "resume" (rest/skip/log past session la reemplazaban o movían la rotación)
     cta = `<div class="cta"><button class="start" data-act="resume">▶ resume workout</button></div>`;
+  } else if(isCurrent&&trainedTodayDone()){
+    // v363 · G18 · ya entrenaste hoy: lo dice; el siguiente día y registrar otra quedan como verbos (antes salía ▶ start workout y [rest day] decía "hoy ya entrenaste")
+    const _td=trainedTodayDone();
+    cta = `<div class="cta"><div class="restplan">✓ hoy ya entrenaste · ${escTxt(_td.dayName||'sesión')}</div>`
+      +`<div class="secondary"><button class="b" data-act="start">entrenar el siguiente</button><button class="b" data-act="loglater">+ log past session</button></div></div>`;
   } else if(isCurrent&&_pdT.rest&&!trainedToday()&&!restToday()){
     // v273 · hoy toca descanso (del plan o sin gym): se dice y se puede entrenar igual; no rompe la racha
     const _nt=planForecast(14)[0];
@@ -10779,7 +10884,7 @@ function acctRun(fn){ if(_acS.busy)return; _acS.busy=true; const m=document.getE
   Promise.resolve().then(fn).then(()=>{ _acS.busy=false; },e=>{ _acS.busy=false; acctMsg('⚠ '+cloudErrTxt(e)); }); }
 // ya hay sesión: la base queda marcada con su cuenta, se sincroniza y, si el teléfono está vacío, sigue el alta
 async function acctDone(k){ closeModal(); _acS={}; cloudLink(); cloudSave(); const tk=toastTask('sincronizando'), r=await cloudSync('login',{ui:true}), has=!!(db.profile&&db.profile.username);
-  if(r==='err')tk.fail('⚠ '+_clErr); else tk.done(r==='adopt'?'✓ datos de tu nube':r==='ask'?'entraste · elige qué copia usar':k!=='new'?'✓ entraste':has?'✓ cuenta lista · datos en tu nube':'✓ cuenta lista');
+  if(r==='err')tk.fail('⚠ '+_clErr); else tk.done(r==='adopt'?'✓ datos de tu nube':r==='union'?cloudJoinTxt():r==='ask'?'entraste · elige qué copia usar':k!=='new'?'✓ entraste':has?'✓ cuenta lista · datos en tu nube':'✓ cuenta lista');
   if(has||r==='ask'){ reRender(); return; } acctOnb(); }
 // v362 · AC-INV · quien ya usa la app sin cuenta: al abrirla se le ofrece guardar sus datos en una cuenta (correo + contraseña).
 // Nunca obliga: sin cuenta todo sigue igual. Hasta 3 veces, con 7 días entre una y otra; después solo queda //ACCOUNT en ajustes.
@@ -10818,7 +10923,7 @@ function acctAct(a,el){
       await authSetPassword(pw); await acctDone('in'); }); }
   else if(a==='ac_resend'){ if(Date.now()-(_acS.t||0)<60000||!_acS.email)return;
       acctRun(async()=>{ await (_acS.kind==='recovery'?authRecover(_acS.email):authResend(_acS.email)); _acS.t=Date.now(); acctTick(); acctMsg('✓ código reenviado'); if(cloudMode()==='fake')openAcct(_acS.v); }); }
-  else if(a==='ac_sync'){ const tk=toastTask('sincronizando'); cloudSync('manual',{ui:true}).then(r=>{ if(r==='err')tk.fail('⚠ '+_clErr); else if(r==='off')tk.fail('⚠ entra a tu cuenta'); else tk.done(r==='ask'?'elige qué copia usar':'✓ sincronizado'); }); }
+  else if(a==='ac_sync'){ const tk=toastTask('sincronizando'); cloudSync('manual',{ui:true}).then(r=>{ if(r==='err')tk.fail('⚠ '+_clErr); else if(r==='off')tk.fail('⚠ entra a tu cuenta'); else tk.done(r==='union'?cloudJoinTxt():r==='ask'?'elige qué copia usar':'✓ sincronizado'); }); }
   else if(a==='ac_out'){ trkAsk({title:'salir de tu cuenta',detail:'tus datos se quedan en este teléfono',ok:'salir'},()=>{ const tk=toastTask('saliendo');
       withTO(cloudSync('out',{only:'push'}),8000).catch(()=>{}).then(()=>authSignOut()).then(()=>{ tk.done('✓ saliste · tus datos siguen aquí'); cloudUi(); }); }); }
   else if(a==='ac_del'){ holdConfirm({title:'borrar tu cuenta',detail:'se borran tu acceso y tu copia en la nube · no se puede deshacer\nlo que está en este teléfono se queda',verb:'borrar cuenta'},()=>{ const tk=toastTask('borrando');
@@ -19454,6 +19559,7 @@ function doBackupShare(){ doExport(); }
 // el recordatorio terco: si pasaron 7 días sin respaldo, se pide UNA vez (no un toast que se va)
 function nudgeBackup(why){
   if(daysSinceBackup()<7)return false;
+  if(cloudIn()&&_cl&&_cl.t&&Date.now()-_cl.t<7*864e5&&!_clErr)return false;   // v363 · con tu nube al día, el aviso sobra
   trkAsk({title:'respalda tus datos',detail:(why||'')+'llevas '+(daysSinceBackup()>=999?'sin respaldar nunca':daysSinceBackup()+' días sin respaldar')+' · se guarda en Archivos, fuera del navegador',ok:'guardar respaldo'},()=>doBackupShare());
   return true;
 }
@@ -19670,7 +19776,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ cloudBoot(); }catch(_){}   // v352 · cuentas y nube: apagada (CLOUD_CFG vacío) no hace nada
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
