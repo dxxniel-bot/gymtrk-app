@@ -993,7 +993,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .slfc i.on{box-shadow:0 0 0 1px var(--fg);}
   .slrl{margin-top:var(--s2);} .slrw{font-size:var(--t-label); color:var(--o60); line-height:var(--lh-read); font-variant-numeric:tabular-nums;} .slrw.on{color:var(--fg);} .slrw.no{color:var(--o40);}   /* v349 · lo que no cuenta (otra app encima de la noche), a la vista pero tenue */   /* v338 · H6 · registro del sueño: lo que se encima, en blanco */ .slsw.hy-awake{box-shadow:inset 0 0 0 .5px var(--o30);}
   .slsum{font-size:var(--t-label); color:var(--o40); margin:0 0 var(--s3) var(--s5);}
-  .slblk{display:flex;gap:var(--s3);align-items:center;margin-bottom:6px;} .slblk input{height:44px;background:transparent;border:var(--bw-field) solid var(--o40);border-radius:var(--r-ctl);color:var(--fg);font:inherit;font-size:var(--t-field);padding:0 var(--s3);min-width:0;} .slblk input[type=time]{flex:0 0 auto;} .slblk .slsep{color:var(--o40);font-size:var(--t-section);} .slblk .sllbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:var(--t-label);color:var(--o50);text-align:right;white-space:nowrap;} .slblk .slx{color:var(--o40);cursor:pointer;padding:0 var(--s2);flex:0 0 auto;font-size:var(--t-section);}
+  .slblk{display:flex;gap:var(--s3);align-items:center;margin-bottom:6px;} .slblk input{height:44px;background:transparent;border:var(--bw-field) solid var(--o40);border-radius:var(--r-ctl);color:var(--fg);font:inherit;font-size:var(--t-field);padding:0 var(--s3);min-width:0;} .slblk input[type=time]{flex:0 1 auto;} .slblk .slsep{color:var(--o40);font-size:var(--t-section);} .slblk .sllbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:var(--t-label);color:var(--o50);text-align:right;white-space:nowrap;} .slblk .slx{position:relative;color:var(--o40);cursor:pointer;padding:0 var(--s2);flex:0 0 auto;font-size:var(--t-section);} .slblk .slx::after{content:'';position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%);}   /* v364 · H8 · el toque, centrado en el ✕: a 320 no pisa la casilla de despertar */ .slblk input[type=time]::-webkit-calendar-picker-indicator{margin:0;padding:0;}   /* v364 · H8 · Chrome/Android: sin los 14 px del reloj la hora cabe entera a 320 */ @media (max-width:359px){ .slblk .sllbl{visibility:hidden;} }   /* v364 · H8 · ahí el rótulo del bloque nunca cabe: no se pinta cortado (el total va debajo) */
   .sheetbtns{display:flex; gap:10px; margin-top:10px;} .sheetbtns .ok{flex:1; height:var(--h-pri); background:var(--fill); color:var(--on-fill); font-weight:800; border:0; font-size:var(--t-data); cursor:pointer; border-radius:var(--r-ctl);} .sheetbtns .cancel{flex:0 0 auto;}
   .pickitem{padding:var(--s4) 6px; min-height:44px; font-size:var(--t-data); border-bottom:var(--bw-sep) solid var(--o10); cursor:pointer;} .pickitem:hover{color:var(--fg);} .pickitem:active{background:var(--o10);}
 
@@ -1190,7 +1190,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .hero.good .ring-fill{stroke:var(--good);} .hero.over .ring-fill{stroke:var(--bad);}   /* v262 · sin brillo */
   .hero-meta .left.under{color:var(--o60);} .hero-meta .left.over{color:var(--bad); font-weight:700;}
   .cell.good .ring-fill{stroke:var(--good);} .cell.over .ring-fill{stroke:var(--bad);} .cell.over .num{color:var(--bad);} .cell.good .num{color:var(--good);}
-  .mrow .bar>i.over{background:var(--bad);} .mrow .mv.ovr{color:var(--bad);}
+  .mrow .bar>i.over{background:var(--bad);} .mrow .bar.lq{position:relative; overflow:visible;} .bar.lq .lqb{position:absolute; left:0; top:-2px; height:7px; background:var(--o20); border-radius:var(--r-sm);} .mrow.lqr{position:relative; border-bottom:0;} .mrow.lqr::after{content:''; position:absolute; left:0; right:0; top:calc(50% - 22px); height:44px;} .bar.lq>i{position:relative; z-index:1;}   /* v363 · LQ1 · franja: todos los líquidos · línea: solo agua */ .mrow .mv.ovr{color:var(--bad);}
   /* add-food: recents fill, controls pinned at bottom, equal buttons */
   .sheet.tall{height:90vh; display:flex; flex-direction:column; padding-bottom:calc(14px + env(safe-area-inset-bottom));}
   .fa-wrap{display:flex; flex-direction:column; height:100%; min-height:0;}
@@ -1257,7 +1257,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .dz-f{display:flex; gap:var(--s3); margin-top:var(--s3);} .dz-f button{flex:1; font-family:inherit; font-size:var(--t-data); padding:10px 0; border:var(--bw-ctl) solid var(--border); border-radius:var(--r-ctl); background:transparent; color:var(--fg); cursor:pointer;}
   .umcaret{color:var(--o40); font-size:var(--t-label); margin-left:1px;}
   .nvm-list{margin-top:6px;}
-  .nvm{display:flex; justify-content:space-between; align-items:center; padding:var(--s5) var(--s1); font-size:var(--t-data); cursor:pointer; border-bottom:var(--bw-sep) solid var(--o10);} .nvm:last-child{border-bottom:none;} .nvm:active{color:var(--o60);} .nvm-x{color:var(--o40); font-size:var(--t-data);}
+  .nvm{display:flex; justify-content:space-between; align-items:center; padding:var(--s5) var(--s1); font-size:var(--t-data); cursor:pointer; border-bottom:var(--bw-sep) solid var(--o10);} .nvm:last-child{border-bottom:none;} .nvm:active{color:var(--o60);} .nvm-x{color:var(--o40); font-size:var(--t-data);} .nvm-del{position:relative; flex:0 0 auto; margin-left:var(--s3); padding:0; border:0; background:none; color:var(--o40); font:inherit; font-size:var(--t-data); cursor:pointer;} .nvm-del::after{content:''; position:absolute; right:calc(-1 * var(--s1)); top:50%; width:44px; height:44px; transform:translateY(-50%);}
   /* screen-change fade (applied by render() only when go() switches screens) */
   @keyframes viewin{from{opacity:.4; transform:translateY(var(--mv-1))}}
   .fadein{animation:viewin var(--dur-screen) var(--ease-out);}
@@ -1561,7 +1561,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v363';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v364';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -1866,16 +1866,17 @@ function ccDayType(date){ const m=db.ccDay&&db.ccDay[date]; if(m==='hi'||m==='lo
   let p=null; try{ p=planDay(date); }catch(_){} return p&&p.rest?'lo':'hi'; }
 // cuántos días high y low proponer: los de tu plan (rotativo: sus on / off; semanal: lo que toca en 7 días); sin plan, 5 y 2
 function ccPlanDays(){ try{ const P=splitPlan(); if(P.mode==='cycle')return {hi:P.on,lo:P.off}; let lo=0; const T=todayISO(), tr=trainedDates(); for(let i=0;i<7;i++){ const p=planDay(shiftDate(T,i),tr); if(p&&p.rest)lo++; } if(lo>0&&lo<7)return {hi:7-lo,lo}; }catch(_){} return {hi:5,lo:2}; }
-function goalsBase(date){ const h=db.goalHist&&db.goalHist[date]; if(h)return h; return (typeof effectiveGoals==='function')?effectiveGoals():(db.settings&&db.settings.goals)||{}; }
+function goalsBase(date){ if(date&&Array.isArray(db.goalSched)&&db.goalSched.length&&date>todayISO()){ const s=goalSchedOn(date); if(s)return Object.assign({},db.settings&&db.settings.goals||{},s.goals); }   // v363 · GL2 · un día futuro se ve con lo programado
+  const h=db.goalHist&&db.goalHist[date]; if(h)return h; return (typeof effectiveGoals==='function')?effectiveGoals():(db.settings&&db.settings.goals)||{}; }
 // al cambiar el día (o de base) se fija el tipo de los días que ya pasaron, se hayan vuelto a abrir o no: así editar después una sesión
 // vieja no les cambia la meta. Se revisa en cada pintada y en cada lectura (una comparación), antes de que puedas tocar nada.
 let _ccFrz=null;
 function ccFreeze(today){ const G=db.goalHist||{}; Object.keys(G).forEach(d=>{ const c=G[d]&&G[d].cc; if(d<today&&c&&c.t!=='hi'&&c.t!=='lo'&&c.hi>=0&&c.lo>=0)c.t=ccDayType(d); }); }
 function ccFreezeTick(){ const td=todayISO(); if(_ccFrz&&_ccFrz.d===td&&_ccFrz.db===db)return; _ccFrz={d:td,db}; try{ ccFreeze(td); }catch(_){} }
-function goalsFor(date){ ccFreezeTick(); const today=todayISO(), h=db.goalHist&&db.goalHist[date], base=goalsBase(date);
+function goalsFor(date){ ccFreezeTick(); const today=todayISO(), gs=date>today&&Array.isArray(db.goalSched)&&db.goalSched.length?goalSchedOn(date):null, h=gs?null:(db.goalHist&&db.goalHist[date]), base=goalsBase(date);   // v363 · GL2 · un día programado: sus metas y su carb cycling
   // hoy (y lo que venga) sigue al carb cycling de AHORA aunque quien guardó la meta del día no haya copiado sus valores (cambiar de objetivo, ajustar la meta…): lo guardado se pone al día aquí
   if(h&&date>=today){ const live=ccSnap(h); if(live){ if(!h.cc||h.cc.hi!==live.hi||h.cc.lo!==live.lo)h.cc=live; } else if(h.cc&&!ccCfg())delete h.cc; }
-  const cc=h?h.cc:ccSnap(base); if(!cc||!(cc.hi>=0)||!(cc.lo>=0))return base;
+  const cc=h?h.cc:gs?(ccCalc(base.carbs,goalSchedCcCfg(date))||undefined):ccSnap(base); if(!cc||!(cc.hi>=0)||!(cc.lo>=0))return base;
   let t; if(h&&date<today){ if(cc.t!=='hi'&&cc.t!=='lo')cc.t=ccDayType(date); t=cc.t; } else t=ccDayType(date);   // un día pasado queda como fue: no cambia aunque después edites sesiones, el plan o el carb cycling
   const c=t==='lo'?cc.lo:cc.hi; return Object.assign({},base,{carbs:c,kcal:Math.round((+base.kcal||0)+(c-(+base.carbs||0))*4),ccT:t,ccAvg:+base.carbs||0}); }
 // take a snapshot of today's goal the FIRST time something is logged that day (so editing the goal later never rewrites the past)
@@ -2639,9 +2640,9 @@ function cloudRescueOffer(){ if(_sbx)return; let seen='', t0=0; try{ seen=localS
           m.sessions.forEach(s=>{ if(!a.has(s.id)){ a.add(s.id); mi.sessions.push(s); } }); m.meals.forEach(o=>{ const k=String(o.m.id); if(!b.has(k)){ b.add(k); mi.meals.push(o); } }); m.days.forEach(o=>{ const k=o.f+'|'+o.d; if(!c.has(k)){ c.add(k); mi.days.push(o); } }); }); return mi; };
       const mi=calc(), n=mi.sessions.length+mi.meals.length+mi.days.length; if(!n){ mark(); return; }
       const R=rescuePlan(mi), s0=R.pairs[0];
-      const doIt=swap=>{ mark(); const m2=calc(), R2=rescuePlan(m2), n2=m2.sessions.length+m2.meals.length+m2.days.length; if(!n2)return;
+      const doIt=swap=>{ const m2=calc(), R2=rescuePlan(m2), n2=m2.sessions.length+m2.meals.length+m2.days.length; if(!n2){ mark(); return; }   /* v364 · r4: se marca al guardar, no antes */
         idbSnap('rescue',db).then(()=>{ if(swap){ const out=new Set(R2.pairs.map(p=>p.dup.id)); db.sessions=(db.sessions||[]).filter(s=>!out.has(s.id)); if(H().sessHR)R2.pairs.forEach(p=>{ delete H().sessHR[p.dup.id]; }); }
-          applyMissing(m2); bumpIdx(); _idbForceNext=true; if(savedToast(swap&&R2.pairs.length?'✓ tu sesión original de vuelta':'✓ recuperado · '+n2+' registros'))reRender(); }); };
+          applyMissing(m2); bumpIdx(); _idbForceNext=true; if(savedToast(swap&&R2.pairs.length?'✓ tu sesión original de vuelta':'✓ recuperado · '+n2+' registros')){ mark(); reRender(); } }); };
       if(s0)bootAsk({title:'encontré tu sesión como la registraste',detail:(s0.s.dayName||'sesión')+' · '+fmtShort(s0.s.date)+' · '+((s0.s.exercises||[]).length)+' ejercicios · '+rescueWhen(s0.s)
           +'\nla que volviste a registrar ('+((s0.dup.exercises||[]).length)+' ejercicios) sale de tu historial y queda en una copia'+(R.pairs.length>1?'\n+ '+(R.pairs.length-1)+' más':'')+(n>R.pairs.length?'\n+ '+(n-R.pairs.length)+' registros que faltaban':''),
           ok:'recuperarla',cancel:'no',alt:{label:'dejar las dos',fn:()=>doIt(false)}},()=>doIt(true),()=>mark());
@@ -2701,6 +2702,192 @@ function _v363hSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
       db.sessions=keep; }
     console.log('v363h self-check OK');
   } finally { db=real; state.screen=s0; bumpIdx(); }
+}
+// self-check de v363 (GL2 · LQ1 · H8). Base de juguete; nada llega a disco; todo se restaura en finally.
+function _v363SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v363: '+nm); }; const real=db, rs=state.screen, gm=window._goalMode, cd=state.macroDate;
+  try{ const T=todayISO(), D=k=>shiftDate(T,k), G0={kcal:2404,protein:150,carbs:270,fat:76,water:3};
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',weightKg:70,heightCm:175,age:26,sex:'M'},gyms:['g'],activeGym:'g',settings:{goals:Object.assign({},G0)},goalHist:{[T]:Object.assign({},G0)},
+      meals:{[T]:[{id:'w1',tag:'drink',name:'agua',qty:1,kcal:0,protein:0,carbs:0,fat:0,water:0.5},{id:'w2',tag:'drink',name:'leche',qty:1,kcal:120,protein:8,carbs:12,fat:5,water:0.2}]},
+      health:{daily:{[D(-1)]:{hrv:{v:40,kind:'rmssd'},src:{hrv:'manual'}}}}}); bumpIdx(); window._goalMode='grams';
+    // GL2 · programar en un día futuro no toca hoy
+    openGoals(D(3)); let m=document.getElementById('modal'); A('GL2 · la hoja de un día futuro dice que se programa', /se programa/.test(m.querySelector('h3').textContent)&&!!document.getElementById('g_phase'));
+    document.getElementById('gg_carbs').value='200'; document.getElementById('gg_carbs').dispatchEvent(new Event('input',{bubbles:true})); document.getElementById('g_phase').value='definición';
+    m.querySelector('[data-act="okgoals"]').click();
+    A('GL2 · guardar en un día futuro programa y hoy no cambia', db.settings.goals.carbs===270&&db.goalHist[T].carbs===270&&!!goalSchedAt(D(3))&&goalSchedAt(D(3)).goals.carbs===200&&goalSchedAt(D(3)).phase==='definición');
+    A('GL2 · ese día ya se ve con lo programado; los de antes, con tu meta', goalsFor(D(3)).carbs===200&&goalsFor(D(2)).carbs===270&&goalsFor(T).carbs===270);
+    A('GL2 · el panel dice lo programado', /programado/.test(gsTagHTML())&&/definición/.test(gsTagHTML()));
+    // al llegar: aplicar desde ese día, con la fase nombrada; lo de antes no cambia
+    const s=goalSchedDue(D(3)); A('GL2 · al llegar la fecha, toca', !!s&&s.from===D(3)&&!goalSchedDue(T));
+    goalSchedApply(s,D(3)); A('GL2 · aceptar: tus metas desde ese día, la foto de ese día y la fase con su nombre', db.settings.goals.carbs===200&&db.goalHist[D(3)].carbs===200&&db.goalHist[T].carbs===270&&!goalSched().length&&(db.phases||[]).some(p=>p.name==='definición'&&p.from===D(3)));
+    // recalcular en un día futuro también programa
+    db.settings.goals=Object.assign({},G0); db.goalSched=[]; openGoals(D(5)); m=document.getElementById('modal'); const gm0=JSON.stringify(db.settings.goals);
+    goalSchedSet(D(5),Object.assign({},G0,{carbs:180}),null,''); A('GL2 · dos cambios: manda el más reciente que ya empezó', goalSchedOn(D(6)).goals.carbs===180&&!goalSchedOn(D(4))); closeModal();
+    A('GL2 · nada de lo anterior tocó la meta de hoy', JSON.stringify(db.settings.goals)===gm0);
+    // LQ1
+    state.screen='macros'; state.macroDate=T; const mo0=state.macroOpen, no0=state.nutOpen; state.macroOpen=true; state.nutOpen=true; const hm=renderMacros(); state.macroOpen=mo0; state.nutOpen=no0; A('LQ1 · la fila liquids: agua contra su meta y la franja de todos los líquidos', /<span class="u-dash">liquids<\/span>/.test(hm)&&/class="lqb" style="width:23\.3/.test(hm)&&/>0\.5 <span class="g">\/ 3 L<\/span>/.test(hm)&&/total 0\.7 L/.test(hm));
+    A('LQ1 · lqRowHTML: sin otras bebidas no repite el total', !/total/.test(lqRowHTML(0.5,0.5,3))&&/width:50%/.test(lqRowHTML(1.5,1.5,3)));
+    // H8 · desde el detalle: guardar deja la hoja con el día anterior; cerrar regresa al detalle
+    window._mdRange=30; window._mdEnd=null; window._mdCustom=null; window._mdSel=null; openMetricDetail('hrv'); A('H8 · el detalle de HRV abre', !!document.querySelector('#modal .sheet.mdetail-wrap'));
+    logBackMark(); openHealthNumLog('hrv'); document.getElementById('hl_v').value='45'; document.getElementById('hl_save').click();
+    m=document.getElementById('modal'); A('H8 · guardar desde la gráfica deja la hoja abierta con el día anterior', !!m&&/HRV/.test((m.querySelector('h3')||{}).textContent||'')&&document.getElementById('hl_date').value===D(-1)&&H().daily[T].hrv.v===45&&document.getElementById('hl_v').value==='40');
+    m.querySelector('[data-act="logclose"]').click(); A('H8 · cerrar regresa al detalle de la métrica', !!document.querySelector('#modal .sheet.mdetail-wrap')&&window._mdKey==='hrv'&&!window._logBack);
+    closeModal(); window._logBack=null; openHealthNumLog('hrv'); document.getElementById('hl_v').value='41'; document.getElementById('hl_save').click(); A('H8 · fuera de la gráfica se cierra como siempre', !document.getElementById('modal'));
+    // ---- fix363 · lo que halló el verificador (base de juguete; todo se restaura en el finally de arriba) ----
+    const B0=()=>({_idfix:true,_fsfix:true,profile:{username:'t',weightKg:70,heightCm:175,age:26,sex:'M'},gyms:['g'],activeGym:'g',settings:{goals:Object.assign({},G0)},goalHist:{[T]:Object.assign({},G0)}});
+    // #2 · una fase programada no le pone su nombre a los días de antes
+    { const GH={}; for(let k=-40;k<=0;k++)GH[D(k)]=Object.assign({},G0); db=migrate(Object.assign(B0(),{goalHist:GH})); bumpIdx();
+      goalSchedApply({id:'gsA',from:T,goals:{protein:180,carbs:240,fat:76},cc:null,phase:'definición'},T); for(let k=1;k<=6;k++)db.goalHist[D(k)]=Object.assign({},db.settings.goals);
+      let P=phasesIn(D(-40),D(6)); A('fix363 · #2 · misma kcal, otra distribución: la fase empieza en su fecha y los días de antes no llevan su nombre', P.length===2&&P[0].name===''&&P[0].to===D(-1)&&P[1].from===T&&P[1].to===D(6)&&P[1].name==='definición');
+      openPhaseName(T,D(6),2364); document.getElementById('ph_name').value='def'; document.querySelector('#asklayer [data-ask="ok"]').click(); P=phasesIn(D(-40),D(6));
+      A('fix363 · #2 · renombrarla desde la gráfica no la pega al tramo de antes', P.length===2&&P[0].name===''&&P[1].name==='def'&&(db.phases||[]).some(p=>p.name==='def'&&p.start));
+      const GH2={}; for(let k=-40;k<=0;k++)GH2[D(k)]=Object.assign({},G0); db=migrate(Object.assign(B0(),{goalHist:GH2})); bumpIdx();
+      goalSchedApply({id:'gsB',from:T,goals:{protein:150,carbs:195,fat:76},cc:null,phase:'mini cut'},T); P=phasesIn(D(-40),T);
+      A('fix363 · #2 · con otra kcal, su primer día tampoco se pega al tramo de antes', P.length===2&&P[0].name===''&&P[1].from===T&&P[1].name==='mini cut'); }
+    // #3 · el carb cycling de un día programado se ve, se guarda y no se pierde
+    { db=migrate(Object.assign(B0(),{settings:{goals:Object.assign({},G0),carbCycle:{on:true,amp:15,v:2}}})); bumpIdx();
+      openGoals(D(4)); A('fix363 · #3 · (prueba) la hoja de un día sin programar abre con el carb cycling de hoy', /^on/.test(document.getElementById('cc_v').textContent));
+      document.getElementById('cc_tog').click(); document.querySelector('#modal [data-act="okgoals"]').click(); const s4=()=>goalSchedAt(D(4))||{};
+      A('fix363 · #3 · programado apagado: ese día y los que siguen ya no ciclan; antes y hoy, igual', !!s4().cc&&s4().cc.on===false&&!goalsFor(D(4)).ccT&&!goalsFor(D(6)).ccT&&!!goalsFor(D(3)).ccT&&db.settings.carbCycle.on===true);
+      openGoals(D(4)); A('fix363 · #3 · al reabrir ese día la hoja dice off', /^off/.test(document.getElementById('cc_v').textContent));
+      document.querySelector('#modal [data-act="okgoals"]').click(); A('fix363 · #3 · guardar sin tocar nada no lo vuelve a encender', !!s4().cc&&s4().cc.on===false);
+      openGoals(D(4)); document.getElementById('g_menu').click(); { const it=[...document.querySelectorAll('#asklayer .nvm')].find(x=>/recalcular/.test(x.textContent)); if(it)it.click(); }
+      A('fix363 · #3 · recalcular en un día futuro dice que solo cambia lo programado', /recalcular lo programado/.test((document.querySelector('#asklayer h3')||{}).textContent||''));
+      document.querySelector('#asklayer [data-ask="ok"]').click(); A('fix363 · #3 · recalcular conserva su carb cycling', !!s4().cc&&s4().cc.on===false&&db.settings.carbCycle.on===true); closeModal();
+      window._gsPrefill={id:'gsX',from:T,goals:Object.assign({},G0,{carbs:240}),cc:{on:false},phase:''}; openGoals(T);
+      A('fix363 · #3 · ajustar trae el carb cycling de lo programado', /^off/.test(document.getElementById('cc_v').textContent));
+      document.querySelector('#modal [data-act="okgoals"]').click(); A('fix363 · #3 · …y al guardar se aplica', db.settings.carbCycle.on===false&&db.settings.goals.carbs===240); }
+    // #4 · una foto vieja de un día programado no le gana a lo programado
+    { db=migrate(Object.assign(B0(),{settings:{goals:Object.assign({},G0),carbCycle:{on:true,amp:15,v:2}}})); bumpIdx(); snapshotGoal(D(4));
+      goalSchedSet(D(4),Object.assign({},G0,{carbs:210,kcal:2164}),null,''); const g=goalsFor(D(4)), k=ccCalc(210,{amp:15});
+      A('fix363 · #4 · con foto vieja y ciclo encendido, ese día cicla sobre sus carbos programados', !!k&&g.ccAvg===210&&(g.carbs===k.hi||g.carbs===k.lo)&&g.kcal===Math.round(2164+(g.carbs-210)*4)); }
+    // #5 · el aviso no sale encima de una hoja: se revisa justo antes de mostrarse
+    { db=migrate(B0()); bumpIdx(); goalSchedSet(T,Object.assign({},G0,{carbs:240}),null,''); const s=goalSchedDue(T); state.screen='macros';
+      const ov0=document.getElementById('bootov'), q0=_bootQ.splice(0), sh0=_bootShowing, ask0=document.getElementById('asklayer'); if(ov0)ov0.removeAttribute('id');
+      try{ _bootShowing=true; goalSchedAsk(s,T); const it=_bootQ[0]; A('fix363 · #5 · (prueba) el aviso entra a la cola con su revisión', !!it&&typeof it.o.when==='function');
+        openModal('<h3>x</h3>'); A('fix363 · #5 · con una hoja abierta ya no toca', it.o.when()===false); closeModal(); A('fix363 · #5 · sin hoja, sí', it.o.when()===true);
+        openModal('<h3>x</h3>'); _gsAsked=s.id+'|'+T; _bootNext(); A('fix363 · #5 · si al salir hay una hoja, no sale encima y se vuelve a ofrecer', document.getElementById('asklayer')===ask0&&_gsAsked===''&&!_bootShowing&&!_bootQ.length); closeModal();
+      } finally { _bootQ.length=0; q0.forEach(x=>_bootQ.push(x)); _bootShowing=sh0; if(ov0)ov0.id='bootov'; }
+      A('fix363 · #14 · lo pendiente se ve en el renglón', /data-act="gsrow"/.test(gsTagHTML())&&/<span class="v">hoy /.test(gsTagHTML())); }
+    // #6 · dos pendientes: cancelar el más reciente no saca el otro después
+    { db=migrate(B0()); bumpIdx(); goalSchedSet(D(-5),Object.assign({},G0,{carbs:250}),null,''); goalSchedSet(D(-2),Object.assign({},G0,{carbs:230}),null,'');
+      const s=goalSchedDue(T); A('fix363 · #6 · (prueba) toca el más reciente', !!s&&s.from===D(-2)); goalSchedCancel(s);
+      A('fix363 · #6 · cancelarlo se lleva el que ya reemplazaba: no sale otro aviso', !goalSchedDue(T)&&!goalSched().length);
+      const u=[...document.querySelectorAll('#toasts .toast:not(.out) .tundo')].pop(); if(u)u.click(); A('fix363 · #6 · deshacer regresa los dos', goalSched().length===2&&!!goalSchedDue(T)&&goalSchedDue(T).from===D(-2)); }
+    // #13 · ··· de la hoja de hoy → programar un cambio
+    { openGoals(T); document.getElementById('g_menu').click(); A('fix363 · #13 · el ··· de metas trae programar un cambio', [...document.querySelectorAll('#asklayer .nvm')].some(x=>/programar un cambio/.test(x.textContent))); closeAsk(true); closeModal(); }
+    // H8 · base con registros para que el detalle tenga qué enseñar
+    db=migrate(Object.assign(B0(),{health:{daily:{[D(-1)]:{hrv:{v:40,kind:'rmssd'},src:{hrv:'manual'}},[D(-2)]:{hrv:{v:42,kind:'rmssd'},src:{hrv:'manual'}}}}})); bumpIdx(); window._mdRange=30; window._mdEnd=null; window._mdCustom=null; window._mdSel=null;
+    // #1 · cerrar regresa al detalle a la misma altura (un detalle que SÍ se desplaza: alto forzado)
+    { const st=document.createElement('style'); st.textContent='#modal .sheet.mdetail-wrap{max-height:220px!important; overflow-y:auto!important;}'; document.head.appendChild(st);
+      try{ openMetricDetail('hrv'); let sh=document.querySelector('#modal .sheet.mdetail-wrap'); sh.scrollTop=sh.scrollHeight; const t0=sh.scrollTop; A('fix363 · #1 · (prueba) el detalle se desplaza', t0>=40);
+        logBackMark(); openHealthNumLog('hrv'); document.getElementById('hl_v').value='44'; document.getElementById('hl_save').click();
+        A('fix363 · estética · el foco queda en la casilla del día anterior', document.activeElement===document.getElementById('hl_v')&&document.getElementById('hl_date').value===D(-1));
+        document.querySelector('#modal [data-act="logclose"]').click(); sh=document.querySelector('#modal .sheet.mdetail-wrap');
+        A('fix363 · #1 · cerrar regresa al detalle a la misma altura (≤1 px)', !!sh&&Math.abs(sh.scrollTop-t0)<=1);
+      } finally { st.remove(); } closeModal(); }
+    // #7 · tocar fuera de la hoja de registro olvida el regreso; el peso desde otra parte se cierra como siempre
+    { openMetricDetail('hrv'); logBackMark(); openHealthNumLog('hrv'); const mm=document.getElementById('modal'); A('fix363 · #7 · (prueba) hay regreso a la gráfica', !!window._logBack);
+      mm.dispatchEvent(new MouseEvent('click',{bubbles:true})); A('fix363 · #7 · tocar fuera cierra y olvida el regreso', !document.getElementById('modal')&&!window._logBack);
+      openWeightLog(); document.getElementById('bw_kg').value='70'; document.getElementById('bw_save').click(); A('fix363 · #7 · después, el peso desde otra parte se guarda y se cierra', !document.getElementById('modal')); }
+    // #8 · el sueño desde su detalle: la hoja se queda con la noche anterior; cerrar regresa al detalle
+    { openMetricDetail('sleep'); logBackMark(); openSleepLog(); document.getElementById('sl_save').click(); m=document.getElementById('modal');
+      A('fix363 · #8 · guardar el sueño desde la gráfica deja la hoja con la noche anterior', !!m&&!m.querySelector('.mdetail-wrap')&&document.getElementById('sl_date').value===D(-1)&&!!(db.sleep&&db.sleep[T]));
+      m.querySelector('[data-act="logclose"]').click(); A('fix363 · #8 · …y cerrar regresa a su detalle', !!document.querySelector('#modal .sheet.mdetail-wrap')&&window._mdKey==='sleep'); closeModal(); }
+    A('fix363 · LQ1 · al tocar la fila: agua y todos los líquidos', /class="mrow lqr" data-gloss="liquids" data-gv="agua 0\.5 L · todos los líquidos 0\.7 L"/.test(lqRowHTML(0.5,0.7,3)));
+    // ---- fix363b · ronda 2 (base de juguete; todo se restaura en el finally de arriba) ----
+    // N1 · el sueño encadenado nunca inventa una noche: la noche sin registro abre vacía y dos guardar seguidos no crean db.sleep del día anterior
+    { db=migrate(B0()); bumpIdx(); window._mdRange=30; window._mdEnd=null; window._mdCustom=null; window._mdSel=null; const tm=()=>[...document.querySelectorAll('#sl_blocks input[type="time"]')].map(i=>i.value).join('-');
+      const errs=()=>document.querySelectorAll('#toasts .toast.err:not(.out)').length, e0=errs();
+      openMetricDetail('sleep'); logBackMark(); openSleepLog(); A('fix363b · N1 · (prueba) desde la gráfica, hoy abre con su bloque de siempre', tm()==='23:00-07:00'&&!(db.sleep&&db.sleep[T]));
+      document.getElementById('sl_save').click(); A('fix363b · N1 · la noche anterior sin registro abre con el bloque vacío', !!(db.sleep&&db.sleep[T])&&val('sl_date')===D(-1)&&tm()==='-');
+      document.getElementById('sl_save').click();
+      A('fix363b · N1 · dos guardar seguidos desde el detalle no crean el sueño del día anterior (lo pide)', !(db.sleep&&db.sleep[D(-1)])&&!!document.getElementById('sl_save')&&val('sl_date')===D(-1)&&errs()===e0+1);
+      document.querySelectorAll('#toasts .toast.err').forEach(t=>{ if(t._kill)t._kill(); });
+      { const dt=document.getElementById('sl_date'); dt.value=D(-3); dt.dispatchEvent(new Event('change')); } A('fix363b · N1 · en la cadena, otra noche sin registro también abre vacía', tm()==='-');
+      // N3 · borrar desde RECENT LOGS no regresa la hoja a hoy ni la saca de la cadena
+      { const dt=document.getElementById('sl_date'); dt.value=D(-1); dt.dispatchEvent(new Event('change')); } document.querySelector('#modal [data-act="delsleep"][data-d="'+T+'"]').click(); document.querySelector('#asklayer [data-ask="ok"]').click();
+      A('fix363b · N3 · borrar un sueño deja la hoja en su fecha y en la cadena', !(db.sleep&&db.sleep[T])&&val('sl_date')===D(-1)&&tm()==='-');
+      document.querySelector('#modal [data-act="logclose"]').click(); A('fix363b · N1 · …y cerrar regresa al detalle', !!document.querySelector('#modal .sheet.mdetail-wrap')&&window._mdKey==='sleep'); closeModal(); window._logBack=null;
+      openSleepLog(); A('fix363b · N1 · fuera de la gráfica, la hoja abre como siempre', tm()==='23:00-07:00'&&!document.getElementById('sl_date').dataset.chain); closeModal(); }
+    // N3 · el peso: borrar desde RECENT LOGS deja la hoja en su fecha
+    { db=migrate(Object.assign(B0(),{bodyweight:{[D(-1)]:70,[D(-2)]:71}})); bumpIdx(); openWeightLog(D(-2)); document.querySelector('#modal [data-act="delbw"][data-d="'+D(-1)+'"]').click(); document.querySelector('#asklayer [data-ask="ok"]').click();
+      A('fix363b · N3 · borrar un peso deja la hoja en su fecha', !db.bodyweight[D(-1)]&&val('bw_date')===D(-2)); closeModal(); }
+    // N2 · tocar el renglón «hoy» cuenta como el aviso: no se duplica en la cola y queda dado por hecho
+    { db=migrate(B0()); bumpIdx(); goalSchedSet(T,Object.assign({},G0,{carbs:240}),null,''); const s=goalSchedDue(T); state.screen='macros';
+      const ov0=document.getElementById('bootov'), q0=_bootQ.splice(0), sh0=_bootShowing, ga0=_gsAsked, bt0=_bootT; _bootT=0; if(ov0)ov0.removeAttribute('id');   /* v364 · sin la espera real de la cola */
+      try{ _gsAsked=''; _bootShowing=true; goalSchedAsk(s,T); A('fix363b · N2 · (prueba) el aviso va en la cola', _bootQ.length===1&&!!_bootQ[0].o.gs);
+        gsRowOpen(); A('fix363b · N2 · el renglón no lo duplica y lo da por hecho', _bootQ.filter(x=>x.o&&x.o.gs).length===1&&_gsAsked===s.id+'|'+T);
+        _bootQ.length=0; _bootShowing=false; _gsAsked=''; gsRowOpen(); A('fix363b · N2 · sin cola, sale en ese momento y queda dado por hecho', /programado para hoy/.test((document.querySelector('#asklayer h3')||{}).textContent||'')&&_gsAsked===s.id+'|'+T); closeAsk(true);
+      } finally { _bootQ.length=0; q0.forEach(x=>_bootQ.push(x)); _bootShowing=sh0; _gsAsked=ga0; _bootT=bt0; if(ov0)ov0.id='bootov'; } }
+    // N4 · ··· → programar un cambio se lleva lo que escribiste en la hoja de hoy; hoy no cambia. Sin tocar nada, el día abre como siempre.
+    { db=migrate(B0()); bumpIdx(); window._goalMode='grams';
+      const pick=d=>{ document.getElementById('g_menu').click(); [...document.querySelectorAll('#asklayer .nvm')].find(x=>/programar un cambio/.test(x.textContent)).click(); document.getElementById('gs_day').value=d; document.querySelector('#asklayer [data-ask="ok"]').click(); };
+      openGoals(T); { const c=document.getElementById('gg_carbs'); c.value='303'; c.dispatchEvent(new Event('input',{bubbles:true})); } pick(D(3));
+      A('fix363b · N4 · la hoja del día elegido abre con lo que escribiste y hoy no cambia', /se programa/.test(document.querySelector('#modal h3').textContent)&&document.getElementById('gg_carbs').value==='303'&&db.settings.goals.carbs===270&&!window._gsCarry);
+      document.querySelector('#modal [data-act="okgoals"]').click(); A('fix363b · N4 · …y se programa con eso', !!goalSchedAt(D(3))&&goalSchedAt(D(3)).goals.carbs===303&&db.settings.goals.carbs===270);
+      openGoals(T); pick(D(5)); A('fix363b · N4 · sin tocar nada, el día elegido abre con lo que ya le toca', document.getElementById('gg_carbs').value==='303'&&!window._gsCarry); closeModal(); }
+    // menú del renglón: un renglón por programado con su ✕ (44 de toque, sin ›); ✕ lo quita con deshacer; tocar el renglón lo abre
+    { db=migrate(B0()); bumpIdx(); goalSchedSet(D(3),Object.assign({},G0,{carbs:240}),null,''); goalSchedSet(D(5),Object.assign({},G0,{carbs:220}),null,'definición'); gsRowOpen(); const L=document.getElementById('asklayer');
+      A('fix363b · menú · un renglón por programado con su ✕', !!L&&L.querySelectorAll('.nvm').length===2&&L.querySelectorAll('.nvm .nvm-del').length===2&&!L.querySelector('.nvm-x')&&!/quitar/.test(L.querySelector('.nvm-list').textContent)&&parseFloat(getComputedStyle(L.querySelector('.nvm-del'),'::after').height)>=44);
+      L.querySelector('.nvm-del[data-nvx="0"]').click(); A('fix363b · menú · ✕ quita ese y nada más', goalSched().length===1&&goalSched()[0].from===D(5)&&!document.getElementById('asklayer'));
+      const u=[...document.querySelectorAll('#toasts .toast:not(.out) .tundo')].pop(); if(u)u.click(); A('fix363b · menú · deshacer lo regresa', goalSched().length===2);
+      gsRowOpen(); document.querySelector('#asklayer .nvm[data-pop="1"]').click(); A('fix363b · menú · tocar el renglón abre ese día', /programado/.test((document.querySelector('#modal h3')||{}).textContent||'')&&document.getElementById('g_phase').value==='definición'); closeModal(); }
+    // ---- fix363c · ronda 3 (base de juguete; todo se restaura en el finally de arriba) ----
+    // B1 · a 320 (la fila mide 284 px) el toque del ✕ del bloque de sueño no pisa la casilla de despertar, mide 44 y no sale de la pantalla; y la hora no se encoge
+    { db=migrate(B0()); bumpIdx(); window._logBack=null; openSleepLog(); const row=document.querySelector('#sl_blocks .slblk').cloneNode(true); closeModal();
+      const host=document.createElement('div'); host.style.cssText='position:fixed;left:18px;top:10px;width:284px;z-index:2147483647;visibility:visible;pointer-events:auto;'; host.appendChild(row); document.body.appendChild(host);
+      try{ const ins=row.querySelectorAll('input[type="time"]'), e=ins[1].getBoundingClientRect(), xr=row.querySelector('.slx').getBoundingClientRect(), y=(e.top+e.bottom)/2, xc=(xr.left+xr.right)/2;
+        const on=(px,py)=>{ const el=document.elementFromPoint(px,py); return !!(el&&el.closest&&el.closest('.slx')&&row.contains(el)); };
+        let pis=0; for(let px=Math.ceil(e.left);px<Math.floor(e.right);px++)if(on(px,y))pis++;
+        let L=null, R=null; for(let px=0;px<=330;px++)if(on(px,y)){ if(L==null)L=px; R=px; }
+        let V=0; for(let py=0;py<=70;py++)if(on(xc,py))V++;
+        A('fix363c · B1 · a 320 el toque del ✕ no pisa la casilla de despertar (0 px)', pis===0&&e.width>0);
+        A('fix363c · B1 · …toca en 44×44 y no sale de la pantalla', L!=null&&R-L+1>=44&&V>=44&&R<320);
+        const w0=ins[0].getBoundingClientRect().width; host.style.width='2000px'; const wn=ins[0].getBoundingClientRect().width; host.style.width='284px';
+        A('fix363c · estética · a 320 la casilla de hora no se encoge (la hora se lee entera)', w0>=wn-0.5);
+      } finally { host.remove(); } }
+    // estética · guardar sin nada que guardar dice lo que falta, corto (la cadena de la gráfica abre con el bloque vacío)
+    { db=migrate(B0()); bumpIdx(); window._mdRange=30; window._mdEnd=null; window._mdCustom=null; window._mdSel=null;
+      const msg=()=>{ const t=[...document.querySelectorAll('#toasts .toast.err:not(.out) .tm')].pop(); return t?t.textContent:''; }, kill=()=>document.querySelectorAll('#toasts .toast.err').forEach(t=>{ if(t._kill)t._kill(); });
+      openMetricDetail('sleep'); logBackMark(); openSleepLog(); document.getElementById('sl_save').click(); kill(); document.getElementById('sl_save').click();
+      A('fix363c · estética · con el bloque vacío pide las dos horas', msg()==='⚠ falta la hora de dormir y de despertar'&&!(db.sleep&&db.sleep[D(-1)])); kill();
+      { const i=document.querySelectorAll('#sl_blocks input[type="time"]'); i[0].value='23:00'; i[0].dispatchEvent(new Event('input')); } document.getElementById('sl_save').click();
+      A('fix363c · estética · con solo la de dormir pide la de despertar', msg()==='⚠ falta la hora de despertar'&&!(db.sleep&&db.sleep[D(-1)])); kill();
+      document.querySelector('#sl_blocks .slx').click(); document.getElementById('sl_save').click(); A('fix363c · estética · sin bloques pide uno', msg()==='⚠ agrega un bloque'); kill();
+      closeModal(); window._logBack=null; }
+    // B2 · programar un cambio solo se lleva lo que cambiaste (y el ciclo solo si lo tocaste), encima de lo que ese día ya tiene programado
+    { db=migrate(Object.assign(B0(),{settings:{goals:Object.assign({},G0),carbCycle:{on:true,amp:12,v:2}}})); bumpIdx(); window._goalMode='grams';
+      goalSchedSet(D(5),Object.assign({},G0,{carbs:220,kcal:2164}),{on:false,amp:12},'definición');
+      const pk=d=>{ document.getElementById('g_menu').click(); [...document.querySelectorAll('#asklayer .nvm')].find(x=>/programar un cambio/.test(x.textContent)).click(); document.getElementById('gs_day').value=d; document.querySelector('#asklayer [data-ask="ok"]').click(); };
+      openGoals(T); { const p=document.getElementById('gg_protein'); p.value='160'; p.dispatchEvent(new Event('input',{bubbles:true})); } pk(D(5));
+      A('fix363c · B2 · el día con algo programado abre con lo suyo más lo que cambiaste', /programado/.test(document.querySelector('#modal h3').textContent)&&val('gg_protein')==='160'&&val('gg_carbs')==='220'&&/^off/.test(document.getElementById('cc_v').textContent)&&val('g_phase')==='definición'&&!window._gsCarry);
+      document.querySelector('#modal [data-act="okgoals"]').click(); const s5=goalSchedAt(D(5));
+      A('fix363c · B2 · …y al guardar conserva sus carbos, su ciclo apagado y su fase; hoy no cambia', !!s5&&s5.goals.protein===160&&s5.goals.carbs===220&&s5.goals.kcal===goalKcalOf(s5.goals)&&!!s5.cc&&s5.cc.on===false&&s5.phase==='definición'&&db.settings.goals.protein===150&&db.settings.carbCycle.on===true);
+      openGoals(T); document.getElementById('cc_tog').click(); pk(D(3));
+      A('fix363c · B2 · el ciclo sí se lleva cuando lo tocaste, y lo demás abre como siempre', /^off/.test(document.getElementById('cc_v').textContent)&&val('gg_carbs')==='270'&&val('gg_protein')==='150'&&db.settings.carbCycle.on===true); closeModal(); }
+    // B3 · tocar el renglón «hoy» con la cola esperando su turno (otro aviso delante): el aviso sale al instante y lo demás de la cola, después
+    { db=migrate(B0()); bumpIdx(); goalSchedSet(T,Object.assign({},G0,{carbs:240}),null,''); const s=goalSchedDue(T); state.screen='macros';
+      const ov0=document.getElementById('bootov'), q0=_bootQ.splice(0), sh0=_bootShowing, bt0=_bootT, ga0=_gsAsked; if(ov0)ov0.removeAttribute('id');
+      try{ _gsAsked=''; _bootShowing=false; _bootT=0; bootAsk({title:'otro aviso'}); goalSchedAsk(s,T);
+        A('fix363c · B3 · (prueba) la cola espera su turno con otro aviso delante', _bootQ.length===2&&!!_bootT&&!document.getElementById('asklayer'));
+        gsRowOpen(); const L=document.getElementById('asklayer');
+        A('fix363c · B3 · tocar el renglón lo muestra al instante', !!L&&/programado para hoy/.test((L.querySelector('h3')||{}).textContent||'')&&!_bootT&&_gsAsked===s.id+'|'+T);
+        A('fix363c · B3 · …y lo demás de la cola sigue detrás', _bootQ.length===1&&_bootQ[0].o.title==='otro aviso'&&_bootShowing);
+        L.dispatchEvent(new MouseEvent('click',{bubbles:true})); A('fix363c · B3 · al cerrarlo, la cola retoma su turno', !document.getElementById('asklayer')&&!!_bootT&&_bootQ.length===1);
+      } finally { clearTimeout(_bootT); closeAsk(true); _bootQ.length=0; q0.forEach(x=>_bootQ.push(x)); _bootShowing=sh0; _bootT=bt0; _gsAsked=ga0; if(ov0)ov0.id='bootov'; } }
+    // r4 · N1: un aviso de la cola nunca sale encima de una hoja abierta; al cerrarla sale una vez y cuenta como visto (onShow)
+    { const ov0=document.getElementById('bootov'), q0=_bootQ.splice(0), sh0=_bootShowing, bt0=_bootT; if(ov0)ov0.removeAttribute('id');
+      try{ closeAsk(true); openModal('<h3>hoja r4</h3>'); clearTimeout(_bootT); _bootT=0; _bootShowing=false; let shown=0; bootAsk({title:'aviso r4',onShow:()=>{ shown++; }},null,null,true);
+        A('fix363d · N1 · con una hoja abierta el aviso no sale y espera su turno', !document.getElementById('asklayer')&&_bootQ.length===1&&!!_bootT&&shown===0&&_bootShowing);
+        closeModal(); clearTimeout(_bootT); _bootT=0; _bootNext(); const L=document.getElementById('asklayer');
+        A('fix363d · N1 · al cerrarla sale una vez y cuenta como visto', !!L&&/aviso r4/.test(L.textContent)&&shown===1&&_bootQ.length===0);
+        closeAsk(true); clearTimeout(_bootT); _bootT=0; _bootQ.length=0; _bootShowing=false; openModal('<h3>hoja r4</h3>'); bootAsk({title:'metas r4',when:()=>true},null,null,true); const L2=document.getElementById('asklayer');
+        A('fix363d · N1 · el que trae su propio when() decide él (metas)', !!L2&&/metas r4/.test(L2.textContent)&&_bootQ.length===0);
+      } finally { clearTimeout(_bootT); closeAsk(true); try{ closeModal(); }catch(_){} _bootQ.length=0; q0.forEach(x=>_bootQ.push(x)); _bootShowing=sh0; _bootT=bt0; if(ov0)ov0.id='bootov'; } }
+    A('fix363d · la invitación cuenta como vista al salir, sin vigía', /onShow:\(\)=>\{ acctInviteMark\(\); save\(\); \}/.test(acctInviteMaybe.toString())&&!/setInterval/.test(acctInviteMaybe.toString()));
+    A('fix363d · P3 · el rescate se marca al guardar, no antes', /\{ mark\(\); reRender\(\); \}/.test(cloudRescueOffer.toString())&&!/doIt=swap=>\{ mark\(\)/.test(cloudRescueOffer.toString()));
+    console.log('v363 self-check OK');
+  } finally { try{ closeAsk(true); }catch(_){} try{ closeModal(); }catch(_){} window._logBack=null; window._goalMode=gm; state.screen=rs; state.macroDate=cd; db=real; bumpIdx(); }
 }
 function _v362SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v362: '+nm); }; const real=db, f0=_clForce, cl0=_cl;
   try{ _clForce='fake'; _cl=null; const N=Date.now(), D=864e5;
@@ -2864,7 +3051,7 @@ async function _cuentasSelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELF
       A('…lo que A borró no revive; la corrección de B y su comida se quedan', !(db.meals[T0]||[]).some(m=>m.id==='m1')&&sw(db).w==='105'&&(db.meals['2026-09-10']||[]).some(m=>m.id==='m10')); keep(B);
       use(A1); A('A toma la unión sin perder nada', (await cloudSync('t'))==='adopt'&&sw(db).w==='105'&&(db.adhoc[T0]||[]).length===1&&(db.adhoc['2026-09-06']||[]).length===1&&!(db.meals[T0]||[]).some(m=>m.id==='m1')&&db.settings.progLayout==='y'&&(db.mamarre||[]).length===1);
       db.settings.restSec=180; keep(A1); use(B); db.settings.restSec=190; A('B sube', (await cloudSync('t'))==='ok'); keep(B);
-      use(A1); _clBaseMem=null; const sk=[], is0=idbSnap; idbSnap=k=>{ sk.push(k); return Promise.resolve(); };
+      use(A1); _clBaseMem=null; const sk=[], is0=idbSnap; idbSnap=(k,d)=>{ sk.push(k); return is0(k,d); };   /* v364 · deja pasar: la prueba de IndexedDB corre a la vez */
       try{ A('v363 · sin la base guardada se juntan sin preguntar y las dos copias quedan guardadas', (await cloudSync('t',{ui:true}))==='union'&&[180,190].indexOf(db.settings.restSec)>=0&&sk.indexOf('nube')>=0&&sk.indexOf('cloud')>=0&&cloudBaseOk()&&!_clHold); } finally{ idbSnap=is0; } }
     { const b={sessions:[{date:'2026-09-01',x:1},{id:'s2',date:'2026-09-02'}],split:{days:[{id:'d1'},{id:'d2'},{id:'d3',n:0}]},meals:{'2026-09-01':[{id:'m1',kcal:100}]},rotIdx:3}, J=x=>JSON.parse(JSON.stringify(x));
       const l=J(b), r=J(b); l.sessions.push({id:'sa',date:'2026-09-03'}); r.sessions.push({id:'sb',date:'2026-09-02'}); l.split.days.reverse(); r.split.days[2].n=1;
@@ -7323,7 +7510,7 @@ function _v334SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('D4b · el export trae los despertares de la noche que los tiene y raya en la que no', /\| despierto \| despertares \| REM \|/.test(md)&&/\| 30 min \| 3 \| 1 h 35 min \|/.test(md)&&/\| — \| — \| — \| — \| — \| — \| 7 h 30 min \| a mano \|/.test(md));
     A('D4 · el export separa agua (contra la meta) de líquidos (agua + bebidas)', /\| fecha \| peso \| pasos \| agua \| líquidos \| FC reposo \| HRV \|/.test(md)&&/\| — \| — \| 0\.5L \| 0\.7L \| — \| — \|/.test(md)&&/agua = solo agua/.test(md)&&/- leche — 120kcal .* · líquido 0\.2L/.test(md)&&/- agua — 0kcal .* · agua 0\.5L/.test(md));
     state.screen='macros'; state.macroDate=T; state.macroOpen=true; state.nutOpen=true; const h=renderMacros();   // v357 · el agua vive en nutrients
-    A('D4 · en macros la fila es `water` (solo agua, contra su meta) y los líquidos van aparte', /<span class="ml">water<\/span>/.test(h)&&/<span class="g mlq">liquids 0\.7 L<\/span>/.test(h)&&!/<span class="ml">liquids<\/span>/.test(h)&&/>0\.5 <span class="g">\/ \d/.test(h));
+    A('D4 · LQ1 · en macros la fila `liquids`: el número es solo agua contra su meta y la franja, todos los líquidos', /<span class="u-dash">liquids<\/span>/.test(h)&&/class="lqb"/.test(h)&&/<span class="g mlq">total 0\.7 L<\/span>/.test(h)&&!/<span class="ml">water<\/span>/.test(h)&&/>0\.5 <span class="g">\/ \d/.test(h));
     db.meals[T]=[{id:'w1',tag:'drink',name:'agua',kcal:0,water:0.75},{id:'l1',tag:'breakfast',name:'té',kcal:5,water:0.04}]; bumpIdx(); A('D4 · si agua y líquidos se leen igual (0.8 y 0.8), no se repite', renderMacros().indexOf('mlq')<0);
     { const el=document.createElement('input'); el.type='time'; el.dataset.mt='breakfast'; const n0=nowHM(); mealClockArm(el,true); const n1=nowHM(); A('D4b · el reloj de una comida de hoy propone la hora de este momento (desde v317)', el.value===n0||el.value===n1);
       state.macroDate=D(1); const e2=document.createElement('input'); e2.type='time'; e2.dataset.mt='breakfast'; mealClockArm(e2,true); A('D4b · …y en otro día nace vacío: no se inventa', e2.value===''); }
@@ -8780,7 +8967,7 @@ function _v359SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     $('gg_carbs').value='300'; fire($('gg_carbs')); A('GL1 · la meta de arriba sigue a tus gramos en vivo', $('gg_kcal').textContent==='2,232');
     A('GL1 · más: lo auto son renglones de solo lectura y lo tuyo, casillas', m.querySelectorAll('#g_morebox .line.stat').length===3&&!$('g_sodium')&&!!$('g_sugar')&&!!$('g_sleep'));
     // = mantenimiento: los carbos cierran la cuenta y todo se repinta (sin guardar)
-    $('g_menu').click(); A('GL1 · el ··· trae = mantenimiento, recalcular y qué se ve en intake', document.querySelectorAll('#asklayer .nvm').length===3); pick(/^= mantenimiento/);
+    $('g_menu').click(); A('GL1 · el ··· trae = mantenimiento, recalcular, qué se ve en intake y (v363) programar un cambio', document.querySelectorAll('#asklayer .nvm').length===4&&/programar un cambio/.test(document.getElementById('asklayer').textContent)); pick(/^= mantenimiento/);
     { const mk=maintenanceKcal(), k=+$('gg_kcal').textContent.replace(/,/g,''); A('GL1 · = mantenimiento: la meta queda en tu mantenimiento (±2) con tu proteína y grasa, sin guardar', !!mk&&Math.abs(k-mk)<=2&&$('gg_protein').value==='150'&&$('gg_fat').value==='48'&&db.settings.goals.kcal===2404); }
     m.querySelector('[data-act="okgoals"]').click(); A('GL1 · guardar: la meta es la suma de tus gramos', db.settings.goals.kcal===goalKcalOf(db.settings.goals)&&db.settings.goals.carbs!==343);
     // qué se ve en intake (antes las fichas SECCIONES)
@@ -10302,7 +10489,7 @@ function renderMacros(){
   const nutBody=''
     +(goalSecHidden('electro')?'':intakeRow('sodium',t.sodium,g.sodium,'mg')+intakeRow('potassium',t.potassium,g.potassium,'mg'))
     +(goalSecHidden('sugarfiber')?'':intakeRow('sugar',t.sugar,g.sugar,'g')+intakeRow('fiber',t.fiber,g.fiber,'g'))
-    +(goalSecHidden('minor')?'':intakeRow('caffeine',t.caffeine,g.caffeine,'mg')+intakeRow('alcohol',t.alcohol,g.alcohol||0,'g')+intakeRow('water',_wo,g.water,'L',(+t.water).toFixed(1)!==(+_wo).toFixed(1)?'<span class="g mlq">liquids '+(+t.water).toFixed(1)+' L</span>':'',1))
+    +(goalSecHidden('minor')?'':intakeRow('caffeine',t.caffeine,g.caffeine,'mg')+intakeRow('alcohol',t.alcohol,g.alcohol||0,'g')+lqRowHTML(_wo,+t.water||0,g.water))
     +(function(){ const r=MICROS.map(mi=>{ const v=(micros&&micros[mi.k])||0; return v>0?intakeRow(mi.l,v,mi.rda,mi.u):''; }).join(''); return r?'<hr class="rule"/><div class="grp-label">MICRONUTRIENTS <span class="u-o40 u-w4">· de suplementos</span></div>'+r:''; })()
     // v262 · retención (look "1", opción B): una línea de diagnóstico SOLO si se sale de rango — el número en rojo y el
     // Na:K del día; tocarla abre sus consejos. En rango no ocupa renglón (BRAND §4).
@@ -10317,7 +10504,7 @@ function renderMacros(){
   return statusBar(false)
     +`<hr class="rule"/>`
     +`<div class="section"><div class="h dnavh"><a data-act="dayprev" class="dnav">‹</a><span class="dnlbl-wrap"><span class="dnlbl">${dayLabel(curDate(),1)}</span><input type="date" class="dcal" data-act="daycal" value="${curDate()}"/></span><a data-act="daynext" class="dnav">›</a></div><div class="meta"><a data-act="share" class="vb">share</a> <a data-act="editgoals" class="vb u-ml8">goals</a></div></div>`
-    +(_mmv?mmViewHTML(curDate(),items,t,g):'')+(_mmv?'':`<div class="card kpanel u-pt16 u-pb16 u-px16"><button class="hero ${open?'open':''} ${kStat}" data-act="togglemacros">${ringHTML(pct,`<div class="num" data-nk="kcal" data-nv="${Math.round(t.kcal)}">${Math.round(t.kcal).toLocaleString()}</div><div class="of">/ ${g.kcal.toLocaleString()} kcal</div>`,'lg')}<div class="hero-meta"><span class="left ${left<0?'over':'under'}">${left>=0?left+' left':Math.abs(left)+' over'}</span> · ${Math.round(pct)}% <span class="chev">▾</span></div></button>${goalSecHidden('balance')?'':(function(){var b=balanceOf(g.kcal);return b?'<div class="hbal">'+(b.label==='mantenimiento'?'en mantenimiento':'<span class="u-w7">'+b.label+'</span> '+Math.round(Math.abs(b.delta)).toLocaleString('en-US')+' kcal')+' · mant. ≈ '+b.maint+'</div>':'';})()}${ccTagHTML(curDate(),g)}${mmTagHTML(curDate())}${details}</div>`)
+    +(_mmv?mmViewHTML(curDate(),items,t,g):'')+(_mmv?'':`<div class="card kpanel u-pt16 u-pb16 u-px16"><button class="hero ${open?'open':''} ${kStat}" data-act="togglemacros">${ringHTML(pct,`<div class="num" data-nk="kcal" data-nv="${Math.round(t.kcal)}">${Math.round(t.kcal).toLocaleString()}</div><div class="of">/ ${g.kcal.toLocaleString()} kcal</div>`,'lg')}<div class="hero-meta"><span class="left ${left<0?'over':'under'}">${left>=0?left+' left':Math.abs(left)+' over'}</span> · ${Math.round(pct)}% <span class="chev">▾</span></div></button>${goalSecHidden('balance')?'':(function(){var b=balanceOf(g.kcal);return b?'<div class="hbal">'+(b.label==='mantenimiento'?'en mantenimiento':'<span class="u-w7">'+b.label+'</span> '+Math.round(Math.abs(b.delta)).toLocaleString('en-US')+' kcal')+' · mant. ≈ '+b.maint+'</div>':'';})()}${ccTagHTML(curDate(),g)}${mmTagHTML(curDate())}${gsTagHTML()}${details}</div>`)
     +suppSecHTML(curDate())
     +(_mmv?'':foodSecHTML(curDate(),items.filter(m=>!isWaterItem(m)),t.kcal))
     +waterSecHTML(curDate());   // orden del dueño: supps → meals → water al final
@@ -10898,8 +11085,7 @@ function acctInviteBusy(){ return !!(db.activeWork||state.screen==='onboard'||st
 function acctInviteMaybe(){ if(_sbx||!acctInviteDue()||acctInviteBusy())return; let now=0; try{ now=performance.now(); }catch(_){}
   let tries=0; const fire=()=>{ if(!acctInviteDue()||acctInviteBusy())return;
     { const a=document.activeElement; if(document.getElementById('modal')||document.getElementById('asklayer')||document.getElementById('bootov')||(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))){ if(++tries<40)setTimeout(fire,2000); return; } }   // nunca encima de una hoja abierta o mientras escribes: espera a que te desocupes
-    bootAsk({title:'guarda tus datos',detail:'con tu correo y una contraseña, tus datos no se pierden si cambias de teléfono y entras desde otro.\nsin cuenta, todo sigue igual.',ok:'crear cuenta',cancel:'ahora no',alt:{label:'entrar',fn:()=>openAcct('in')}},()=>openAcct('new'));
-    let k=0; const iv=setInterval(()=>{ const L=document.getElementById('asklayer'); if(L&&/guarda tus datos/.test(L.textContent)){ clearInterval(iv); acctInviteMark(); save(); } else if(++k>150)clearInterval(iv); },200);
+    bootAsk({title:'guarda tus datos',detail:'con tu correo y una contraseña, tus datos no se pierden si cambias de teléfono y entras desde otro.\nsin cuenta, todo sigue igual.',ok:'crear cuenta',cancel:'ahora no',alt:{label:'entrar',fn:()=>openAcct('in')},onShow:()=>{ acctInviteMark(); save(); }},()=>openAcct('new'));   /* v364 · r4: cuenta como vista al salir, por larga que sea la espera */
   }; setTimeout(fire,Math.max(0,4600-now)); }
 function acctOnb(){ onbD(); db.onb.done=false; if(!(db.onb.step>0))db.onb.step=1; state.screen='onboard'; cloudSave(); render(); try{ history.pushState({onb:db.onb.step},''); }catch(_){} }
 function acctAct(a,el){
@@ -11283,11 +11469,12 @@ function mdRound(v,sp){ if(sp&&sp.exact)return Math.round(v*60)/60; return Math.
 // decide qué es "definición" ni "volumen": eso no sale de ninguna fórmula.
 const PH={tol:0.08,min:3};
 function phaseRuns(){ const H=db.goalHist||{}, R=[]; let cur=null;
-  Object.keys(H).sort().forEach(d=>{ const k=+((H[d]||{}).kcal)||0; if(!(k>0)||!/^\d{4}-\d{2}-\d{2}$/.test(d))return;
-    if(cur&&Math.abs(k-cur.k0)/cur.k0<=PH.tol){ cur.to=d; cur.n++; cur.c[k]=(cur.c[k]||0)+1; if(cur.c[k]>=cur.c[cur.kcal])cur.kcal=k; } else { cur={from:d,to:d,k0:k,kcal:k,n:1,c:{}}; cur.c[k]=1; R.push(cur); } });   /* k0 = con qué se compara; kcal = la meta que más días tuvo (empate: la más reciente) */
+  const cuts=(db.phases||[]).filter(p=>p&&p.start&&p.from).map(p=>p.from).sort();   // v363 · GL2 · una fase programada empieza en su fecha: ahí se parte el tramo (aunque la kcal no cambie)
+  Object.keys(H).sort().forEach(d=>{ const k=+((H[d]||{}).kcal)||0; if(!(k>0)||!/^\d{4}-\d{2}-\d{2}$/.test(d))return; const cx=cur?cuts.filter(x=>x>cur.to&&x<=d).pop():null;
+    if(cur&&!cx&&Math.abs(k-cur.k0)/cur.k0<=PH.tol){ cur.to=d; cur.n++; cur.c[k]=(cur.c[k]||0)+1; if(cur.c[k]>=cur.c[cur.kcal])cur.kcal=k; } else { cur={from:cx||d,to:d,k0:k,kcal:k,n:1,c:{},hard:!!cx}; cur.c[k]=1; R.push(cur); } });   /* k0 = con qué se compara; kcal = la meta que más días tuvo (empate: la más reciente) */
   const out=[]; R.forEach(r=>{ const p=out[out.length-1];
-    if(p&&(r.n<PH.min||Math.abs(r.kcal-p.kcal)/p.kcal<=PH.tol)){ p.to=r.to; p.n+=r.n; if(r.n>p.w){ p.w=r.n; p.kcal=r.kcal; } } else out.push({from:r.from,to:r.to,kcal:r.kcal,n:r.n,w:r.n}); });
-  if(out.length>1&&out[0].n<PH.min){ out[1].from=out[0].from; out[1].n+=out[0].n; out.shift(); }
+    if(p&&!r.hard&&(r.n<PH.min||Math.abs(r.kcal-p.kcal)/p.kcal<=PH.tol)){ p.to=r.to; p.n+=r.n; if(r.n>p.w){ p.w=r.n; p.kcal=r.kcal; } } else out.push({from:r.from,to:r.to,kcal:r.kcal,n:r.n,w:r.n,hard:r.hard}); });   // un tramo que empieza en una fase programada no se pega al de antes
+  if(out.length>1&&out[0].n<PH.min&&!out[1].hard){ out[1].from=out[0].from; out[1].n+=out[0].n; out.shift(); }
   return out; }
 // El nombre se guarda con las fechas que el tramo tenía ESE día. La fase en curso sigue creciendo: el nombre vale mientras cubra
 // la mitad del más corto de los dos (el tramo o lo nombrado); si no, a las dos semanas de nombrarla se perdía solo.
@@ -11311,7 +11498,7 @@ function openPhaseName(from,to,kcal){ const cur=phaseNameOf(from,to), days=Math.
   focusEl(document.getElementById('ph_name'));
   m.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-ask]'); if(!b)return; ev.stopPropagation(); const v=String((document.getElementById('ph_name')||{}).value||'').trim(); closeAsk();
     if(b.dataset.ask==='no')return; const put=b.dataset.ask==='ok'&&!!v; if(!put&&!cur)return;
-    db.phases=(db.phases||[]).filter(p=>p!==cur); if(put)db.phases.push({id:uid(),from,to,name:v});
+    db.phases=(db.phases||[]).filter(p=>p!==cur); if(put)db.phases.push(Object.assign({id:uid(),from,to,name:v},cur&&cur.start?{start:true}:{}));   // v363 · GL2
     savedToast(put?'✓ fase · '+v:'✓ nombre quitado'); if(window._mdKey&&document.getElementById('modal'))openMetricDetail(window._mdKey); }); }
 // GR3 · la meta de CADA día como quedó guardada ese día (las metas pasadas no se recalculan), para que la raya diga lo mismo que
 // el carril. kcal: un día sin meta guardada sigue con la última conocida, antes de la primera no hay raya y hoy es la vigente.
@@ -12373,14 +12560,21 @@ function openHealthImport(){
   var p=document.getElementById("hi_paste"); if(p)p.onclick=function(){ try{ navigator.clipboard.readText().then(function(t){ var e=document.getElementById("hi_txt"); if(e)e.value=t; },function(){ toast('pega a mano: mantén presionado el cuadro y elige Pegar'); }); }catch(_){ toast('pega a mano: mantén presionado el cuadro y elige Pegar'); } };
   var g=document.getElementById("hi_go"); if(g)g.onclick=function(){ var _r=healthPasteApply(val("hi_txt")||""); if(_r){ savedToast('✓ Salud · '+_r.days+(_r.days===1?' día':' días')); closeModal(); reRender(); return; } var txt=(val("hi_txt")||"").trim(); if(txt.charAt(0)==="?")txt=txt.slice(1); var msg=[]; try{ msg=importHealth(new URLSearchParams(txt)); }catch(_){} if(msg.length){ save(); closeModal(); reRender(); setTimeout(function(){ toast("\u2713 "+msg.join(" \u00b7 ")); },120); } else { toast('⚠ no reconocí datos · formato stepsh=fecha:valor o weighth=fecha:kg','err'); } };
 }
-function openWeightLog(){ const ks=Object.keys(db.bodyweight||{}).sort(); const last=ks.length?db.bodyweight[ks[ks.length-1]]:((db.profile&&db.profile.weightKg)||'');
+// ---- v363 · H8 · registrar varios días seguidos sin salir de la gráfica ----
+// El dueño (16-oct): "en HRV lo tengo que estar poniendo de forma manual… cuando le doy guardar me manda completamente al inicio… si ya desplegué para
+// estar viendo la gráfica, quedarme ahí y poder estar loggeando así de forma más rápida y ya que termine yo me salgo". Abierto desde el detalle de una
+// métrica (+ log): al guardar, la hoja se queda con el día anterior listo para el siguiente; cerrar regresa al detalle, en su periodo y ya con lo nuevo.
+function logBackMark(){ const d=document.querySelector('#modal .sheet.mdetail-wrap'); window._logBack=d&&window._mdKey?{key:window._mdKey,top:d.scrollTop}:null; }
+function logBackGo(){ const b=window._logBack; if(!b)return false; window._logBack=null; sheetBack(()=>openMetricDetail(b.key)); const sh=document.querySelector('#modal .sheet.mdetail-wrap'); if(!sh){ closeModal(); reRender(); return true; }
+  if(b.top>0){ scrollHold(sh,b.top); Promise.resolve().then(()=>{ try{ if(sh.isConnected)scrollHold(sh,b.top); }catch(_){} }); } return true; }   // v363 · H8 · a la altura que tenía (antes regresaba arriba)
+function openWeightLog(day){ day=day||todayISO(); const ks=Object.keys(db.bodyweight||{}).sort(); const last=ks.length?db.bodyweight[ks[ks.length-1]]:((db.profile&&db.profile.weightKg)||'');
   const recent=ks.slice(-8).reverse();
   const rows=recent.map(d=>`<div class="line u-py6 u-px0"><span class="k u-tap u-ul" data-act="editbw" data-d="${d}">${d}</span><span class="dots"></span><span class="v">${bwShow(db.bodyweight[d])} ${bwU()} <span data-act="delbw" data-d="${d}" class="u-o40 u-tap u-ml8">✕</span></span></div>`).join('');
   openModal(`<h3>peso corporal</h3>
-   <div class="field row2"><div><label>PESO (${bwU()})</label><input id="bw_kg" type="number" inputmode="decimal" value="${last?bwShow(last):''}" placeholder="${bwU()==='lbs'?'ej. 160':'ej. 72.5'}"/></div><div><label>FECHA</label><input id="bw_date" type="date" value="${todayISO()}" max="${todayISO()}"/></div></div>
-   <div class="sheetbtns u-mb6"><button class="ok" id="bw_save">guardar</button><button class="cancel" data-act="closemodal">cerrar</button></div>
+   <div class="field row2"><div><label>PESO (${bwU()})</label><input id="bw_kg" type="number" inputmode="decimal" value="${day===todayISO()?(last?bwShow(last):''):((db.bodyweight&&db.bodyweight[day])?bwShow(db.bodyweight[day]):'')}" placeholder="${bwU()==='lbs'?'ej. 160':'ej. 72.5'}"/></div><div><label>FECHA</label><input id="bw_date" type="date" value="${day}" max="${todayISO()}"/></div></div>
+   <div class="sheetbtns u-mb6"><button class="ok" id="bw_save">guardar</button><button class="cancel" data-act="logclose">cerrar</button></div>
    ${recent.length?`<div class="grp-label sub">RECENT LOGS</div>`+rows+``:''}`);
-  document.getElementById('bw_save').onclick=()=>{ const v=bwParse(val('bw_kg')); const d=val('bw_date')||todayISO(); if(!v){ toast('⚠ pon un peso válido','err'); return; } db.bodyweight=db.bodyweight||{}; db.bodyweight[d]=v; H().src.weight[d]='manual'; const allk=Object.keys(db.bodyweight).sort(); if(allk.length&&db.profile)db.profile.weightKg=db.bodyweight[allk[allk.length-1]]; savedToast('✓ peso guardado'); closeModal(); reRender(); };
+  document.getElementById('bw_save').onclick=()=>{ const v=bwParse(val('bw_kg')); const d=val('bw_date')||todayISO(); if(!v){ toast('⚠ pon un peso válido','err'); return; } db.bodyweight=db.bodyweight||{}; db.bodyweight[d]=v; H().src.weight[d]='manual'; const allk=Object.keys(db.bodyweight).sort(); if(allk.length&&db.profile)db.profile.weightKg=db.bodyweight[allk[allk.length-1]]; savedToast('✓ peso guardado'); if(window._logBack){ openWeightLog(shiftDate(d,-1)); focusEl(document.getElementById('bw_kg')); return; } closeModal(); reRender(); };   // v363 · H8
 }
 // v263 · FC en reposo, HRV y energía activa se teclean: una métrica activada siempre tiene por dónde registrarse.
 // Viven donde ya vivían (db.health.daily[fecha]) con marca de origen por campo, como los pasos: lo tecleado gana y
@@ -12388,22 +12582,22 @@ function openWeightLog(){ const ks=Object.keys(db.bodyweight||{}).sort(); const 
 const HLOG={ rhr:{t:'FC en reposo',u:'lpm',ph:'ej. 58',min:25,max:140,step:'1',fld:'rhr',get:x=>(x&&+x.rhr)||0,set:(x,v)=>{ x.rhr=Math.round(v); }},
   hrv:{t:'HRV',u:'ms',ph:'ej. 42',min:1,max:400,step:'0.1',fld:'hrv',get:x=>(x&&x.hrv&&+x.hrv.v)||0,set:(x,v)=>{ x.hrv={v:Math.round(v*10)/10,kind:'rmssd'}; }},
   kcalact:{t:'energía activa',u:'kcal',ph:'ej. 420',min:1,max:8000,step:'1',fld:'activeKcal',get:x=>(x&&+x.activeKcal)||0,set:(x,v)=>{ x.activeKcal=Math.round(v); }} };
-function openHealthNumLog(key){ const C=HLOG[key]; if(!C)return; const h=H();
+function openHealthNumLog(key,day){ const C=HLOG[key]; if(!C)return; const h=H(); day=day||todayISO();
   const ks=Object.keys(h.daily||{}).filter(d=>C.get(h.daily[d])>0).sort(); const recent=ks.slice(-8).reverse();
   const rows=recent.map(d=>{ const x=h.daily[d]; const man=x.src&&x.src[C.fld]==='manual';
     return `<div class="line u-py6 u-px0"><span class="k u-tap u-ul" data-act="edithlog" data-m="${key}" data-d="${d}">${d}</span><span class="dots"></span><span class="v">${C.get(x)} ${C.u}${man?'':' <span class="u-o40">· sync</span>'} <span data-act="delhlog" data-m="${key}" data-d="${d}" class="u-o40 u-tap u-ml8">✕</span></span></div>`; }).join('');
   openModal(`<h3>${C.t}</h3>
    <div class="submeta u-mb10">si tu reloj lo sincroniza después, se queda tu número</div>
-   <div class="field row2"><div><label>${C.u.toUpperCase()}</label><input id="hl_v" type="number" inputmode="decimal" step="${C.step}" placeholder="${C.ph}"/></div><div><label>FECHA</label><input id="hl_date" type="date" value="${todayISO()}" max="${todayISO()}"/></div></div>
-   <div class="sheetbtns u-mb6"><button class="ok" id="hl_save">guardar</button><button class="cancel" data-act="closemodal">cerrar</button></div>
+   <div class="field row2"><div><label>${C.u.toUpperCase()}</label><input id="hl_v" type="number" inputmode="decimal" step="${C.step}" placeholder="${C.ph}"/></div><div><label>FECHA</label><input id="hl_date" type="date" value="${day}" max="${todayISO()}"/></div></div>
+   <div class="sheetbtns u-mb6"><button class="ok" id="hl_save">guardar</button><button class="cancel" data-act="logclose">cerrar</button></div>
    ${recent.length?`<div class="grp-label sub">RECENT LOGS</div>`+rows:''}`);
   const load=d=>{ const el=document.getElementById('hl_v'); if(el){ const v=C.get(H().daily[d]); el.value=v>0?v:''; } };
   const dt=document.getElementById('hl_date'); if(dt)dt.onchange=()=>load(dt.value);
   document.getElementById('hl_save').onclick=()=>{ const v=parseFloat(val('hl_v')); const d=val('hl_date')||todayISO();
     if(!isFinite(v)||v<C.min||v>C.max){ toast('⚠ pon un número entre '+C.min+' y '+C.max,'err'); return; }
     const hh=H(); const day=hh.daily[d]||(hh.daily[d]={}); day.src=day.src||{}; C.set(day,v); day.src[C.fld]='manual';
-    const fa=(document.getElementById('hl_save')||{dataset:{}}).dataset.fa==='1'; savedToast('✓ '+C.t+' · guardado'); closeModal(); reRender(); if(fa&&state.screen==='progress')faBack(); };   // venías de la hoja de fitness age: regresas a ella, donde estabas
-  load(todayISO());
+    const fa=(document.getElementById('hl_save')||{dataset:{}}).dataset.fa==='1'; savedToast('✓ '+C.t+' · guardado'); if(window._logBack&&!fa){ openHealthNumLog(key,shiftDate(d,-1)); focusEl(document.getElementById('hl_v')); return; } closeModal(); reRender(); if(fa&&state.screen==='progress')faBack(); };   // v363 · H8 · desde la gráfica: el día anterior, listo   // venías de la hoja de fitness age: regresas a ella, donde estabas
+  load(day);
 }
 // sleep compat + clock math (lazy migration): un día = array de bloques [{start,end,type,date,hours}].
 // legacy: número (h) u objeto único {start,end,...}. sleepBlocks() normaliza a array, sleepHours() suma — reads nunca se rompen.
@@ -12504,18 +12698,18 @@ function hm2min(s){ if(!s||typeof s!=='string'||s.indexOf(':')<0)return NaN; con
 function sleepDur(start,end){ const a=hm2min(start),b=hm2min(end); if(!isFinite(a)||!isFinite(b))return 0; let diff=b-a; if(diff<0)diff+=1440; return Math.round(diff/6)/10; } // minutos→horas (0.1); cruza medianoche; iguales→0 (rechazado)
 function isNocturnal(start){ const a=hm2min(start); if(!isFinite(a))return true; return a>=1200||a<360; } // inicio ≥20:00 ó <06:00
 // sleep log — date = the morning you woke up. Multi-bloque: noche + siestas; cada uno hora dormir+despertar (cruza medianoche) o horas manuales.
-function openSleepLog(){
+function openSleepLog(day,chain){ day=day||todayISO();   /* v364 · H8 · chain = la abrió guardar desde la gráfica: una noche sin registro abre vacía */
   const ks=Object.keys(db.sleep||{}).sort();
   const recent=ks.slice(-8).reverse();
   const rows=recent.map(d=>{ const n=sleepBlocks(db.sleep[d]).length; const h=sleepHours(db.sleep[d]);
     return `<div class="line u-py6 u-px0"><span class="k u-tap u-ul" data-act="editsleep" data-d="${d}">${d}</span><span class="dots"></span><span class="v">${fmtSleep(db.sleep[d])||'—'}${n>1?' · '+n+' bloques':''} <span data-act="delsleep" data-d="${d}" class="u-o40 u-tap u-ml8">✕</span></span></div>`; }).join('');
   openModal(`<h3>sueño</h3>
    <div class="submeta u-mb8">noche + siestas · el total del día es la suma de los bloques</div>
-   <div class="field"><label>FECHA (despertar)</label><input id="sl_date" type="date" value="${todayISO()}" max="${todayISO()}"/></div>
+   <div class="field"><label>FECHA (despertar)</label><input id="sl_date" type="date" value="${day}" max="${todayISO()}"${chain?' data-chain="1"':''}/></div>
    <div class="grp-label first">BLOCKS</div>
    <div id="sl_blocks"></div>
    <div class="u-flex u-gap12 u-aic u-mt8 u-mb4 u-mx0"><button class="b u-f0" id="sl_add">+ siesta</button><a id="sl_manual" class="u-data u-o50 u-tap u-ul">¿sin hora? horas →</a><span id="sl_total" class="submeta u-mlauto">total —</span></div>
-   <div class="sheetbtns u-mb6"><button class="ok" id="sl_save">guardar</button><button class="cancel" data-act="closemodal">cerrar</button></div>
+   <div class="sheetbtns u-mb6"><button class="ok" id="sl_save">guardar</button><button class="cancel" data-act="logclose">cerrar</button></div>
    ${recent.length?`<div class="grp-label sub">RECENT LOGS</div>`+rows+``:''}`);
   let blocks=[];
   const blkTimed=b=>b.start!==undefined; // manual block has no start key
@@ -12550,7 +12744,7 @@ function openSleepLog(){
     wrap.querySelectorAll('.slx').forEach(x=>{ x.onclick=()=>{ blocks.splice(+x.dataset.i,1); paint(); }; });
     blocks.forEach((b,i)=>phSum(i)); total();
   }
-  function load(d){ blocks=sleepBlocks(db.sleep&&db.sleep[d]).map(b=>(b&&typeof b==='object')?Object.assign({},b,{_o:{start:b.start,end:b.end},_det:!!phaseMin(b)},b.ph?{ph:Object.assign({},b.ph)}:{}):{hours:b}); if(!blocks.length)blocks=[{start:'23:00',end:'07:00'}]; paint(); }
+  function load(d){ blocks=sleepBlocks(db.sleep&&db.sleep[d]).map(b=>(b&&typeof b==='object')?Object.assign({},b,{_o:{start:b.start,end:b.end},_det:!!phaseMin(b)},b.ph?{ph:Object.assign({},b.ph)}:{}):{hours:b}); if(!blocks.length)blocks=[chain?{start:'',end:''}:{start:'23:00',end:'07:00'}]; paint(); }
   document.getElementById('sl_add').onclick=()=>{ blocks.push({start:'',end:''}); paint(); };
   document.getElementById('sl_manual').onclick=()=>{ blocks.push({hours:''}); paint(); };
   document.getElementById('sl_date').onchange=function(){ load(this.value); };
@@ -12564,10 +12758,11 @@ function openSleepLog(){
         if(ph){ o.ph={}; SLEEP_PH.forEach(([k])=>{ if(ph[k]>0)o.ph[k]=ph[k]; }); o.inBed=win; o.hours=blockAsleep(o); }   // v257 · `hours` = DORMIDO
         out.push(o); } } }
       else { const mh=Math.round((+b.hours)*10)/10; if(mh>0&&mh<24)out.push({date:d,type:'nocturno',hours:mh}); } });
-    if(!out.length){ toast('⚠ agrega un bloque: dormir + despertar, o las horas','err'); return; }
-    db.sleep=db.sleep||{}; db.sleep[d]=out; savedToast('✓ sueño guardado'); closeModal(); reRender();
+    if(!out.length){ const nb=blocks.find(b=>blkTimed(b)&&(!b.start||!b.end));   /* v364 · H8 · lo que falta, corto */
+      toast(!blocks.length?'⚠ agrega un bloque':nb?'⚠ falta la hora de '+(nb.start?'despertar':nb.end?'dormir':'dormir y de despertar'):'⚠ revisa las horas','err'); return; }
+    db.sleep=db.sleep||{}; db.sleep[d]=out; savedToast('✓ sueño guardado'); if(window._logBack){ openSleepLog(shiftDate(d,-1),true); return; } closeModal(); reRender();   // v363 · H8 · desde la gráfica: la noche anterior, lista
   };
-  load(todayISO());
+  load(day);
 }
 // habit series helpers (last-N days, daily water summed from meals, avg of logged days)
 function lastDays(n){ const now=new Date(); const out=[]; for(let i=n-1;i>=0;i--){ const d=new Date(now); d.setDate(now.getDate()-i); out.push(todayISO(d)); } return out; }
@@ -14369,6 +14564,7 @@ function applyEnter(root){ const e=state._enter, p=state._pop; state._enter=null
   if(p){ const el=root.querySelector('.dchk[data-exi="'+p.exi+'"][data-si="'+p.si+'"],.pairdone[data-exi="'+p.exi+'"][data-si="'+p.si+'"]'); if(el)el.classList.add('pop'); } }
 function afterPaint(root,swap){ if(!root)return; try{ popClose(); }catch(_){}
   if(state.screen==='home'&&!_sbx&&!window._stkT)window._stkT=setTimeout(()=>{ window._stkT=0; streakLvMaybe(); },450);   // v291 · ¿subiste de nivel de racha?
+  if(state.screen==='macros'&&!_sbx&&!window._gsT)window._gsT=setTimeout(()=>{ window._gsT=0; try{ goalSchedMaybe(); }catch(_){} },500);   // v363 · GL2 · ¿hoy toca un cambio programado?
   try{ footDonePaint(); }catch(_){}
   try{ animNums(root); }catch(_){} try{ animBars(root); }catch(_){} try{ animArcs(root); }catch(_){} try{ slideTabs(root,swap); }catch(_){} try{ applyEnter(root); }catch(_){} try{ tourMaybe(); }catch(_){} }
 // ---- R4 · TRKRow reflow (§7.18): lo que queda se reacomoda en vez de saltar ----
@@ -15056,13 +15252,13 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='usetpl'){ const t=(window._tpls||[])[+el.dataset.i]; if(t&&db.split&&(db.split.days||[]).length){ const _nx=t.build(), _k=db.split; (_nx.days||[]).forEach(d=>{ d.id='d'+uid(); (d.exercises||[]).forEach(x=>{ x.id='e'+uid(); }); }); if(_k.plan)_nx.plan=Object.assign(splitClone(_k.plan),_k.plan.mode==='weekly'?{mode:'daily',week:{}}:{}); if(_k.metric)_nx.metric=_k.metric; if(_k.allowF!=null)_nx.allowF=_k.allowF;
       splitSet(_nx,splitArchiveInto(splitsSaved()),'✓ plantilla lista · el anterior quedó guardado'); state._scroll=0; /*ds:top*/ go('splitedit'); return; }   // v356 · SP7
     if(t){ splitCarry(t.build()); db.rotIdx=0; state.selDay=null; save(); closeModal(); state._scroll=0; /*ds:top*/ go('splitedit'); } }
-  else if(a==='logweight'){ openWeightLog(); }
-  else if(a==='logsleep'){ openSleepLog(); }
+  else if(a==='logweight'){ logBackMark(); openWeightLog(); }
+  else if(a==='logsleep'){ logBackMark(); openSleepLog(); }
   else if(a==='editsleep'){ const d=el.dataset.d; const dt=document.getElementById('sl_date'); if(dt){ dt.value=d; dt.dispatchEvent(new Event('change')); } }
-  else if(a==='delsleep'){ const d=el.dataset.d; trkAsk({title:'borrar el sueño del '+fmtShort(d),ok:'borrar',danger:true},()=>{ if(db.sleep)delete db.sleep[d]; save(); openSleepLog(); }); }
-  else if(a==='logrhr'||a==='loghrv'||a==='logkcalact'){ const fb=faHold(); openHealthNumLog(a.slice(3)); if(fb){ const b=document.getElementById('hl_save'); if(b)b.dataset.fa='1'; } }
+  else if(a==='delsleep'){ const d=el.dataset.d; trkAsk({title:'borrar el sueño del '+fmtShort(d),ok:'borrar',danger:true},()=>{ if(db.sleep)delete db.sleep[d]; save(); { const dt=document.getElementById('sl_date'); openSleepLog(dt&&dt.value||null,!!(dt&&dt.dataset.chain)); } }); }   /* v364 · H8 · se queda en su fecha */
+  else if(a==='logrhr'||a==='loghrv'||a==='logkcalact'){ const fb=faHold(); logBackMark(); openHealthNumLog(a.slice(3)); if(fb){ const b=document.getElementById('hl_save'); if(b)b.dataset.fa='1'; } }
   else if(a==='edithlog'){ const dt=document.getElementById('hl_date'); if(dt){ dt.value=el.dataset.d; dt.dispatchEvent(new Event('change')); } }
-  else if(a==='delhlog'){ const d=el.dataset.d, m=el.dataset.m, C=HLOG[m]; if(!C)return; trkAsk({title:'borrar '+C.t+' del '+fmtShort(d),ok:'borrar',danger:true},()=>{ const day=H().daily[d]; if(day){ delete day[C.fld]; if(day.src)delete day.src[C.fld]; } save(); openHealthNumLog(m); }); }
+  else if(a==='delhlog'){ const d=el.dataset.d, m=el.dataset.m, C=HLOG[m]; if(!C)return; trkAsk({title:'borrar '+C.t+' del '+fmtShort(d),ok:'borrar',danger:true},()=>{ const day=H().daily[d]; if(day){ delete day[C.fld]; if(day.src)delete day.src[C.fld]; } save(); openHealthNumLog(m,(document.getElementById('hl_date')||{}).value||null); }); }
   else if(a==='healthimport'){ openHealthImport(); }
   else if(a==='healthsync'){ healthSync(); }
   else if(a==='healthjson'){ openHealthJsonImport(); }
@@ -15118,7 +15314,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='sefold'){ const b=document.getElementById('se_sec_'+el.dataset.k); if(b){ const op=b.hidden; keepUnder(el,()=>{ b.hidden=!op; el.setAttribute('aria-expanded',op?'true':'false'); const c=el.querySelector('.rchev'); if(c)c.textContent=op?'▾':'›'; if(window._seSum)window._seSum(); }); if(op)revealAnim(b); } }
   else if(a==='chartpt'){ try{ const pts=JSON.parse(el.dataset.pts||'[]'); if(pts.length){ const r=el.getBoundingClientRect(); const x=(e.clientX-r.left)/(r.width||1); let best=pts[0],bd=9; pts.forEach(p=>{ const d=Math.abs(p.f-x); if(d<bd){bd=d;best=p;} }); if(best&&best.l)toast(best.l); } }catch(_){} }
   else if(a==='editbw'){ const d=el.dataset.d; const dt=document.getElementById('bw_date'), kg=document.getElementById('bw_kg'); if(dt)dt.value=d; if(kg){ kg.value=(db.bodyweight&&db.bodyweight[d])||''; focusEl(kg); } }
-  else if(a==='delbw'){ const d=el.dataset.d; trkAsk({title:'borrar el peso del '+fmtShort(d),ok:'borrar',danger:true},()=>{ if(db.bodyweight)delete db.bodyweight[d]; const allk=Object.keys(db.bodyweight||{}).sort(); if(db.profile)db.profile.weightKg=allk.length?db.bodyweight[allk[allk.length-1]]:db.profile.weightKg; save(); openWeightLog(); }); }
+  else if(a==='delbw'){ const d=el.dataset.d; trkAsk({title:'borrar el peso del '+fmtShort(d),ok:'borrar',danger:true},()=>{ if(db.bodyweight)delete db.bodyweight[d]; const allk=Object.keys(db.bodyweight||{}).sort(); if(db.profile)db.profile.weightKg=allk.length?db.bodyweight[allk[allk.length-1]]:db.profile.weightKg; save(); openWeightLog((document.getElementById('bw_date')||{}).value||null); }); }   /* v364 · H8 · se queda en su fecha */
   else if(a==='settings'){ go('settings'); }
   else if(a==='profile'||a==='editprofile'){ goPerfil(); }
   else if(a==='navmenu'){ openNavMenu(); }
@@ -15484,6 +15680,8 @@ document.getElementById('app').addEventListener('click',e=>{
     const lbl=(setLabels(ex.sets,ex.unilateral?2:1)[p0])||'';
     toast('↩ '+(ex.name||'serie')+' · serie '+lbl+' pendiente',null,{undo:()=>{ idxs.forEach((j,k)=>{ const st=ex.sets[j]; if(st&&prev[k]){ st.done=prev[k].done; if(prev[k].doneAt)st.doneAt=prev[k].doneAt; } }); }}); }
   else if(a==='closemodal'){ closeModal(); reRender(); }
+  else if(a==='gsrow'){ gsRowOpen(); }   // v363 · GL2
+  else if(a==='logclose'){ if(!logBackGo()){ closeModal(); reRender(); } }   // v363 · H8
 });
 // ---------- hold & drag reorder: exercises within a muscle + whole muscle blocks ----------
 // HTML5 native DnD is unreliable on iOS Safari, so this is a manual touch+mouse engine.
@@ -16104,7 +16302,7 @@ function openModal(html,cls){ const cur=document.getElementById('modal'); const 
   const g=window._modalGhost; const swap=had||!!(g&&g.isConnected); if(g){ try{g.remove();}catch(_){} window._modalGhost=null; }
   const m=document.createElement('div'); m.className='modal'+(sheetLow(html,cls)?' low':'')+(swap?'':' in'); m.id='modal'; m.innerHTML=`<div class="sheet glass-strong ${cls||''}">${html}</div>`; if(!/\bnodismiss\b/.test(cls||''))m.addEventListener('click',ev=>{if(ev.target===m){ closeModal(); reRender(); }}); document.getElementById('app').appendChild(m); { const s1=m.querySelector('.sheet'); if(s1&&m.classList.contains('low')&&s1.scrollHeight>s1.clientHeight+1)m.classList.remove('low'); }   /* más alta que su tope: arriba, como antes (abajo el corte caía en el borde de la pantalla) */
   { const s2=m.querySelector('.sheet'); if(s2&&old&&old.low&&old.h>0&&m.classList.contains('low')&&old.key===sheetKey(s2))s2.style.minHeight=old.h+'px'; } try{ sheetRestore(m,old,back,had); }catch(_){} sheetFootWatch(m); afterPaint(m,swap); }
-function closeModal(){ const s=window._scanner; if(s){ try{ if(s.timer)clearTimeout(s.timer); }catch(_){} try{ if(s._q&&typeof Quagga!=='undefined'){ if(s._fn)Quagga.offDetected(s._fn); Quagga.stop(); } }catch(_){} try{ if(s.stream)s.stream.getTracks().forEach(t=>t.stop()); }catch(_){} window._scanner=null; } window._linkBarcode=''; if(!_sheetIn&&!window._sheetBackGo)_sheetMem=null; const m=document.getElementById('modal'); if(!m)return;
+function closeModal(){ const s=window._scanner; if(s){ try{ if(s.timer)clearTimeout(s.timer); }catch(_){} try{ if(s._q&&typeof Quagga!=='undefined'){ if(s._fn)Quagga.offDetected(s._fn); Quagga.stop(); } }catch(_){} try{ if(s.stream)s.stream.getTracks().forEach(t=>t.stop()); }catch(_){} window._scanner=null; } window._linkBarcode=''; if(!_sheetIn&&!window._sheetBackGo){ _sheetMem=null; window._logBack=null; }   /* v363 · H8 · cerrar la hoja (tocar fuera, otra pantalla) olvida el regreso a la gráfica */ const m=document.getElementById('modal'); if(!m)return;
   // DS-3: el modal deja de existir YA para la lógica (sin id, sin clics); lo que queda es su fantasma saliendo 180 ms
   m.removeAttribute('id'); m.classList.remove('in'); m.classList.add('out'); window._modalGhost=m;
   setTimeout(()=>{ try{m.remove();}catch(_){} if(window._modalGhost===m)window._modalGhost=null; },200); }
@@ -18996,19 +19194,26 @@ function profileSecHTML(){ const p=db.profile||{}, g=db.settings.goals||{};
 function balanceOf(kcal){ const m=maintenanceKcal(); if(!m)return null; const delta=Math.round((+kcal||0)-m); const band=Math.max(60,m*0.03); const label=delta<-band?'déficit':(delta>band?'volumen':'mantenimiento'); return {maint:m,delta:delta,label:label}; }   /* v264 · el balance no lleva color: 'déficit' no es bueno ni malo y la palabra ya lo dice (B-07) */
 // v331 · CC1 · el renglón del día en el panel de macros (misma pieza que `radar ›`): hoy se toca para cambiarlo a mano; un día pasado solo lo dice.
 // Va en el panel y no en la cabecera: a 320 de ancho, un tercer botón junto a [share] y [goals] no cabe (se medía partido en dos renglones).
+// ---- v363 · LQ1 · líquidos: el agua y todo lo que tomas en una fila, con dos líneas como //STIMULUS ----
+// El dueño (16-oct): "en water en nutrientes… que dijera líquidos y representar entre dos tipos de líneas, así como está en estímulo, cuál pertenece a
+// líquidos en general… refresco, leche o cualquier otra bebida y cuál es únicamente agua". El número es tu agua contra tu meta (lo de siempre);
+// la línea blanca = solo agua; la franja detrás = todos los líquidos.
+function lqRowHTML(water,total,goal){ water=+water||0; total=Math.max(+total||0,water); goal=+goal||0; const p=x=>goal?Math.max(0,Math.min(100,x/goal*100)):0, ov=goal&&water>goal*1.05;
+  return '<div class="mrow lqr" data-gloss="liquids" data-gv="agua '+water.toFixed(1)+' L · todos los líquidos '+total.toFixed(1)+' L"><span class="ml"><span class="u-dash">liquids</span></span><div class="bar lq"><span class="lqb" style="width:'+p(total)+'%"></span>'+trkBarI('in:water',p(water),ov?'over':'')+'</div>'
+    +'<span class="mv '+(ov?'ovr':'')+'">'+water.toFixed(1)+' <span class="g">/ '+goal+' L</span>'+(total.toFixed(1)!==water.toFixed(1)?'<span class="g mlq">total '+total.toFixed(1)+' L</span>':'')+'</span></div>'; }
 function ccTagHTML(date,g){ if(!g||!g.ccT)return ''; const w=g.ccT==='lo'?'off':'on', v=w+' · '+Math.round(g.carbs)+' g', k='<span class="k">carb day</span><span class="dots"></span>';
   return date===todayISO()?'<button type="button" class="line stat tap kp-rad kp-cc" data-act="cctog" aria-label="hoy es día '+w+' · tocar para cambiarlo">'+k+'<span class="v">'+v+' ›</span></button>':'<div class="line stat kp-rad">'+k+'<span class="v">'+v+'</span></div>'; }
 function ccFlip(){ const d=todayISO(), g=goalsFor(d); if(!g.ccT)return; db.ccDay=db.ccDay||{}; const had=Object.prototype.hasOwnProperty.call(db.ccDay,d), prev=db.ccDay[d], nt=g.ccT==='hi'?'lo':'hi'; db.ccDay[d]=nt;
   save(); reRender(); toast('✓ hoy es '+(nt==='lo'?'off':'on')+' · carbs '+goalsFor(d).carbs+' g','ok',{undo:()=>{ if(had)db.ccDay[d]=prev; else delete db.ccDay[d]; }}); }
 // la sección de `edit goals` (solo al editar la meta de hoy): un renglón que la enciende y, encendida, sus cuatro casillas (etiquetas en español, como sus vecinas PROT · GRASA · SODIO)
 // v339 · CC4 · CC5 · la sección de `edit goals`: on / off, la diferencia (un slider) y, debajo, las kcal y P/C/F de un día on y de uno off.
-function ccFormHTML(){ const c=db.settings.carbCycle||{}, on=!!c.on;
+function ccFormHTML(c0){ const c=c0||db.settings.carbCycle||{}, on=!!c.on;   // v363 · GL2 · c0 = el de un día programado
   return '<div class="line u-tap kp-rad" role="button" tabindex="0" id="cc_tog" aria-expanded="'+on+'" aria-controls="cc_box"><span class="k">carb cycling</span><span class="dots"></span><span class="v" id="cc_v">'+(on?'on':'off')+' ›</span></div>'
     +'<div id="cc_box"'+(on?'':' hidden')+'><div class="line"><span class="k">diferencia</span><span class="dots"></span><span class="v" id="cc_d">—</span></div>'
     +'<input type="range" id="cc_amp" class="ccsl" min="0" max="20" step="1" value="'+ccAmpOf(c)+'" aria-label="diferencia entre días on y off"/>'
     +'<div class="ccgrid" id="cc_tab"></div><div id="cc_sum" class="submeta u-mt2 u-mb10 u-mx0 u-data"></div></div>'; }
 // getBase() = la meta que hay en la hoja en ese momento ({kcal, protein, carbs, fat}; los carbos son el promedio). El slider solo cambia texto.
-function ccWire(getBase){ const $=id=>document.getElementById(id); if(!$('cc_tog'))return null; const c0=db.settings.carbCycle||{}, S={on:!!c0.on,amp:ccAmpOf(c0)};
+function ccWire(getBase,init){ const $=id=>document.getElementById(id); if(!$('cc_tog'))return null; const c0=init||db.settings.carbCycle||{}, S={on:!!c0.on,amp:ccAmpOf(c0)};
   const B=()=>{ const b=(getBase&&getBase())||{}; return {kcal:+b.kcal||0,protein:+b.protein||0,carbs:+b.carbs||0,fat:+b.fat||0}; }, n=x=>Math.round(x).toLocaleString('en-US');
   const show=()=>{ const b=B(), k=ccCalc(b.carbs,{amp:S.amp}), sh=ccShare(), wk=Math.round(sh.p*7), d=k?k.hi-k.lo:0;
     $('cc_d').textContent=d>0?d+' g · '+n(d*4)+' kcal':'sin diferencia';
@@ -19018,21 +19223,86 @@ function ccWire(getBase){ const $=id=>document.getElementById(id); if(!$('cc_tog
   $('cc_amp').addEventListener('input',()=>{ S.amp=Math.max(0,Math.min(20,Math.round(+$('cc_amp').value||0))); show(); });
   $('cc_tog').onclick=()=>{ S.on=!S.on; $('cc_box').hidden=!S.on; $('cc_v').textContent=(S.on?'on':'off')+' ›'; $('cc_tog').setAttribute('aria-expanded',S.on?'true':'false'); if(S.on)show(); };
   show();
-  return { refresh:()=>show(), ok:()=>true,
+  return { refresh:()=>show(), ok:()=>true, get:()=>({on:S.on,amp:S.amp}),
     commit:()=>{ const prev=db.settings.carbCycle; if(!S.on){ if(prev)prev.on=false; return; } db.settings.carbCycle=Object.assign({},prev||{},{on:true,amp:S.amp,v:2}); } }; }
+// ---- v363 · GL2 · metas programadas ----
+// El dueño (16-oct): "si yo para dentro de X cantidad de días… pongo una fase de volumen, definición, mantenimiento… que se quede programado… y
+// cuando se llegue esa fecha, a la hora de loguear, que salga… programaste para hoy esta modificación, cancelar, aceptar o ajustar… lo quise hacer
+// para lunes empezar con otra distribución de macros… y me lo cambió ya directamente para el día presente". Causa: guardar metas en un día futuro
+// escribía settings.goals (la meta de hoy). Ahora se PROGRAMA: db.goalSched (aditivo) = [{id, from, goals, cc, phase, t}]. Nada cambia hasta que la
+// aceptas; se aplica desde ese día en adelante y las metas pasadas nunca se recalculan. El día programado ya se ve con sus metas en intake.
+function goalSched(){ return (db.goalSched=Array.isArray(db.goalSched)?db.goalSched:[]); }
+function goalSchedAt(day){ return goalSched().find(s=>s&&s.from===day)||null; }
+function goalSchedSort(){ goalSched().sort((a,b)=>a.from<b.from?-1:a.from>b.from?1:0); }
+function goalSchedSet(day,goals,cc,phase){ const L=goalSched(), i=L.findIndex(s=>s&&s.from===day), o={id:i>=0?L[i].id:'gs'+uid(),from:day,goals:Object.assign({},goals),cc:cc||null,phase:String(phase||'').trim().slice(0,24),t:Date.now()};
+  if(i>=0)L[i]=o; else L.push(o); goalSchedSort(); return o; }
+function goalSchedDel(id){ const L=goalSched(), i=L.findIndex(s=>s&&s.id===id); return i<0?null:L.splice(i,1)[0]; }
+// la que manda en una fecha: la más reciente que ya empezó
+function goalSchedOn(date){ let r=null; goalSched().forEach(s=>{ if(s&&s.from<=date&&(!r||s.from>=r.from))r=s; }); return r; }
+function goalSchedDue(today){ return goalSchedOn(today||todayISO()); }
+function goalSchedNext(today){ today=today||todayISO(); return goalSched().filter(s=>s&&s.from>today)[0]||null; }
+function goalSchedTxt(s){ const G=s.goals||{}; return (s.phase?s.phase+' · ':'')+Math.round(+G.kcal||0).toLocaleString('en-US')+' kcal · P '+Math.round(+G.protein||0)+' · C '+Math.round(+G.carbs||0)+' · G '+Math.round(+G.fat||0); }
+// aplicar: como guardar metas hoy (settings + la foto de hoy) y, si trae nombre, la fase queda nombrada desde hoy. Las de antes se van con ella.
+function goalSchedApply(s,today){ today=today||todayISO(); const G=Object.assign({},s.goals||{}); ['protein','carbs','fat'].forEach(k=>{ if(G[k]!=null)G[k]=Math.round(+G[k]); }); G.kcal=goalKcalOf(G);
+  db.settings.goals=Object.assign({},db.settings.goals,G); db.goalHist=db.goalHist||{};
+  if(s.cc){ const prev=db.settings.carbCycle; if(s.cc.on)db.settings.carbCycle=Object.assign({},prev||{},{on:true,amp:s.cc.amp,v:2}); else if(prev)prev.on=false; }
+  Object.keys(db.goalHist).forEach(k=>{ if(k>today)db.goalHist[k]=Object.assign({},db.settings.goals); });   // un día futuro con foto (comida planeada) la toma de nuevo
+  db.goalHist[today]=Object.assign({},db.settings.goals); { const k=ccSnap(db.goalHist[today]); if(k)db.goalHist[today].cc=k; }
+  if(s.phase){ db.phases=db.phases||[]; db.phases.push({id:'p'+uid(),from:today,to:today,name:s.phase,start:true}); }
+  db.goalSched=goalSched().filter(x=>x&&x.from>s.from); }
+// al entrar a intake el día que toca (o después): aceptar · ajustar · cancelar. Tocar fuera la deja pendiente (vuelve a salir la próxima vez).
+let _gsAsked='';
+function goalSchedMaybe(){ if(_sbx||!db||!db.settings)return; const T=todayISO(), s=goalSchedDue(T); if(!s||_gsAsked===s.id+'|'+T||!goalSchedCan())return; _gsAsked=s.id+'|'+T; goalSchedAsk(s,T); }
+// v363 · GL2 · el aviso: solo en intake, sin sesión, hoja ni otro aviso, y se revisa OTRA vez justo antes de salir: la cola espera 700 ms y en ese rato
+// podías abrir metas (salía encima; aceptar se perdía al guardar la hoja). Si ya no toca, no sale y se ofrece de nuevo en la siguiente pintada.
+function goalSchedCan(){ return !!db&&!db.activeWork&&state.screen==='macros'&&!document.getElementById('modal')&&!document.getElementById('asklayer'); }
+function goalSchedAsk(s,T,now){ T=T||todayISO();
+  bootAsk({title:s.from===T?'programado para hoy':'programado para el '+fmtShort(s.from),detail:goalSchedTxt(s)+(s.from===T?'':'\nse aplica desde hoy'),ok:'aceptar',cancel:'cancelar',alt:{label:'ajustar',fn:()=>{ window._gsPrefill=s; openGoals(T); }},
+    when:()=>goalSchedCan()&&goalSchedDue(T)===s, later:()=>{ _gsAsked=''; }, gs:1},
+    ()=>{ const snap=JSON.stringify({g:db.settings.goals,h:db.goalHist&&db.goalHist[T]||null,cc:db.settings.carbCycle||null,ph:db.phases||null,gs:db.goalSched}); goalSchedApply(s,T); save(); reRender();
+      toast('✓ metas desde hoy · '+Math.round(+db.settings.goals.kcal||0).toLocaleString('en-US')+' kcal','ok',{undo:()=>{ const o=JSON.parse(snap); db.settings.goals=o.g; if(o.h)db.goalHist[T]=o.h; else delete db.goalHist[T]; if(o.cc)db.settings.carbCycle=o.cc; else delete db.settings.carbCycle; if(o.ph)db.phases=o.ph; else delete db.phases; db.goalSched=o.gs; }}); },
+    ()=>goalSchedCancel(s), now); }
+// v363 · GL2 · cancelar se lleva también los que ese ya reemplazaba (más viejos): no salen en cadena después. Deshacer los regresa todos.
+function goalSchedCancel(s){ const L=goalSched(), d=L.filter(x=>x&&x.from<=s.from); db.goalSched=L.filter(x=>x&&x.from>s.from); save(); reRender(); toast('✓ cambio programado cancelado','ok',{undo:()=>{ db.goalSched=goalSched().concat(d); goalSchedSort(); }}); }
+function goalSchedDrop(s){ const d=goalSchedDel(s.id); save(); reRender(); toast('✓ ya no está programado','ok',{undo:()=>{ if(d){ goalSched().push(d); goalSchedSort(); } }}); }
+// v363 · GL2 · el carb cycling que manda en un día programado: el del último programado que lo trae (null = el de hoy)
+function goalSchedCcAt(date){ let r=null; goalSched().forEach(s=>{ if(s&&s.cc&&s.from<=date&&(!r||s.from>=r.from))r=s; }); return r?r.cc:null; }
+function goalSchedCcCfg(date){ const c=goalSchedCcAt(date); return c?(c.on?{amp:ccAmpOf(c)}:null):ccCfg(); }
+// v363 · GL2 · ··· → programar un cambio: eliges desde qué día (mañana o después) y se abre la misma hoja de metas para ese día
+function goalSchedPick(carry){ const t1=shiftDate(todayISO(),1), m=askLayer('<h3>programar un cambio</h3>'+formRow('gs_day','desde','',{v:t1,attr:' type="date" min="'+t1+'"'})+'<div class="sheetbtns"><button class="ok" data-ask="ok">elegir</button><button class="cancel" data-ask="no">cancelar</button></div>');
+  m.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-ask]'); if(!b)return; ev.stopPropagation(); if(b.dataset.ask!=='ok'){ closeAsk(); return; }
+    const v=String((m.querySelector('#gs_day')||{}).value||''); if(!(v>todayISO())){ toast('⚠ elige un día desde mañana','err'); return; } window._gsCarry=carry?carry():null; closeAsk(); openGoals(v); }); }
+// el renglón del panel: lo próximo que tienes programado
+// v363 · GL2 · el renglón: lo pendiente (si tocaste fuera del aviso se queda aquí: tocarlo lo vuelve a abrir) o lo próximo. La fase va solo si cabe en un
+// renglón a 320 (GS_ROW caracteres de valor; nunca se corta, B-12): si no cabe, la fecha y la fase se leen al abrirlo.
+const GS_ROW=19;
+function gsTagHTML(){ const T=todayISO(), due=goalSchedDue(T), n=due||goalSchedNext(T); if(!n)return ''; const all=goalSched().filter(s=>s&&s.from>T).length+(due?1:0), d=due?'hoy':fmtShort(n.from), more=all>1?'+'+(all-1):'';
+  const ph=n.phase&&(d+' · '+n.phase+(more?' '+more:'')).length<=GS_ROW?' · '+n.phase:'';
+  return '<button type="button" class="line stat tap kp-rad kp-cc" data-act="gsrow" aria-label="'+escTxt('cambio programado · '+d+(n.phase?' · '+n.phase:''))+'"><span class="k">programado</span><span class="dots"></span><span class="v">'+escTxt(d+ph)+(more?' <span class="u-o50">'+more+'</span>':'')+' ›</span></button>'; }
+function gsMenuTxt(s){ return fmtShort(s.from)+' · '+(s.phase||Math.round(+(s.goals||{}).kcal||0).toLocaleString('en-US')+' kcal'); }   // con la fase de 24 cabe en un renglón a 320
+// v363 · GL2 · el menú del renglón: ver o editar cada uno, y quitarlo ahí mismo (con deshacer)
+function gsRowOpen(){ const T=todayISO(), due=goalSchedDue(T);
+  if(due){ _gsAsked=due.id+'|'+T; for(let i=_bootQ.length-1;i>=0;i--){ if(_bootQ[i]&&_bootQ[i].o&&_bootQ[i].o.gs)_bootQ.splice(i,1); }   // v364 · GL2 · un solo aviso
+    if(_bootT){ clearTimeout(_bootT); _bootT=0; const rest=_bootQ.splice(0); _bootShowing=false; goalSchedAsk(due,T,true); rest.forEach(x=>_bootQ.push(x)); if(!_bootShowing&&_bootQ.length){ _bootShowing=true; _bootWait(250); } return; }   /* v364 · GL2 · la cola esperaba su turno: lo que pediste sale ya y lo demás, después */
+    return goalSchedAsk(due,T,true); }
+  const L=goalSched().filter(s=>s&&s.from>T); if(!L.length)return;
+  trkMenu('programado',L.map(s=>[gsMenuTxt(s),()=>openGoals(s.from),()=>goalSchedDrop(s),'quitar '+fmtShort(s.from)])); }
 function openGoals(dayArg){   // v256: desde //PERFIL se abre con hoy (antes heredaba el día que estuvieras viendo en macros)
   // Editing day-scope: PAST → edit only that day's goalHist snapshot; TODAY → update both
   // settings.goals (future default) AND goalHist[today] (so today reflects immediately);
   // FUTURE → settings.goals only (becomes default once reached).
   const today=todayISO(); const day=dayArg||curDate(); const isPast=day<today; const isFuture=day>today;
   // Source of values shown in the editor: the goal for the currently-displayed day
-  const baseG=(isPast||isFuture)?Object.assign({},(db.goalHist&&db.goalHist[day])||db.settings.goals||{}):db.settings.goals;
+  const _gsN=(isFuture&&window._gsCarry)||null; window._gsCarry=null;   // v364 · GL2 · lo escrito en la hoja de hoy antes de «programar un cambio»
+  const _gsF=isFuture?(goalSchedAt(day)||null):null, _gsp=(!isPast&&!isFuture&&window._gsPrefill)||null; window._gsPrefill=null;   // v363 · GL2
+  const ccI=(_gsN&&_gsN.cc)||(_gsF&&_gsF.cc)||(_gsp&&_gsp.cc)||(isFuture?goalSchedCcAt(day):null);   // v363 · GL2 · el carb cycling de lo programado (antes la hoja enseñaba el de hoy y al guardar lo volvía a encender)
+  const baseG=_gsN?/* v364 · GL2 · lo que cambiaste, encima de lo que ese día ya tiene */((b,n)=>{ Object.assign(b,n); if(['protein','carbs','fat'].some(k=>k in n))b.kcal=goalKcalOf(b); return b; })(_gsF?Object.assign({},db.settings.goals,_gsF.goals):Object.assign({},goalsBase(day)),_gsN.goals):_gsF?Object.assign({},db.settings.goals,_gsF.goals):_gsp?Object.assign({},db.settings.goals,_gsp.goals):isFuture?Object.assign({},goalsBase(day)):isPast?Object.assign({},(db.goalHist&&db.goalHist[day])||db.settings.goals||{}):db.settings.goals;
   const g=Object.assign({},baseG);   if(isPast&&g.cc){ const dg=goalsFor(day); g.kcal=dg.kcal; g.carbs=dg.carbs; delete g.cc; }   /* v331 · un día pasado que cicló se edita con SUS números (los que ves en macros); al guardarlo queda con lo que escribas, ya sin ciclar */                     // local working copy
   if(window._goalMode!=='pct')window._goalMode='grams';   // v344 · FD1 · los gramos mandan; el % se lee al lado y los deslizadores quedan tras [por %]
   const pk0=(g.protein||0)*4, fk0=(g.fat||0)*9, ck0=(g.carbs||0)*4, tk=pk0+fk0+ck0||1;
   let pP=Math.round(pk0/tk*100), pF=Math.round(fk0/tk*100), pC=Math.max(0,100-pP-pF);
   const eg=effectiveGoals();
-  const scopeLabel=isPast?('· '+fmtShort(day)+' · solo este día'):isFuture?('· '+fmtShort(day)+' · desde ese día'):'';   // v359 · en un renglón
+  const scopeLabel=isPast?('· '+fmtShort(day)+' · solo este día'):isFuture?('· '+fmtShort(day)+' · '+(_gsF?'programado':'se programa')):_gsp?'· lo programado':'';   // v359 · en un renglón
   const micro=(id,lbl,v,ro)=>{ const p=String(lbl).split(' '), u=p.slice(1).join(' '); return `<label class="obr"><span class="obk">${p[0].toLowerCase()}</span><span class="obv"><input class="obi${ro?' u-dim':''}" id="${id}" type="number" inputmode="decimal" value="${ro?Math.round(v*100)/100:(v?v:'')}"${ro?' disabled':' placeholder="0"'}/><span class="obu">${escTxt(u)}${ro?' · auto':''}</span></span></label>`; };   // v344 · FD1 · filas del alta
   const sl=(k,lbl,pct)=>`<div class="gsl"><div class="gsl-h"><span>${lbl} <button type="button" class="lk" id="lk_${k}" title="fijar este porcentaje">[fijar]</button></span><span><b id="sp_${k}">${pct}</b>% · <span class="gg" id="sg_${k}">0</span> g</span></div><input type="range" id="sl_${k}" min="0" max="100" value="${pct}" class="gslider"/></div>`;
   // v359 · GL1 · la hoja con jerarquía: tu meta de kcal arriba (siempre la suma de tus gramos), luego cómo la escribes (gramos o %) y tus
@@ -19048,8 +19318,9 @@ function openGoals(dayArg){   // v256: desde //PERFIL se abre con hoy (antes her
      <div id="gp_sum" class="submeta u-mt2 u-mb10 u-mx0"></div>
    </div>
    <div id="gm_grams" style="display:${window._goalMode==='grams'?'block':'none'}">${goalGramRows(g)}</div>
+   ${(isFuture||_gsp)?formRow('g_phase','fase','',{ph:'ej. definición',v:(_gsF||_gsp||{}).phase||'',attr:' maxlength="24"'}):''}
    <hr class="rule u-mt8 u-mb4 u-mx0"/>
-   ${(isPast||isFuture)?'':ccFormHTML()}
+   ${isPast?'':ccFormHTML(ccI)}
    <div class="line u-tap kp-rad" role="button" tabindex="0" id="g_more" aria-expanded="false" aria-controls="g_morebox"><span class="k">más</span><span class="dots"></span><span class="v">sodio · azúcar · agua… ›</span></div><div id="g_morebox" hidden>
    ${ro('sodio',eg.sodium,'mg')}${ro('potasio',eg.potassium,'mg')}${ro('agua',eg.water,'L')}
    ${micro('g_sugar','AZÚCAR g',g.sugar)}${micro('g_fiber','FIBRA g',g.fiber)}${micro('g_caffeine','CAFEÍNA mg',g.caffeine)}${micro('g_alcohol','ALCOHOL g · límite',g.alcohol||0)}${micro('g_sleep','SUEÑO h · meta',g.sleep||8)}
@@ -19094,7 +19365,7 @@ function openGoals(dayArg){   // v256: desde //PERFIL se abre con hoy (antes her
   ['gg_protein','gg_carbs','gg_fat'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('input',gkc); });
   applyLocks(); onKcal(); gkc();   // normalize grams to the kcal total on open so the split sums to 100%
   // v331 · CC1 · el carb cycling lee los carbos que haya en la hoja en ese momento (su promedio) y se repinta cuando los mueves o cambias de % a gramos
-  const ccw=(isPast||isFuture)?null:ccWire(()=>{ let P,C,F,K; if(window._goalMode==='pct'){ P=gr.protein; C=gr.carbs; F=gr.fat; K=Kget()||(P*4+C*4+F*9); } else { P=parseFloat(val('gg_protein'))||0; C=parseFloat(val('gg_carbs'))||0; F=parseFloat(val('gg_fat'))||0; K=(Math.round(P)===Math.round(+g.protein)&&Math.round(C)===Math.round(+g.carbs)&&Math.round(F)===Math.round(+g.fat)&&+g.kcal>0)?+g.kcal:P*4+C*4+F*9; } return {kcal:Math.round(K),protein:Math.round(P),carbs:Math.round(C),fat:Math.round(F)}; });   // v339 · CC5 · la meta entera: las kcal y P/C/F de on y de off
+  const ccw=isPast?null:ccWire(()=>{ let P,C,F,K; if(window._goalMode==='pct'){ P=gr.protein; C=gr.carbs; F=gr.fat; K=Kget()||(P*4+C*4+F*9); } else { P=parseFloat(val('gg_protein'))||0; C=parseFloat(val('gg_carbs'))||0; F=parseFloat(val('gg_fat'))||0; K=(Math.round(P)===Math.round(+g.protein)&&Math.round(C)===Math.round(+g.carbs)&&Math.round(F)===Math.round(+g.fat)&&+g.kcal>0)?+g.kcal:P*4+C*4+F*9; } return {kcal:Math.round(K),protein:Math.round(P),carbs:Math.round(C),fat:Math.round(F)}; },ccI);   // v339 · CC5 · la meta entera: las kcal y P/C/F de on y de off
   if(ccw){ ['gm_pct','gm_grams'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('input',()=>ccw.refresh()); }); document.querySelectorAll('#gm_tog [data-gm]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{ try{ ccw.refresh(); }catch(_){} },0))); }
   document.querySelectorAll('#gm_tog [data-gm]').forEach(b=>b.onclick=()=>{ const mode=b.dataset.gm; if(mode===window._goalMode)return; window._goalMode=mode; { const kl=document.getElementById('gg_kl'); if(kl)kl.textContent=mode==='pct'?'kcal · total':'kcal = tus gramos'; }   // v359 · el modo nuevo antes de repintar: la meta de arriba sale del modo correcto
     if(mode==='grams'){ setVal('gg_protein',Math.round(gr.protein)); setVal('gg_carbs',Math.round(gr.carbs)); setVal('gg_fat',Math.round(gr.fat)); gkc(); }
@@ -19106,6 +19377,9 @@ function openGoals(dayArg){   // v256: desde //PERFIL se abre con hoy (antes her
     else { P=parseFloat(val('gg_protein'))||0; C=parseFloat(val('gg_carbs'))||0; F=parseFloat(val('gg_fat'))||0; kcal=(Math.round(P)===Math.round(+g.protein)&&Math.round(C)===Math.round(+g.carbs)&&Math.round(F)===Math.round(+g.fat)&&+g.kcal>0)?+g.kcal:P*4+C*4+F*9; }
     g.protein=Math.round(P); g.carbs=Math.round(C); g.fat=Math.round(F); g.kcal=goalKcalOf(g);   // v354 · K1 · la meta de kcal es la suma de tus gramos (cuadra siempre)
     ['sugar','fiber','caffeine','alcohol','sleep'].forEach(k=>{ const v=parseFloat(val('g_'+k)); if(!isNaN(v))g[k]=v; });   // Na/K/water are AUTO from derivedActivity()
+    if(isFuture){ goalSchedSet(day,{kcal:g.kcal,protein:g.protein,carbs:g.carbs,fat:g.fat,sugar:g.sugar,fiber:g.fiber,caffeine:g.caffeine,alcohol:g.alcohol,sleep:g.sleep},ccw?ccw.get():null,val('g_phase'));   // v363 · GL2 · programa: hoy no cambia
+      savedToast('✓ programado para el '+fmtShort(day)); closeModal(); reRender(); return; }
+    if(_gsp){ const ph=val('g_phase'); db.goalSched=goalSched().filter(x=>x&&x.from>_gsp.from); if(ph){ db.phases=db.phases||[]; db.phases.push({id:'p'+uid(),from:day,to:day,name:String(ph).trim().slice(0,24),start:true}); } }   // v363 · GL2 · ajustar lo programado: se aplica hoy con tus cambios
     if(isPast){ db.goalHist=db.goalHist||{}; db.goalHist[day]=g; }            // past: only this day
     else { Object.assign(db.settings.goals, g); db.goalHist=db.goalHist||{}; db.goalHist[day]=Object.assign({},db.settings.goals); if(ccw)ccw.commit(); { const k=ccSnap(db.goalHist[day]); if(k)db.goalHist[day].cc=k; } } // present/future: update current goal AND today/that-day's snapshot
     savedToast('✓ metas guardadas'); closeModal(); reRender(); };
@@ -19118,12 +19392,15 @@ function openGoals(dayArg){   // v256: desde //PERFIL se abre con hoy (antes her
     refresh(); toast('= mantenimiento · '+Math.round(m).toLocaleString('en-US')+' kcal'); };
   const recalc=()=>{ if(!db.profile||!db.profile.weightKg){ toast('⚠ completa tu perfil primero (ajustes › perfil)','err'); return; } const _go14=()=>{
     const fresh=recalcGoals(db.profile);
+    if(isFuture){ goalSchedSet(day,fresh,ccw?ccw.get():((_gsF||{}).cc||null),val('g_phase')); save(); closeModal(); openGoals(day); return; }   // v363 · GL2 · en un día futuro, recalcular también programa
     if(isPast){ db.goalHist=db.goalHist||{}; db.goalHist[day]=fresh; }
     else { db.settings.goals=fresh; db.goalHist=db.goalHist||{}; db.goalHist[day]=Object.assign({},fresh); { const k=ccSnap(db.goalHist[day]); if(k)db.goalHist[day].cc=k; } }
-    save(); closeModal(); openGoals(day); }; return trkAsk({title:'recalcular todas las metas',detail:'desde tu perfil y nivel de actividad · sobrescribe tus ajustes manuales'+(isPast?' · solo este día':''),ok:'recalcular'},_go14); };
+    save(); closeModal(); openGoals(day); }; return trkAsk(isFuture?{title:'recalcular lo programado',detail:'desde tu perfil · para el '+fmtShort(day)+' · hoy no cambia',ok:'recalcular'}:{title:'recalcular todas las metas',detail:'desde tu perfil y nivel de actividad · sobrescribe tus ajustes manuales'+(isPast?' · solo este día':''),ok:'recalcular'},_go14); };   // v363 · GL2
   const SECS=[['balance','déficit / mantenimiento'],['electro','sodio y potasio'],['sugarfiber','azúcar y fibra'],['minor','agua, cafeína y alcohol']];
   const secMenu=()=>trkMenu('qué se ve en intake',SECS.map(([k,l])=>[l+' · '+(goalSecHidden(k)?'oculto':'se ve'),()=>{ db.settings=db.settings||{}; const arr=db.settings.hiddenGoalSections=db.settings.hiddenGoalSections||[]; const i=arr.indexOf(k); if(i>=0)arr.splice(i,1); else arr.push(k); save(); secMenu(); }]));   // se vuelve a abrir: el estado nuevo se lee en su lugar
-  { const gm=document.getElementById('g_menu'); if(gm)gm.onclick=()=>trkMenu('metas',[['= mantenimiento'+(maintenanceKcal()?' · '+Math.round(maintenanceKcal()).toLocaleString('en-US'):''),toMaint],['recalcular desde tu perfil',recalc],['qué se ve en intake',secMenu]]); }
+  const gsNow=()=>{ const o=window._goalMode==='pct'?pctOut():{protein:Math.round(parseFloat(val('gg_protein'))||0),carbs:Math.round(parseFloat(val('gg_carbs'))||0),fat:Math.round(parseFloat(val('gg_fat'))||0)}; o.kcal=goalKcalOf(o);   // v364 · GL2 · lo que hay en la hoja, sin guardarlo
+    ['sugar','fiber','caffeine','alcohol','sleep'].forEach(k=>{ const v=parseFloat(val('g_'+k)); if(!isNaN(v))o[k]=v; }); return {goals:o,cc:ccw?ccw.get():null}; }, gs0=gsNow(), gsCarry=()=>{ const c=gsNow(), g={}; Object.keys(c.goals).forEach(k=>{ if(k!=='kcal'&&c.goals[k]!==gs0.goals[k])g[k]=c.goals[k]; }); const cc=JSON.stringify(c.cc)!==JSON.stringify(gs0.cc)?c.cc:null; return (cc||Object.keys(g).length)?{goals:g,cc:cc}:null; };   /* v364 · GL2 · solo lo que cambiaste; el ciclo, solo si lo tocaste */
+  { const gm=document.getElementById('g_menu'); if(gm)gm.onclick=()=>trkMenu('metas',[['= mantenimiento'+(maintenanceKcal()?' · '+Math.round(maintenanceKcal()).toLocaleString('en-US'):''),toMaint],['recalcular desde tu perfil',recalc],['qué se ve en intake',secMenu]].concat(_gsF?[['quitar lo programado',()=>{ closeModal(); goalSchedDrop(_gsF); }]]:(!isPast&&!isFuture&&!_gsp)?[['programar un cambio',()=>goalSchedPick(gsCarry)]]:[])); }
 }
 // brief non-blocking confirmation (used by step-import from the iOS Shortcut, etc.)
 // ---- R2 · TRK* de feedback y confirmación (DESIGN_SYSTEM.md §7.18) ----
@@ -19189,12 +19466,16 @@ function trkAsk(o,onOk,onCancel){ const danger=!!o.danger, alt=o.alt&&o.alt.labe
 // v259 · los avisos del arranque (sesión por recuperar, respaldo más completo) van en cola: uno tras otro. Antes el de
 // IndexedDB (900 ms) reemplazaba al del espejo (700 ms) sin avisar a nadie. Si otro aviso los tapa, la cola se vacía:
 // lo pendiente sigue guardado y se vuelve a ofrecer en el siguiente arranque.
-const _bootQ=[]; let _bootShowing=false;
-function bootAsk(o,onOk,onCancel,now){ _bootQ.push({o,onOk,onCancel}); if(_bootShowing)return; _bootShowing=true; if(now)_bootNext(); else setTimeout(_bootNext,700); }
-function _bootNext(){ if(document.getElementById('bootov')){ setTimeout(_bootNext,300); return; }   // v268 · Z-2: ningún aviso se abre DEBAJO del arranque o del recap; espera a que se cierren
+const _bootQ=[]; let _bootShowing=false, _bootT=0;   /* v364 · GL2 · _bootT = la espera de la cola (una a la vez): el renglón de metas la puede adelantar */
+const _bootWait=ms=>{ clearTimeout(_bootT); _bootT=setTimeout(()=>{ _bootT=0; _bootNext(); },ms); };
+function bootAsk(o,onOk,onCancel,now){ _bootQ.push({o,onOk,onCancel}); if(_bootShowing)return; _bootShowing=true; if(now)_bootNext(); else _bootWait(700); }
+function _bootNext(){ if(document.getElementById('bootov')){ _bootWait(300); return; }   // v268 · Z-2: ningún aviso se abre DEBAJO del arranque o del recap; espera a que se cierren
   const it=_bootQ.shift(); if(!it){ _bootShowing=false; return; }
-  const next=()=>{ if(_bootQ.length)setTimeout(_bootNext,250); else _bootShowing=false; };
+  if(!it.o.when&&(document.getElementById('modal')||document.getElementById('asklayer'))){ _bootQ.unshift(it); _bootWait(300); return; }   // v364 · r4: nunca encima de una hoja abierta (tras «ajustar» o cualquier hoja): espera a que se cierre
+  const next=()=>{ if(_bootQ.length)_bootWait(250); else _bootShowing=false; };
+  if(it.o.when&&!it.o.when()){ try{ if(it.o.later)it.o.later(); }catch(_){} next(); return; }   // v363 · GL2 · ya no toca (abriste una hoja): no sale encima
   trkAsk(Object.assign({},it.o,{dismiss:next}), ()=>{ if(it.onOk)it.onOk(); next(); }, ()=>{ if(it.onCancel)it.onCancel(); next(); });
+  if(it.o.onShow){ try{ it.o.onShow(); }catch(_){} }   // v364 · r4: lo que debe contar «cuando se ve» cuenta aquí
   const lay=document.getElementById('asklayer'); if(lay)lay._onReplaced=()=>{ _bootQ.length=0; _bootShowing=false; }; }
 // TRKHold: lo irreversible se arma sosteniendo 0.9 s ("armando 73 %"); soltar antes cancela. o = {title, detail, verb}
 function holdConfirm(o,onOk,onCancel){ const verb=o.verb||'confirmar', idle='mantén para '+verb, D=durMs('--dur-hold',900);
@@ -19361,6 +19642,7 @@ function _pulgarSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
 // ---- R3 · TRKPop (Smart Popover, §7.18): texto corto anclado al término; un MENÚ va en la capa de TRKAsk (en el
 // marco del teléfono siempre es "móvil": popover en pantalla ancha, sheet en la angosta) ----
 const GLOSS={
+  liquids:'',   // v363 · LQ1 · lo dice el renglón (data-gv): agua X L · todos los líquidos Y L
   pfrp:'resistencia: en qué parte del recorrido pesa más (en máquina, polea y smith se guarda por gym) · '+PROF_DEF.rp.why,
   pflen:'longitud: en qué posición trabaja el músculo · '+PROF_DEF.len.why,
   exsig:'σ del ejercicio en esa sesión: suma el estímulo de sus series según las reps y qué tan cerca del fallo quedaron, contra tu propio máximo en esa máquina. No depende de la unidad: 15 placas × 7 al fallo cuentan lo mismo que 200 lbs × 7 al fallo.',
@@ -19420,10 +19702,10 @@ function trkPop(anchor,text){ popClose(); if(!text)return; const app=document.ge
   p.style.left=Math.max(18,Math.min(fr.width-18-w,r.left-fr.left+r.width/2-w/2))+'px';
   const below=r.bottom-fr.top+8, ph=p.offsetHeight; p.style.top=(below+ph>fr.height-90?Math.max(8,r.top-fr.top-8-ph):below)+'px'; window._glossEl=anchor; }
 // menú de acciones: filas .nvm en la capa de TRKAsk (encima del sheet actual) · items = [[etiqueta, fn], …]
-function trkMenu(title,items){ const m=askLayer('<h3>'+escTxt(title)+'</h3><div class="nvm-list">'+items.map((it,i)=>'<div class="nvm" data-pop="'+i+'">'+escTxt(it[0])+'<span class="nvm-x">›</span></div>').join('')+'</div><div class="sheetbtns"><button class="cancel" data-ask="no">cerrar</button></div>');
-  m.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-pop],[data-ask]'); if(!b)return; ev.stopPropagation(); closeAsk(true); if(b.dataset.pop!=null)items[+b.dataset.pop][1](); }); }
+function trkMenu(title,items){ const m=askLayer('<h3>'+escTxt(title)+'</h3><div class="nvm-list">'+items.map((it,i)=>'<div class="nvm" data-pop="'+i+'">'+escTxt(it[0])+(typeof it[2]==='function'?'<button type="button" class="nvm-del" data-nvx="'+i+'" aria-label="'+escTxt(it[3]||'quitar')+'">✕</button>':'<span class="nvm-x">›</span>')+'</div>').join('')+'</div><div class="sheetbtns"><button class="cancel" data-ask="no">cerrar</button></div>');   /* v364 · it[2] = el ✕ del renglón */
+  m.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-nvx],[data-pop],[data-ask]'); if(!b)return; ev.stopPropagation(); closeAsk(true); if(b.dataset.nvx!=null)items[+b.dataset.nvx][2](); else if(b.dataset.pop!=null)items[+b.dataset.pop][1](); }); }
 document.addEventListener('click',e=>{ const g=e.target&&e.target.closest&&e.target.closest('[data-gloss]');
-  if(g){ e.stopPropagation(); e.preventDefault(); if(document.getElementById('gloss')&&window._glossEl===g)popClose(); else trkPop(g,(g.dataset.gv?g.dataset.gv+' · ':'')+GLOSS[g.dataset.gloss]); return; }   /* v301 · data-gv = el valor de ESE elemento (la σ de la barra) antes de la explicación */
+  if(g){ e.stopPropagation(); e.preventDefault(); if(document.getElementById('gloss')&&window._glossEl===g)popClose(); else trkPop(g,[g.dataset.gv,GLOSS[g.dataset.gloss]].filter(Boolean).join(' · ')); return; }   /* v301 · data-gv = el valor de ESE elemento (la σ de la barra) antes de la explicación */
   if(!(e.target&&e.target.closest&&e.target.closest('#gloss,#tsel')))popClose(); },true);
 try{ document.addEventListener('scroll',popClose,{capture:true,passive:true}); }catch(_){}   // cualquier scroll (pantalla o sheet) la cierra
 // TRKPrompt: un campo en un sheet (reemplaza al diálogo nativo de texto). onSave(valor) → false = no cerrar (el toast dice por qué)
@@ -19776,7 +20058,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ cloudBoot(); }catch(_){}   // v352 · cuentas y nube: apagada (CLOUD_CFG vacío) no hace nada
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
