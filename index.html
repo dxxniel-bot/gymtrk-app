@@ -957,7 +957,8 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .hbal{text-align:center; font-size:var(--t-label); color:var(--o50); margin-top:var(--s3);}
   .kpanel .rule{margin:var(--s5) calc(-1 * var(--s5));}   /* v269 · reglas a sangre dentro del panel del anillo, mismo aire arriba y abajo */
   .kp-unit{display:flex; justify-content:flex-end; margin-top:var(--s2);}
-  .kp-rad{min-height:44px; align-items:center; margin-top:var(--s2);} button.kp-cc{width:100%; border:0; background:none; font-family:inherit; color:inherit; text-align:left;}   /* v331 · el renglón `carb day` es un botón con la cara de `radar ›` */ .kpanel .macro-rad{margin:var(--s3) auto 0;}   /* v290 · fila `radar ›`: plegada de entrada */
+  .kp-rad{min-height:44px; align-items:center; margin-top:var(--s2);} button.kp-cc{width:100%; border:0; background:none; font-family:inherit; color:inherit; text-align:left;}
+  .tsph{display:flex; align-items:flex-end; width:100%; min-height:44px; margin:0; padding:0 0 var(--s2); border:0; background:none; font-family:inherit; text-align:left; cursor:pointer;} .grp-label.sub.tsph{margin:0; padding:0; align-items:center;} .tspold{opacity:var(--op-dim); pointer-events:none;}   /* v364 · SP13 · SP14 · fix · 15 · 17 */   /* v331 · el renglón `carb day` es un botón con la cara de `radar ›` */ .kpanel .macro-rad{margin:var(--s3) auto 0;}   /* v290 · fila `radar ›`: plegada de entrada */
   .shmhero{display:flex; justify-content:center; margin:var(--s2) 0 var(--s5);} .shmhero.good .ring-fill{stroke:var(--good);} .shmhero.over .ring-fill{stroke:var(--bad);} .shviz{margin-bottom:var(--s3);} .shviz .rings{margin-top:var(--s3);}
   .lkc{text-align:center; margin:10px 0 6px;} .lkc b{font-size:var(--t-display); font-weight:800; color:var(--fg);} .lkc .u{font-size:var(--t-data); color:var(--o50);}
   .lnut{max-height:38vh; overflow-y:auto; -webkit-overflow-scrolling:touch; margin:var(--s1) 0 10px;} .lnut .line{padding:var(--s2) 0;}
@@ -1561,7 +1562,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v364';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v365';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2704,6 +2705,150 @@ function _v363hSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
   } finally { db=real; state.screen=s0; bumpIdx(); }
 }
 // self-check de v363 (GL2 · LQ1 · H8). Base de juguete; nada llega a disco; todo se restaura en finally.
+// self-check de v364 (SP13 · SP14 · SP15). Base de juguete; nada llega a disco; todo se restaura en finally.
+function _v364SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v364: '+nm); }; const real=db, rs=state.screen;
+  try{ db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',split:{name:'s',days:[{id:'a',name:'push',exercises:[{id:'x1',name:'press banca',muscle:'chest',type:'free',sets:4},{id:'x2',name:'elevaciones laterales',muscle:'delts',type:'free',sets:3}]}]},
+      sessions:[{id:'s1',date:todayISO(),dayId:'a',dayName:'push',type:'training',exercises:[{exId:'x2',name:'elevaciones laterales',muscle:'delts',type:'free',sets:[{w:'20',r:'12',rir:'1',unit:'lbs',done:true}]}]}]}); bumpIdx();
+    // SP13 · tres estilos de nota
+    let P=parseSplitText('Push A\npress banca 4x8\nelevaciones laterales 3x12-15\n\nPull A\njalón al pecho 4x10\ncurl femoral 3x10\ncurl con barra 3x12');
+    A('SP13 · días por renglón sin dos puntos y series NxM', P.days.length===2&&P.days[0].name==='Push A'&&P.days[0].ex.length===2&&P.days[1].ex.length===3&&P.days[0].ex[0].sets===4&&P.days[0].ex[1].reps==='12-15');
+    A('SP13 · el músculo sale del nombre (curl femoral no es bíceps)', P.days[0].ex[0].m==='chest'&&P.days[0].ex[1].m==='side_delts'&&P.days[1].ex[0].m==='lats'&&P.days[1].ex[1].m==='hamstrings'&&P.days[1].ex[2].m==='biceps');
+    A('SP13 · aislado o compuesto por el movimiento', P.days[0].ex[0].iso===false&&P.days[0].ex[1].iso===true);
+    P=parseSplitText('Día 1: pecho y tríceps\n- press inclinado con mancuernas 3x10 RIR 1\n- aperturas 3 series\n- extensión de tríceps en polea 3x12 al fallo\nDía 2: espalda\n1. dominadas 4x8\n2. remo con barra 4x10');
+    A('SP13 · encabezados «Día N: …», viñetas, RIR y al fallo', P.days.length===2&&P.days[0].name==='pecho y tríceps'&&P.days[0].ex[0].rir===1&&P.days[0].ex[1].sets===3&&P.days[0].ex[2].rir===0&&P.days[0].ex[2].m==='triceps'&&P.days[1].ex[0].m==='lats'&&P.days[1].ex[0].type==='bodyweight'&&P.days[1].ex[1].m==='upper_back');
+    P=parseSplitText('LUNES\nSentadilla 4 x 6-8 @8\nprensa c/u 3x12\ncurl alternado 3x10\nMARTES\nhip thrust 4x8\nesto no es nada');
+    A('SP13 · días en mayúsculas, @RPE, c/u y alternado; lo que no entiende va aparte', P.days.length===2&&P.days[0].ex[0].rir===2&&P.days[0].ex[1].lat==='uni'&&P.days[0].ex[1].type==='machine'&&P.days[0].ex[2].lat==='alt'&&P.days[1].ex[0].m==='glutes'&&P.skipped.length===1);
+    const sp=txtToSplit(P,false); A('SP13 · tal cual: los ejercicios con su nombre', sp.days.length===2&&sp.days[0].exercises[0].name==='Sentadilla'&&!sp.days[0].exercises[0].pend&&sp.days[0].exercises[1].unilateral===true);
+    // SP14 · solo la estructura
+    const st=splitStructure(db.split); const e0=st.days[0].exercises[0], e1=st.days[0].exercises[1];
+    A('SP14 · solo la estructura: lugares sin nombre, con su músculo, aislado o compuesto, series y la pista', e0.pend&&e0.name===''&&e0.slot.m==='chest'&&e0.slot.iso===false&&e0.sets===4&&e0.slot.hint==='press plano con barra'&&e1.slot.hint==='elevación lateral con mancuernas'&&e1.slot.m==='side_delts'&&e1.slot.iso===true&&st.days[0].id!=='a');
+    A('SP14 · un lugar cuenta por su músculo en el motor', targetsFor(e1)[0].id==='side_delts');
+    db.split=st; bumpIdx(); state.selDay=null; db.rotIdx=0; const w=newWorkSession(); A('SP14 · los lugares por elegir no entran a la sesión', w.exercises.length===0&&slotPendN(db.split.days[0])===2);
+    A('SP14 · //NEXT dice lo que falta', /por elegir/.test(dayPreviewHTML(db.split.days[0])));
+    const C=slotCands(e1.slot); A('SP14 · para lateral aislado: tus ejercicios de ese músculo y movimientos genéricos, nunca de otro músculo', C.own.some(k=>/laterales/.test(k.name))&&!C.own.some(k=>/banca/.test(k.name))&&C.mv.length>0&&C.mv.every(m=>m[2]==='side_delts'&&m[3]));
+    openSlotPick(0,1); A('SP14 · la hoja de elegir', !!document.querySelector('#modal [data-act="slot_own"]')&&!!document.querySelector('#modal [data-act="slot_mv"]'));
+    slotAct('slot_own',{dataset:{i:'0'}}); A('SP14 · elegir llena el lugar y sigue con el que falta', !db.split.days[0].exercises[1].pend&&/laterales/.test(db.split.days[0].exercises[1].name)&&!!document.querySelector('#modal [data-act="slot_mv"]'));
+    slotAct('slot_mv',{dataset:{i:String(window._slotPick.C.mv.findIndex(m=>m[0]==='press plano en máquina'))}}); A('SP14 · un movimiento genérico también; el día queda listo', !slotPendN(db.split.days[0])&&db.split.days[0].exercises[0].name==='press plano en máquina'&&db.split.days[0].exercises[0].type==='machine'&&!document.getElementById('modal'));
+    // SP15 · compartir y volver a leer
+    const tx=splitShareText({name:'mi split',days:[{name:'push',exercises:[{name:'press banca',muscle:'chest',type:'free',sets:4},{name:'elevaciones laterales',muscle:'delts',type:'free',sets:3}]}]});
+    const P2=parseSplitText(tx); A('SP15 · compartir pasa la estructura y se vuelve a leer igual', /^gym\/\/TRK split · mi split/.test(tx)&&P2.struct&&P2.title==='mi split'&&P2.days.length===1&&P2.days[0].ex[0].m==='chest'&&P2.days[0].ex[0].iso===false&&P2.days[0].ex[0].sets===4&&P2.days[0].ex[1].m==='side_delts'&&P2.days[0].ex[1].iso===true);
+    // v364 · fix · lo que halló el verificador (base de juguete; nada llega a disco)
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',split:{name:'s',days:[{id:'d1',name:'push',exercises:[{id:'a1',name:'press banca',muscle:'chest',type:'free',sets:3},{id:'a2',name:'chest press',muscle:'chest',type:'machine',sets:3},{id:'a3',name:'pec deck',muscle:'chest',type:'machine',sets:3},{id:'p1',name:'',pend:true,slot:{m:'side_delts',iso:true,hint:''},muscle:'side delts',type:'free',sets:3}]}]},
+      sessions:[{id:'s9',date:todayISO(),dayId:'d1',dayName:'push',type:'training',startMs:Date.now()-3600000,exercises:['a1','a2','a3'].map(id=>({exId:id,name:{a1:'press banca',a2:'chest press',a3:'pec deck'}[id],muscle:'chest',type:id==='a1'?'free':'machine',sets:[{w:'100',r:'8',rir:'1',unit:'lbs',done:true}]}))}]}); bumpIdx(); state.selDay=null; db.rotIdx=0;
+    // 1 · renombrar un día de la previa (guardar y cancelar) vuelve a la previa con lo pegado
+    _tsp={txt:'Push\npress banca 4x8\nPull\njalón al pecho 4x10',P:null,struct:false}; tspPaint(); tspAct('tsp_read',{dataset:{}}); tspAct('tsp_day',{dataset:{di:'1'}});
+    let pop=document.querySelector('#asklayer [data-pop="0"]'); if(pop)pop.click(); const tin=document.getElementById('tp_in'); if(tin)tin.value='espalda'; const tok=document.getElementById('tp_ok'); if(tok)tok.click();
+    A('fix 1 · renombrar un día deja la previa abierta, con su texto y el nombre nuevo', !!tin&&!!document.querySelector('#modal [data-act="tsp_use"]')&&!!_tsp&&_tsp.P.days[1].name==='espalda'&&/press banca/.test(document.getElementById('tsp_txt').value));
+    tspAct('tsp_day',{dataset:{di:'0'}}); pop=document.querySelector('#asklayer [data-pop="0"]'); if(pop)pop.click(); const tbk=document.getElementById('tp_back'); if(tbk)tbk.click();
+    A('fix 1 · cancelar el nombre también vuelve a la previa', !!tbk&&!!document.querySelector('#modal [data-act="tsp_use"]')&&_tsp.P.days[0].name==='Push');
+    // 9 · con algo escrito, tocar fuera pregunta
+    const tmd=document.getElementById('modal'); tmd._dirty=true; A('fix 9 · la hoja de texto con algo escrito no se cierra sin preguntar', sheetUnsaved(tmd)); tspAct('tsp_cancel',{dataset:{}});
+    // 3 · el lector con notas comunes
+    const pc=t=>{ const p=parseSplitText(t); return p.days.map(d=>d.ex.length).join('/')+' '+p.skipped.length; };
+    A('fix 3 · sin series: un renglón en blanco separa días y un movimiento nunca es encabezado', pc('PECHO Y TRÍCEPS\nPress banca\nFondos\n\nESPALDA\nRemo\nPeso muerto\n\nPIERNA\nSentadilla\nPress de pierna\nExtensiones de pierna\nPantorrilla')==='2/2/4 0');
+    A('fix 3 · encabezados de músculo sin series', pc('Pecho\nPress banca\nAperturas\nEspalda\nRemo\nJalón al pecho')==='2/2 0');
+    const P3=parseSplitText('Mi rutina de hipertrofia para todo el año 2026\nPush\nPress banca 4x8\nDescanso 2 min\nFondos\nPull\nJalón al pecho - 4 - 12\nRemo 3x10\nNota: subir peso cuando completes el rango');
+    A('fix 3 · títulos largos, descanso y notas van a «no entendí»; un «Fondos» suelto es ejercicio; «- 4 - 12» son series', P3.days.map(d=>d.ex.length).join('/')==='2/2'&&P3.skipped.length===3&&P3.days[0].ex[1].name==='Fondos'&&P3.days[1].ex[0].name==='Jalón al pecho'&&P3.days[1].ex[0].sets===4&&P3.days[1].ex[0].reps==='12');
+    A('fix 3 · «Día 1» con subtítulos de músculo es un solo día', pc('Día 1\nPecho:\n- press banca 4x8\nTríceps:\n- press francés 3x10\nDía 2\nEspalda:\n- remo 4x8')==='2/1 0');
+    // 4 · músculos y énfasis
+    const mu=n=>txtMuscle(n)+'/'+(txtIso(n)?'a':'c');
+    A('fix 4 · de lo específico a lo general, con guion y plural', mu('press de pierna')==='quads/c'&&mu('peso muerto')==='hamstrings/c'&&mu('pull-ups')==='lats/c'&&mu('extensiones de pierna')==='quads/a'&&mu('curl de muñeca')==='forearms/a'&&mu('tricep kickback')==='triceps/a'&&mu('overhead tricep extension')==='triceps/a'&&mu('remo al mentón')==='side_delts/c'&&mu('jalón con cuerda para tríceps')==='triceps/a'&&mu('incline db press')==='chest/c'&&mu('hanging leg raise')==='abs/a'&&mu('arnold press')==='front_delts/c');
+    A('fix 4 · cada movimiento de MOVES se lee con su músculo y su énfasis', MOVES.every(m=>txtMuscle(m[0])===m[2]&&txtIso(m[0])===!!m[3]));
+    // 5 · plantillas (también el alta): cada lugar con músculo, press compuesto, pantorrilla aislada, pista genérica en español
+    const sl=[].concat(...SPLIT_TEMPLATES().map(t=>[].concat(...splitStructure(t.build()).days.map(d=>d.exercises))));
+    A('fix 5 · plantillas: músculo, aislado o compuesto y la pista de MOVES en cada lugar', sl.length>20&&sl.every(x=>x.pend&&MUSCLES[x.slot.m]&&MOVES.some(m=>m[0]===x.slot.hint))&&sl.filter(x=>x.slot.hint==='press plano con barra').length>0&&sl.filter(x=>x.slot.hint==='press plano con barra').every(x=>!x.slot.iso)&&sl.some(x=>x.slot.m==='hamstrings'&&!x.slot.iso&&x.slot.hint==='peso muerto rumano')&&sl.filter(x=>x.slot.m==='calves').every(x=>x.slot.iso));
+    // 6 · elegir respeta el énfasis y no repite lo que ya usas
+    const cI=slotCands({m:'chest',iso:true}), cC=slotCands({m:'chest',iso:false});
+    A('fix 6 · aislado o compuesto en los dos sentidos', cI.mv.length>0&&cI.mv.every(m=>m[3])&&cI.own.every(k=>exMI(k).iso)&&cC.mv.length>0&&cC.mv.every(m=>!m[3])&&cC.own.every(k=>!exMI(k).iso)&&cC.own.some(k=>k.name==='chest press')&&cI.own.some(k=>k.name==='pec deck'));
+    A('fix 6 · el genérico que ya equivale a uno tuyo no se repite', !cC.mv.some(m=>m[0]==='press plano en máquina')&&!cC.mv.some(m=>m[0]==='press plano con barra')&&cC.mv.some(m=>m[0]==='press inclinado en máquina')&&!cI.mv.some(m=>m[0]==='aperturas en máquina')&&cI.mv.some(m=>m[0]==='cruce de poleas'));
+    // 7 · compartir no lleva tus nombres, máquinas ni marcas
+    const stx=splitShareText({name:'s',days:[{name:'push',exercises:[{name:'Hammer Strength chest press',muscle:'chest',type:'machine',machine:'Hammer',sets:3},{name:'caminadora inclinada',type:'cardio',cardioSub:'treadmill',machine:'Matrix',sets:1}]}]});
+    A('fix 7 · compartir: la pista es el movimiento genérico y el cardio va por su tipo', !/hammer|strength|matrix|inclinada|chest press/i.test(stx)&&/- press plano en máquina · pecho · compuesto · 3 series/.test(stx)&&/- caminadora · cardio · 1 serie/.test(stx));
+    // 8 · compartir y volver a leer conserva la estructura
+    const rt=parseSplitText(splitShareText({name:'s',days:[{name:'Día 1: push',exercises:[{name:'press banca',muscle:'chest',type:'free',sets:4}]},{name:'descanso',exercises:[]},{name:'Día 3: pull',exercises:[{name:'bici',type:'cardio',cardioSub:'bike',sets:1},{name:'remo · barra',muscle:'back',type:'free',sets:3,unilateral:true}]}]}));
+    A('fix 8 · días vacíos, nombres con «:» y el cardio vuelven igual', rt.struct&&rt.days.length===3&&rt.days[0].name==='Día 1: push'&&!rt.days[1].ex.length&&rt.days[2].name==='Día 3: pull'&&rt.days[2].ex[0].cardio==='bike'&&rt.days[2].ex[1].m==='upper_back'&&rt.days[2].ex[1].sets===3&&rt.days[2].ex[1].lat==='uni');
+    const rs=txtToSplit(rt,true); A('fix 8 · al importarlo el cardio no es un lugar por elegir', rs.days.length===3&&rs.days[2].exercises[0].type==='cardio'&&!rs.days[2].exercises[0].pend&&rs.days[2].exercises[1].pend&&!rs.days[1].exercises.length);
+    // 2 · después de entrenar sin el lugar: ni «no coinciden» por el lugar vacío, y al elegirlo el próximo Start lo trae
+    A('fix 2 · un lugar por elegir no cuenta como diferencia contra tu sesión', !dayDrift(db.split.days[0])&&!splitAsk(db.split.days[0]));
+    db.split.days[0].mt=1; openSlotPick(0,3); const mvI=window._slotPick.C.mv.findIndex(m=>m[0]==='elevación lateral en polea'); slotAct('slot_mv',{dataset:{i:String(mvI)}});
+    const w2=newWorkSession(); A('fix 2 · elegirlo después edita el día y el próximo Start lo trae', mvI>=0&&db.split.days[0].mt>1&&w2.exercises.length===4&&w2.exercises.some(x=>x.exId==='p1'));
+    // 10 · «otro…» con lugares pendientes: la cadena sigue
+    db.split.days[0].exercises.push({id:'p2',name:'',pend:true,slot:{m:'triceps',iso:true,hint:''},muscle:'triceps',type:'free',sets:3},{id:'p3',name:'',pend:true,slot:{m:'biceps',iso:true,hint:''},muscle:'biceps',type:'free',sets:3});
+    openSlotPick(0,4); slotAct('slot_other',{dataset:{}}); const oin=document.getElementById('tp_in'); if(oin)oin.value='mi polea rara'; const ook=document.getElementById('tp_ok'); if(ook)ook.click();
+    A('fix 10 · otro… guarda y la cadena sigue con el siguiente lugar', !!oin&&db.split.days[0].exercises[4].name==='mi polea rara'&&!db.split.days[0].exercises[4].pend&&!!document.querySelector('#modal [data-act="slot_other"]')&&!!window._slotPick&&window._slotPick.ei===5);
+    // 16 · desde la sesión: lo elegido entra a la sesión, ligado a su lugar
+    closeModal(); window._slotPick=null; db.activeWork={id:'w1',date:todayISO(),dayId:'d1',dayName:'push',gym:'g',startMs:Date.now(),exercises:[]}; slotAct('slot_live',{dataset:{}}); slotAct('slot_mv',{dataset:{i:'0'}});
+    A('fix 16 · «por elegir ›» en la sesión: lo elegido entra a la sesión', db.activeWork.exercises.some(x=>x.exId==='p3')&&!slotPendN(db.split.days[0])); db.activeWork=null;
+    // 11 · un solo idioma por componente; nunca «other» en un lugar
+    A('fix 11 · un lugar dice su músculo con tu etiqueta y nunca «other»', slotTxt({slot:{m:'chest',iso:false}})===muscleLabel('chest')+' · compuesto'&&slotTxt({slot:{iso:true}})==='sin músculo · aislado'&&txtToSplit(parseSplitText('Día 1\ncosa rara 3x10'),true).days[0].exercises[0].muscle===''&&!/ sets</.test(dayPreviewHTML(db.split.days[0])));
+    // v365 · lo que halló la ronda 2 (base de juguete de arriba; nada llega a disco)
+    // N1 · un encabezado de día pegado al último ejercicio, con y sin series; un renglón suelto sigue yendo a «no entendí»
+    const hd2=(a,b,s)=>{ const x=s?' 4x8':'', p=parseSplitText(a+'\nPress banca'+x+'\nAperturas'+x+'\n'+b+'\nRemo con barra'+x+'\nJalón al pecho'+x); return p.days.map(d=>d.ex.length).join('/')+' '+p.skipped.length+' '+p.days.map(d=>d.name).join('|'); };
+    const HP=[['Rutina A','Rutina B'],['Entreno 1','Entreno 2'],['D1 Pecho','D2 Espalda'],['Sesión 1','Sesión 2'],['Workout A','Workout B'],['PPL - Push','PPL - Pull'],['Pecho y tríceps (lunes)','Espalda y bíceps (miércoles)'],['Legs (quad focus)','Legs (glute focus)'],['Cardio y abs','Pierna'],['Primer día','Segundo día'],['Pierna enfocada en glúteo','Torso'],['Fuerza','Hipertrofia']];
+    A('N1 · encabezados pegados al ejercicio anterior, con y sin series', HP.every(([a,b])=>hd2(a,b,1)==='2/2 0 '+a+'|'+b&&hd2(a,b,0)==='2/2 0 '+a+'|'+b));
+    A('N1 · un renglón suelto entre ejercicios no abre día', parseSplitText('Push\npress banca 4x8\nesto no se entiende\naperturas 3x12\nPull\njalón al pecho 4x10').days.map(d=>d.ex.length).join('/')==='2/1');
+    // N1 · «empieza un día aquí» en la previa (desde un ejercicio y desde «no entendí»)
+    _tsp={txt:'Rutina A\npress banca 4x8\naperturas 3x12\nremo con barra 4x8\njalón al pecho 4x10',P:null,struct:false}; tspPaint(); tspAct('tsp_read',{dataset:{}}); tspAct('tsp_ex',{dataset:{di:'0',ei:'2'}});
+    const sp1=[...document.querySelectorAll('#asklayer [data-pop]')].find(b=>/empieza un día aquí/.test(b.textContent)); if(sp1)sp1.click();
+    A('N1 · «empieza un día aquí» parte el día en la previa', !!sp1&&_tsp.P.days.map(d=>d.ex.length).join('/')==='2/2'&&!!document.querySelector('#modal [data-act="tsp_day"][data-di="1"]'));
+    _tsp.P={title:'',struct:false,days:[{name:'a',ex:[1,2,3].map(n=>txtExLine('press banca '+n+'x8'))}],empty:[],skipped:['Bloque raro'],skipAt:[]}; _tsp.P.skipAt=[{d:_tsp.P.days[0],k:1}]; tspPaint(); tspAct('tsp_skip',{dataset:{i:'0'}});
+    const sp2=[...document.querySelectorAll('#asklayer [data-pop]')].find(b=>/empieza un día aquí/.test(b.textContent)); if(sp2)sp2.click();
+    A('N1 · desde «no entendí», el renglón es el nombre del día nuevo', !!sp2&&_tsp.P.days.length===2&&_tsp.P.days[1].name==='Bloque raro'&&_tsp.P.days[1].ex.length===2&&!_tsp.P.skipped.length);
+    // N2 · al volver de renombrar (cancelar) la hoja con texto sigue protegida: tocar fuera pregunta
+    tspAct('tsp_day',{dataset:{di:'0'}}); let pp=document.querySelector('#asklayer [data-pop="0"]'); if(pp)pp.click(); const bk2=document.getElementById('tp_back'); if(bk2)bk2.click();
+    A('N2 · al volver de renombrar, la hoja de texto no se cierra sin preguntar', !!bk2&&!!document.querySelector('#modal [data-act="tsp_use"]')&&sheetUnsaved(document.getElementById('modal')));
+    // N4 · con un nombre escrito, tocar fuera pregunta; «cerrar» vuelve a la previa
+    tspAct('tsp_day',{dataset:{di:'0'}}); pp=document.querySelector('#asklayer [data-pop="0"]'); if(pp)pp.click(); const tin2=document.getElementById('tp_in'), md2=document.getElementById('modal');
+    if(tin2){ tin2.value='otro nombre'; tin2.dispatchEvent(new Event('input',{bubbles:true})); } if(md2)md2.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+    const ask2=[...document.querySelectorAll('#asklayer h3')].map(x=>x.textContent).join('|'), still=!!document.getElementById('tp_in'); const ok2=document.querySelector('#asklayer [data-ask="ok"]'); if(ok2)ok2.click();
+    A('N4 · un nombre escrito no se pierde sin preguntar', !!tin2&&/cerrar sin guardar/.test(ask2)&&still&&!!document.querySelector('#modal [data-act="tsp_use"]')&&_tsp.P.days[0].name==='a');
+    tspAct('tsp_cancel',{dataset:{}});
+    // N3 · una plantilla sobre un split sin días llega solo con su estructura (como con días)
+    { const g0=go; db.split={name:'',days:[]}; openWorkshop(); const it3=document.querySelector('#modal [data-act="usetpl"]'); try{ go=()=>{}; if(it3)it3.click(); } finally { go=g0; }
+      const xs=[].concat(...((db.split&&db.split.days)||[]).map(d=>d.exercises||[]));
+      A('N3 · plantilla con el split vacío: solo lugares por elegir, sin nombres', !!it3&&xs.length>0&&xs.every(x=>isCardio(x)||(x.pend&&!x.name&&MUSCLES[x.slot.m]))); }
+    // N6 · con una mano o alternado, la pista no es de barra
+    A('N6 · la pista no contradice la lateralidad', exSlotOf({name:'remo a una mano',muscle:'back',type:'free',unilateral:true}).hint==='remo con mancuerna'&&exSlotOf({name:'curl alterno',muscle:'biceps',type:'free',lat:'alt'}).hint!=='curl con barra');
+    // v365 · lo que halló la ronda 3 (base de juguete de arriba; nada llega a disco)
+    // M1 · una nota corta entre ejercicios («RPE 8», «RIR 2», «Tempo 3»…) no abre día, con y sin series; los encabezados de verdad siguen abriendo
+    const nd1=(x,s)=>{ const y=s?' 4x8':''; return parseSplitText('Push\nPress banca'+y+'\n'+x+'\nAperturas'+y+'\nFondos'+y).days.length; };
+    const M1N=['RPE 8','RIR 2','Tempo 3','Pausa 2','Drop 2','Cluster 3','Agarre B','Opción B','Variante 2','Grupo A','Último 2','Lento 3','Cadencia 2','Pesado','Ligero','Volumen alto','Enfoque pecho','Correr 5','Bici 5','Burpees 3','Hiit 4','Cardio con cuerda 10 min'];
+    A('M1 · una nota corta entre ejercicios no abre día', M1N.every(x=>nd1(x,1)===1&&nd1(x,0)===1));
+    let P4=parseSplitText('Día 1 - Pecho\nPress banca 4x6-8\nRPE 8\nPress inclinado 3x10\nRPE 9\nAperturas 3x12\n\nDía 2 - Espalda\nDominadas 4x8\nTempo 3\nRemo 4x10');
+    A('M1 · formato de coach: 2 días y las notas en «no entendí»', P4.days.map(d=>d.ex.length).join('/')==='3/2'&&P4.skipped.join('|')==='RPE 8|RPE 9|Tempo 3'&&P4.days.map(d=>d.name).join('|')==='Pecho|Espalda');
+    A('M1 · «Bloque B» y «Rutina A … B» siguen abriendo día', parseSplitText('Push\nPress banca 4x8\nBloque B\nAperturas 3x12\nFondos 3x10').days.map(d=>d.name).join('|')==='Push|Bloque B'&&hd2('Rutina A','Rutina B',0)==='2/2 0 Rutina A|Rutina B');
+    // B1 · máquina o polea con un nombre que no dice el énfasis: manda el motor; el peso libre desconocido sigue compuesto
+    A('B1 · en máquina manda el motor; en peso libre, compuesto', exMI({name:'máquina zeta',muscle:'glutes',type:'machine'}).iso===true&&exMI({name:'máquina zeta',muscles:[{name:'glutes'},{name:'hamstrings',weight:0.6}],type:'machine'}).iso===false&&exMI({name:'cosa zeta',muscle:'chest',type:'free'}).iso===false&&exMI({name:'cosa zeta',type:'machine'}).iso===false);
+    // B2 · partir un día de nombres automáticos los renumera
+    _tsp={txt:'Press banca 4x8\nAperturas 3x12\n\nRemo 4x8\nJalón al pecho 4x10\n\nSentadilla 4x8\nPrensa 3x12',P:null,struct:false}; tspPaint(); tspAct('tsp_read',{dataset:{}}); tspSplit(0,1,'día 2',-1);
+    A('B2 · al partir, los días automáticos quedan en orden', _tsp.P.days.map(d=>d.name).join('|')==='día 1|día 2|día 3|día 4');
+    tspAct('tsp_cancel',{dataset:{}});
+    // B3 · //NEXT con todo por elegir dice «N por elegir» arriba y «ver rutina» va sin cuenta; con alguno elegido, la cuenta va junto a «ver rutina»
+    const dP={exercises:[{pend:true},{pend:true}]}, dM={exercises:[{name:'x'},{pend:true}]};
+    A('B3 · //NEXT no dice «0 ejercicios»', /^2.por.elegir$/.test(dayExTxt(dP))&&dayPendTxt(dP)===''&&/^1.ejercicio$/.test(dayExTxt(dM))&&/1.por.elegir/.test(dayPendTxt(dM)));
+    // B4 · fecha, «s/c», series en su renglón, cardio con su máquina, «Tempo 3-1-1»
+    P4=parseSplitText('16/10/26\nPierna\nSentadilla\nBurpees\nZancadas\n\nPush\nPress banca\nMountain climbers');
+    A('B4 · una fecha suelta no cambia el modo de lectura', P4.days.map(d=>d.ex.length).join('/')==='3/2'&&P4.skipped.join('|')==='16/10/26');
+    const sc4=txtExLine('Press banca 4x8 s/c'); A('B4 · «s/c» no son segundos', !!sc4&&sc4.reps==='8'&&sc4.name==='Press banca s/c');
+    P4=parseSplitText('Push\nPress banca\n4x8\nAperturas\n3x12\n\nPull\nRemo con barra\n4x10');
+    A('B4 · las series en su propio renglón van con su ejercicio', P4.days.map(d=>d.ex.length).join('/')==='2/1'&&!P4.skipped.length&&P4.days[0].ex[0].sets===4&&P4.days[0].ex[1].reps==='12'&&P4.days[1].ex[0].reps==='10');
+    P4=parseSplitText('Cardio y abs\nCaminadora 20 min\nCrunch 3x20\n\nPierna\nSentadilla 4x8');
+    A('B4 · «Caminadora 20 min» es cardio del día, no su nombre', P4.days.map(d=>d.name).join('|')==='Cardio y abs|Pierna'&&P4.days[0].ex[0].cardio==='treadmill'&&P4.days[0].ex[0].name==='Caminadora'&&!P4.skipped.length);
+    A('B4 · «Tempo 3-1-1» es una nota', parseSplitText('Push A\nPress banca 4x8\nTempo 3-1-1\nAperturas 3x12').skipped.join('|')==='Tempo 3-1-1');
+    // r4 · lo que hallaron los verificadores de la ronda 4
+    const dd=t=>{ const P=parseSplitText(t); return P.days.map(d=>d.ex.length).join('/'); }, dn=t=>parseSplitText(t).days.map(d=>d.name).join('|');
+    A('fix364d · M1b · «Superserie:», «Circuito abdominal:», «Biserie:» y dos notas seguidas no abren día', dd('Día 1 - Pecho y tríceps\nPress banca 4x8\nPress inclinado con mancuernas 3x10\nSuperserie:\nAperturas 3x12\nFondos 3x10\nCircuito abdominal:\nCrunch 3x20\nPlancha 3x30s\n\nDía 2 - Espalda y bíceps\nDominadas 4x8\nRemo con barra 4x10\nRPE 8\nSubir peso si sale fácil\nJalón al pecho 4x10\nBiserie:\nCurl con barra 3x12\nCurl martillo 3x12')==='6/5');
+    A('fix364d · R1 · un cardio arriba de «Día 1:» no parte el día en sus sub-encabezados', dd('Día 1:\nCaminadora 10 min\nPecho:\nPress banca 4x8\nAperturas 3x12\nTríceps:\nPress francés 3x12\n\nDía 2:\nBici 10 min\nEspalda:\nRemo 4x8\nBíceps:\nCurl con barra 3x12')==='4/3');
+    A('fix364d · M1 · WhatsApp: *negritas* y emoji fuera', dn('Hola! te paso tu rutina \u{1F4AA}\n\n*LUNES - PECHO*\n▪️ Press banca 4x12\n▪️ Aperturas 3x12\n\n*MARTES - ESPALDA*\n✅ Remo 4x10\n✅ Jalón 3x12')==='PECHO|ESPALDA'&&parseSplitText('*LUNES*\n▪️ Press banca 4x12').days[0].ex[0].name==='Press banca');
+    A('fix364d · M2 · «Semana 1 - Día 2» es un día', dd('Semana 1 - Día 1\nPress banca 4x8\nRemo 4x8\nSemana 1 - Día 2\nSentadilla 4x8\nPrensa 3x12')==='2/2');
+    A('fix364d · M3 · tablas: tabuladores, columnas y una celda por renglón', (()=>{ const a=parseSplitText('Ejercicio\tSeries\tReps\tDescanso\nPress banca\t4\t8-10\t90s'), b=parseSplitText('Pecho\nPress banca 4 8-10\nAperturas 3 12'), c=parseSplitText('DÍA 1 – PECHO\nEjercicio\nSeries\nReps\nPress banca\n4\n8-10\nAperturas\n3\n12');
+      return a.days[0].ex.length===1&&a.days[0].ex[0].name==='Press banca'&&a.days[0].ex[0].sets===4&&a.days[0].ex[0].reps==='8-10'&&b.days[0].ex[0].sets===4&&b.days[0].ex[1].reps==='12'&&c.days[0].ex.length===2&&c.days[0].ex[0].sets===4; })());
+    A('fix364d · M5 · el encabezado con renglón en blanco debajo se queda con su bloque', dn('Pecho\n\nPress banca\nAperturas\n\nEspalda\n\nRemo\nJalón al pecho')==='Pecho|Espalda');
+    A('fix364d · «Opción A:» / «Opción B:» son días; «Drop jump 3x5» es un ejercicio; «Cuerda tríceps 3x12» no es cardio', dd('Opción A:\nPress banca 4x8\nRemo 4x8\nOpción B:\nSentadilla 4x8\nPrensa 3x12')==='2/2'&&dd('Pierna\nSentadilla 4x8\nDrop jump 3x5')==='2'&&parseSplitText('Brazo\nCuerda tríceps 3x12').days[0].ex[0].type!=='cardio');
+    A('fix364d · una nota bajo el encabezado no le roba el nombre al día', dn('Pecho\nCalienta bien\nPress banca 4x8\nAperturas 3x12')==='Pecho');
+    console.log('v364 self-check OK');
+  } finally { try{ closeAsk(true); }catch(_){} try{ closeModal(); }catch(_){} window._slotPick=null; _tsp=null; state.screen=rs; db=real; bumpIdx(); }
+}
 function _v363SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v363: '+nm); }; const real=db, rs=state.screen, gm=window._goalMode, cd=state.macroDate;
   try{ const T=todayISO(), D=k=>shiftDate(T,k), G0={kcal:2404,protein:150,carbs:270,fat:76,water:3};
     db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',weightKg:70,heightCm:175,age:26,sex:'M'},gyms:['g'],activeGym:'g',settings:{goals:Object.assign({},G0)},goalHist:{[T]:Object.assign({},G0)},
@@ -3420,7 +3565,7 @@ function daySource(day){
 // session; ad-hoc exercises (or ones since removed from the split) keep whatever they last recorded.
 function newWorkSession(){
   const day=db.split.days[selIdx()]||null;   // v267 · cuenta nueva sin split: sesión libre, sin día (antes: day.id de undefined)
-  const {prior,fromPrior,list}=daySource(day);
+  const {prior,fromPrior,list:list0}=daySource(day), list=fromPrior?list0:list0.filter(x=>!(x&&x.pend));   // v364 · SP14 · un lugar por elegir no entra a la sesión
   const exs=list.map((pe,ei)=>{
     const sp=fromPrior?splitExFor(prior,ei):pe;
     const base=sp||pe;
@@ -3705,7 +3850,7 @@ function resolveGroup(group,exName){ const n=mNorm(exName);
   return null; }
 // músculos del MOTOR de un ejercicio: [{id, w, label, src}] — override del ejercicio (db.exCat[name].targets,
 // src 'user') › cada etiqueta mapeada (auto/user) › grupo resuelto por nombre ('inferred') › sin resolver (id null)
-function targetsFor(ex){ if(!ex)return [];
+function targetsFor(ex){ if(!ex)return []; if(ex.slot&&ex.slot.m&&ex.pend&&MUSCLES[ex.slot.m])return [{id:ex.slot.m,w:1,label:ex.muscle||null,src:'slot'}];   // v364 · SP14 · un lugar por elegir cuenta por su músculo
   const ov=(exCatRec(ex.name)||{}).targets;
   if(Array.isArray(ov)&&ov.length) return ov.filter(t=>t&&MUSCLES[t.id]).map((t,i)=>({id:t.id,w:i===0?1:Math.max(0,Math.min(1,+t.w||0.5)),label:null,src:'user'}));
   return exMuscles(ex).map(m=>{ const c=muscleCanon(m.name);
@@ -4771,9 +4916,9 @@ function renderHome(){
     +`<div class="rot"><span class="lbl">ROTATION</span><span class="n"><span class="arrow" data-act="prevday">‹</span> day ${di+1}/${dayCount()}${_plan.mode==='cycle'?' · '+cycleLen()+' d':_plan.mode==='weekly'?' · '+DOW_ES[dowOf(_nx||todayISO())]:''}${offLabel} <span class="arrow" data-act="nextday">›</span></span></div>`
     +`<div class="segs">${segs}</div>`
     +`<div class="ctrls"><a data-act="changesplit">change split</a><a data-act="changegym">change gym</a><a data-act="history">history</a></div>`
-    +dayHeadHTML(l1,escTxt(day.name),[escTxt(db.split.name),escTxt(intensityTag()),escTxt(db.activeGym||''),day.exercises.length+' ejercicios'].filter(Boolean).join(' · '))
+    +dayHeadHTML(l1,escTxt(day.name),[escTxt(db.split.name),escTxt(intensityTag()),escTxt(db.activeGym||''),dayExTxt(day)].filter(Boolean).join(' · '))
     +(isCurrent?dayScoresHTML(day):'')
-    +`<div class="u-mt10 u-mb2 u-mx0"><a data-act="togglepreview" class="vb" role="button" aria-expanded="${!!state.previewDay}">${state.previewDay?'ocultar rutina':'ver rutina'}</a></div>`
+    +`<div class="u-mt10 u-mb2 u-mx0"><a data-act="togglepreview" class="vb" role="button" aria-expanded="${!!state.previewDay}">${state.previewDay?'ocultar rutina':'ver rutina'}</a>${dayPendTxt(day)}</div>`   // v365 · N7 · «N por elegir» va aquí: al completarlos, la cabecera de //NEXT no pierde un renglón y Start no sube
     +(state.previewDay?dayPreviewHTML(day):'')
     +cta
     +stimulusSection()
@@ -4793,14 +4938,14 @@ function dayPreviewHTML(day){
   let body=''; let curM=null;
   exs.forEach((pe,ei)=>{
     const sp=fromPrior?splitExFor(prior,ei):pe; const base=sp||pe;
-    const m=base.muscle||'other';
+    const m=base.muscle||(base.pend?'sin músculo':'other');
     if(m!==curM){ body+=`<div class="u-label u-o50 u-mt10 u-mb2 u-mx0">#${escTxt(m)}</div>`; curM=m; }   // B-12: su etiqueta tal cual, como #etiqueta
     const rec=machineRec(db.activeGym,base); const tg=[];
     if(['machine','pulley','smith','cable'].indexOf(base.type)>=0)tg.push(rec&&rec.brand?escTxt(rec.brand):'máquina');
     if(base.useFS)tg.push('FS');
     const tags=tg.length?` <span class="u-o40">· ${tg.join(' · ')}</span>`:'';
     const nSets=fromPrior?((pe.sets&&pe.sets.length)||1):(pe.sets||1);
-    body+=`<div class="u-flex u-jsb u-gap8 u-py4 u-px0 u-sep"><span class="u-data">${latTxt(base)}${escTxt(base.name)}${tags}</span><span class="u-label u-o50 u-nowrap">${nSets} sets</span></div>`;
+    body+=`<div class="u-flex u-jsb u-gap8 u-py4 u-px0 u-sep"><span class="u-data">${base.pend?'<span class="u-o50">○ por elegir · '+(base.slot&&base.slot.iso?'aislado':'compuesto')+'</span>':latTxt(base)+escTxt(base.name)}${tags}</span><span class="u-label u-o50 u-nowrap">${nSets===1?'1 serie':nSets+' series'}</span></div>`;
   });
   return `<div class="u-mt2 u-mb4 u-mx0">${body}</div>`;
 }
@@ -8792,23 +8937,413 @@ function splitCopy(s){ const c=splitClone(s), map={}; c.name=(c.name||'split')+'
   if(c.plan&&c.plan.week){ const w={}; Object.keys(c.plan.week).forEach(k=>{ if(map[c.plan.week[k]])w[k]=map[c.plan.week[k]]; }); c.plan.week=w; } return c; }
 function splitBlank(){ const P=splitClone((db.split&&db.split.plan)||{}); delete P.week; if(P.mode==='weekly')P.mode='daily';
   return {name:'split nuevo',days:[{id:'d'+uid(),name:'día 1',tag:'@ RIR · F',metric:'rir',allowFailure:true,exercises:[]}],plan:P,metric:db.split&&db.split.metric,allowF:db.split&&db.split.allowF}; }
+// ---- v364 · SP13 · SP14 · SP15 · rutinas de texto, splits que pasan solo su estructura y compartir el tuyo ----
+// El dueño (16-oct): "me gustaría que no sea de que pegar texto… mucha gente la tiene como en notas… poderlo como que traducir y adaptar a nuestro formato…
+// que se lo presente y confirme si es que sí se pasó bien" · "si un usuario quiere seleccionar un split, es el puro split. La selección de ejercicios ya es
+// individual… depende de cada usuario de qué máquinas tenga disponibles en su gimnasio… que le salga como recordatorio… que tiene que loguear la
+// selección de ejercicios… si se busca el deltoides frontal aislado, que no sugiera… lateral… o que involucre otros grupos… un chest press de otra
+// marca es el mismo movimiento… básicamente tiene que estar en blanco y nomás una guía".
+// Un LUGAR del split (aditivo): {id, name:'', pend:true, slot:{m, iso, hint}, muscle, sets, …}: qué músculo, si aislado o compuesto, y cuántas series;
+// el ejercicio lo eliges tú. Mientras está por elegir no entra a la sesión y Start te lo recuerda. Las cuentas de //COVERAGE ya lo cuentan.
+const MOVES=[ // [nombre genérico, tipo, músculo, aislado]
+  ['press plano con barra','free','chest',0],['press plano en máquina','machine','chest',0],['press inclinado con mancuernas','free','chest',0],['press inclinado en máquina','machine','chest',0],['aperturas en máquina','machine','chest',1],['cruce de poleas','cable','chest',1],['fondos','bodyweight','chest',0],
+  ['jalón al pecho','cable','lats',0],['dominadas','bodyweight','lats',0],['jalón a una mano','cable','lats',0],['pullover en polea','cable','lats',1],
+  ['remo con barra','free','upper_back',0],['remo en máquina con apoyo de pecho','machine','upper_back',0],['remo en polea baja','cable','upper_back',0],['remo con mancuerna','free','upper_back',0],
+  ['encogimientos con mancuernas','free','traps',1],['encogimientos en máquina','machine','traps',1],
+  ['press de hombro con mancuernas','free','front_delts',0],['press de hombro en máquina','machine','front_delts',0],['elevación frontal con mancuerna','free','front_delts',1],['elevación frontal en polea','cable','front_delts',1],
+  ['elevación lateral con mancuernas','free','side_delts',1],['elevación lateral en polea','cable','side_delts',1],['elevación lateral en máquina','machine','side_delts',1],
+  ['pájaros con mancuernas','free','rear_delts',1],['pec deck invertido','machine','rear_delts',1],['face pull','cable','rear_delts',1],
+  ['curl con barra','free','biceps',1],['curl inclinado con mancuernas','free','biceps',1],['curl predicador en máquina','machine','biceps',1],['curl en polea','cable','biceps',1],['curl martillo','free','biceps',1],
+  ['extensión de tríceps en polea','cable','triceps',1],['extensión sobre la cabeza en polea','cable','triceps',1],['press francés','free','triceps',1],['fondos en máquina','machine','triceps',0],
+  ['curl de muñeca','free','forearms',1],
+  ['sentadilla con barra','free','quads',0],['prensa de pierna','machine','quads',0],['sentadilla hack','machine','quads',0],['extensión de pierna','machine','quads',1],['zancadas','free','quads',0],
+  ['peso muerto rumano','free','hamstrings',0],['curl femoral sentado','machine','hamstrings',1],['curl femoral acostado','machine','hamstrings',1],
+  ['hip thrust','free','glutes',0],['patada de glúteo en polea','cable','glutes',1],['abductor en máquina','machine','glutes',1],
+  ['aductor en máquina','machine','adductors',1],
+  ['pantorrilla de pie en máquina','machine','calves',1],['pantorrilla sentado','machine','calves',1],['pantorrilla en prensa','machine','calves',1],
+  ['crunch en polea','cable','abs',1],['elevación de piernas colgado','bodyweight','abs',1],['crunch en máquina','machine','abs',1],
+  ['extensión de cuello','free','neck',1],['flexión de cuello','free','neck',1],
+  ['hiperextensión','bodyweight','lower_back',0]];
+const SLOT_T={free:'peso libre',machine:'máquina',cable:'polea',pulley:'polea',smith:'smith',bodyweight:'peso corporal',cardio:'cardio'};
+// v364 · fix · 11 · la etiqueta de sus filas vecinas (muscleLabel) y nunca «other»: un lugar sin músculo lo dice
+// v365 · estética · el músculo de un lugar: el nombre que le pusiste › tu etiqueta si exactamente una lo nombra (sin contar los lugares por elegir,
+// que se nombran con esto mismo) › si no, en el idioma de tus etiquetas (las tuyas en inglés: «side delts»; sin etiquetas o en español: «deltoides
+// lateral»), para que una lista no mezcle «chest» con «deltoides lateral». Antes la previa decía «cuádriceps» y el editor «quads», y una cuenta nueva
+// «chest · compuesto».
+function slotMus(id){ if(!MUSCLES[id])return ''; if(db.muscleNames&&db.muscleNames[id])return db.muscleNames[id]; const ck='sl:'+id; if(_mLblCache[ck]!=null)return _mLblCache[ck];
+  let U=_mLblCache['sl:*']; if(!U){ const used=new Set(), add=e=>{ if(e&&!e.pend)exMuscles(e).forEach(m=>{ if(m&&m.name)used.add(m.name); }); };
+    ((db.split&&db.split.days)||[]).forEach(d=>(d.exercises||[]).forEach(add)); (db.sessions||[]).forEach(s=>{ if(s&&s.type!=='rest')(s.exercises||[]).forEach(add); });
+    const EN=new Set(Object.keys(MUSCLES).map(j=>mNorm(MUSCLES[j].n)).concat(Object.keys(MUSCLE_GROUPS).map(g=>mNorm(MUSCLE_GROUPS[g].n)))), ES=new Set(Object.keys(MUSCLES).map(j=>mNorm(MUSCLES[j].es)));
+    let en=0, es=0; used.forEach(l=>{ const k=mNorm(l); if(EN.has(k))en++; else if(ES.has(k))es++; }); U=_mLblCache['sl:*']={used:[...used],en:en>es}; }
+  const mine=U.used.filter(l=>{ const c=muscleCanon(l); return !c.group&&c.id===id; }); return (_mLblCache[ck]=mine.length===1?mine[0]:U.en?MUSCLES[id].n:MUSCLES[id].es); }   // se limpia con bumpIdx, como muscleLabel
+function slotTxt(x){ const s=(x&&x.slot)||{}; return (MUSCLES[s.m]?slotMus(s.m):'sin músculo')+' · '+(s.iso?'aislado':'compuesto'); }
+function serN(n){ return n+(+n===1?' serie':' series'); }
+// v364 · fix · 5 · 6 · 7 · un movimiento por su nombre: familia (press, remo, curl…) y rasgos (inclinado, mancuerna o barra, una mano, martillo,
+// sentado o de pie). Sirve para decir qué genérico de MOVES es (la pista que viaja) y para no repetir un genérico que ya usas.
+const MV_FAM=[['facepull',/face ?pull/],['pullover',/pull ?over/],['tri_oh',/sobre la cabeza|por encima|overhead (tri|cable|ext)/],['tri_sk',/franc[eé]s|skull|rompecr/],['kick',/patada|kick ?back/],['dip',/fondos|\bdips?\b/],
+  ['tri_pd',/pushdown|tr[ií]ceps|tricep|cuerda/],['legraise',/elevaci[oó]n(es)? de piernas|leg raise|knee raise/],['shrug',/encog|shrug/],['rear',/p[aá]jaro|reverse (pec|fly)|invertid|rear delt|vuelos? posterior/],
+  ['fly',/apertura|\bfly|flye|cruce|crossover|pec ?deck/],['calfseat',/(pantorr|gemel|calf|tal[oó]n).*(sentad|seated)|(sentad|seated).*(pantorr|gemel|calf)/],['calfpress',/(pantorr|gemel|calf).*(prensa|press)/],['calf',/pantorr|gemel|\bcalf|calves|tal[oó]n/],
+  ['legcurl',/curl\s*(femoral|de pierna|n[oó]rdic)|leg curl|femoral|n[oó]rdic/],['legext',/extensi[oó]n(es)? de (pierna|cu[aá]d|rodilla)|leg ext/],['neckext',/extensi[oó]n de cuello|neck ext/],['neck',/cuello|\bneck\b/],
+  ['curl',/curl|martillo/],['hyper',/hiperext|hyperext|back ext|extensi[oó]n de espalda/],['abd',/abduc/],['add',/aduc|adduc/],['thrust',/thrust|puente|bridge|cadera/],['crunch',/crunch|abdominal/],
+  ['rdl',/rumano|romanian|\brdl\b|sldl|stiff|peso muerto|deadlift|good ?morning|buenos d/],['hack',/hack/],['legpress',/prensa|leg press|press de pierna/],['lunge',/zancada|lunge|b[uú]lgara|split squat|step[- ]?ups?/],
+  ['squat',/sentadilla|squat/],['pullup',/dominad|pull[- ]?ups?|chin[- ]?ups?/],['pulldown',/jal[oó]n|pull ?down/],['row',/remo|\brows?\b|t-?bar/],['raise',/elevaci[oó]n|raise|vuelos?/],['press',/press|bench|militar|military|arnold|\bohp\b|lagartij|push[- ]?ups?/]];
+function mvFeat(name){ const n=String(name||'').toLowerCase(); let f=''; for(const [k,re] of MV_FAM)if(re.test(n)){ f=k; break; }
+  return {f, inc:/inclin/.test(n), dec:/declin/.test(n), uni:/una mano|una pierna|un brazo|a una|single|unilateral/.test(n), ham:/martillo|hammer/.test(n)&&/curl|martillo/.test(n),
+    pos:/sentad|seated/.test(n)?1:/acostad|lying|tumbad|de pie|standing/.test(n)?2:0, imp:/mancuern|\bdb\b|dumbbell/.test(n)?1:/barra|\bbb\b|barbell|\bez\b/.test(n)?2:0}; }
+// cuánto se parece un ejercicio a un genérico [nombre, tipo, músculo, aislado]: misma familia +8, mismo tipo +4, cada rasgo que choca −6 (12 = el mismo movimiento)
+function mvScore(name,type,m){ const A=mvFeat(name), B=mvFeat(m[0]); let s=0; if(A.f&&B.f)s+=A.f===B.f?8:-20; if(canonType(type||'free')===canonType(m[1]))s+=4;
+  ['inc','dec','uni','ham'].forEach(k=>{ if(A[k]!==B[k])s-=6; }); if(A.pos&&B.pos&&A.pos!==B.pos)s-=6; if(A.imp&&B.imp)s+=A.imp===B.imp?2:-6; return s; }
+// el genérico de un lugar: del mismo músculo y énfasis, el más parecido; '' si ninguno es ese movimiento
+// v365 · N6 · lat = 'uni' o 'alt' (o lo dice el nombre): la barra no es la pista de un ejercicio a una mano o alternado; si dos empatan, sin pista
+function moveOf(m,iso,name,type,lat){ const L=lat||(/altern/i.test(String(name||''))?'alt':mvFeat(name).uni?'uni':''); let best=null, bs=-1, tie=false;
+  MOVES.forEach(x=>{ if(x[2]!==m||!!x[3]!==!!iso)return; let s=mvScore(name,type,x); if(L&&mvFeat(x[0]).imp===2)s-=6; if(s>bs){ bs=s; best=x; tie=false; } else if(s===bs)tie=true; });
+  return best&&!(L&&tie)?best[0]:''; }
+// de un ejercicio con nombre: el músculo principal del motor (si no lo resuelve, el del nombre) y si es aislado (sin secundarios que pesen ≥ 0.5 ni movimiento compuesto)
+// v365 · B1 · si el nombre no dice el énfasis y es de máquina o polea con músculo, manda el motor (sin secundarios que pesen = aislado); el
+// «compuesto» por defecto de #5 queda para el peso libre y lo que no tiene músculo. Antes una máquina de glúteo sin secundarios salía compuesta.
+function exMI(e){ const t=targetsFor(e), m=(t.length&&t[0].id)||txtMuscle(e&&e.name)||null, eng=!t.slice(1).some(x=>x&&x.id&&x.w>=0.5), k=txtIsoKw(e&&e.name);
+  return {m, iso:eng&&(k!=null?k:(!!(t.length&&t[0].id)&&/^(machine|cable)$/.test(canonType(e&&e.type)))||txtIso(e&&e.name,m))}; }
+// su lugar: la pista es el movimiento genérico, nunca tu nombre, tu máquina ni tu marca
+function exSlotOf(e){ const o=exMI(e); return {m:o.m, iso:o.iso, hint:o.m?moveOf(o.m,o.iso,e&&e.name,e&&e.type,e&&(e.lat==='alt'?'alt':e.unilateral?'uni':'')):''}; }
+// el split solo con su estructura: días, orden, lugares (músculo, aislado o compuesto, series y lateralidad), sin nombres, máquinas ni marcas.
+// v364 · fix · 7 · 8 · el cardio viaja por su tipo (caminadora, bicicleta…), no con tu nombre ni tu máquina; un lugar sin músculo no se vuelve «other»
+function splitStructure(sp){ const c=splitClone(sp||{}); delete c.savedAt; (c.days||[]).forEach(d=>{ d.id='d'+uid(); delete d.mt;
+    d.exercises=(d.exercises||[]).map(e=>{ if(e&&e.pend)return Object.assign({},e,{id:'e'+uid()});
+      if(isCardio(e)){ const sub=CARDIO_SUBS[e.cardioSub]?e.cardioSub:'treadmill'; return {id:'e'+uid(),name:CARDIO_SUBS[sub].l,type:'cardio',cardioSub:sub,muscle:'cardio',sets:typeof e.sets==='number'?e.sets:1}; }
+      const s=exSlotOf(e); return {id:'e'+uid(),name:'',pend:true,slot:s,muscle:s.m?slotMus(s.m):'',type:'free',unilateral:!!e.unilateral,lat:e.lat,sets:typeof e.sets==='number'?e.sets:((e.sets&&e.sets.length)||3)}; }); });
+  if(c.plan&&c.plan.week)c.plan.week={}; return c; }
+function slotPendN(day){ return ((day&&day.exercises)||[]).filter(x=>x&&x.pend).length; }
+// v364 · fix · 16 · //NEXT cuenta lo que entra a la sesión y aparte lo que falta
+// v365 · B3 · con todo por elegir, la cabecera de //NEXT dice «5 por elegir» (no «0 ejercicios») y «ver rutina» va sin cuenta; con alguno elegido,
+// la cabecera cuenta lo que entra y «· N por elegir» va junto a «ver rutina». Los dos renglones miden lo mismo en los dos casos: Start no se mueve
+function dayPendTxt(day){ const p=slotPendN(day), n=((day&&day.exercises)||[]).length-p; return p&&n>0?'<span class="u-label u-o50"> · '+p+'\u00a0por\u00a0elegir</span>':''; }
+function dayExTxt(day){ const p=slotPendN(day), n=((day&&day.exercises)||[]).length-p; return !n&&p?p+'\u00a0por\u00a0elegir':n+(n===1?'\u00a0ejercicio':'\u00a0ejercicios'); }   // a 320 no se separa el número de su palabra
+// ---- elegir el ejercicio de un lugar ----
+// v364 · fix · 6 · aislado o compuesto en los dos sentidos (tus ejercicios y los genéricos); el genérico que ya equivale a uno tuyo (mismo movimiento y tipo) no se repite
+function slotCands(s){ if(!s||!MUSCLES[s.m])return {own:[],mv:[]};
+  const own=knownExercises().filter(k=>{ if(!k||!k.name||isCardio(k))return false; const o=exMI(k); return o.m===s.m&&!!o.iso===!!s.iso; }).slice(0,12);
+  return {own, mv:MOVES.filter(x=>x[2]===s.m&&!!x[3]===!!s.iso&&!own.some(k=>mvScore(k.name,k.type,x)>=12))}; }
+// from: 'start' o 'later' (el aviso de Start o de + log past session), 'live' (la sesión en curso)
+function openSlotPick(di,ei,from){ const d=db.split.days[di], x=d&&(d.exercises||[])[ei]; if(!x||!x.slot)return; const s=x.slot;
+  if(!MUSCLES[s.m]){ trkMenu('músculo de este lugar',Object.keys(MUSCLES).map(id=>[slotMus(id),()=>{ s.m=id; x.muscle=slotMus(id); save(); reRender(); openSlotPick(di,ei,from); }])); return; }   // v364 · fix · 11 · sin músculo: primero cuál
+  const C=slotCands(s); window._slotPick={di,ei,C,from};
+  const row=(act,i,name,sub)=>'<div class="sexr"><button type="button" class="sxb" data-act="'+act+'" data-i="'+i+'"><span class="sxt">'+escTxt(name)+'</span><span class="sxm">'+escTxt(sub||'')+' ›</span></button></div>';   // la fila del editor de split
+  openModal('<h3>'+escTxt(slotTxt(x))+'</h3><div class="submeta gap">'+serN(x.sets||3)+(s.hint?' · '+escTxt(s.hint):'')+'</div>'
+    +(C.own.length?'<div class="grp-label sub">YA LOS USAS</div>'+C.own.map((k,i)=>row('slot_own',i,k.name,SLOT_T[k.type]||SLOT_T.free)).join(''):'')
+    +(C.mv.length?'<div class="grp-label sub">EN TU GYM BUSCA</div>'+C.mv.map((m,i)=>row('slot_mv',i,m[0],SLOT_T[m[1]]||'')).join(''):'')
+    +'<div class="sheetbtns"><button class="b" data-act="slot_other">otro…</button><button class="b" data-act="slot_del">quitar del split</button><button class="cancel" data-act="closemodal">cerrar</button></div>','sl'+String(x.id||ei).replace(/[^\w-]/g,''));   // v364 · fix · 14 · cada lugar es su hoja: la siguiente abre arriba, con su título a la vista
+}
+// devuelve true si la cadena sigue (abrió la hoja del siguiente lugar)
+function slotFill(o){ const P=window._slotPick; if(!P)return false; const d=db.split.days[P.di], x=d&&d.exercises[P.ei]; if(!x||!x.pend)return false;
+  Object.assign(x,{name:String(o.name||'').trim(),type:o.type||'free',muscle:o.muscle||x.muscle||slotMus(x.slot&&x.slot.m),machine:o.machine||''}); if(Array.isArray(o.muscles)&&o.muscles.length)x.muscles=o.muscles.slice(); else delete x.muscles; delete x.pend;
+  d.mt=Date.now();   // v364 · fix · 2 · elegir edita el día: el próximo Start sale del split, con el que faltaba (no de tu última sesión)
+  const w=db.activeWork; if(P.from==='live'&&w&&w.dayId===d.id){ addExFromKnown(w.exercises.length-1,x); const nw=w.exercises[w.exercises.length-1]; if(nw&&nw.name===x.name)nw.exId=x.id; }   // v364 · fix · 16 · desde la sesión: entra al final, ligado a su lugar
+  save(); const n=slotPendN(d), nx=d.exercises.findIndex(y=>y&&y.pend);
+  if(nx>=0){ toast('✓ '+x.name+' · '+(n===1?'falta 1':'faltan '+n)); openSlotPick(P.di,nx,P.from); return true; }
+  window._slotPick=null; closeModal(); reRender(); const go=P.from==='start'||P.from==='later'?P.from:'';
+  toast('✓ el día está listo','ok',go?{act:{label:'[empezar]',fn:()=>{ const b=document.querySelector('#view [data-act="'+(go==='later'?'loglater':'start')+'"]'); if(b)b.click(); }}}:{}); return false; }   // estética · completo desde el aviso de Start: arrancar ahí mismo
+function slotAct(a,el){ if(a==='slot_live'){ const w=db.activeWork, D=(db.split&&db.split.days)||[], di=w?D.findIndex(d=>d.id===w.dayId):-1, k=di>=0?(D[di].exercises||[]).findIndex(x=>x&&x.pend):-1; if(k>=0)openSlotPick(di,k,'live'); return; }   // v364 · fix · 16 · «N por elegir ›» en la sesión
+  const P=window._slotPick; if(!P)return; const i=+el.dataset.i;
+  if(a==='slot_own'){ const k=P.C.own[i]; if(k)slotFill({name:k.name,type:k.type,muscle:k.muscle,muscles:k.muscles,machine:k.machine}); }
+  else if(a==='slot_mv'){ const m=P.C.mv[i]; if(m)slotFill({name:m[0],type:m[1]}); }
+  else if(a==='slot_other'){ trkPrompt({title:'nombre del ejercicio',label:'EJERCICIO',value:'',hint:'como lo llamas en tu gym',back:()=>openSlotPick(P.di,P.ei,P.from)},v=>{ const n=String(v||'').trim(); if(!n){ toast('⚠ escribe un nombre','err'); return false; } if(slotFill({name:n,type:txtType(n)}))return false; }); }   // v364 · fix · 10 · si sigue la cadena, su hoja no se cierra
+  else if(a==='slot_del'){ const d=db.split.days[P.di], x=d&&d.exercises[P.ei]; if(!x)return; d.exercises.splice(P.ei,1); window._slotPick=null; save(); closeModal(); reRender(); toast('lugar fuera del split','',{undo:()=>{ d.exercises.splice(Math.min(P.ei,d.exercises.length),0,x); }}); } }
+// v364 · fix · 16 · Start y «+ log past session» avisan de lo que falta (una vez por toque): [elegir] abre la cadena; la otra salida sigue sin esos lugares
+function slotGate(act){ const di=selIdx(), d=db.split&&(db.split.days||[])[di], n=slotPendN(d); if(!n||window._slotGo)return false;
+  trkAsk({title:(n===1?'falta 1':'faltan '+n)+' por elegir',ok:'elegir',cancel:act==='loglater'?'registrar igual':'entrenar igual',dismiss:()=>{}},()=>{ const k=(d.exercises||[]).findIndex(x=>x&&x.pend); if(k>=0)openSlotPick(di,k,act==='loglater'?'later':'start'); },
+    ()=>{ window._slotGo=1; try{ const b=document.querySelector('#view [data-act="'+act+'"]'); if(b)b.click(); } finally{ window._slotGo=0; } }); return true; }
+// ---- SP13 · leer una rutina escrita como en tus notas ----
+// v364 · fix · 4 · de lo específico a lo general: antebrazo y cuello antes que bíceps; tríceps antes que hombro, glúteo, dorsal y pecho;
+// pantorrilla antes que pierna; remo al mentón antes que remo. Acepta guion y plural (pull-ups, extensiones).
+// v365 · N5 · abducción y aducción (cadera), vuelos posteriores, pull over, landmine / push / z / viking press, ab wheel, dead bug, bird dog, pallof,
+// paseo del granjero y curl inverso
+const TXT_MUS=[[/mu[nñ]eca|wrist|antebrazo|forearm|curl invertid|curl invers[oa]|reverse curl|farmer|granjero/,'forearms'],[/cuello|\bneck\b/,'neck'],
+  [/tr[ií]ceps|tricep|pushdown|press franc|skull|rompecr|jal[oó]n de tr|fondos (en m[aá]quina|para tr|de tr|en banco)|bench dips?|dip machine|extensi[oó]n(es)? (sobre la cabeza|por encima|de codo)|overhead (cable )?ext/,'triceps'],
+  [/pantorr|gemel|\bcalf|calves|s[oó]leo|tal[oó]n(es)?\b|toe press/,'calves'],[/face ?pull|p[aá]jaro|reverse (pec|fly)|rear delt|pec deck invertido|deltoides? posterior|vuelos? (invertid|posterior)/,'rear_delts'],
+  [/curl\s*(femoral|de pierna|n[oó]rdico)|leg curl|femoral|isquio|hamstring|\brdl\b|rumano|romanian|sldl|stiff|peso muerto|deadlift|good ?morning|buenos d[ií]as|n[oó]rdic/,'hamstrings'],[/aduc|adduc/,'adductors'],
+  [/hip ?thrust|gl[uú]te|patada|kick ?back|abduc|puente|bridge|elevaci[oó]n de cadera/,'glutes'],[/abdom|\babs\b|crunch|plancha|plank|elevaci[oó]n(es)? de piernas|leg raise|knee raise|\bcore\b|oblicu|russian twist|ab ?wheel|dead ?bug|bird ?dog|pallof|roll ?out/,'abs'],
+  [/sentadilla|squat|prensa|press de pierna|leg press|hack|extensi[oó]n(es)? de (pierna|cu[aá]d|rodilla)|leg ext|zancada|lunge|b[uú]lgara|sissy|p[eé]ndulo|pendulum|cu[aá]dri|step[- ]?ups?/,'quads'],
+  [/remo al ment[oó]n|upright row|elevaci[oó]n(es)? lateral|laterales|lateral raise|side raise|y[- ]raise/,'side_delts'],[/encog|shrug|trapecio|\btraps?\b/,'traps'],
+  [/jal[oó]n|pulldown|pull ?down|dominad|pull[- ]?ups?|chin[- ]?ups?|pull ?over|dorsal|\blats?\b/,'lats'],[/remo|\brows?\b|t-?bar|seal|espalda media|romboid|chest[- ]supported/,'upper_back'],
+  [/press (militar|de hombro|hombro|arnold)|arnold|shoulder press|military|overhead press|\bohp\b|militar|frontal|front raise|deltoides? anterior|landmine|push press|\bz[- ]?press|viking/,'front_delts'],[/b[ií]ceps|bicep|curl|martillo/,'biceps'],
+  [/press (banca|plano|inclinado|declinado|de pecho)|bench|pecho|chest|apertura|pec ?deck|\bfly|flye|cruce|crossover|fondos|\bdips?\b|lagartij|push[- ]?ups?|(incline|flat|decline)\b.*press|\bdb press|dumbbell press|pectoral/,'chest'],
+  [/lumbar|hiperext|hyperext|back ext|extensi[oó]n de espalda|superman/,'lower_back']];
+function txtMuscle(name){ const n=String(name||'').toLowerCase(); for(const [re,id] of TXT_MUS)if(re.test(n))return id; return null; }
+// un renglón «· deltoides lateral ·» (lo que escribe compartir tu split): el nombre del músculo exacto, no adivinado por el ejercicio
+function txtMuscleSeg(seg){ const n=String(seg||'').toLowerCase().trim(); for(const id in MUSCLES){ const M=MUSCLES[id]; if(n===M.es||n===M.n)return id; } return null; }
+// v364 · fix · 5 · primero los compuestos con palabra de aislado (fondos, hiperextensión, remo al mentón), luego lo aislado (francés, pantorrilla en prensa, curl,
+// elevación, extensión…), luego lo compuesto (press, bench, remo, jalón, sentadilla, peso muerto…).
+// v365 · #5 · un movimiento que no conoce ya no es aislado por defecto: toma el énfasis de su músculo m (o el del nombre) cuando en MOVES todos los de
+// ese músculo son aislados (lateral, bíceps, pantorrilla…); si no, o sin músculo, compuesto.
+function txtIsoKw(name){ const n=String(name||'').toLowerCase(); if(/\baislado\b/.test(n))return true; if(/\bcompuesto\b/.test(n))return false;
+  if(/hiperext|hyperext|back ext|extensi[oó]n de espalda|fondos|\bdips?\b|remo al ment|upright row|press (cerrado|close)|close[- ]grip|elevaci[oó]n de cadera/.test(n))return false;
+  if(/franc[eé]s|skull|rompecr|pantorr|gemel|\bcalf|calves|tal[oó]n|toe press|elevaci[oó]n|raise|extensi[oó]n|extension|\bext\b|curl|martillo|apertura|\bfly|flye|cruce|crossover|pec ?deck|kick ?back|patada|face ?pull|p[aá]jaro|encog|shrug|pull ?over|abduc|aduc|adduc|crunch|plancha|plank|pallof|pushdown|tr[ií]ceps|tricep|cuello|neck/.test(n))return true;
+  if(/press|bench|sentadilla|squat|prensa|remo|\brows?\b|jal[oó]n|pull ?down|dominad|pull[- ]?ups?|chin[- ]?ups?|peso muerto|deadlift|\brdl\b|sldl|rumano|romanian|stiff|thrust|zancada|lunge|hack|b[uú]lgara|good ?morning|buenos d[ií]as|lagartij|push[- ]?ups?|step[- ]?ups?|puente|bridge|t-?bar|militar|arnold|\bohp\b/.test(n))return false;
+  return null; }
+// v365 · B1 · txtIsoKw = lo que dice el nombre (true, false o null si no dice nada); txtIso le suma el énfasis por defecto de #5
+function txtIso(name,m){ const k=txtIsoKw(name); if(k!=null)return k; const mm=m||txtMuscle(name), mv=MOVES.filter(x=>x[2]===mm); return mv.length>0&&mv.every(x=>x[3]); }
+// v365 · N5 · una máquina escrita con su marca es máquina (Hammer Strength, Life Fitness, Cybex…); «hammer curl» sigue siendo curl martillo
+function txtType(name){ const n=String(name||'').toLowerCase(); if(/smith/.test(n))return 'smith'; if(/polea|cable|cruce|crossover|face ?pull|pushdown|jal[oó]n|pull ?down|cuerda|pallof/.test(n))return 'cable';
+  if(/m[aá]quina|machine|pec deck|prensa|press de pierna|leg press|hack|extensi[oó]n(es)? de pierna|leg ext|curl femoral|leg curl|abduc|aduc|adduc|chest press|hammer strength|life ?fitness|cybex|technogym|matrix|panatta|nautilus|precor|gym ?80|atlantis|hoist|star ?trac/.test(n)||(/\bhammer\b/.test(n)&&!/curl|martillo/.test(n)))return 'machine';
+  if(/dominad|fondos|plancha|plank|lagartij|push[- ]?ups?|pull[- ]?ups?|chin[- ]?ups?|\bdips?\b|colgad|hanging|hiperext|hyperext/.test(n))return 'bodyweight'; return 'free'; }
+// v364 · fix · 3 · 12 · un renglón con series (3x10, 4 series de 8, 3 sets of 10, «- 4 - 12», «3 al fallo», 4x máx); un movimiento conocido; un encabezado
+// de músculo o de split (Pecho y tríceps, Push A, Chest & Back); un día (Día 1, lunes, #); lo que nunca es ejercicio (notas, descanso, calentamiento, semana)
+// v365 · N5 · también la pirámide sin «x» («12-10-8-6», «12,10,8»)
+const TXT_SET=/\d+\s*(?:series?|sets?)?\s*[x×*]\s*(?:\d|m[aá]x|amrap|al fallo|fallo|f(?![a-z]))|\b\d+\s*(?:series?|sets?|rondas?)\b|[|\-–—]\s*\d{1,2}\s*[|\-–—]\s*\d{1,2}(?:\s*[-–]\s*\d{1,2})?\s*(?:reps?)?\s*$|\d+\s*(?:series\s*)?(?:al fallo|a fallo|amrap)|\b\d+(?:\s*[-–]\s*\d+)?\s*(?:reps?|repeticiones)\b|(?:^|\s)\d{1,2}(?:\s*[-–,/]\s*\d{1,2}){2,}\s*(?:reps?)?\s*$/i;
+const TXT_MOVE=/press|bench|curl|remo|\brows?\b|jal[oó]n|pulldown|pull ?down|dominad|pull[- ]?ups?|chin[- ]?ups?|sentadilla|squat|prensa|peso muerto|deadlift|\brdl\b|sldl|thrust|zancada|lunge|b[uú]lgara|extensi[oó]n|extension|\bext\b|elevaci[oó]n|raise|apertura|\bfly|flye|cruce|crossover|fondos|\bdips?\b|face ?pull|p[aá]jaro|encogimiento|shrug|pull ?over|crunch|plancha|plank|abduc|aduc|adduc|calf|hack|pec ?deck|kick ?back|patada|good ?morning|buenos d[ií]as|hiperext|hyperext|push[- ]?ups?|lagartija|skull|rompecr|pushdown|franc[eé]s|step[- ]?ups?|n[oó]rdic|ment[oó]n|upright|arnold|militar|military|sissy|p[eé]ndulo|pendulum|t-?bar|polea|cable|m[aá]quina|mancuerna|barra|smith|martillo|\bpuente\b|bridge|vuelos?|tal[oó]n|landmine|swing|farmer|granjero|pallof|ab ?wheel|dead ?bug|bird ?dog|roll ?out|\bdb\b|\bbb\b|dumbbell|barbell|burpees?|thrusters?|kettlebell|\bkb\b|wall ?balls?|box ?jumps?|snatch|\bclean|\bjerk|toes ?to ?bar|double ?unders?|muscle ?ups?|sit ?ups?|mountain ?climbers?|jumping ?jacks?/;   // v365 · r4: crossfit y funcional
+const TXT_HW=/^(pecho|pectorales?|espalda|piernas?|hombros?|brazos?|biceps|triceps|gluteos?|cuadriceps|femorales?|isquios?|isquiotibiales|pantorrillas?|gemelos?|abdomen|abdominales?|abs|core|trapecios?|dorsales?|deltoides?|antebrazos?|cuello|lumbar|chest|back|legs?|shoulders?|arms?|bicep|tricep|glutes?|quads?|hamstrings?|hams|calves|traps?|lats?|delts?|forearms?|neck|push|pull|upper|lower|full|body|fullbody|torso|superior|inferior|tren|empuje|traccion|tiron)$/, TXT_CON=/^(y|e|and|de|del|la|el|los|las|con|day|dia|[a-d]|[1-9]|i{1,3})$/;
+// v365 · N1 · «Cardio y abs» es un día, no una nota (sí lo es «Cardio: 20 min»)
+// v365 · M1 · y solo con un músculo detrás: «Cardio con cuerda 10 min» es una nota
+function txtStray(l){ if(!/^(?:[-–—•*·‣▪◦○●□■☐☑✓✔]|\d+\s*[.)\-])?\s*(notas?\b|note\b|ojo\b|tip\b|importante|descans|rest\b|calentamiento|calentar|warm[- ]?up|estiramiento|estirar|stretch|cool ?down|enfriamiento|cardio\b|semana|week\b|fase\b|objetivo)/i.test(l))return false;
+  const c=String(l).match(/^[-–•*]?\s*cardio\s*(?:y|e|&|\+|and|con)\s+(.+)$/i); return !(c&&txtWords(c[1]).some(x=>TXT_HW.test(x))); }
+// v365 · N5 · lo que nunca es ejercicio aunque traiga series («Calentamiento 2x15», «Nota: 3x10 si puedes»)
+function txtStrayHard(l){ return /^(?:[-–—•*·‣▪◦○●□■☐☑✓✔]|\d+\s*[.)\-])?\s*(notas?\b|note\b|ojo\b|tip\b|importante|calentamiento|calentar|warm[- ]?up|estiramiento|estirar|stretch|cool ?down|enfriamiento)/i.test(l); }
+function txtDayW(l){ return /^#+\s|^(d[ií]a|day)\s*(\d+|[a-d]\b)|^(lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i.test(l); }
+// v365 · B4 · una fecha suelta («16/10/26», «2026-10-16») no es una pirámide de series: no cambia el modo de lectura. Es fecha si el año va con 4
+// cifras, si algo empieza en 0 o si los números no van en orden (una pirámide sube o baja: «15/12/10» sigue siendo pirámide)
+function txtDate(l){ const s=String(l||'').trim(); if(/^\d{4}-\d{1,2}-\d{1,2}$/.test(s))return true;
+  if(/^\d{1,2}\s*(?:de\s+)?(?:ene|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dic|jan|apr|aug|dec)[a-z]*\.?(?:\s+(?:de\s+)?\d{2,4})?$/i.test(s))return true;   // v365 · r4 · «16 oct», «16 de octubre»
+  { const q=s.match(/^(\d{1,2})[\/\-](\d{1,2})$/); if(q&&+q[1]>12&&+q[1]<=31&&+q[2]>=1&&+q[2]<=12)return true; }   // v365 · r4 · «16/10» (el día pasa de 12: no son reps)
+  const m=s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2}|\d{4})$/); if(!m)return false;
+  const a=+m[1], b=+m[2], c=+m[3]; if(!((a>=1&&a<=31&&b>=1&&b<=12)||(a>=1&&a<=12&&b>=1&&b<=31)))return false;
+  return m[3].length===4||/^0/.test(m[1])||/^0/.test(m[2])||/^0/.test(m[3])||!((a>=b&&b>=c)||(a<=b&&b<=c)); }
+// v365 · B4 · un renglón que empieza con una máquina o actividad de cardio («Caminadora 20 min», «Bici 5»): su tipo de cardio, o '' si no lo es
+function txtCardioW(l){ const n=String(l||'').toLowerCase().replace(/^[-–—•*·\s]+/,''), m=n.match(/^(caminadora|cinta|treadmill|bici(?:cleta)?|bike|el[ií]ptica|elliptical|escaladora|stair ?master|spinning|nataci[oó]n|nadar|swim(?:ming)?|correr|trotar|caminar|running|jogging|cuerda|saltar (?:la )?cuerda|jump ?rope)(?![a-záéíóúñ])/); if(!m||/^cuerda\s+(?:para\s+|de\s+)?(?:tr[ií]ceps|polea|\()|^bici(?:cleta)?\s+abdominal/.test(n)||(/\d+\s*[x×]\s*\d/.test(n)&&!/\d\s*(?:min|'|km|m\b|seg|s\b|")/.test(n)))return '';   /* v365 · r4: con N×M y sin tiempo no es cardio */
+  const w=m[1]; return /^(caminadora|cinta|treadmill)/.test(w)?'treadmill':/^(bici|bike)/.test(w)?'bike':/^(el[ií]p|ellip)/.test(w)?'elliptical':/^(escal|stair)/.test(w)?'stair':/^spin/.test(w)?'spin':/^(nat|nad|swim)/.test(w)?'swim':/cuerda|rope/.test(w)?'jump':'outdoor'; }
+const txtWords=l=>String(l||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,' ').trim().split(' ').filter(Boolean);
+function txtMusc(l){ const w=txtWords(l); return w.length>0&&w.length<=6&&w.every(x=>TXT_HW.test(x)||TXT_CON.test(x))&&w.some(x=>TXT_HW.test(x)); }
+// v365 · N1 · un encabezado de día que no es palabra de músculo ni «Día N»: Rutina A, Entreno 2, D1 Pecho, Sesión 1, Workout B, PPL - Push, «Pecho y tríceps
+// (lunes)», «Legs (quad focus)», Primer día, Fuerza, Hipertrofia, «Cardio y abs», «Pierna enfocada en glúteo». Corto (5 palabras o menos), con una palabra
+// de rutina, de día o de enfoque, o con la forma «palabra + letra o número» (Bloque B). Un renglón suelto («esto no se entiende») no lo es.
+// v365 · M1 · tres fuerzas de encabezado. Palabra de rutina o de día (rutina, entreno, sesión, D1, PPL, fuerza, hipertrofia, torso, cardio,
+// días de la semana): abre día aunque venga pegada al ejercicio anterior. Adjetivo o enfoque (pesado, ligero, volumen, enfoque, focus): solo después
+// de un renglón en blanco o detrás de un músculo («Pierna enfocada en glúteo», «Legs (quad focus)»); si no, es una nota. «Palabra + letra o número»
+// (Parte 2): solo después de un renglón en blanco, si el texto trae la serie (Parte 1 … Parte 2) o si es «Bloque B». Antes «RPE 8», «Tempo 3», «Pesado» o
+// «Bici 5» entre dos ejercicios abrían un día.
+const TXT_HL=/^(rutinas?|entrenos?|entrenamientos?|sesion(es)?|sessions?|workouts?|wod|trainings?|dias?|day|d\d|ppl|phul|phat|metcon|fuerza|hipertrofia|potencia|torso|cardio|split|lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|friday|saturday|sunday|strength|hypertrophy|power)$/,
+  TXT_HL2=/^(resistencia|volumen|definicion|enfocad[oa]s?|enfoque|enfasis|focus|pesad[oa]s?|liger[oa]s?|heavy|light)$/, TXT_GRP=/^(superseries?|superset|biseries?|triseries?|circuitos?|grupos?|series?|sets?|rondas?|vueltas?)$/;
+const txtSeqW=w=>w.length>=2&&w.length<=3&&/^[a-z]{3,}$/.test(w[0])&&/^([a-f]|[1-9]|i{1,3}|iv|vi?)$/.test(w[w.length-1])?w[0]:'';
+// las palabras que el texto trae en serie: «Parte 1» y «Parte 2» (la serie empieza en A, 1 o I)
+function txtSeqs(L){ const m={}; L.forEach(l=>{ const w=txtWords(l), g=txtSeqW(w); if(g)(m[g]=m[g]||new Set()).add(w[w.length-1]); }); return new Set(Object.keys(m).filter(g=>m[g].size>1&&['a','1','i'].some(x=>m[g].has(x)))); }
+// 2 = encabezado aquí · 1 = palabra de encabezado que aquí es nota · 0 = no parece encabezado. loose = después de un renglón en blanco (o el primero).
+// «Superserie A», «Grupo A», «Circuito 1» dentro de un día son notas (antes «Grupo A» sin series se volvía un ejercicio)
+function txtHeadLike(l,loose,seq){ const w=txtWords(l); if(!w.length||w.length>5)return 0; if(TXT_GRP.test(w[0]))return loose?0:1;
+  if(w.some(x=>TXT_HL.test(x)))return 2;
+  if(w.some(x=>TXT_HL2.test(x)))return loose||TXT_HW.test(w[0])?2:1;
+  const g=txtSeqW(w); return g&&(loose||g==='bloque'||(seq&&seq.has(g)))?2:0; }
+// v365 · M1 · una anotación (RIR, RPE, tempo, pausa, drop, cluster, myo, agarre, opción, variante, alternativa, último, cadencia, lento) va a
+// «no entendí» aunque traiga números («Tempo 3-1-1»), salvo que nombre un movimiento («Tempo squat 3x5») o un día («Último día»)
+function txtAnn(l){ return /^(?:[-–—•*·‣▪◦○●□■☐☑✓✔]|\d+\s*[.)\-])?\s*(rir|rpe|tempo|pausas?|drop|cluster|myo|agarre|opci[oó]n|variantes?|alternativas?|[uú]ltim[oa]s?|cadencia|lent[oa])\b/i.test(l)&&!TXT_MOVE.test(String(l).toLowerCase())&&!txtWords(l).some(x=>TXT_HL.test(x))&&!/\d+\s*[x×]\s*\d|\b\d+\s*(?:series|sets)\b/i.test(l); }   // v365 · r4: con viñeta también; con series de verdad es un ejercicio
+function cut40(s){ s=String(s||'').trim(); return s.length>40?s.slice(0,41).replace(/\s+\S*$/,''):s; }   // B-12: a 40, sin partir palabras
+// v365 · N5 · viñetas de apps de notas (☐ — ◦), la raya larga que pone iOS, el %, el tiempo («3x45s», «3x30 seg») y la pirámide («12-10-8-6»)
+function txtExLine(l){ let s=String(l||'').replace(/^\s*([-–—•*·‣▪◦○●□■☐☑✓✔]|\d+\s*[.)\-]|[a-e]\d+\s*[.):\-]?)\s*/i,'').replace(/^(superseries?|superset|biseries?|triseries?|circuito)\s*:?\s*/i,'').replace(/^(alternativas?|opci[oó]n(?:\s+[a-c1-3])?|variantes?(?:\s+[a-c1-3])?|drop\s*sets?|[uú]ltim[oa]s?|lent[oa]s?)\s*:\s*/i,'')
+    .replace(/\b\d+(?:[.,]\d+)?\s*(?:kgs?|kilos?|lbs?|libras?)\b/gi,' ').replace(/@?\s*\d+(?:[.,]\d+)?\s*%/g,' ');   // el peso (y su %) no es parte del nombre ni de las series
+  const low=s.toLowerCase(), rn=x=>String(x||'').replace(/\s/g,'').replace(/[a–]/g,'-'), PYR=/(?:^|\s)(\d{1,2}(?:\s*[-–,/]\s*\d{1,2}){2,})\s*(?:reps?)?\s*$/, pyr=x=>x.split(/\s*[-–,/]\s*/);
+  const tu=k=>{ const u=low.slice(k).match(/^\s*(seg(?:undo)?s?|secs?|s|min(?:uto)?s?)(?![a-záéíóúñ\/])/); return u?(u[1][0]==='m'?' min':'s'):''; };   // el tiempo va con las reps
+  let sets=null, reps='', rir=null, m;
+  if((m=low.match(/(\d+)\s*(?:series?|sets?)?\s*[x×*]\s*(\d+(?:\s*(?:[-–]|a)\s*\d+)?|m[aá]x(?:imo)?|amrap|al fallo|fallo|f(?![a-z]))/))){ const a=+m[1], b=String(m[2]);
+    if(/^\d/.test(b)){ if(a<=10){ sets=a; reps=rn(b)+tu(m.index+m[0].length); } else { const b0=+b.split(/[-–a]/)[0]; sets=b0<=10?b0:null; reps=String(a); } } else { sets=a; rir=0; } }
+  else if((m=low.match(/(\d+)\s*(?:series?|sets?|rondas?)\b(?:\s*(?:de|of|x|×|por)\s*(\d+(?:\s*(?:[-–]|a)\s*\d+)?))?/))){ sets=+m[1]; if(m[2])reps=rn(m[2])+tu(m.index+m[0].length); }
+  else if((m=low.match(PYR))){ const v=pyr(m[1]); sets=v.length; reps=v.join('-'); }   // pirámide: una serie por número
+  else if((m=low.match(/[|\-–—]\s*(\d{1,2})\s*[|\-–—]\s*(\d{1,2}(?:\s*[-–]\s*\d{1,2})?)\s*(?:reps?)?\s*$/))){ sets=+m[1]; reps=rn(m[2]); }
+  else if((m=low.match(/(\d+)\s*(?:series\s*)?(?:al fallo|a fallo|amrap|m[aá]x)/))){ sets=+m[1]; rir=0; }
+  if(!reps&&(m=low.match(/(\d+(?:\s*(?:[-–]|a)\s*\d+)?)\s*(?:reps?|repeticiones)\b/)))reps=rn(m[1]);
+  if(!reps&&(m=low.match(PYR)))reps=pyr(m[1]).join('-');   // «4 series 12/10/8/6»
+  if(rir==null){ if((m=low.match(/\brir\s*(\d)/)))rir=+m[1]; else if((m=low.match(/\brpe\s*(\d+(?:\.\d)?)/)))rir=Math.max(0,Math.round(10-(+m[1]))); else if((m=low.match(/@\s*(\d+(?:\.\d)?)/))&&+m[1]<=10){ const v=+m[1]; rir=v>5?Math.max(0,Math.round(10-v)):v; } else if(/al fallo|\bfallo\b|failure|amrap/.test(low))rir=0; }
+  const alt=/alternad|altern/.test(low), uni=!alt&&/\b(uni|unilateral|c\/u|cada lado|por lado|una mano|una pierna|un brazo|single|each|per side)\b/.test(low);
+  let name=s.replace(/\(.*?\)/g,' ')
+    .replace(/(\d+)\s*(?:series?|sets?)?\s*[x×*]\s*(\d+(?:\s*(?:[-–]|a)\s*\d+)?|m[aá]x(?:imo)?|amrap|al fallo|fallo|f(?![a-z]))(?:\s*(?:seg(?:undo)?s?|secs?|s|min(?:uto)?s?)(?![a-záéíóúñ\/]))?(?:\s*,\s*\d+)*/gi,' ')
+    .replace(/\b(?:de|of|por)\s+\d+(?:\s*(?:[-–]|a)\s*\d+)?(?:\s*(?:repeticiones|reps?|seg(?:undo)?s?|secs?|min(?:uto)?s?)\b)?/gi,' ').replace(/\b\d+\s*(?:series?|sets?|rondas?|reps?|repeticiones)\b/gi,' ')
+    .replace(/(?:^|\s)\d{1,2}(?:\s*[-–,/]\s*\d{1,2}){2,}\s*(?:reps?)?\s*$/i,' ')
+    .replace(/[|\-–—]\s*\d{1,2}\s*[|\-–—]\s*\d{1,2}(?:\s*[-–]\s*\d{1,2})?\s*(?:reps?)?\s*$/i,' ')
+    .replace(/@?\s*\b(?:rir|rpe)\s*\d+(?:\.\d)?|@\s*\d+(?:\.\d)?/gi,' ').replace(/\b\d+\s*(?:series\s*)?(?:al fallo|a fallo)|\bal fallo\b|\ba fallo\b|\bfailure\b|\bamrap\b|\bm[aá]x(?:imo)?(?![a-z])/gi,' ')
+    .replace(/\bdrop(?:\s*sets?)?\b|\bc\/u\b|\bcada lado\b|\bpor lado\b|\beach(?:\s+(?:side|arm|leg))?\b|\bper side\b|\b(?:reps?|repeticiones)\b/gi,' ')
+    .replace(/(\s\d+(?:\s*[-–]\s*\d+)?)+\s*$/,' ').replace(/\s[x×]\s*$/i,' ');
+  if(!reps&&(m=s.match(/\s(\d+\s*[-–]\s*\d+)\s*$/)))reps=rn(m[1]);
+  const seg=name.split('·').map(x=>x.replace(/\s{2,}/g,' ').trim()).filter(Boolean), more=seg.slice(1);
+  const mExp=more.map(txtMuscleSeg).find(Boolean)||null, isoExp=more.find(x=>/^(aislado|compuesto)$/i.test(x)), latExp=more.find(x=>/^(unilateral|alternado)$/i.test(x)), cardio=more.some(x=>/^cardio$/i.test(x));
+  name=(seg[0]||'').replace(/^[:\-–—|,@.\s]+|[:\-–—|,@.\s]+$/g,'').replace(/\s{2,}/g,' ').trim();
+  if(!name||!/[a-záéíóúñ]/i.test(name))return null;
+  if(cardio){ const k=Object.keys(CARDIO_SUBS).find(c=>CARDIO_SUBS[c].l===name.toLowerCase())||'treadmill'; return {name,sets:Math.max(1,Math.min(10,sets||1)),reps:'',rir:null,lat:'bi',m:null,iso:true,type:'cardio',cardio:k}; }   // v364 · fix · 8
+  const ck=TXT_MOVE.test(name.toLowerCase())?'':txtCardioW(name);   // v365 · B4 · «Caminadora 20 min»: cardio del día, ni su nombre ni un ejercicio de pesas
+  if(ck)return {name:name.replace(/\s*\d.*$/,'').trim()||name,sets:Math.max(1,Math.min(10,sets||1)),reps:'',rir:null,lat:'bi',m:null,iso:true,type:'cardio',cardio:ck};
+  const mm=mExp||txtMuscle(name);
+  return {name, sets:Math.max(1,Math.min(10,sets||3)), reps, rir, lat:latExp?(/^alt/i.test(latExp)?'alt':'uni'):alt?'alt':uni?'uni':'bi', m:mm, iso:isoExp?/^aislado$/i.test(isoExp):txtIso(name,mm), type:txtType(name)}; }
+// raw = lo que escribe compartir: el nombre del día tal cual («Día 3: pull»)
+function txtHead(l,raw){ let s=String(l||'').replace(/^\s*#+\s*/,'').replace(/[:\s]+$/,'').trim(); if(raw)return cut40(s);
+  const m=s.match(/^(?:(?:d[ií]a|day)\s*(?:\d+|[a-d])|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\s*[-–:.)]\s*(.+)$/i); if(m)s=m[1]; else { const k=s.indexOf(':'); if(k>0&&s.slice(k+1).trim())s=s.slice(k+1).trim(); }
+  return cut40(s); }
+// v364 · fix · 3 · el lector: un renglón con un movimiento conocido nunca es encabezado; sin series, un renglón en blanco separa días (y con series, si
+// no hay ningún encabezado); notas, descanso, calentamiento y renglones de más de 40 sin series van a «no entendí». skipAt = dónde estaba cada uno.
+// v365 · N1 · un encabezado de día pegado al último ejercicio del día anterior (sin renglón en blanco) ya no se pierde: si parece encabezado (txtHeadLike)
+// y lo sigue un ejercicio, abre día, con o sin series.
+// v365 · r4 · antes de leer: emoji y U+FE0F fuera (las viñetas de BUL se quedan), *negritas* y _cursivas_ de WhatsApp, y tablas de Excel o PDF: con
+// tabuladores («Press banca⇥4⇥8-10⇥90s»), en columnas («Press banca 4 8-10») o una celda por renglón, y su fila de títulos («Ejercicio Series Reps») como nota
+const TXT_TH=/^(ejercicios?|exercises?|series|sets|reps|repeticiones|descanso|rest|rir|rpe|peso|weight|notas?|tempo|carga|load)$/i;
+function txtPre(L,struct){ if(struct)return L;
+  const cl=s0=>{ let s=String(s0||'').replace(/[\u200d\ufe0f]/g,'').replace(/^(\d)\u20e3\s*/,'$1. ').replace(/(\d)\u20e3/g,'$1').replace(/[^\P{Extended_Pictographic}▪☑✔]/gu,' ');
+    for(let k=0;k<2;k++)s=s.replace(/(^|[\s(])([*_~]+)(?=\S)([^*_~\n]*?\S)\2(?=$|[\s:.,;)!?])/g,'$1$3');
+    if(/\t/.test(s)){ const c=s.split(/\t+/).map(x=>x.trim()).filter(Boolean); if(c.length>1&&c.every(x=>TXT_TH.test(x)))return 'Nota: '+c.join(' ');
+      if(c.length>=3&&/^\d{1,2}$/.test(c[1])&&+c[1]>=1&&+c[1]<=10&&/^\d{1,2}(?:\s*[-–]\s*\d{1,2})?$/.test(c[2]))return c[0]+' '+c[1]+'x'+c[2]; s=c.join(' '); }
+    s=s.replace(/\s{2,}/g,' ').trim(); const w=s.split(' '); if(w.length>1&&w.every(x=>TXT_TH.test(x)))return 'Nota: '+s;
+    const q=s.match(/^(.*[a-záéíóúñ)])\s+(\d{1,2})\s+(\d{1,2}(?:\s*[-–]\s*\d{1,2})?)(?:\s+\d{1,3}\s*(?:s|seg|segs|"|min))?$/i); if(q&&+q[2]>=1&&+q[2]<=10&&!/\d\s*[x×*]\s*\d/.test(q[1]))s=q[1]+' '+q[2]+'x'+q[3];
+    return s; };
+  const A=L.map(cl), out=[];
+  for(let i=0;i<A.length;i++){ const a=A[i];
+    if(a&&TXT_TH.test(a)){ let j=i; while(j<A.length&&A[j]&&TXT_TH.test(A[j]))j++; if(j-i>=2){ out.push('Nota: '+A.slice(i,j).join(' ')); i=j-1; continue; } }
+    if(a&&/[a-záéíóúñ]/i.test(a)&&!/\d\s*$/.test(a)&&/^\d{1,2}$/.test(A[i+1]||'')&&+A[i+1]>=1&&+A[i+1]<=10&&/^\d{1,2}(?:\s*[-–]\s*\d{1,2})?(?:\s*reps?)?$/i.test(A[i+2]||'')){
+      out.push(a+' '+A[i+1]+'x'+A[i+2].replace(/\s*reps?$/i,'')); i+=2; if(/^\d{1,3}\s*(?:s|seg|segs|"|min)$/i.test(A[i+1]||''))i++; continue; }
+    out.push(a); }
+  return out; }
+// v365 · r4 · secciones dentro de un día (con «:» pegadas a un ejercicio son notas) y sub-bloques que van con su día («Abs:», «Core:»)
+const TXT_SEC=/^(ss|finisher|finalizador|opcional|optional|luego|despues|after|accesorios?|accessory|accessories|principal|main|extras?|parte|emom|amrap|tabata|chipper)$/, TXT_ACC=/^(abs|abdomen|abdominal|abdominales|core|pantorrillas?|gemelos?|calves|calf|cardio|antebrazos?|forearms?|cuello|neck)$/;
+function parseSplitText(txt){ const raw=String(txt||'').replace(/\r/g,''), struct=/^\s*gym\/\/TRK split/i.test(raw); let title='';
+  const L0=txtPre(raw.split('\n').map(x=>x.trim()),struct), dates=L0.filter(txtDate), L=dates.length?L0.filter(l=>!txtDate(l)):L0;   // v365 · B4 · una fecha suelta no cuenta como series ni parte nada: va a «no entendí»
+  if(struct){ const days=[], skipped=[], skipAt=[]; let cur=null;   // lo que escribe compartir: «día:» y «- movimiento · músculo · énfasis · series»; un día vacío sigue siendo día
+    L.forEach(l=>{ if(!l)return; const mt=l.match(/^gym\/\/TRK split\s*·?\s*(.*)$/i); if(mt){ title=mt[1].trim(); return; }
+      const bu=/^[-–•]\s/.test(l), e=bu?txtExLine(l):null; if(e){ if(!cur){ cur={name:'día 1',ex:[]}; days.push(cur); } cur.ex.push(e); return; }
+      if(!bu&&/:$/.test(l)){ cur={name:txtHead(l,1)||('día '+(days.length+1)),ex:[]}; days.push(cur); return; }
+      skipped.push(l); skipAt.push({d:cur,k:cur?cur.ex.length:0}); });
+    return {title,struct,days,empty:[],skipped,skipAt}; }
+  const hasSets=L.some(l=>TXT_SET.test(l)&&!txtAnn(l)), BUL=/^([-–—•*·‣▪◦○●□■☐☑✓✔]|\d+\s*[.)\-]\s)/, first=i=>i===0||!L[i-1];
+  const nxt=i=>{ for(let j=i+1;j<L.length;j++)if(L[j])return L[j]; return ''; }, prv=i=>i>0?L[i-1]:'', exLike=l=>!!l&&!txtDayW(l)&&!txtAnn(l)&&(TXT_SET.test(l)||BUL.test(l)||TXT_MOVE.test(l.toLowerCase())||!!txtCardioW(l));
+  let blocks=0; L.forEach((l,i)=>{ if(l&&first(i))blocks++; }); const seq=txtSeqs(L);
+  const BULX=/^([-–—•*·‣▪◦○●□■☐☑✓✔]|\d+\s*[.)\-])\s*/, KM={};   // v365 · r4
+  const noteL=x=>txtStray(x)||txtAnn(x)||txtDate(x)||(/:$/.test(x)&&TXT_SEC.test(txtWords(x)[0]||'')), nxtM=i=>{ for(let j=i+1;j<L.length;j++)if(L[j]&&!noteL(L[j]))return L[j]; return ''; };   // lo que sigue, saltando notas
+  const hlW=x=>x&&!BUL.test(x)&&txtWords(x).length<=5&&txtWords(x).some(w=>TXT_HL.test(w)||TXT_HL2.test(w))&&exLike(nxtM(L.indexOf(x)));
+  const hl2n=L.filter(hlW).length, hl2f=L.some((x,j)=>first(j)&&hlW(x));   // «Heavy» / «Light»: en par y el primero arriba de su bloque
+  const kind=(l,i,bm)=>{ const key=(bm?'b':'s')+i; if(key in KM)return KM[key]; return KM[key]=kind0(l,i,bm); };
+  const kind0=(l,i,bm)=>{ const set=TXT_SET.test(l), mv=TXT_MOVE.test(l.toLowerCase()), lw=txtWords(l), sw=txtSeqW(lw);
+    if(/^gym\/\/TRK split/i.test(l))return 'skip';
+    if(!set&&lw.length<=8&&/(^|[^a-záéíóúñ])(d[ií]a|day)\s*\d+\b/i.test(l)&&!BUL.test(l)&&!txtStrayHard(l))return 'dw';   // v365 · r4 · M2 · «Semana 1 - Día 2», «SEMANA 1 · DÍA 1 (PUSH)»
+    if(!set&&sw&&/^(opcion|opciones|variante|variantes|alternativa|alternativas)$/.test(sw)&&(first(i)||seq.has(sw)))return 'head';   // v365 · r4 · «Opción A:» / «Opción B:»
+    if((txtStray(l)&&(!set||txtStrayHard(l)))||txtAnn(l))return 'skip';   // v365 · M1 · «RPE 8», «Tempo 3-1-1»: notas
+    if(txtDayW(l))return 'dw';
+    if(set)return 'ex';
+    if(/:$/.test(l)&&!mv){ const w0=lw[0]||''; return !first(i)&&(TXT_GRP.test(w0)||(TXT_SEC.test(w0)&&!(sw&&seq.has(sw))))?'skip':'head'; }   // v365 · r4 · M1b · «Superserie:», «Finisher:», «Parte principal:» pegados a un ejercicio: notas
+    if(l.length>40)return 'skip';
+    if(mv||txtCardioW(l))return 'ex';   // v365 · B4 · «Caminadora 20 min» también
+    let hl=BUL.test(l)?(txtHeadLike(l.replace(BULX,''),false,seq)===1?1:0):txtHeadLike(l,first(i),seq);   // v365 · r4 · «- Pesado», «◦ Grupo A»: notas
+    if(hl===1&&hl2n>=2&&hl2f&&!BUL.test(l)&&lw.some(x=>TXT_HL2.test(x)))hl=2;   // v365 · r4 · «Heavy» / «Light», «Enfoque glúteo» / «Enfoque cuádriceps»: en par son días
+    if(hl===2&&exLike(nxtM(i)))return 'head';   // v365 · N1 · M1 · r4: saltando una nota («WOD 1» / «Calentamiento: 400m trote»)
+    if(hl===1)return 'skip';   // v365 · M1 · «Pesado», «Volumen alto», «Enfoque pecho» entre ejercicios: una nota, ni día ni ejercicio
+    if(bm)return first(i)?'head':'ex';
+    if(txtMusc(l))return 'head';
+    if(BUL.test(l))return 'ex';
+    if(hasSets){ if(!exLike(nxt(i))||TXT_GRP.test(lw[0]||''))return 'skip';   // un renglón suelto entre ejercicios no parte el día · ni «Superserie A» tras el encabezado
+      for(let j=i-1;j>=0&&L[j];j--){ const k=kind(L[j],j,bm); if(k!=='skip')return 'skip'; }   // v365 · r4 · M1b · N1 · tras un ejercicio o un encabezado (saltando notas) es una nota
+      return 'head'; }
+    return first(i)?'head':'ex'; };
+  const run=bm=>{ const days=[], skipped=[], skipAt=[]; let cur=null, nb=true, heads=0, lx=-1;
+    L.forEach((l,i)=>{ if(!l){ nb=true; return; } const k=kind(l,i,bm);
+      if(k==='dw'||k==='head'){ heads++; const st=!first(i)&&!!cur&&cur.ex.length>0; cur={name:txtHead(l)||('día '+(days.length+1)),ex:[],src:l,dw:k==='dw',stuck:st}; days.push(cur); nb=false; return; }
+      if(k==='ex'){ const e=txtExLine(l); if(e){ if(!cur||(bm&&nb&&(cur.ex.length||/descans|\brest\b|\boff\b|libre/i.test(cur.src||'')))){ cur={name:'día '+(days.length+1),ex:[],src:''}; days.push(cur); } nb=false; cur.ex.push(e); lx=i; return; }
+        const e2=cur&&cur.ex.length&&lx===i-1&&!TXT_SET.test(L[i-1])?txtExLine(L[i-1]+' '+l):null; if(e2){ cur.ex[cur.ex.length-1]=e2; lx=-1; return; } }   // v365 · B4 · «Press banca» y abajo «4x8»: las series van con su ejercicio
+      skipped.push(l); skipAt.push({d:cur,k:cur?cur.ex.length:0}); });
+    return {days,skipped,skipAt,heads}; };
+  let R=run(!hasSets&&blocks>1); if(hasSets&&blocks>1&&!R.heads)R=run(true);
+  const days=R.days, emp=D=>!D.ex.length||D.ex.every(e=>e.type==='cardio'), fh=days.filter(d=>!d.stuck&&d.ex.length).length;   // «Día 1» sin ejercicios propios (o solo cardio) seguido de subtítulos: un solo día
+  for(let i=0;i<days.length;i++){ const D=days[i]; if(/descans|\brest\b|\boff\b|libre/i.test(D.src||''))continue;
+    if(D.dw&&emp(D)){ let j=i+1; while(j<days.length&&!days[j].dw)j++; const subs=days.slice(i+1,j); if(!subs.some(x=>x.ex.length))continue;
+      subs.forEach(x=>{ x.into=D; x.off=D.ex.length; D.ex=D.ex.concat(x.ex); }); if(subs.length===1)D.name=cut40(D.name+' · '+subs[0].name); days.splice(i+1,subs.length); continue; }
+    if(!D.ex.length)continue;
+    let j=i+1; while(j<days.length&&!days[j].dw&&days[j].stuck&&(D.dw||(fh>=2&&txtWords(days[j].src).every(w=>TXT_ACC.test(w)||TXT_CON.test(w)))))j++;   // v365 · r4
+    const subs=days.slice(i+1,j); if(!subs.length)continue; subs.forEach(x=>{ x.into=D; x.off=D.ex.length; D.ex=D.ex.concat(x.ex); }); days.splice(i+1,subs.length); }
+  const ok=days.filter(d=>d.ex.length), empty=days.filter(d=>!d.ex.length);   // un encabezado sin ejercicios («domingo: descanso») va con lo que no entendí
+  return {title,struct,days:ok,empty:empty.map(d=>d.name),skipped:dates.concat(R.skipped,empty.map(d=>d.src||d.name)),skipAt:dates.map(()=>null).concat(R.skipAt,empty.map(()=>null))}; }
+function txtToSplit(P,struct){ const B=splitBlank(); B.name=P.title||'rutina importada';
+  B.days=P.days.map(d=>({id:'d'+uid(),name:d.name,tag:'@ RIR · F',metric:'rir',allowFailure:true,exercises:d.ex.map(e=>{
+    if(e.cardio)return {id:'e'+uid(),name:e.name,type:'cardio',cardioSub:e.cardio,muscle:'cardio',sets:e.sets};   // v364 · fix · 8 · el cardio vuelve como cardio, no como lugar por elegir
+    const note=(e.reps?e.reps+(/[a-z]$/i.test(e.reps)?'':' reps'):'')+(e.rir!=null?(e.reps?' · ':'')+'RIR '+e.rir:''), base={id:'e'+uid(),muscle:e.m?slotMus(e.m):(struct?'':'other'),unilateral:e.lat==='uni',lat:e.lat==='alt'?'alt':undefined,sets:e.sets,note};
+    return struct?Object.assign(base,{name:'',pend:true,slot:{m:e.m,iso:!!e.iso,hint:txtMuscleSeg(e.name)?'':e.name},type:'free'}):Object.assign(base,{name:e.name,type:e.type}); })}));
+  return B; }
+let _tsp=null;
+function openTextSplit(){ if(db.activeWork){ toast('⚠ termina tu sesión primero','err'); return; } _tsp={txt:'',P:null,struct:false}; tspPaint(); }
+// v364 · fix · sin color en frases (B-07): «⚠ sin músculo» va neutro · un solo primario (leer o usar) · 4×8 sin espacio · «no entendí» completo
+function tspHTML(){ const S=_tsp, P=S.P, ok=!!(P&&P.days.length), sr=e=>e.sets+'×'+(e.reps?escTxt(e.reps):''), lat=e=>e.lat==='uni'?'[uni] ':e.lat==='alt'?'[alt] ':'[bi] ';
+  let h='<h3>rutina desde texto</h3><div class="submeta gap">pégala como la tengas en tus notas</div>'
+    +'<textarea id="tsp_txt" class="ta lg" placeholder="Push A&#10;press banca 4x8&#10;elevaciones laterales 3x12&#10;&#10;Pull A&#10;jalón al pecho 4x10">'+escTxt(S.txt)+'</textarea>'
+    +'<div class="line lsv"><span class="k">ejercicios</span><span class="dots"></span><span class="toggles"><button type="button" class="t'+(S.struct?'':' on')+'" data-act="tsp_mode" data-v="0">tal cual</button><button type="button" class="t'+(S.struct?' on':'')+'" data-act="tsp_mode" data-v="1">estructura</button></span></div>';
+  if(P){ h+='<div id="tsp_prev">'; if(!P.days.length)h+='<div class="submeta u-mt8">⚠ no encontré días con ejercicios</div>';
+    P.days.forEach((d,di)=>{ h+='<button type="button" class="grp-label sub tsph" data-act="tsp_day" data-di="'+di+'">'+escTxt(d.name)+' ›</button>';
+      d.ex.forEach((e,ei)=>{ const sl=S.struct&&!e.cardio, mu=e.cardio?'cardio':e.m?escTxt(slotMus(e.m)):'⚠ sin músculo';   // v365 · estética · el músculo como lo dirá el editor
+        h+='<div class="sexr"><button type="button" class="sxb" data-act="tsp_ex" data-di="'+di+'" data-ei="'+ei+'"><span class="sxt">'+(sl?'○ '+(e.m?mu+' · '+(e.iso?'aislado':'compuesto'):'⚠ sin músculo'):(e.cardio?'':lat(e))+escTxt(e.name))+'</span><span class="sxm">'+(sl?escTxt(e.name):mu)+' · '+sr(e)+' ›</span></button></div>'; }); });   // la fila del editor de split
+    if(P.skipped.length){ const all=S.allSkip||P.skipped.length<=12, n=all?P.skipped.length:10;
+      h+='<div class="grp-label sub">NO ENTENDÍ</div>'+P.skipped.slice(0,n).map((l,i)=>'<div class="sexr"><button type="button" class="sxb" data-act="tsp_skip" data-i="'+i+'"><span class="sxt u-o50">'+escTxt(l)+' ›</span></button></div>').join('')
+        +(all?'':'<div class="sexr"><button type="button" class="sxb" data-act="tsp_more"><span class="sxt u-o50">'+(P.skipped.length-n)+' más ›</span></button></div>'); }
+    h+='</div>'; }
+  const go=ok?['tsp_use','usar este split']:['tsp_read','leer'];
+  return h+'<div class="sheetbtns"><button class="ok" data-act="'+go[0]+'">'+go[1]+'</button><button class="cancel" data-act="tsp_cancel">cancelar</button></div>'; }
+// v364 · fix · 15 · al editar el texto después de leer, la previa vieja se apaga (sin moverse) y el botón vuelve a «leer»
+// v365 · N2 · con texto pegado la hoja cuenta como «sin guardar» cada vez que se pinta: al volver de renombrar (sheetBack) tocar fuera también pregunta
+function tspPaint(){ openModal(tspHTML()); const md=document.getElementById('modal'); if(md&&_tsp&&String(_tsp.txt||'').trim())md._dirty=true;
+  const t=document.getElementById('tsp_txt'); if(t)t.addEventListener('input',()=>{ if(!_tsp)return; _tsp.txt=t.value; if(_tsp.P){ _tsp.P=null; const pv=document.getElementById('tsp_prev'); if(pv)pv.classList.add('tspold'); const b=document.querySelector('#modal [data-act="tsp_use"]'); if(b){ b.dataset.act='tsp_read'; b.textContent='leer'; } } }); }
+// dónde quedó un renglón de «no entendí»: su día (o el día al que se unió) y su lugar en él
+function tspAt(a){ let d=a&&a.d, k=(a&&a.k)||0; while(d&&d.into){ k+=d.off||0; d=d.into; } return {d,k}; }
+// v365 · N1 · «empieza un día aquí»: parte el día di antes de su ejercicio k. si = el renglón de «no entendí» que se vuelve el nombre del día nuevo (o −1);
+// lo que «no entendí» guardaba después de ese punto se va con el día nuevo. Lo que tocaste queda a su altura: el ejercicio (ahora primero del día
+// nuevo) o, si era un renglón de «no entendí», el que le sigue.
+function tspSplit(di,k,name,si){ const P=_tsp&&_tsp.P, D=P&&P.days[di]; if(!D||!(k>0)||k>=D.ex.length)return;
+  const q0=si>=0?'[data-act="tsp_skip"][data-i="'+si+'"]':'[data-act="tsp_ex"][data-di="'+di+'"][data-ei="'+k+'"]', a=document.querySelector('#modal .sheet '+q0), y0=a?a.getBoundingClientRect().top:null;
+  const ND={name:cut40(name)||('día '+(di+2)),ex:D.ex.splice(k),src:si>=0?P.skipped[si]:''}; P.days.splice(di+1,0,ND); P.days.forEach((d,j)=>{ if(!d.src&&/^día \d+$/.test(d.name))d.name='día '+(j+1); });   /* v365 · B2 · los días de nombre automático se numeran en orden: nunca «día 2 | día 2» */
+  P.skipAt.forEach((s,j)=>{ const q=tspAt(s); if(s&&q.d===D&&(q.k>k||(q.k===k&&si>=0&&j>si))){ s.d=ND; s.k=q.k-k; } });
+  if(si>=0){ P.skipped.splice(si,1); P.skipAt.splice(si,1); } tspPaint(); sheetRestoreNow();
+  const sh=document.querySelector('#modal .sheet'), b=sh&&(sh.querySelector(si>=0?q0:'[data-act="tsp_ex"][data-di="'+(di+1)+'"][data-ei="0"]')||sh.querySelector('.sheetbtns .ok'));
+  if(y0!=null&&b)scrollHold(sh,sh.scrollTop+(b.getBoundingClientRect().top-y0)); }
+function tspAct(a,el){ const S=_tsp; if(!S)return; const t=document.getElementById('tsp_txt'); if(t)S.txt=t.value; const P=S.P;
+  if(a==='tsp_cancel'){ _tsp=null; closeModal(); reRender(); return; }
+  if(a==='tsp_read'){ S.P=parseSplitText(S.txt); S.allSkip=false; if(S.P.struct)S.struct=true; tspPaint(); return; }
+  if(a==='tsp_mode'){ S.struct=el.dataset.v==='1'; tspPaint(); return; }
+  if(a==='tsp_more'){ S.allSkip=true; tspPaint(); return; }
+  if(!P)return;
+  if(a==='tsp_ex'){ const di=+el.dataset.di, ei=+el.dataset.ei, d=P.days[di], e=d&&d.ex[ei]; if(!e)return; const it=[];
+    if(!e.cardio)it.push(['músculo · '+(e.m?slotMus(e.m):'—'),()=>trkMenu('músculo',Object.keys(MUSCLES).map(id=>[slotMus(id),()=>{ e.m=id; tspPaint(); }]))]);
+    it.push(['series · '+e.sets,()=>trkMenu('series',[1,2,3,4,5,6,7,8,9,10].map(n=>[String(n),()=>{ e.sets=n; tspPaint(); }]))]);   // v364 · fix · 15 · hasta 10, como lee el texto
+    if(S.struct&&!e.cardio)it.push(['aislado o compuesto · '+(e.iso?'aislado':'compuesto'),()=>{ e.iso=!e.iso; tspPaint(); }]);   // solo pesa en estructura
+    if(ei>0)it.push(['empieza un día aquí',()=>tspSplit(di,ei,'día '+(di+2),-1)]);   // v365 · N1 · partir lo que el lector juntó
+    it.push(['quitar',()=>{ d.ex.splice(ei,1); if(!d.ex.length)P.days.splice(di,1); tspPaint(); }]); trkMenu(e.name,it); return; }
+  if(a==='tsp_day'){ const di=+el.dataset.di, d=P.days[di]; if(!d)return;
+    const it=[['renombrar',()=>trkPrompt({title:'nombre del día',label:'DÍA',value:d.name,back:tspPaint},v=>{ const n=String(v||'').trim(); if(n)d.name=cut40(n); sheetBack(tspPaint); return false; })]];   // v364 · fix · 1 · guardar y cancelar vuelven a la previa
+    if(di>0){ const pv=P.days[di-1], join=hd=>{ const k0=pv.ex.length, e=hd?txtExLine('- '+(d.src||d.name)):null; pv.ex=pv.ex.concat(e?[e]:[],d.ex); d.into=pv; d.off=k0+(e?1:0); P.days.splice(di,1); tspPaint(); };
+      it.push(['unir con '+pv.name,()=>join(false)]); if(d.src)it.push(['es un ejercicio de '+pv.name,()=>join(true)]); }   // v364 · fix · 3 · v365 · un día sin renglón propio («día 2») no es un ejercicio
+    it.push(['quitar el día',()=>{ P.days.splice(di,1); tspPaint(); }]); trkMenu(d.name,it); return; }
+  if(a==='tsp_skip'){ const i=+el.dataset.i, l=P.skipped[i]; if(l==null)return; const r=tspAt(P.skipAt[i]); let di=P.days.indexOf(r.d), k=r.k; const sd=di, sk=k;
+    if(di<0){ di=r.d||!P.days.length?P.days.length-1:0; k=di>=0&&r.d?P.days[di].ex.length:0; }   // antes del primer día: al principio del primero
+    const drop=()=>{ P.skipped.splice(i,1); P.skipAt.splice(i,1); };
+    const it=[['agregar a '+(di>=0?P.days[di].name:'día 1'),()=>{ const e=txtExLine('- '+l)||{name:cut40(l),sets:3,reps:'',rir:null,lat:'bi',m:null,iso:txtIso(l),type:'free'}; if(di<0){ P.days.push({name:'día 1',ex:[]}); di=0; k=0; } const D=P.days[di];
+        drop(); P.skipAt.forEach(s=>{ const q=tspAt(s); if(s&&q.d===D&&q.k>=k)s.k++; }); D.ex.splice(Math.min(k,D.ex.length),0,e); tspPaint(); }],   // v364 · fix · 15 · al día y al lugar donde estaba
+      ['ignorar',()=>{ drop(); tspPaint(); }]];   // v364 · fix · 16 · [agregar] [ignorar]
+    if(sd>=0&&sk>0&&sk<P.days[sd].ex.length)it.splice(1,0,['empieza un día aquí',()=>tspSplit(sd,sk,txtHead(l),i)]);   // v365 · N1 · un encabezado que el lector no vio: el día nuevo lleva su nombre
+    trkMenu(l,it); return; }
+  if(a==='tsp_use'){ if(!P.days.length)return; const nx=txtToSplit(P,S.struct), nd=nx.days.length, n=nx.days.reduce((a2,d)=>a2+d.exercises.filter(x=>S.struct?x.pend:true).length,0);
+    if(splitSet(nx,splitArchiveInto(splitsSaved()),'✓ '+nd+(nd===1?'\u00a0día · ':'\u00a0días · ')+n+(S.struct?'\u00a0por\u00a0elegir':(n===1?'\u00a0ejercicio':'\u00a0ejercicios'))))_tsp=null; } }   // estética · «✓ 3 días · 18 por elegir [deshacer]»; a 320 baja de renglón en el «·», no a media frase
+// ---- SP15 · compartir tu split: solo su estructura, en texto que otra persona pega en «rutina desde texto» ----
+// v364 · fix · 7 · 8 · la pista es el movimiento genérico (splitStructure); el cardio va por su tipo; los días vacíos y los nombres con «:» vuelven igual; «·» no corta
+function splitShareText(sp){ sp=sp||db.split||{}; const S=splitStructure(sp), cl=x=>String(x||'').replace(/·/g,'-').replace(/\s+/g,' ').trim();
+  return 'gym//TRK split · '+cl(sp.name||'split')+'\n'+(S.days||[]).map((d,i)=>{ const o=(sp.days||[])[i]||{};
+    return cl(o.name||d.name||('día '+(i+1))).replace(/^[-–•]\s*/,'')+':\n'+(d.exercises||[]).map(x=>{ if(!x.pend)return '- '+cl(x.name)+' · cardio · '+serN(x.sets||1);
+      const M=MUSCLES[x.slot&&x.slot.m], hn=cl(x.slot&&x.slot.hint); return '- '+[hn||(M?M.es:'ejercicio')].concat(M&&hn?[M.es]:[],[x.slot.iso?'aislado':'compuesto',serN(x.sets||3)],x.lat==='alt'?['alternado']:x.unilateral?['unilateral']:[]).join(' · '); }).join('\n'); }).join('\n\n'); }
+function openShareSplit(){ const t=splitShareText();
+  openModal('<h3>compartir tu split</h3><div class="submeta gap">solo días, músculos y series</div><textarea id="spsh_txt" class="ta lg" readonly>'+escTxt(t)+'</textarea>'
+    +'<div class="sheetbtns"><button class="ok" data-act="spsh_copy">copiar</button><button class="cancel" data-act="closemodal">cerrar</button></div>'); }
 function openNewSplit(){ if(db.activeWork){ toast('⚠ termina o guarda tu sesión antes de cambiar de split','err'); return; } trkMenu('nuevo split',[['en blanco',()=>splitSet(splitBlank(),splitArchiveInto(splitsSaved()),'✓ split nuevo · el anterior quedó guardado')],
-  ['desde una plantilla',()=>openWorkshop()],['copia de este',()=>splitSet(splitCopy(db.split),splitArchiveInto(splitsSaved()),'✓ copia lista · el original quedó guardado')]]); }
+  ['desde una plantilla',()=>openWorkshop()],['desde texto',()=>openTextSplit()],['copia de este',()=>splitSet(splitCopy(db.split),splitArchiveInto(splitsSaved()),'✓ copia lista · el original quedó guardado')]]); }
 function openSplits(){ const L=splitsSaved();
-  openModal('<h3>tus splits</h3><div class="line stat"><span class="k">'+escTxt((db.split&&db.split.name)||'split')+' · en uso</span><span class="dots"></span><span class="v u-nowrap">'+((db.split&&db.split.days)||[]).length+' días</span></div>'
+  openModal('<h3>tus splits</h3>'+(((db.split&&db.split.days)||[]).some(d=>(d.exercises||[]).length)?'<button type="button" class="line stat tap u-w100 sph" data-act="sp_share"><span class="k">'+escTxt((db.split&&db.split.name)||'split')+' · en uso</span><span class="dots"></span><span class="v u-nowrap">compartir ›</span></button>':'<div class="line stat"><span class="k">'+escTxt((db.split&&db.split.name)||'split')+' · en uso</span><span class="dots"></span><span class="v u-nowrap">'+((db.split&&db.split.days)||[]).length+' días</span></div>')   // v364 · fix · 13
     +L.map((s,i)=>'<button type="button" class="line stat tap u-w100 sph" data-act="sp_pick" data-i="'+i+'"><span class="k">'+escTxt(s.name||'split')+'</span><span class="dots"></span><span class="v u-nowrap">'+(s.days||[]).length+' días ›</span></button>').join('')
     +'<div class="sheetbtns"><button class="b" data-act="sp_new">+ nuevo split</button><button class="cancel" data-act="closemodal">cerrar</button></div>'); }
 function splitSwitch(i){ const L=splitsSaved(), s=L[i]; if(!s)return; const nx=splitClone(s); delete nx.savedAt; const rest=L.filter((_,j)=>j!==i); return splitSet(nx,splitArchiveInto(rest),'✓ ahora usas '+(nx.name||'ese split')); }
 function splitDelete(i){ const L=splitsSaved(), s=L[i]; if(!s)return; holdConfirm({title:'borrar '+(s.name||'este split'),detail:'tus sesiones se quedan en el historial',verb:'borrar'},()=>{
   const prevL=splitClone(L); db.splits=L.filter((_,j)=>j!==i); closeModal(); const ok=save(); reRender(); if(ok)toast('✓ split borrado','ok',{undo:()=>{ db.splits=prevL; }}); else toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err'); }); }
 function sdNewDayName(){ return 'día '+(((db.split&&db.split.days)||[]).length+1); }
-function splitBtnsHTML(){ const n=splitsSaved().length; return '<div class="secondary u-mt6 u-mb10"><button class="b" data-act="sp_new">+ nuevo split</button>'+(n?'<button class="b" data-act="sp_list">tus splits · '+n+'</button>':'')+'</div>'; }
+function splitBtnsHTML(){ const n=splitsSaved().length; return '<div class="secondary u-mt6 u-mb10"><button class="b" data-act="sp_new">+ nuevo split</button>'+(n||((db.split&&db.split.days)||[]).some(d=>(d.exercises||[]).length)?'<button class="b" data-act="sp_list">tus splits'+(n?' · '+n:'')+'</button>':'')+'</div>'; }   // v364 · SP15 · fix · 13
 // ---- v356 · SP8 · el editor: filas de 44, arrastrar ⠿ y un menú por fila (quitar ya no es una ✕ a un roce: v303) ----
-function sdExRowHTML(d,di,e,ei){ const tl={machine:' · máquina',pulley:' · polea',smith:' · smith',cable:' · polea',bodyweight:' · peso corporal'}[e.type]||'';
+function sdExRowHTML(d,di,e,ei){ if(e&&e.pend)return '<div class="sexr" data-di="'+di+'" data-ei="'+ei+'" data-rk="sx:'+escTxt(e.id||(di+':'+ei))+'"><span class="sxg" data-sxdrag="'+di+':'+ei+'" aria-hidden="true">⠿</span><button type="button" class="sxb" data-act="sd_exmenu" data-di="'+di+'" data-ei="'+ei+'"><span class="sxt u-o60">○ '+escTxt(slotTxt(e))+'</span><span class="sxm">'+(e.sets||3)+'×</span></button></div>';   // v364 · SP14
+  const tl={machine:' · máquina',pulley:' · polea',smith:' · smith',cable:' · polea',bodyweight:' · peso corporal'}[e.type]||'';
   return '<div class="sexr" data-di="'+di+'" data-ei="'+ei+'" data-rk="sx:'+escTxt(e.id||(di+':'+ei))+'"><span class="sxg" data-sxdrag="'+di+':'+ei+'" aria-hidden="true">⠿</span>'
     +'<button type="button" class="sxb" data-act="sd_exmenu" data-di="'+di+'" data-ei="'+ei+'"><span class="sxt">'+latTxt(e)+escTxt(e.name||'')+'</span><span class="sxm">'+escTxt(fmtMuscles(e))+tl+(e.assisted?' · asistido':'')+(e.weighted?' · con lastre':'')+' · '+(e.sets||1)+'×</span></button></div>'; }
 function sdMove(di,ei,to){ const xs=((db.split.days[di]||{}).exercises)||[]; if(to<0||to>=xs.length||to===ei)return; const it=xs.splice(ei,1)[0]; xs.splice(to,0,it); save(); reRender(); }
-function sdExMenu(di,ei){ const d=db.split.days[di], x=d&&(d.exercises||[])[ei]; if(!x)return; const n=d.exercises.length, it=[['editar',()=>openExEdit(di,ei)]];
+function sdExMenu(di,ei){ const d=db.split.days[di], x=d&&(d.exercises||[])[ei]; if(!x)return; if(x.pend)return openSlotPick(di,ei);   /* v364 · SP14 */ const n=d.exercises.length, it=[['editar',()=>openExEdit(di,ei)]];
   if(ei>0)it.push(['subir',()=>sdMove(di,ei,ei-1)]); if(ei<n-1)it.push(['bajar',()=>sdMove(di,ei,ei+1)]);
   it.push(['quitar del split',()=>{ d.exercises.splice(ei,1); save(); reRender(); toast((x.name||'ejercicio')+' · fuera del split','',{undo:()=>{ d.exercises.splice(Math.min(ei,d.exercises.length),0,x); }}); }]);
   trkMenu(x.name||'ejercicio',it); }
@@ -10130,7 +10665,7 @@ function renderWorkout(){
     +top
     +(full?(w.loggedAfter?'':`<div class="rot u-mt12"><span class="lbl">ROTATION - DAY ${curDayIdx()+1}/${dayCount()}${w.startMs?' · '+elapsedStr(w.startMs):''}</span><span class="n vb" role="button" data-act="changegym">change gym</span></div>`)+dayHeadHTML('NOW',escTxt(w.dayName),[escTxt(db.split.name),escTxt(intensityTag()),escTxt(w.gym||'')].filter(Boolean).join(' · '),'top')+sessionContextNote(w):'')
     +`<div class="wfocus">${body}</div>`
-    +(w.exercises.some(e=>!isCardio(e)&&(e.sets||[]).some(s=>setReps(s)>0&&!s._pf))?'<div class="secondary u-mt12"><button class="b" data-act="sharelive">compartir sesión</button></div>':'');   // v346 · X4 · la sesión en curso se comparte completa
+    +((pn,sh)=>pn||sh?'<div class="secondary u-mt12">'+(pn?'<button class="b" data-act="slot_live">'+pn+' por elegir ›</button>':'')+(sh?'<button class="b" data-act="sharelive">compartir sesión</button>':'')+'</div>':'')(day&&day.id===w.dayId?slotPendN(day):0,w.exercises.some(e=>!isCardio(e)&&(e.sets||[]).some(s=>setReps(s)>0&&!s._pf)));   // v364 · fix · 16   // v346 · X4 · la sesión en curso se comparte completa
 }
 
 // ---------- render: macros ----------
@@ -11172,7 +11707,7 @@ function onbApply(d){ const today=todayISO(), P=onbProfile(d), sk=k=>(d.skip||[]
   db.goalHist=db.goalHist||{}; db.goalHist[today]=Object.assign({},db.settings.goals);
   if(P.wKg&&P.wKg>=30&&P.wKg<=250){ db.bodyweight=db.bodyweight||{}; if(db.bodyweight[today]==null)db.bodyweight[today]=P.wKg; }   // el peso que tecleaste es tu primer registro
   const tp=!sk('split')&&SPLIT_TEMPLATES().find(t=>t.key===d.tpl);
-  if(tp)db.split=tp.build(); else if(!sk('split')&&d.tpl==='blank')db.split={name:'mi split',days:[{id:'d'+uid(),name:'día 1',exercises:[]}]};
+  if(tp)db.split=splitStructure(tp.build());   /* v364 · SP14 · la plantilla pasa solo su estructura: los ejercicios los eliges tú */ else if(!sk('split')&&d.tpl==='blank')db.split={name:'mi split',days:[{id:'d'+uid(),name:'día 1',exercises:[]}]};
   db.split=db.split||{name:'',days:[]};
   if(!sk('train')){ db.split.plan={mode:d.mode||'daily',on:+d.on||3,off:+d.off||1,week:{},blocked:(d.blocked||[]).map(Number)}; db.split.metric=d.metric==='rpe'?'rpe':'rir';
     if(d.mode==='weekly'&&(db.split.days||[]).length)db.split.plan.week=defaultWeek(); }
@@ -14184,7 +14719,7 @@ function openSubFixes(){ const L=db._dataLog&&db._dataLog.v3; if(!L)return; cons
 // mano; nunca automático (el split es su plan, no un registro).
 function dayDrift(day){
   const ds=daySource(day); if(!ds.fromPrior)return null;
-  const cur=(day.exercises||[]).map(e=>nameKey(e.name));
+  const cur=(day.exercises||[]).filter(e=>!(e&&e.pend)).map(e=>nameKey(e.name));   // v364 · fix · 2 · un lugar por elegir no cuenta
   const real=(ds.list||[]).map(e=>nameKey(e.name));
   if(cur.length===real.length&&cur.every((x,i)=>x===real[i]))return null;
   return {cur,real,list:ds.list,prior:ds.prior};
@@ -14212,6 +14747,7 @@ function adoptDaySource(di){
       sets:Math.max(1,nn||base.sets||1)
     });
   });
+  old.forEach((x,i)=>{ if(x&&x.pend&&!used[x.id])day.exercises.splice(Math.min(i,day.exercises.length),0,x); });   // v364 · fix · los lugares por elegir se quedan al adoptar · v365 · N8 · cada uno en su sitio
   save(); reRender(); toast('✓ split actualizado · '+day.exercises.length+' ejercicios');
 }; return trkAsk({title:'adoptar "'+(day.name||'')+'" como lo entrenaste',detail:'el '+((d.prior&&d.prior.date)||'')+':\n'+names,ok:'adoptar'},_go3);}
 // v273 · //SCHEDULE: cómo entrenas, días sin gym, ciclo real e intensidad (RIR o RPE) — antes que los días
@@ -15199,10 +15735,11 @@ document.getElementById('app').addEventListener('click',e=>{
   // G2 · R-SESS: lo que CREA una sesión o mueve la rotación nunca corre con una sesión viva (antes reemplazaba la tuya)
   else if((a==='start'||a==='loglater'||a==='rest'||a==='skip'||a==='unrest')&&db.activeWork){ toast('⚠ sesión en curso · termínala o abórtala','err'); }
   else if(a==='start'){ const _go=()=>{ const _t0=ccCfg()?goalsFor(todayISO()).ccT:null; ccActDay(); db.activeWork=stampSessionPre(newWorkSession()); save(); state._autoScroll=true; go('workout'); if(_t0&&_t0!=='hi')toast('✓ hoy es on'+ccTxt().replace(/^ · on/,' ·')); };
-    const _sd=db.split&&(db.split.days||[])[selIdx()]; if(_sd&&splitAsk(_sd)){ trkAsk({title:'tu split y tu última sesión no coinciden',detail:'este día del split no es como lo entrenaste la última vez · ¿empiezas con tu split o como lo entrenaste?',ok:'mi split',cancel:'como lo entrené',dismiss:()=>{}},()=>{ _sd.mt=Date.now(); _go(); },()=>{ _sd.mt=1; _go(); }); return; }   // v355 · SP5 · una vez por día
+    const _sd=db.split&&(db.split.days||[])[selIdx()]; if(slotGate('start'))return;   // v364 · SP14 · fix · 16
+    if(_sd&&splitAsk(_sd)){ trkAsk({title:'tu split y tu última sesión no coinciden',detail:'este día del split no es como lo entrenaste la última vez · ¿empiezas con tu split o como lo entrenaste?',ok:'mi split',cancel:'como lo entrené',dismiss:()=>{}},()=>{ _sd.mt=Date.now(); _go(); },()=>{ _sd.mt=1; _go(); }); return; }   // v355 · SP5 · una vez por día
     _go(); }   // v339 · CC3 · entrenar manda sobre el cambio a mano de hoy
   else if(a==='togglepreview'){ state.previewDay=!state.previewDay; reRender(); }
-  else if(a==='loglater'){ const w=newWorkSession(); w.loggedAfter=true; w.startMs=null; const y=new Date(); y.setDate(y.getDate()-1); w.date=todayISO(y); db.activeWork=w; save(); go('workout'); }
+  else if(a==='loglater'){ if(slotGate('loglater'))return;   /* v364 · fix · 16 */ const w=newWorkSession(); w.loggedAfter=true; w.startMs=null; const y=new Date(); y.setDate(y.getDate()-1); w.date=todayISO(y); db.activeWork=w; save(); go('workout'); }
   else if(a==='togglenoadv'){ if(db.activeWork){ db.activeWork.noAdvance=!db.activeWork.noAdvance; reRender(); } }
   else if(a==='resume'){ goBack('workout'); }   // v285 · a la serie donde ibas
   else if(a==='leave'){ const b=state._shBack; state._shBack=null; if(b&&b!=='home'&&state.screen==='share'&&state.shareType==='session'){ _lastTap=null; goBack(b); } else if(state._from==='home')goBack('home'); else go('home'); }   // v346 · compartir sesión vuelve a la sesión, al historial o a su hoja   // ‹ back vuelve a la altura de gym solo si venías de ahí
@@ -15249,9 +15786,9 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='loaddemo'){ db.split=demoSplit(); db.rotIdx=0; state.selDay=null; save(); render(); }
   else if(a==='loadmine'){ db.split=myStarterSplit(); db.rotIdx=0; state.selDay=null; if(!db.activeGym){db.activeGym='PRO GYM — arandas'; db.gyms=['PRO GYM — arandas'];} save(); render(); }
   else if(a==='workshop'){ openWorkshop(); }
-  else if(a==='usetpl'){ const t=(window._tpls||[])[+el.dataset.i]; if(t&&db.split&&(db.split.days||[]).length){ const _nx=t.build(), _k=db.split; (_nx.days||[]).forEach(d=>{ d.id='d'+uid(); (d.exercises||[]).forEach(x=>{ x.id='e'+uid(); }); }); if(_k.plan)_nx.plan=Object.assign(splitClone(_k.plan),_k.plan.mode==='weekly'?{mode:'daily',week:{}}:{}); if(_k.metric)_nx.metric=_k.metric; if(_k.allowF!=null)_nx.allowF=_k.allowF;
+  else if(a==='usetpl'){ const t=(window._tpls||[])[+el.dataset.i]; if(t&&db.split&&(db.split.days||[]).length){ const _nx=splitStructure(t.build()),   /* v364 · SP14 · una plantilla pasa solo su estructura */ _k=db.split; (_nx.days||[]).forEach(d=>{ d.id='d'+uid(); (d.exercises||[]).forEach(x=>{ x.id='e'+uid(); }); }); if(_k.plan)_nx.plan=Object.assign(splitClone(_k.plan),_k.plan.mode==='weekly'?{mode:'daily',week:{}}:{}); if(_k.metric)_nx.metric=_k.metric; if(_k.allowF!=null)_nx.allowF=_k.allowF;
       splitSet(_nx,splitArchiveInto(splitsSaved()),'✓ plantilla lista · el anterior quedó guardado'); state._scroll=0; /*ds:top*/ go('splitedit'); return; }   // v356 · SP7
-    if(t){ splitCarry(t.build()); db.rotIdx=0; state.selDay=null; save(); closeModal(); state._scroll=0; /*ds:top*/ go('splitedit'); } }
+    if(t){ splitCarry(splitStructure(t.build()));   /* v365 · N3 · también con el split vacío (alta sin split): los ejercicios los eliges tú */ db.rotIdx=0; state.selDay=null; save(); closeModal(); state._scroll=0; /*ds:top*/ go('splitedit'); } }
   else if(a==='logweight'){ logBackMark(); openWeightLog(); }
   else if(a==='logsleep'){ logBackMark(); openSleepLog(); }
   else if(a==='editsleep'){ const d=el.dataset.d; const dt=document.getElementById('sl_date'); if(dt){ dt.value=d; dt.dispatchEvent(new Event('change')); } }
@@ -15377,6 +15914,10 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='sd_fold'){ const _d=db.split.days[+el.dataset.di]; if(_d){ const _op=!sdOpen(_d,db.split); (state._sdOpen=state._sdOpen||{})[_d.id]=_op; if(_op)state._enter={sel:'.seday[data-id="'+(window.CSS&&CSS.escape?CSS.escape(_d.id):_d.id)+'"] > :not(.sehead)'}; reRender(); } }   // v285 · SP1
   else if(a==='sd_cov'){ state._covOpen=!(state._covOpen!==false); if(state._covOpen)state._enter={sel:'.sefoldh ~ .line.sch, .sefoldh ~ .cvx'}; reRender(); }   // v285 · SP2 · v352: abre desplegada
   else if(a==='sd_exmenu'){ sdExMenu(+el.dataset.di,+el.dataset.ei); }   // v356 · SP8
+  else if(a.indexOf('slot_')===0){ slotAct(a,el); }   // v364 · SP14
+  else if(a.indexOf('tsp_')===0){ tspAct(a,el); }   // v364 · SP13
+  else if(a==='sp_share'){ openShareSplit(); }   // v364 · SP15
+  else if(a==='spsh_copy'){ const t=document.getElementById('spsh_txt'); const v=t?t.value:''; try{ navigator.clipboard.writeText(v).then(()=>toast('✓ copiado · pégalo en un mensaje'),()=>{ if(t){ t.select(); toast('selecciónalo y cópialo','',{}); } }); }catch(_){ if(t)t.select(); } }
   else if(a==='sd_daymenu'){ sdDayMenu(+el.dataset.di); }
   else if(a==='sp_new'){ closeModal(); openNewSplit(); }   // v356 · SP7
   else if(a==='sp_list'){ openSplits(); }
@@ -19506,7 +20047,7 @@ function safeBottomPx(){ if(_sabT!=null)return _sabT;
 // sin franja (escritorio, teléfono con botón) no hay nada que proteger: con 0 todo sigue como antes
 function inGestureStrip(y){ const s=safeBottomPx(); return s>0&&typeof y==='number'&&y>=window.innerHeight-(s+EDGE_PAD); }
 // hojas del flujo de gym que guardan lo escrito con SU botón (las demás guardan al tocar: no tienen nada que perder)
-const SHEET_GUARD='[data-act="okexedit"],[data-act="okaddex"],[data-act="ss_save"],[data-act="pf_save"],#mc_save,#exn_save,#ng_add,#ax_newmus_go,#tp_ok';
+const SHEET_GUARD='[data-act="okexedit"],[data-act="okaddex"],[data-act="ss_save"],[data-act="pf_save"],#mc_save,#exn_save,#ng_add,#ax_newmus_go,#tp_ok,[data-act="tsp_read"],[data-act="tsp_use"]';   // v364 · fix · 9 · la hoja de rutina desde texto
 function sheetUnsaved(m){ return !!(m&&m._dirty&&m.querySelector(SHEET_GUARD)); }
 function scrimGuard(ev){ const m=ev.target; if(!m||!m.classList||!m.classList.contains('modal'))return false;   // solo el velo, nunca la hoja
   if(inGestureStrip(ev.clientY)){ ev.stopPropagation(); return true; }
@@ -19709,9 +20250,10 @@ document.addEventListener('click',e=>{ const g=e.target&&e.target.closest&&e.tar
   if(!(e.target&&e.target.closest&&e.target.closest('#gloss,#tsel')))popClose(); },true);
 try{ document.addEventListener('scroll',popClose,{capture:true,passive:true}); }catch(_){}   // cualquier scroll (pantalla o sheet) la cierra
 // TRKPrompt: un campo en un sheet (reemplaza al diálogo nativo de texto). onSave(valor) → false = no cerrar (el toast dice por qué)
-function trkPrompt(o,onSave){ openModal('<h3>'+escTxt(o.title||'')+'</h3><div class="field"><label>'+escTxt(o.label||'')+'</label><input id="tp_in" type="'+(o.type||'text')+'"'+(o.inputmode?' inputmode="'+o.inputmode+'"':'')+' value="'+escTxt(o.value==null?'':String(o.value))+'" placeholder="'+escTxt(o.placeholder||'')+'"/></div>'+(o.hint?'<div class="submeta gap">'+escTxt(o.hint)+'</div>':'')+'<div class="sheetbtns"><button class="ok" id="tp_ok">'+escTxt(o.ok||'guardar')+'</button><button class="cancel" data-act="closemodal">cancelar</button></div>');
+function trkPrompt(o,onSave){ openModal('<h3>'+escTxt(o.title||'')+'</h3><div class="field"><label>'+escTxt(o.label||'')+'</label><input id="tp_in" type="'+(o.type||'text')+'"'+(o.inputmode?' inputmode="'+o.inputmode+'"':'')+' value="'+escTxt(o.value==null?'':String(o.value))+'" placeholder="'+escTxt(o.placeholder||'')+'"/></div>'+(o.hint?'<div class="submeta gap">'+escTxt(o.hint)+'</div>':'')+'<div class="sheetbtns"><button class="ok" id="tp_ok">'+escTxt(o.ok||'guardar')+'</button><button class="cancel" '+(o.back?'id="tp_back"':'data-act="closemodal"')+'>cancelar</button></div>',o.back?'nodismiss':'');
   const i=document.getElementById('tp_in'); const go=()=>{ if(onSave(i.value)!==false)closeModal(); };
-  document.getElementById('tp_ok').onclick=go; i.addEventListener('keydown',e=>{ if(e.key==='Enter')go(); }); }
+  document.getElementById('tp_ok').onclick=go; i.addEventListener('keydown',e=>{ if(e.key==='Enter')go(); });
+  if(o.back){ const bk=()=>sheetBack(o.back), md=document.getElementById('modal'), cb=document.getElementById('tp_back'); if(cb)cb.onclick=bk; if(md)md.addEventListener('click',ev=>{ if(ev.target!==md)return; if(md._dirty&&i.value!==String(o.value==null?'':o.value))trkAsk({title:'cerrar sin guardar',detail:'lo que escribiste en esta hoja no se guarda',ok:'cerrar',cancel:'seguir',danger:true},bk); else bk(); }); } }   // v364 · fix · 1 · o.back = la hoja madre · v365 · N4 · lo escrito no se tira sin preguntar
 // ── DESIGN MODE: live spacing/radius editor (open with ?design=1). Pure overlay — overrides nothing until you move a slider. ──
 const DESIGN_KNOBS=[
   {k:'pageY',l:'página · arriba',d:22,min:6,max:56,css:s=>`:root{--sp-py:${s}px}`},
@@ -20058,7 +20600,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ cloudBoot(); }catch(_){}   // v352 · cuentas y nube: apagada (CLOUD_CFG vacío) no hace nada
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
