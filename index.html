@@ -528,7 +528,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .hist-rail .hitem:first-child::before{top:var(--hdot);} .hist-rail .hitem:last-child::before{bottom:auto; height:var(--hdot);} .hist-rail .hitem:only-child::before{display:none;}
   .hist-rail .hitem::after{content:''; position:absolute; left:0; top:calc(var(--hdot) - 3.5px); width:7px; height:7px; border-radius:50%; background:var(--o40);}
   .hist-rail .hitem.hit::after{background:var(--fg);}
-  .hbody{padding-bottom:var(--s4);} .hbody .hacts{display:flex; justify-content:flex-end;} .hbody .hacts a{padding:var(--s2) 0 var(--s2) var(--s5); font-size:var(--t-label); color:var(--o60); cursor:pointer;}
+  .hbody{padding-bottom:var(--s4);} .hbody .hacts{display:flex; justify-content:flex-end;} .hbody .hacts a{padding:var(--s2) 0 var(--s2) var(--s5); min-height:44px; display:inline-flex; align-items:center; font-size:var(--t-label); color:var(--o60); cursor:pointer;}
   .hcal{background:var(--card); border:var(--bw-card) solid var(--border); border-radius:var(--radius); padding:var(--s2) var(--s4) var(--s4); margin-bottom:var(--sp-gap);}
   .hcalh{display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--s2);}
   .hcalh .hct{font-size:var(--t-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--o50);} .hcalh .hct b{color:var(--fg); font-weight:700;}
@@ -1109,7 +1109,6 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .shxl{margin-top:var(--s3); font-size:var(--t-label); color:var(--o40); text-align:center;}
   .shxr.hn{align-items:baseline; line-height:var(--lh-ui);} .shxr.hn .nm{grid-column:1 / 4; display:block; min-width:0; white-space:normal;} .shxr.hn .shxn{display:inline; color:var(--fg); letter-spacing:0;} .shxr.hn .shxp{margin-left:var(--s3);}   /* el ▲▼ sigue a la última palabra del nombre: no gasta un renglón */ .shxr.hn.bx{align-items:baseline;}   /* v345 · X9 · el nombre y los rótulos de sus columnas en un renglón */
   .srb .srn{display:block;} .srl{display:flex; align-items:baseline; gap:var(--s3);} .srl .srno{flex:0 0 2ch; font-size:var(--t-label); color:var(--o40);}   /* v345 · X7 · una serie por renglón */
-  .shvt{margin:var(--s5) 0 0;}
   /* v281 · compartir sesión "cajas": la misma tabla con las cajas de la sesión viva (.inp), sin nada que tocar. El dueño (1-oct): "quiero uno como el de la sesión, pero más sintetizado, sin las opciones de poder alterar" */
   .shxr.bx{grid-template-columns:18px 14px minmax(0,1fr) 32px 28px 36px; align-items:center;}
   .shxr.bx:not(.hd){margin-bottom:calc(var(--s1) / 2);}
@@ -1190,7 +1189,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .hero.good .ring-fill{stroke:var(--good);} .hero.over .ring-fill{stroke:var(--bad);}   /* v262 · sin brillo */
   .hero-meta .left.under{color:var(--o60);} .hero-meta .left.over{color:var(--bad); font-weight:700;}
   .cell.good .ring-fill{stroke:var(--good);} .cell.over .ring-fill{stroke:var(--bad);} .cell.over .num{color:var(--bad);} .cell.good .num{color:var(--good);}
-  .mrow .bar>i.over{background:var(--bad);} .cvx .cvxc.adj,.cvx .cvxc.adjw,.cvx .cvxc.adjf{position:relative;} .cvx .cvxc.adj::before,.cvx .cvxc.adjw::after,.cvx .cvxc.adjf::before{content:''; position:absolute; top:50%; width:var(--s2); height:var(--s3); transform:translateY(-50%); background:var(--o30);} .cvx .cvxc.adj::before{right:100%;} .cvx .cvxc.adjw::after{left:100%; width:var(--s1);} .cvx .cvxc.adjf::before{right:100%; width:var(--s1);} /* v366 · B5 · la vuelta: media unión en cada orilla (la del primero no toca el número) */ .cvx .cvxdh{position:relative; cursor:pointer;} .cvx .cvxdh::after{content:''; position:absolute; top:0; bottom:0; left:50%; width:var(--h-pri); transform:translateX(-50%);} .cvx .cvxh>.cvxn+.cvxdh::after{left:0; transform:none;}   /* v365 · SP12 · pegado: una unión tenue y sin color en el hueco entre dos días (adjw: el último con el primero) · el nombre del día, toque de 44 (el primero no tapa «volumen») */
+  .mrow .bar>i.over{background:var(--bad);} .ssx{display:block; width:100%; min-height:44px; margin:0 0 var(--s2); padding:var(--s2) 0; border:0; border-bottom:var(--bw-sep) solid var(--o10); background:none; color:inherit; font:inherit; text-align:left; cursor:pointer;} .ssx .sxr{margin-bottom:0;} .ssx:active{opacity:var(--op-press);} .hbody .sxh .sxn,.ssx .sxh .sxn{white-space:normal; overflow:visible; text-overflow:clip;}   /* v366 · HS1 · fix366: el nombre dobla renglón, no se corta (B-12) */ .hbody .sxh,.ssx .sxh{flex-wrap:wrap; row-gap:0;} .hbody .sxh .sxk,.ssx .sxh .sxk{margin-left:auto;}   /* v367 · si el nombre no cabe junto a su dato, el dato baja a su renglón */ .hbody .hacts.two{justify-content:space-between;} .hbody .hacts.two a:first-child{padding-left:0;}   /* v366 · HR2 */ .cvx .cvxc.adj,.cvx .cvxc.adjw,.cvx .cvxc.adjf{position:relative;} .cvx .cvxc.adj::before,.cvx .cvxc.adjw::after,.cvx .cvxc.adjf::before{content:''; position:absolute; top:50%; width:var(--s2); height:var(--s3); transform:translateY(-50%); background:var(--o30);} .cvx .cvxc.adj::before{right:100%;} .cvx .cvxc.adjw::after{left:100%; width:var(--s1);} .cvx .cvxc.adjf::before{right:100%; width:var(--s1);} /* v366 · B5 · la vuelta: media unión en cada orilla (la del primero no toca el número) */ .cvx .cvxdh{position:relative; cursor:pointer;} .cvx .cvxdh::after{content:''; position:absolute; top:0; bottom:0; left:50%; width:var(--h-pri); transform:translateX(-50%);} .cvx .cvxh>.cvxn+.cvxdh::after{left:0; transform:none;}   /* v365 · SP12 · pegado: una unión tenue y sin color en el hueco entre dos días (adjw: el último con el primero) · el nombre del día, toque de 44 (el primero no tapa «volumen») */
   .cvx .cvxdh.mv::before{content:''; position:absolute; left:var(--s1); right:var(--s1); bottom:0; border-bottom:var(--bw-dash) dashed var(--fg);} .cvxpend{position:sticky; bottom:calc(-1 * var(--nav-clear)); z-index:2; margin-top:var(--s4); background:var(--bg); border-top:var(--bw-sep) solid var(--o10);}   /* v366 · N1 · un día movido sin aplicar: punteado bajo su nombre (sin color ni alto nuevo) · lo que falta aplicar se pega abajo mientras se ven los renglones del mapa (.cvxw empieza tras la cabecera: nunca tapa los nombres, D1) · D4 · justo sobre la barra de inicio del iPhone: baja solo el relleno de .scroll sin la zona segura, y su relleno es el de .line (en el iPhone medía 87 px) · los avisos quedan encima */ .mrow .bar.lq{position:relative; overflow:visible;} .bar.lq .lqb{position:absolute; left:0; top:-2px; height:7px; background:var(--o20); border-radius:var(--r-sm);} .mrow.lqr{position:relative; border-bottom:0;} .mrow.lqr::after{content:''; position:absolute; left:0; right:0; top:calc(50% - 22px); height:44px;} .bar.lq>i{position:relative; z-index:1;}   /* v363 · LQ1 · franja: todos los líquidos · línea: solo agua */ .mrow .mv.ovr{color:var(--bad);}
   /* add-food: recents fill, controls pinned at bottom, equal buttons */
   .sheet.tall{height:90vh; display:flex; flex-direction:column; padding-bottom:calc(14px + env(safe-area-inset-bottom));}
@@ -1562,7 +1561,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v366';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v367';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2707,6 +2706,193 @@ function _v363hSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
 // self-check de v363 (GL2 · LQ1 · H8). Base de juguete; nada llega a disco; todo se restaura en finally.
 // self-check de v364 (SP13 · SP14 · SP15). Base de juguete; nada llega a disco; todo se restaura en finally.
 // self-check de v365 (SP10 · SP11 · SP12). Base de juguete; nada llega a disco; todo se restaura en finally.
+// self-check de v366 (X11 · HS1 · HR2). Base de juguete; nada llega a disco; todo se restaura en finally.
+function _v366SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v366: '+nm); }; const real=db, t0=state.shareType, i0=state.shareId, v0=state._shv, sb0=_sbx, r0=render, rr0=reRender, ts0=toast;
+  try{ _sbx=true; render=()=>{}; reRender=()=>{};   /* fix366 */ const T=todayISO(), S=(w,r,rir,o)=>Object.assign({w:String(w),r:String(r),rir:String(rir),unit:'lbs',done:true},o||{});
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1','g2'],activeGym:'g1',split:{name:'s',days:[]},
+      sessions:[{id:'q1',date:T,dayName:'push A',gym:'g1',durSec:4500,type:'training',exercises:[{name:'press banca',muscle:'chest',type:'machine',sets:[S(110,8,1),S(110,7,1),S(60,10,0,{isDrop:true})]},{name:'curl',muscle:'bicep',type:'machine',sets:[S(20,10,1)]}]}]}); bumpIdx();
+    // X11
+    state.shareType='session'; state.shareId='q1'; delete state._shv; let b=document.createElement('div'); b.innerHTML=renderShareSession('q1'); const card=b.querySelector('.sharecard');
+    A('X11 · por omisión, el formato del historial: un bloque por ejercicio con sus series en una línea', shSessView()==='historial'&&card.querySelectorAll('.sxr').length===2&&/110\s*×\s*8/.test(card.querySelector('.sxs').textContent)&&!card.querySelector('.shxr'));
+    A('X11 · solo dos pestañas: historial y lista, fuera de la imagen', [...b.querySelectorAll('.shvt [role="tab"]')].map(x=>x.textContent).join()==='historial,lista'&&!card.querySelector('.shvt'));
+    A('X11 · de solo lectura', !card.querySelector('[data-act],input,select,textarea,button'));
+    state._shv='lista'; b.innerHTML=renderShareSession('q1'); A('X11 · la lista sigue', !!b.querySelector('.srw'));
+    // HS1
+    openSessionEdit('q1'); let m=document.getElementById('modal'); const oks=m.querySelectorAll('.sheetbtns .ok');
+    A('HS1 · un solo principal (guardar), las filas del alta y los ejercicios como en el historial', oks.length===1&&oks[0].textContent==='guardar'&&m.querySelectorAll('.obr').length===4&&m.querySelectorAll('[data-act="ss_exm"] .sxr').length===2&&!/FECHA|INICIO|close\b/.test(m.textContent));
+    A('HS1 · los verbos: editar series, compartir, importar TCX y borrar', ['openhistedit','sharesession','tcxfor','ss_del'].every(k=>!!m.querySelector('.secondary [data-act="'+k+'"]')));
+    db.health=db.health||{}; H().sessHR=H().sessHR||{}; H().sessHR.q1={sets:{'0:0':{pre:90,peak:150},'1:0':{pre:95,peak:140}}};
+    ssExMenu(0); const it=[...document.querySelectorAll('#asklayer .nvm')]; const bj=it.find(x=>/bajar/.test(x.textContent)); A('HS1 · tocar un ejercicio: bajar y su bitácora', !!bj&&it.some(x=>/bitácora/.test(x.textContent)));
+    bj.click(); A('HS1 · al moverlo, su FC por serie se va con él', db.sessions[0].exercises[0].name==='curl'&&H().sessHR.q1.sets['1:0'].peak===150&&H().sessHR.q1.sets['0:0'].peak===140);
+    closeModal();
+    // HR2
+    delete H().sessHR.q1; const hb=histBodyHTML(db.sessions[0]); A('HR2 · en el historial: importar TCX a la izquierda y ver / editar en el mismo renglón', /class="hacts two"><a data-act="tcxfor" data-id="q1">importar TCX<\/a><a data-act="vieweditsession"/.test(hb));
+    const t0m=Date.parse(T+'T18:00:00'), hr=[]; for(let t=t0m;t<=t0m+20*60000;t+=5000)hr.push([t,100+Math.round(Math.sin(t/60000)*20)]); const P={hr,workouts:[]};
+    db.sessions[0].exercises.forEach(e=>e.sets.forEach(st=>{ delete st.doneAt; })); delete H().sessHR.q1;
+    const r=tcxForSession(P,'q1'); A('HR2 · si el TCX no cae en la sesión (no tiene hora), pregunta si usar su horario', r==='ask'&&/18:00 a 18:20/.test((document.querySelector('#asklayer h3')||{}).textContent||''));
+    closeAsk(true); const got=tcxAlign(P,db.sessions[0]); A('HR2 · usar ese horario: la sesión toma la hora del TCX y su FC', db.sessions[0].startTime==='18:00'&&db.sessions[0].endTime==='18:20'&&db.sessions[0].durSec===1200&&got);
+    { delete H().sessHR.q1; const h1=JSON.stringify(H()); A('HR2 · un TCX de otro día lo dice y no toca nada', tcxForSession({hr:[[t0m-2*864e5,90],[t0m-2*864e5+60000,95],[t0m-2*864e5+120000,99]]},'q1')==='day'&&JSON.stringify(H())===h1); }   /* fix366 · BAJA-10 */
+    // ---- fix366 · lo que halló el verificador (base de juguete; nada llega a disco) ----
+    { const tx=q=>((document.querySelector(q)||{}).textContent||''), HJ=()=>JSON.stringify([H().sessHR,H().workouts,H().sources]);
+      const mkP=(d,a,b)=>{ const t0=Date.parse(d+'T'+a+':00'), t1=Date.parse(d+'T'+b+':00'), hr=[]; for(let t=t0;t<=t1;t+=3000)hr.push([t,100+Math.round(Math.sin(t/60000)*20),'fitbit']);
+        return {platform:'tcx',sources:[{key:'fitbit',name:'Fitbit'}],hr,workouts:[{id:'tcx:'+t0,type:'Other',startMs:t0,endMs:t1,kcal:310,src:'fitbit'}]}; };
+      const E=()=>[{name:'press banca',muscle:'chest',type:'machine',sets:[S(110,8,1),S(110,7,1)]}], Q=id=>db.sessions.find(x=>x.id===id), D4=shiftDate(T,-4);
+      db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1'],activeGym:'g1',split:{name:'s',days:[]},
+        sessions:[{id:'q5',date:D4,dayName:'legs C',gym:'g1',type:'training',startTime:'09:00',endTime:'10:00',durSec:3600,exercises:E()},
+          {id:'q1',date:T,dayName:'push A',gym:'g1',type:'training',startTime:'10:00',endTime:'11:00',durSec:3600,exercises:E()},{id:'q2',date:T,dayName:'pull B',gym:'g1',type:'training',startTime:'18:00',endTime:'19:00',durSec:3600,exercises:E()}]}); bumpIdx();
+      // ALTA-1 · MEDIA-5 · MEDIA-7: el TCX de 14:00 a 14:40 no cae en ninguna sesión; con la hoja abierta, usar ese horario la repinta y [guardar] no deshace nada
+      openSessionEdit('q1'); const P=mkP(T,'14:00','14:40'); let hj=HJ(), r=tcxForSession(P,'q1');
+      A('fix366 · HR2 · sin sesión a esa hora pregunta ANTES de ingerir', r==='ask'&&HJ()===hj&&/usar ese horario/.test(tx('#asklayer')));
+      closeAsk(true); let un=null; toast=(m,t,o)=>{ if(o&&o.undo)un=o.undo; return null; }; const got=tcxAlign(P,Q('q1')); toast=ts0; let m=document.getElementById('modal');
+      A('fix366 · HR2 · usar ese horario: inicio, fin y duración en HH:MM, sin ventana absoluta, y la hoja repintada', got&&Q('q1').startTime==='14:00'&&Q('q1').endTime==='14:40'&&Q('q1').durSec===2400&&Q('q1').startMs==null&&Q('q1').endMs==null&&!!m&&m.querySelector('#ss_start').value==='14:00'&&m.querySelector('#ss_end').value==='14:40'&&!!m.querySelector('.hrblk')&&!m.querySelector('[data-act="tcxfor"]'));
+      m.querySelector('[data-act="ss_save"]').click(); let w=sessionWindow(Q('q1'));
+      A('fix366 · HS1 · [guardar] después de alinear: las horas y la ventana de la FC dicen lo mismo', Q('q1').startTime==='14:00'&&Q('q1').durSec===2400&&!!w&&w.startMs===Date.parse(T+'T14:00:00')&&w.endMs===Date.parse(T+'T14:40:00')&&!!H().sessHR.q1);
+      openSessionEdit('q1'); un();
+      A('fix366 · HR2 · [deshacer]: horas, FC, entreno y fuente como estaban, y la hoja vuelve a ofrecer el TCX', Q('q1').startTime==='10:00'&&Q('q1').endTime==='11:00'&&Q('q1').durSec===3600&&HJ()===hj&&!workoutOfSession('q1')&&!H().sources.fitbit&&!!document.querySelector('#modal [data-act="tcxfor"]')&&!document.querySelector('#modal .hrblk'));
+      Q('q1').startMs=Date.parse(T+'T10:00:00'); Q('q1').endMs=Date.parse(T+'T11:00:00'); openSessionEdit('q1'); document.getElementById('ss_start').value='09:30'; document.querySelector('#modal [data-act="ss_save"]').click(); w=sessionWindow(Q('q1'));
+      A('fix366 · HS1 · [guardar] con otra hora: la ventana absoluta se va y la FC sigue a lo escrito', Q('q1').startMs==null&&Q('q1').endMs==null&&!!w&&w.startMs===Date.parse(T+'T09:30:00')&&Q('q1').durSec===5400);
+      Q('q1').startTime='10:00'; Q('q1').durSec=3600;
+      // ALTA-2: el TCX de 17:55 a 19:05 es de q2; desde q1 lo dice, no ofrece mover horas y solo lo liga a q2 si aceptas
+      hj=HJ(); r=tcxForSession(mkP(T,'17:55','19:05'),'q1');
+      A('fix366 · HR2 · un TCX de OTRA sesión lo dice antes de ligar nada y no ofrece mover horas', r==='other'&&HJ()===hj&&/otra sesión/.test(tx('#asklayer h3'))&&/pull B/.test(tx('#asklayer'))&&!/horario/.test(tx('#asklayer')));
+      document.querySelector('#asklayer [data-ask="ok"]').click();
+      A('fix366 · HR2 · y al aceptar va a esa sesión; esta no cambia', !!H().sessHR.q2&&!H().sessHR.q1&&Q('q1').startTime==='10:00'&&Q('q1').endTime==='11:00'&&workoutOfSession('q2')&&!workoutOfSession('q1'));
+      // MEDIA-4: de otro día: con sesión ese día, lo dice y cancelar no cambia nada; sin sesión ese día, lo dice y nada cambia
+      hj=HJ(); r=tcxForSession(mkP(D4,'09:05','09:50'),'q1'); const askd=tx('#asklayer'); document.querySelector('#asklayer [data-ask="no"]').click();
+      A('fix366 · HR2 · un TCX de otro día que cae en otra sesión lo dice; cancelar no liga nada', r==='other'&&/legs C/.test(askd)&&HJ()===hj&&!H().sessHR.q5);
+      A('fix366 · HR2 · un TCX de otro día sin sesión: lo dice y nada cambia (ni entreno ni fuente)', tcxForSession(mkP(shiftDate(T,-2),'09:00','09:40'),'q1')==='day'&&HJ()===hj);
+      // MEDIA-6: con ✓ las horas no se mueven ni se anuncia FC por serie
+      Q('q1').exercises[0].sets.forEach((st,i)=>{ st.doneAt=Date.parse(T+'T10:'+(10+i*20)+':00'); }); hj=HJ();
+      A('fix366 · HR2 · una sesión con ✓ no cambia de horario: lo dice y nada cambia', tcxForSession(P,'q1')==='done'&&tcxAlign(P,Q('q1'))===false&&HJ()===hj&&Q('q1').startTime==='10:00'&&!document.getElementById('asklayer'));
+      // MEDIA-7: dentro de su horario se liga como siempre y la hoja abierta se repinta
+      openSessionEdit('q1'); r=tcxForSession(mkP(T,'10:02','10:55'),'q1'); m=document.getElementById('modal');
+      A('fix366 · HR2 · dentro de su horario: su FC por serie y la hoja repintada (sin [importar TCX])', r==='ok'&&!!H().sessHR.q1&&H().sessHR.q1.perSet&&Object.keys(H().sessHR.q1.sets).length===2&&!!m.querySelector('.hrblk')&&!m.querySelector('[data-act="tcxfor"]'));
+      closeModal();
+      // HS1 (sugerencias): el resumen sin fecha ni duración repetidas, sin la etiqueta EJERCICIOS, [importar TCX] junto a las horas y los verbos sin él;
+      // q2 tiene su entreno ligado pero ya no su FC: el historial y la hoja ofrecen el TCX con la misma regla
+      delete H().sessHR.q2; openSessionEdit('q2'); m=document.getElementById('modal'); const tb=m.querySelector('[data-act="tcxfor"]');
+      A('fix366 · HS1 · resumen corto, sin EJERCICIOS, [importar TCX] junto a las horas (no entre los verbos) y un solo principal', /^1 ej( · σ [\d.]+)?$/.test(tx('#modal .submeta.gap'))&&!m.querySelector('.grp-label')&&!/EJERCICIOS/.test(m.textContent)&&!!tb&&tb.parentElement.nextElementSibling.classList.contains('ssxl')&&!m.querySelector('[data-act="ss_del"]').parentElement.querySelector('[data-act="tcxfor"]')&&m.querySelectorAll('.sheetbtns .ok').length===1);
+      A('fix366 · HR2 · el historial y la hoja ofrecen el TCX con la misma regla', /data-act="tcxfor"/.test(histBodyHTML(Q('q2')))&&!/data-act="tcxfor"/.test(histBodyHTML(Q('q1')))&&!!workoutOfSession('q2'));
+      closeModal();
+      // ALTA-3 · MEDIA-8: el nombre largo dobla renglón (tarjeta y hoja) y la tarjeta no tiene nada que tocar (ni el ▲▼)
+      const LN='press de pecho inclinado con mancuernas en banco';
+      db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1'],activeGym:'g1',split:{name:'s',days:[{id:'d1',name:'push A',exercises:[{id:'e1',name:LN,muscle:'chest',type:'machine',sets:2}]}]},
+        sessions:[{id:'p0',date:shiftDate(T,-7),dayId:'d1',dayName:'push A',gym:'g1',durSec:3000,exercises:[{exId:'e1',name:LN,muscle:'chest',type:'machine',sets:[S(100,8,1),S(100,7,1)]}]},
+          {id:'p1',date:T,dayId:'d1',dayName:'push A',gym:'g1',durSec:3000,exercises:[{exId:'e1',name:LN,muscle:'chest',type:'machine',sets:[S(110,8,1),S(110,8,1)]}]}]}); bumpIdx();
+      const L=document.createElement('div'); L.id='v366sc'; L.style.cssText='position:absolute; left:-9999px; top:0; width:320px;'; document.body.appendChild(L);
+      delete state._shv; L.innerHTML=renderShareSession('p1'); const cd=L.querySelector('.sharecard'), nm=cd.querySelector('.shhist .sxn'), cs=getComputedStyle(nm), lh=parseFloat(cs.lineHeight)||parseFloat(cs.fontSize)*1.3;
+      A('fix366 · X11 · el nombre largo dobla renglón en la tarjeta (sin «…» ni corte)', cs.whiteSpace==='normal'&&cs.textOverflow!=='ellipsis'&&nm.scrollWidth<=nm.clientWidth+1&&nm.getBoundingClientRect().height>lh*1.5&&nm.textContent.indexOf(LN)>=0);
+      A('fix366 · X11 · la tarjeta es de solo lectura: el ▲▼ va sin glosario ni title', /▲/.test(cd.textContent)&&!cd.querySelector('[data-act],[data-gloss],[title],input,select,textarea,button'));
+      openSessionEdit('p1'); const sn=document.querySelector('#modal .ssx .sxn');
+      A('fix366 · HS1 · en la hoja el nombre también dobla renglón', !!sn&&getComputedStyle(sn).whiteSpace==='normal'&&sn.scrollWidth<=sn.clientWidth+1);
+      closeModal(); L.remove();
+      // MEDIA-9: copiar texto de la sesión viva copia la viva
+      db.activeWork={id:'w',date:T,dayId:'d1',dayName:'VIVA pull B',gym:'g1',startMs:Date.now()-600000,exercises:[{exId:'e9',name:'remo',muscle:'lats',type:'machine',sets:[S(999,8,1)]}]};
+      state.shareType='session'; state.shareId='live'; const lt=shareTextFor();
+      A('fix366 · X11 · copiar texto de la sesión viva copia la viva', /^VIVA pull B/.test(lt)&&/999/.test(lt)&&!/push A/.test(lt)); db.activeWork=null; }
+    // ---- v367 · fix366c · ronda 2 (base de juguete; nada llega a disco) ----
+    { const at=(d,hm)=>Date.parse(d+'T'+hm+':00'), D=shiftDate(T,-9), D0=shiftDate(D,-1), Q=id=>db.sessions.find(x=>x.id===id), val=k=>(document.getElementById(k)||{}).value, rb=e=>e.getBoundingClientRect();
+      const sv=()=>document.querySelector('#modal [data-act="ss_save"]').click(), put=(k,v)=>{ document.getElementById(k).value=v; };
+      const mkP=(d,a,b)=>{ const t0=at(d,a), t1=at(d,b), hr=[]; for(let t=t0;t<=t1;t+=3000)hr.push([t,100+Math.round(Math.sin(t/60000)*20),'fitbit']);
+        return {platform:'tcx',sources:[{key:'fitbit',name:'Fitbit'}],hr,workouts:[{id:'tcx:'+t0,type:'Other',startMs:t0,endMs:t1,kcal:310,src:'fitbit'}]}; };
+      // MEDIA-N1: q9 en vivo (ventana 10:00–11:00 y ✓ 10:05 · 10:20 · 10:35); q0, el día antes, con su entreno de 18:05 ligado
+      db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1','g2'],activeGym:'g1',split:{name:'s',days:[]},
+        sessions:[{id:'q9',date:D,dayName:'viva',gym:'g1',type:'training',startTime:'10:00',endTime:'11:00',startMs:at(D,'10:00'),endMs:at(D,'11:00'),savedMs:at(D,'11:00'),durSec:3600,exercises:[{name:'press',muscle:'chest',type:'machine',sets:[0,1,2].map(k=>S(100,8,1,{doneAt:at(D,'10:05')+k*15*60000}))}]},
+          {id:'q0',date:D0,dayName:'otra',gym:'g1',type:'training',loggedAfter:true,startTime:'18:00',endTime:'19:00',savedMs:at(D0,'19:00'),durSec:3600,exercises:[{name:'press',muscle:'chest',type:'machine',sets:[S(90,8,1)]}]}]}); bumpIdx();
+      db.health=db.health||{}; H().workouts=H().workouts||{}; H().workouts['tcx:x']={type:'Other',startMs:at(D0,'18:05'),endMs:at(D0,'18:55'),kcal:300,src:'fitbit'}; matchWorkouts();
+      const dA=()=>JSON.stringify(Q('q9').exercises[0].sets.map(x=>x.doneAt)), dA0=dA();
+      openSessionEdit('q9'); put('ss_date',D0); sv(); matchWorkouts(); let w=sessionWindow(Q('q9'));
+      A('v367 · MEDIA-N1 · otra fecha en una sesión en vivo con ✓: la ventana de su FC sigue en la hora real (1 h), los ✓ no se mueven y no se lleva el entreno de otra', H().workouts['tcx:x'].sessId==='q0'&&Q('q9').date===D0&&!!w&&w.startMs===at(D,'10:00')&&w.endMs===at(D,'11:00')&&dA()===dA0);
+      openSessionEdit('q9'); put('ss_start','09:40'); sv(); matchWorkouts(); w=sessionWindow(Q('q9'));
+      A('v367 · MEDIA-N1 · y otro inicio: va al día de sus ✓ (sin ventana de dos días)', H().workouts['tcx:x'].sessId==='q0'&&Q('q9').startTime==='09:40'&&!!w&&w.startMs===at(D,'09:40')&&w.endMs===at(D,'11:00')&&Q('q9').durSec===4800&&dA()===dA0);
+      delete Q('q9').startMs; delete Q('q9').endMs; openSessionEdit('q9'); put('ss_date',shiftDate(D0,-1)); sv(); w=sessionWindow(Q('q9'));
+      A('v367 · MEDIA-N1 · con ✓ y sin ventana guardada, otra fecha tampoco la parte en dos días', !!w&&w.startMs===at(D,'09:40')&&w.endMs===at(D,'11:00'));
+      // BAJA-N2: repintar la hoja (un TCX, su deshacer, subir o bajar) no borra lo tecleado sin guardar; lo que el TCX cambia (las horas) sí manda
+      db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1','g2'],activeGym:'g1',split:{name:'s',days:[]},
+        sessions:[{id:'q1',date:D,dayName:'push A',gym:'g1',type:'training',startTime:'10:00',endTime:'11:00',durSec:3600,exercises:[{name:'press',muscle:'chest',type:'machine',sets:[S(110,8,1)]},{name:'curl',muscle:'bicep',type:'machine',sets:[S(20,10,1)]}]},
+          {id:'q3',date:D,dayName:'pull B',gym:'g1',type:'training',durSec:0,exercises:[{name:'remo',muscle:'lats',type:'machine',sets:[S(90,8,1)]}]}]}); bumpIdx(); db.health=db.health||{};
+      const D2=shiftDate(D,-20); openSessionEdit('q1'); put('ss_gym','g2'); put('ss_date',D2);
+      let r=tcxForSession(mkP(D,'09:58','11:02'),'q1');
+      A('v367 · BAJA-N2 · importar un TCX desde la hoja: lo tecleado (gym y fecha) sigue ahí, sin guardar · BAJA-R3-2: el TCX del día guardado ya no es de la fecha que se ve', r==='day'&&!H().sessHR.q1&&val('ss_gym')==='g2'&&val('ss_date')===D2&&Q('q1').gym==='g1'&&Q('q1').date===D);
+      ssExMenu(0); const bj=[...document.querySelectorAll('#asklayer .nvm')].find(x=>/bajar/.test(x.textContent)); if(bj)bj.click();
+      A('v367 · BAJA-N2 · subir o bajar un ejercicio tampoco lo borra', !!bj&&Q('q1').exercises[0].name==='curl'&&val('ss_gym')==='g2'&&val('ss_date')===D2);
+      closeModal(); openSessionEdit('q3'); put('ss_gym','g2'); put('ss_start','08:00'); let un=null; toast=(m,t,o)=>{ if(o&&o.undo)un=o.undo; return null; };
+      r=tcxForSession(mkP(D,'14:00','14:40'),'q3'); const okb=document.querySelector('#asklayer [data-ask="ok"]'); if(okb)okb.click(); toast=ts0;
+      A('v367 · BAJA-N2 · usar ese horario desde la hoja: las horas son las del TCX y el gym tecleado sigue', r==='ask'&&!!okb&&Q('q3').startTime==='14:00'&&val('ss_start')==='14:00'&&val('ss_end')==='14:40'&&val('ss_gym')==='g2'&&Q('q3').gym==='g1');
+      if(un)un(); A('v367 · BAJA-N2 · su deshacer devuelve las horas y el gym tecleado sigue', !!un&&!Q('q3').startTime&&val('ss_start')===''&&val('ss_gym')==='g2');
+      closeModal();
+      // BAJA-N4: los avisos de otro día y de una sesión con ✓ caben en 42
+      let tm=[]; toast=m=>{ tm.push(String(m)); return null; }; Q('q1').exercises[1].sets[0].doneAt=at(D,'10:10'); delete H().sessHR.q1;
+      const rD=tcxForSession(mkP(shiftDate(D,-3),'10:00','10:40'),'q1'), rK=tcxForSession(mkP(D,'14:00','14:40'),'q1'); toast=ts0;
+      A('v367 · BAJA-N4 · los avisos del TCX de otro día y de una sesión con ✓ caben en 42', rD==='day'&&rK==='done'&&tm.length===2&&tm.every(m=>m.length<=42));
+      // BAJA-N3 y las pestañas: a lo angosto el dato baja a su renglón y nada se sale; las pestañas de compartir van encima de la tarjeta
+      const LN='press de pecho inclinado con mancuernas en banco', ex=k=>[{exId:'e1',name:LN,muscle:'chest',type:'machine',sets:[S(100*k,8,1),S(100*k,7,1)]},{exId:'e3',name:'curl',muscle:'bicep',type:'machine',sets:[S(20*k,10,1)]}];
+      db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1'],activeGym:'g1',split:{name:'s',days:[{id:'d1',name:'push A',exercises:[]}]},
+        sessions:[{id:'p0',date:shiftDate(T,-7),dayId:'d1',dayName:'push A',gym:'g1',durSec:3000,exercises:ex(1)},{id:'p1',date:T,dayId:'d1',dayName:'push A',gym:'g1',durSec:3000,exercises:ex(1.1)}]}); bumpIdx();
+      // cada medida en su propia caja, con su ancho desde que nace (al cargar, cambiarle el ancho a una caja ya puesta no siempre se vuelve a medir)
+      const box=(w,html,fn)=>{ const d=document.createElement('div'); d.id='v366sc'; d.style.cssText='position:absolute; left:-9999px; top:0; width:'+w+'px;'; document.body.appendChild(d); d.innerHTML=html; try{ return fn(d); } finally { d.remove(); } };
+      const fits=x=>[...x.querySelectorAll('*')].every(y=>rb(y).right<=rb(x).right+0.5), below=x=>rb(x.querySelector('.sxk')).top>=rb(x.querySelector('.sxn')).bottom-1;
+      A('v367 · BAJA-N3 · //HISTORY a lo angosto: el nombre largo usa el ancho, su dato baja a la derecha y el ▲▼ no se sale', box(240,histBodyHTML(Q('p1')),L=>{ const hs=[...L.querySelectorAll('.sxh')];
+        return hs.length===2&&rb(hs[0]).width>150&&hs.every(fits)&&below(hs[0])&&rb(hs[0].querySelector('.sxn')).width>=rb(hs[0]).width*0.9&&/▲/.test(hs[0].querySelector('.sxk').textContent)&&Math.abs(rb(hs[0].querySelector('.sxk')).right-rb(hs[0]).right)<1; }));
+      A('v367 · BAJA-N3 · si cabe, el dato sigue en el renglón del nombre', box(360,histBodyHTML(Q('p1')),L=>{ const hs=[...L.querySelectorAll('.sxh')];
+        return hs.length===2&&rb(hs[1]).width>250&&!below(hs[1])&&Math.abs(rb(hs[1].querySelector('.sxk')).top-rb(hs[1].querySelector('.sxn')).top)<8; }));
+      A('v367 · BAJA-N3 · un emoji pegado a su palabra baja de renglón con ella', nmGlue('agarre neutro💪')==='agarre <span class="u-nowrap">neutro💪</span>'&&nmGlue('press 💪 &amp; curl')==='press 💪 &amp; curl'
+        &&box(120,'<div class="hbody">'+sessExBlockHTML({name:'jalón al pecho agarre neutro💪'},{lines:['x'],unit:''},'','')+'</div>',L=>{ const gl=L.querySelector('.sxn .u-nowrap'); return !!gl&&gl.getClientRects().length===1&&rb(L.querySelector('.sxn')).height>rb(gl).height*1.5; }));
+      delete state._shv;
+      A('v367 · X11 · las pestañas van encima de la tarjeta (fuera de la imagen), sin colchón, y la tarjeta angosta no se sale', box(240,renderShareSession('p1'),L=>{ const tb=L.querySelector('.shvt'), cd=L.querySelector('.sharecard');
+        return !!tb&&!!cd&&rb(cd).width>150&&!!(tb.compareDocumentPosition(cd)&Node.DOCUMENT_POSITION_FOLLOWING)&&!cd.querySelector('.shvt')&&[...cd.querySelectorAll('.sxh')].every(fits)&&typeof shTabHold==='undefined'; })); }
+    // ---- v367 · fix366d · ronda 3 (base de juguete; nada llega a disco) ----
+    { const at=(d,hm)=>Date.parse(d+'T'+hm+':00'), D=shiftDate(T,-9), D0=shiftDate(D,-1), D2=shiftDate(D,-20), Q=id=>db.sessions.find(x=>x.id===id), val=k=>(document.getElementById(k)||{}).value;
+      const put=(k,v)=>{ document.getElementById(k).value=v; }, md=()=>document.getElementById('modal');
+      const mkP=(d,a,b)=>{ const t0=at(d,a), t1=at(d,b), hr=[]; for(let t=t0;t<=t1;t+=3000)hr.push([t,100+Math.round(Math.sin(t/60000)*20),'fitbit']);
+        return {platform:'tcx',sources:[{key:'fitbit',name:'Fitbit'}],hr,workouts:[{id:'tcx:'+t0,type:'Other',startMs:t0,endMs:t1,kcal:310,src:'fitbit'}]}; };
+      let tm=[]; const cap=()=>{ tm=[]; toast=m=>{ tm.push(String(m)); return null; }; };
+      // BAJA-R3-1: q9 tiene sus ✓ el día D (desde las 10:05) y la fecha D0 (rótulo); un TCX del rótulo dice de qué día son sus ✓ y nada cambia
+      db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1'],activeGym:'g1',split:{name:'s',days:[]},
+        sessions:[{id:'q9',date:D0,dayName:'viva',gym:'g1',type:'training',startTime:'10:00',endTime:'11:00',startMs:at(D,'10:00'),endMs:at(D,'11:00'),savedMs:at(D,'11:00'),durSec:3600,exercises:[{name:'press',muscle:'chest',type:'machine',sets:[0,1,2].map(k=>S(100,8,1,{doneAt:at(D,'10:05')+k*15*60000}))}]}]}); bumpIdx(); db.health=db.health||{};
+      const s9=JSON.stringify(Q('q9')); cap(); const r1=tcxForSession(mkP(D0,'10:00','10:40'),'q9'), r2=tcxForSession(mkP(D,'14:00','14:40'),'q9'), r3=tcxForSession(mkP(shiftDate(D,-5),'10:00','10:40'),'q9'); toast=ts0;
+      A('v367 · BAJA-R3-1 · con ✓ y otra fecha, un TCX del día del rótulo dice de qué día son tus ✓ (≤ 42) y nada cambia', r1==='day'&&tm[0]==='⚠ tus ✓ son del '+fmtShort(D)&&tm[0].length<=42&&!(H().sessHR||{}).q9&&JSON.stringify(Q('q9'))===s9);
+      A('v367 · BAJA-R3-1 · del día de sus ✓ sigue diciendo las horas; de otro día, su fecha', r2==='done'&&tm[1]==='⚠ ese TCX es de 14:00 · tus ✓, de 10:05'&&r3==='day'&&tm[2]==='⚠ ese TCX es del '+fmtShort(shiftDate(D,-5)));
+      // BAJA-R3-2: desde la hoja se decide con la fecha y las horas que se ven; si la FC cae, se guardan con ella; el gym tecleado sigue sin guardar
+      db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1','g2'],activeGym:'g1',split:{name:'s',days:[]},
+        sessions:[{id:'q1',date:D,dayName:'push A',gym:'g1',type:'training',startTime:'10:00',endTime:'11:00',durSec:3600,exercises:[{name:'press',muscle:'chest',type:'machine',sets:[S(110,8,1)]}]},
+          {id:'q3',date:D,dayName:'pull B',gym:'g1',type:'training',durSec:0,exercises:[{name:'remo',muscle:'lats',type:'machine',sets:[S(90,8,1)]}]},
+          {id:'q4',date:D,dayName:'legs C',gym:'g1',type:'training',durSec:0,exercises:[{name:'prensa',muscle:'quads',type:'machine',sets:[S(200,10,1)]}]}]}); bumpIdx(); db.health=db.health||{};
+      cap(); openSessionEdit('q1'); put('ss_gym','g2'); put('ss_date',D2); let r=tcxForSession(mkP(D,'10:02','10:55'),'q1');
+      A('v367 · BAJA-R3-2 · la hoja dice otra fecha: el TCX del día guardado lo dice con su fecha y nada se liga ni se guarda', r==='day'&&tm[0]==='⚠ ese TCX es del '+fmtShort(D)&&!H().sessHR.q1&&Q('q1').date===D&&val('ss_date')===D2&&val('ss_gym')==='g2');
+      r=tcxForSession(mkP(D2,'10:02','10:55'),'q1'); toast=ts0;
+      A('v367 · BAJA-R3-2 · el TCX de la fecha que se ve: su FC llega, esa fecha se guarda con ella y el gym tecleado sigue sin guardar', r==='ok'&&!!H().sessHR.q1&&Q('q1').date===D2&&Q('q1').startTime==='10:00'&&!!md()&&!!md().querySelector('.hrblk')&&val('ss_date')===D2&&val('ss_gym')==='g2'&&Q('q1').gym==='g1');
+      closeModal(); cap(); openSessionEdit('q3'); put('ss_start','14:00'); put('ss_end','14:40'); r=tcxForSession(mkP(D,'14:00','14:40'),'q3'); toast=ts0;
+      A('v367 · BAJA-R3-2 · las horas que se ven: el TCX de esas horas se liga sin preguntar y se guardan con su FC', r==='ok'&&!document.getElementById('asklayer')&&!!H().sessHR.q3&&Q('q3').startTime==='14:00'&&Q('q3').endTime==='14:40'&&Q('q3').durSec===2400&&val('ss_start')==='14:00');
+      closeModal(); let un=null; toast=(m,t,o)=>{ if(o&&o.undo)un=o.undo; return null; }; openSessionEdit('q4'); put('ss_date',D0); put('ss_start','08:00'); r=tcxForSession(mkP(D0,'07:00','07:40'),'q4');
+      const dq=(document.querySelector('#asklayer .submeta')||{}).textContent||'', okb=document.querySelector('#asklayer [data-ask="ok"]'); if(okb)okb.click(); toast=ts0;
+      A('v367 · BAJA-R3-2 · sin sesión a esa hora pregunta con lo que se ve y, al usar ese horario, la sesión queda en ese día con su FC', r==='ask'&&/dice 08:00/.test(dq)&&!!okb&&Q('q4').date===D0&&Q('q4').startTime==='07:00'&&Q('q4').endTime==='07:40'&&!!H().sessHR.q4&&val('ss_start')==='07:00');
+      if(un)un(); A('v367 · BAJA-R3-2 · su deshacer quita las horas y la FC del TCX', !!un&&!Q('q4').startTime&&!H().sessHR.q4);
+      A('fix366e · BAJA-R4-2 · …y devuelve la fecha que tenía', Q('q4').date===D);
+      closeModal(); Q('q1').startTime='09:00'; openSessionEdit('q1'); put('ss_end','12:00'); document.querySelector('#modal [data-act="ss_save"]').click();
+      A('v367 · BAJA-R3-2 · [guardar] usa la misma regla (ssApply): fin, duración y fecha', Q('q1').endTime==='12:00'&&Q('q1').durSec===10800&&Q('q1').date===D2&&Q('q1').gym==='g1'&&!md());
+      // nota estética: en la hoja, el ▲▼ va sin glosario (cada ejercicio es un solo botón)
+      const ex=k=>[{exId:'e1',name:'press',muscle:'chest',type:'machine',sets:[S(100*k,8,1),S(100*k,7,1)]}];
+      db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1'],activeGym:'g1',split:{name:'s',days:[{id:'d1',name:'push A',exercises:[]}]},
+        sessions:[{id:'p0',date:shiftDate(T,-7),dayId:'d1',dayName:'push A',gym:'g1',durSec:3000,exercises:ex(1)},{id:'p1',date:T,dayId:'d1',dayName:'push A',gym:'g1',durSec:3000,exercises:ex(1.1)}]}); bumpIdx();
+      openSessionEdit('p1'); const pg=document.querySelector('#modal .ssx .exprog');
+      A('v367 · HS1 · en la hoja, el ▲▼ va sin glosario ni title: un solo toque por renglón', !!pg&&/▲/.test(pg.textContent)&&!document.querySelector('#modal .ssx [data-gloss],#modal .ssx .exprog[title]')&&/data-gloss="cap"/.test(histBodyHTML(Q('p1'))));
+      closeModal();
+      // r4 · MEDIA-R4-1 · R4-4 · R4-5
+      db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1'],activeGym:'g1',split:{name:'s',days:[{id:'d1',name:'push A',exercises:[]}]},
+        sessions:[{id:'r1',date:D,dayId:'d1',dayName:'push A',gym:'g1',type:'training',startTime:'10:00',endTime:'11:00',durSec:3612,exercises:ex(1)}]}); bumpIdx(); db.health=db.health||{}; H().sessHR=H().sessHR||{};
+      openSessionEdit('r1'); put('ss_start','11:30'); r=tcxForSession(mkP(D,'11:30','12:30'),'r1'); const ak=document.getElementById('asklayer'), akt=ak?ak.textContent:''; closeAsk(true);
+      A('fix366e · MEDIA-R4-1 · inicio tecleado después del fin: el TCX no se liga solo y pregunta con lo guardado', r==='ask'&&/dice 10:00–11:00/.test(akt)&&!H().sessHR.r1&&Q('r1').startTime==='10:00'&&Q('r1').durSec===3612);
+      let tw=''; toast=m=>{ tw=m; return null; }; document.querySelector('#modal [data-act="ss_save"]').click(); toast=ts0;
+      A('fix366e · MEDIA-R4-1 · …y [guardar] avisa y no guarda una ventana de 23.5 h', /el fin va antes del inicio/.test(tw)&&Q('r1').startTime==='10:00'&&Q('r1').durSec===3612&&!!md());
+      put('ss_start','10:00'); toast=()=>null; document.querySelector('#modal [data-act="ss_save"]').click(); toast=ts0;
+      A('fix366e · BAJA-R4-4 · [guardar] sin cambiar las horas no reescribe la duración', Q('r1').durSec===3612&&!md());
+      openSessionEdit('r1'); put('ss_date',''); toast=()=>null; document.querySelector('#modal [data-act="ss_save"]').click(); toast=ts0;
+      A('fix366e · BAJA-R4-5 · una fecha vacía no se guarda', Q('r1').date===D);
+      closeModal(); }
+    console.log('v366 self-check OK');
+  } finally { try{ closeAsk(true); }catch(_){} try{ closeModal(); }catch(_){} try{ const L=document.getElementById('v366sc'); if(L)L.remove(); }catch(_){} db=real; state.shareType=t0; state.shareId=i0; if(v0===undefined)delete state._shv; else state._shv=v0; _sbx=sb0; render=r0; reRender=rr0; toast=ts0; bumpIdx(); }
+}
 function _v365SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v365: '+nm); }; const real=db, K=['_covOpen','_covUnit','_covPlan','_cvxD','_cvxSort','_cvxS','_cvxO'], s0={}; K.forEach(k=>s0[k]=state[k]);
   try{ const ex=(id,name,muscle,sets)=>({id,name,muscle,type:'machine',sets});
     db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',rotIdx:1,split:{name:'s',plan:{mode:'cycle',on:3,off:1,week:{},blocked:[]},days:[
@@ -8069,7 +8255,7 @@ function _v345SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('X7 · …una serie por renglón y el drop en el suyo', tx(c.querySelectorAll('.srw')[0],'.srl')==='1110lbs×8@1|2110lbs×7@1|↓60lbs×10@0'&&c.querySelectorAll('.srw')[0].querySelectorAll('.srl.dr').length===1);
     A('X7 · …los dos lados de una serie unilateral en el mismo renglón', tx(c.querySelectorAll('.srw')[1],'.srl')==='1R 20lbs×10@1 · L 20lbs×9@F|2R 20lbs×8@0 · L 20lbs×8@0');
     A('X7 · el texto copiable sigue como RECENT', shareTextFor().indexOf('#chest press banca 110lbs×8@1 / 110lbs×7@1 / ↓60lbs×10@0')>0);
-    b=paint(); c=b.querySelector('.sharecard');
+    b=paint('cajas'); c=b.querySelector('.sharecard');   /* v366 · X11: cajas, por su nombre */
     A('X9 · cada ejercicio rotula sus columnas en el renglón de su nombre', c.querySelectorAll('.shxr.hn').length===2&&[...c.querySelectorAll('.shxr.hn')].every(r=>tx(r,'.c, .g')==='reps|rir|σ'&&!!r.querySelector('.shxn')));
     A('X8 · la leyenda va fuera de la imagen', !c.querySelector('.shxl')&&!!b.querySelector('.shxl'));
     A('X8 · cajas de 16 px', (()=>{ document.body.appendChild(b); const e=b.querySelector('.shxr.bx:not(.hd) .w'), hh=e?Math.round(e.getBoundingClientRect().height):0; b.remove(); return hh===16; })());
@@ -8113,7 +8299,7 @@ function _v346SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('X4 · …sin tocar nada de la sesión viva', db.activeWork.dayName==='push A'&&db.activeWork.exercises[0].sets.length===3&&JSON.stringify(db.sessions)===h0);
     closeExShare();
     // X4 · compartir la sesión viva completa, y [‹ back] regresa a donde estabas
-    let b=document.createElement('div'); b.innerHTML=renderShareSession('live');
+    const _v0=state._shv; state._shv='cajas'; let b=document.createElement('div'); b.innerHTML=renderShareSession('live'); if(_v0===undefined)delete state._shv; else state._shv=_v0;   /* v366 · X11: cajas, por su nombre */
     A('X4 · la sesión viva se comparte completa', b.querySelectorAll('.sharecard .shx').length===1&&b.querySelectorAll('.sharecard .shxr.bx:not(.hd)').length===3&&!!b.querySelector('[data-act="shoneex"][data-id="live"]'));
     go=s=>{ went.push('go:'+s); state.screen=s; }; goBack=s=>{ went.push('back:'+s); state.screen=s; };
     state.screen='workout'; btn=document.createElement('button'); btn.type='button'; btn.hidden=true; document.getElementById('app').appendChild(btn);
@@ -9798,18 +9984,80 @@ function tcxParse(txt){ let doc=null; try{ doc=new DOMParser().parseFromString(S
 // lo que tocaste se queda donde estaba aunque al repintar aparezca algo arriba (p. ej. `fuentes · Fitbit` la primera vez)
 function hpKeep(act){ const v=document.getElementById('view'), q='[data-act="'+act+'"]', e0=v&&v.querySelector(q), y0=e0?e0.getBoundingClientRect().top:null;
   return ()=>{ const e1=v&&v.querySelector(q); if(y0!=null&&e1)v.scrollTop+=e1.getBoundingClientRect().top-y0; }; }
+// ---- v366 · HR2 · el TCX de UNA sesión (desde el historial o su hoja) ----
+// El dueño (16-oct): "ese file lo pondría… en historial… que en ese mismo renglón, alineado a la izquierda, salga import ese file… para cargarle esa
+// información a ese día". fix366: con destino se decide ANTES de ingerir. Si cae en el horario de esa sesión, como siempre; si cae en el de OTRA (de
+// ese día o de otro), lo dice y solo se liga ahí si aceptas; si no cae en ninguna y es del mismo día, ofrece usar su horario (con deshacer), salvo
+// que la sesión tenga sus ✓ (esas horas son las de verdad); de otro día, lo dice y nada cambia.
+// se ofrece en una sesión de pesas registrada en vivo y aún sin FC (el historial y la hoja usan esta misma regla)
+function tcxOffer(s){ return !!s&&s.type!=='rest'&&!s.loggedAfter&&!(H().sessHR||{})[s.id]; }
+// las sesiones en cuyo horario cae esa FC: la regla de ingestHealth (±15 min, 3 muestras y al menos una dentro)
+function tcxHits(p,v){ const pts=(p&&p.hr)||[]; if(!pts.length)return []; const t0=pts[0][0], t1=pts[pts.length-1][0];   /* v367 · v: esa sesión como se ve en su hoja */
+  return (db.sessions||[]).map(s=>v&&String(s.id)===String(v.id)?v:s).filter(s=>{ if(s.type==='rest')return false; const w=sessionWindow(s); if(!w)return false; const a=w.startMs-15*60000, b=w.endMs+15*60000; if(t1<a||t0>b)return false;
+    const sub=pts.filter(x=>x[0]>=a&&x[0]<=b); return sub.length>=3&&sub.some(x=>x[0]>=w.startMs&&x[0]<=w.endMs); }); }
+// de la primera a la última ✓ (doneAt) de una sesión registrada en vivo, o null
+function tcxDone(s){ if(!s||s.loggedAfter)return null; let lo=Infinity, hi=0; (s.exercises||[]).forEach(e=>(e.sets||[]).forEach(st=>{ if(st&&st.doneAt){ lo=Math.min(lo,st.doneAt); hi=Math.max(hi,st.doneAt); } })); return isFinite(lo)?[lo,hi]:null; }
+// la hoja «ver / editar» abierta (la marca es su [guardar]): su id, o null
+function ssOpenId(){ return document.querySelector('#modal [data-act="ss_save"]')?window._sessId:null; }
+// v367 · MEDIA-N1 · [guardar] con otra fecha, inicio o fin. Sin ✓, la ventana de la FC sigue a lo escrito (fecha + inicio y fin), como en fix366. Con ✓
+// (doneAt), esos son la hora real: la ventana se queda en su día (la fecha solo rotula la sesión) y un inicio o fin escrito va al día de sus ✓, el más
+// cercano. Nada se inventa ni se muda de día, y la ventana nunca queda entre dos días.
+function ssPinWin(s,st0,en0){ const dn=tcxDone(s); if(!dn){ delete s.startMs; delete s.endMs; return; }
+  const near=(hm,ref)=>{ const m=hm2min(hm); if(!isFinite(m))return null; const d=new Date(ref); d.setHours(0,m,0,0); const t=d.getTime(); if(t-ref>432e5)d.setDate(d.getDate()-1); else if(ref-t>432e5)d.setDate(d.getDate()+1); return d.getTime(); };
+  if((s.startTime||'')!==st0||!s.startMs){ const t=near(s.startTime,dn[0]); if(t)s.startMs=t; else delete s.startMs; }
+  if((s.endTime||'')!==en0||!s.endMs){ const t=near(s.endTime,dn[1]); if(t)s.endMs=t; else delete s.endMs; } }
+// v367 · BAJA-R3-2 · lo que [guardar] hace con la fecha, el inicio y el fin de la hoja abierta (la duración y la ventana de la FC de acuerdo). El TCX desde
+// la hoja decide con esto mismo sobre una copia (lo que se ve, no lo guardado) y solo lo guarda si su FC cae en esta sesión
+// v367 · r4 · MEDIA-R4-1 · en la hoja, un fin antes del inicio con una vuelta de más de 12 h no es una sesión de madrugada: es un error de tecleo
+function ssTimesBad(){ const a=(document.getElementById('ss_start')||{}).value, b=(document.getElementById('ss_end')||{}).value; if(!a||!b)return false; const d=hm2min(b)-hm2min(a); return d<0&&d+1440>720; }
+function ssApply(s){ const g=k=>document.getElementById(k), w0=[s.date,s.startTime||'',s.endTime||''].join(), st0=s.startTime||'', en0=s.endTime||'', dt=g('ss_date'), sst=g('ss_start'), set=g('ss_end');
+  if(dt&&dt.value)s.date=dt.value; if(sst)s.startTime=sst.value||null; if(set)s.endTime=set.value||null;   /* v367 · r4: una fecha vacía no se guarda */
+  if(s.startTime&&s.endTime&&(s.startTime!==st0||s.endTime!==en0||!s.durSec)){ let d=hm2min(s.endTime)-hm2min(s.startTime); if(d<0)d+=1440; s.durSec=d*60; }   /* v367 · r4: la duración cambia solo si cambiaron las horas */
+  if([s.date,s.startTime||'',s.endTime||''].join()!==w0)ssPinWin(s,st0,en0); return s; }
+// v367 · BAJA-N2 · repintar la hoja abierta (un TCX, su deshacer, subir o bajar un ejercicio) no borra lo tecleado y aún no guardado: ssTyped toma, de la
+// hoja de ESA sesión, las casillas que difieren de lo que se pintó; ssRetype las devuelve, salvo que la acción haya cambiado ese dato (las horas del TCX mandan)
+function ssDef(i){ return i.tagName==='SELECT'?(([...i.options].find(o=>o.defaultSelected)||i.options[0]||{}).value||''):i.defaultValue; }
+function ssTyped(id){ if(id==null||String(ssOpenId())!==String(id))return []; return ['ss_date','ss_start','ss_end','ss_gym'].map(k=>{ const i=document.getElementById(k); return i&&i.value!==ssDef(i)?[k,ssDef(i),i.value]:null; }).filter(Boolean); }
+function ssRetype(ty){ (ty||[]).forEach(([k,d,v])=>{ const i=document.getElementById(k); if(i&&ssDef(i)===d)i.value=v; }); }
+// v367 · BAJA-R3-2 · desde su hoja abierta, se decide con la fecha, el inicio y el fin que se ven (tecleados, aún sin guardar) y no con los guardados: si
+// su FC cae en esta sesión, esos valores se guardan con ella (ssApply, como [guardar]) y la FC y su horario dicen lo mismo; si no, nada se guarda. El gym
+// tecleado sigue sin guardar. BAJA-R3-1 · con ✓ la fecha solo rotula (MEDIA-N1): el día real es el de sus ✓, y un TCX del rótulo lo dice con su fecha
+function tcxForSession(p,tgt){ const s0=(db.sessions||[]).find(x=>String(x.id)===String(tgt)); if(!s0||!p||!p.hr||!p.hr.length)return 'none';
+  const lv=ssTyped(tgt).some(x=>x[0]!=='ss_gym')&&!ssTimesBad(), s=lv?ssApply(JSON.parse(JSON.stringify(s0))):s0,   /* v367 · r4: horas imposibles → decide con lo guardado */
+    dn=tcxDone(s), dr=dn?todayISO(new Date(dn[0])):s.date;
+  const a=p.hr[0][0], b=p.hr[p.hr.length-1][0], d=todayISO(new Date(a)), dd=x=>x!==s.date?fmtShort(x)+' ':'', hits=tcxHits(p,s);
+  if(hits.indexOf(s)>=0){ if(lv)ssApply(s0); tcxIngest(p); return 'ok'; }
+  if(hits.length){ const o=hits[0]; trkAsk({title:'ese TCX es de otra sesión',detail:dd(d)+hhmm(a)+'–'+hhmm(b)+' · '+((o.dayName||'sesión')+' '+dd(o.date)+(o.startTime?o.startTime+(o.endTime?'–'+o.endTime:''):'')).trim(),ok:'ponerlo en esa'},()=>{ const h0=lv?JSON.stringify((H().sessHR||{})[s0.id]||null):null; tcxIngest(p); if(lv){ const h1=JSON.parse(h0); H().sessHR=H().sessHR||{}; if(h1==null)delete H().sessHR[s0.id]; else H().sessHR[s0.id]=h1; save(); } }); return 'other'; }   /* v367 · r4: es de la otra, no de ésta */
+  if(d!==dr){ toast(d===s.date?'⚠ tus ✓ son del '+fmtShort(dr):'⚠ ese TCX es del '+fmtShort(d),'err'); return 'day'; }   /* v367 · BAJA-N4 · BAJA-R3-1 */
+  if(dn){ toast('⚠ ese TCX es de '+hhmm(a)+' · tus ✓, de '+hhmm(dn[0]),'err'); return 'done'; }   /* v367 · BAJA-N4 */
+  trkAsk({title:'ese TCX es de '+hhmm(a)+' a '+hhmm(b),detail:'esta sesión '+(s.startTime?'dice '+s.startTime+(s.endTime?'–'+s.endTime:''):'no tiene hora')+' · ¿le pongo el horario del TCX?',ok:'usar ese horario'},()=>tcxAlign(p,s0,lv?s.date:null));   /* v367 · BAJA-R3-2: el día que se ve; las horas, las del TCX */
+  return 'ask'; }
+// lo que un TCX deja en H() para una sesión: su FC, sus entrenos y su fuente; devuelve cómo dejarlo como estaba
+function tcxSnap(p,sid){ const h=H(), cp=x=>x==null?null:JSON.parse(JSON.stringify(x)), hr=cp(h.sessHR[sid]), wo={}, sr={};
+  (p.workouts||[]).forEach(r=>{ if(r&&r.id)wo[r.id]=cp(h.workouts[r.id]); }); (p.sources||[]).forEach(x=>{ if(x&&x.key)sr[x.key]=cp(h.sources[x.key]); });
+  return ()=>{ const h=H(), put=(o,k,v)=>{ if(v==null)delete o[k]; else o[k]=v; }; put(h.sessHR,sid,hr); Object.keys(wo).forEach(k=>put(h.workouts,k,wo[k])); Object.keys(sr).forEach(k=>put(h.sources,k,sr[k])); matchWorkouts(); h.readiness={}; }; }
+// usar el horario del TCX: inicio, fin y duración como los escribe [guardar] (HH:MM), sin ventana absoluta (startMs/endMs): la FC sigue a esas horas
+// aunque luego las edites. Con deshacer (horas, FC, entreno y fuente, como estaban) y la hoja abierta repintada. Una sesión con ✓ no se mueve.
+function tcxAlign(p,s,dt){ if(tcxDone(s))return false; const a=p.hr[0][0], b=p.hr[p.hr.length-1][0], K=['startTime','endTime','startMs','endMs','durSec'].concat(dt?['date']:[]), prev={}, back=tcxSnap(p,s.id); K.forEach(k=>prev[k]=s[k]); if(dt)s.date=dt;   /* v367 · r4: la fecha que se ve entra al deshacer */
+  delete s.startMs; delete s.endMs; s.startTime=hhmm(a); s.endTime=hhmm(b); { let m=hm2min(s.endTime)-hm2min(s.startTime); if(m<0)m+=1440; s.durSec=m*60; } try{ ingestHealth(p); }catch(_){}
+  const ok=save(), got=!!(H().sessHR||{})[s.id], rp=()=>{ if(String(ssOpenId())===String(s.id))openSessionEdit(s.id); }; if(!_sbx)reRender(); rp();
+  if(ok)toast(got?'✓ FC de Fitbit en esta sesión':'⚠ el TCX no trae FC en ese horario',got?'ok':'err',{undo:()=>{ K.forEach(k=>{ if(prev[k]==null)delete s[k]; else s[k]=prev[k]; }); back(); rp(); }}); else toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err');
+  return got; }
+// un TCX como siempre: su FC va a la sesión en cuyo horario cae y su entreno se liga solo; repinta la vista y, si está abierta, la hoja «ver / editar»
+function tcxIngest(p){ let o=null; try{ o=ingestHealth(p); }catch(e){ healthLog('tcx falló: '+e.message,'err'); toast('⚠ no pude leer ese TCX','err'); return null; }
+  const ok=save(), keep=hpKeep('healthtcx'), sid=ssOpenId(); render(); keep();
+  if(!ok){ toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err'); return o; }
+  if(sid)openSessionEdit(sid);   // fix366 · MEDIA-7 · la hoja se repinta con su FC (antes buscaba un botón que ya no existe)
+  if(!o.sess){ if(o.same){ toast('✓ esa FC ya estaba'); return o; } if(db.activeWork){ toast('⚠ termina tu sesión e impórtalo','err'); return o; }
+    const a=p.hr[0][0]; toast('⚠ '+fmtShort(todayISO(new Date(a)))+' '+hhmm(a)+' · sin sesión a esa hora','err'); return o; }
+  toast('✓ FC de Fitbit en '+o.sess+(o.sess===1?' sesión':' sesiones')); return o; }
 // el selector de archivos va sin `accept`: iOS no conoce .tcx y lo dejaría gris; lo que se elija se revisa al leerlo
-function openTcxImport(){ const inp=document.createElement('input'); inp.type='file';
+function openTcxImport(tgt){ tgt=tgt||null; const inp=document.createElement('input'); inp.type='file';
   inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f)return; const rd=new FileReader();
     rd.onload=()=>{ const p=tcxParse(rd.result); if(!p){ toast('⚠ ese archivo no es un TCX','err'); return; }
       if(!p.hr.length){ toast('⚠ ese TCX no trae FC','err'); return; }
-      let o=null; try{ o=ingestHealth(p); }catch(e){ healthLog('tcx falló: '+e.message,'err'); toast('⚠ no pude leer ese TCX','err'); return; }
-      const ok=save(), keep=hpKeep('healthtcx'), sid=window._sessId, inSheet=!!document.querySelector('#modal [data-act="healthtcx"]'); render(); keep();
-      if(!ok){ toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err'); return; }
-      if(inSheet&&sid&&o.sess)openSessionEdit(sid);   // la hoja de la sesión se repinta con su FC
-      if(!o.sess){ if(o.same){ toast('✓ esa FC ya estaba'); return; } if(db.activeWork){ toast('⚠ termina tu sesión e impórtalo','err'); return; }
-        const a=p.hr[0][0]; toast('⚠ '+fmtShort(todayISO(new Date(a)))+' '+hhmm(a)+' · sin sesión a esa hora','err'); return; }
-      toast('✓ FC de Fitbit en '+o.sess+(o.sess===1?' sesión':' sesiones')); };
+      if(tgt){ tcxForSession(p,tgt); return; }   // v366 · HR2 · con destino se decide antes de ingerir (fix366 · ALTA-2 · MEDIA-4)
+      tcxIngest(p); };
     rd.readAsText(f); };
   inp.click(); }
 // una serie: FC antes → pico (lo que pidió: "qué tanto sube"); la bajada en 60 s va en el editor de series, con su etiqueta
@@ -11269,8 +11517,8 @@ function mealFoodRows(items){ const kp=kcalParts(items);
 // de v256 recortaba — comida perdía TODOS sus alimentos — y apretaba las series: "amontonado". Aquí nada se recorta,
 // nada baja de tamaño y nada hace scroll dentro. Las acciones van FUERA de la tarjeta. La tarjeta y el texto copiable
 // salen del MISMO modelo, así nunca dicen cosas distintas.
-function summaryShell(top,body,pre,acts){   // v285 · pre: lo que va entre la tarjeta y las acciones (el selector de vista), fuera de la imagen · v307 · acts: verbos extra en la fila de acciones
-  return statusBar(true)
+function summaryShell(top,body,pre,acts,tabs){   // v285 · pre: lo que va entre la tarjeta y las acciones, fuera de la imagen · v307 · acts: verbos extra en la fila de acciones · v367 · tabs: el selector de vista, encima de la tarjeta (fuera de la imagen)
+  return statusBar(true)+(tabs||'')
    +`<div class="sharecard">${top||''}<div class="shbody">${body||''}</div><div class="shfoot">gym<span class="u-o40">//</span>TRK</div></div>`
    +(pre||'')
    +`<div class="secondary shacts"><button class="b" data-act="shcopy">copiar texto</button><button class="b" data-act="shimg">guardar imagen</button>${acts||''}</div>`; }
@@ -11397,8 +11645,12 @@ function paintExShare(swap){ const L=document.getElementById('exsh'), S=state._e
 // y cada ejercicio su ▲▼ de capacidad contra la sesión equivalente anterior (histProgress). Sale del MISMO modelo que la
 // lista (shSessModel); la lista (su vista RECENT, 21-sep) se conserva como segunda vista. La vista elegida vive en memoria.
 // v281 · tres vistas mientras el dueño elige usándolas ("ver las dos en mi teléfono"): cajas (como la sesión viva) · columnas (la misma tabla en texto) · lista (RECENT)
-const SHSESS_V=[['cajas','cajas'],['sesion','columnas'],['lista','lista']];
-function shSessView(){ return state._shv==='lista'?'lista':state._shv==='sesion'?'sesion':'cajas'; }
+const SHSESS_V=[['historial','historial'],['lista','lista']];   // v366 · X11
+function shSessView(){ return state._shv==='lista'?'lista':state._shv==='sesion'?'sesion':state._shv==='cajas'?'cajas':'historial'; }
+// el formato del historial al desplegar un día: un bloque por ejercicio con sus series en una línea, su σ y su ▲▼ (de solo lectura)
+function shHistHTML(s){ _shM=(s&&s.metric)==='rpe'?'rpe':'rir'; const tn=(function(){ try{ return sessionTension(s); }catch(_){ return []; } })(); let b='';
+  ((s&&s.exercises)||[]).forEach((e,ei)=>{ if(isCardio(e))return; const r=shareExLines(e); if(!r.n)return; const t=tn&&tn[ei]&&tn[ei].total>0?' · σ '+fmtSig(tn[ei].total):''; let pb=''; try{ pb=progBadgeFromProg(histProgress(s,ei),'capacidad vs sesión equivalente'); }catch(_){}
+    b+=sessExBlockHTML(e,r,t,pb?' '+pb.replace(/ (?:data-gloss|title)="[^"]*"/g,''):''); }); return b?'<div class="hbody shhist">'+b+'</div>':''; }   // fix366 · MEDIA-8 · el ▲▼ sin glosario: nada que tocar
 function shSessTabsHTML(){ const v=shSessView();
   return `<div class="mdtabs tall shvt" data-tk="shv" role="tablist">${SHSESS_V.map(([k,l])=>`<span role="tab" aria-selected="${k===v}" class="${k===v?'on':''}" data-act="shview" data-v="${k}">${l}</span>`).join('')}</div>`; }
 function shSigTxt(g){ return g?((g.est?'~':'')+g.t.toFixed(2)):'—'; }
@@ -11441,7 +11693,7 @@ function _shareSessSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
     A('la σ de la serie es la de la sesión', Math.abs(M.exs[0].toks[0].sg.t-sessionTension(s)[0].per[0].t)<1e-9&&Math.abs(M.exs[1].toks[3].sg.t-sessionTension(s)[1].per[3].t)<1e-9);
     A('▲ contra la sesión equivalente anterior', !!M.exs[0].prog&&M.exs[0].prog.dir==='up'&&M.exs[0].prog.pct>0);
     A('sin sesión anterior no hay ▲▼', shSessModel(db.sessions.find(x=>x.id==='p0')).exs[0].prog==null);
-    state.shareType='session'; state.shareId='p1'; delete state._shv;
+    state.shareType='session'; state.shareId='p1'; state._shv='cajas';   /* v366 · X11: cajas ya no se ofrece; se sigue probando por dentro */
     let box=paint(), card=box.querySelector('.sharecard'); const X=card.querySelectorAll('.shx');
     A('la vista por defecto es la de la sesión, con cajas', shSessView()==='cajas'&&X.length===2&&!card.querySelector('.srw')&&card.querySelectorAll('.shxr.bx:not(.hd)').length===7);
     A('solo lectura: nada que tocar dentro de la tarjeta', !card.querySelector('[data-act],input,select,textarea,button'));
@@ -11453,8 +11705,8 @@ function _shareSessSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
     A('cada ejercicio rotula sus columnas en el renglón de su nombre (v345)', card.querySelectorAll('.shxr.hd').length===2&&tx(card,'.shxr.hd .c, .shxr.hd .g')==='reps,rir,σ,reps,rir,σ');
     A('cabecera: día, fecha, gym y duración', tx(card,'.shsn')==='push A'&&tx(card,'.shsm').indexOf(fmtShort('2026-09-27'))>=0&&tx(card,'.shsm').indexOf('g1')>=0&&tx(card,'.shsum').indexOf(fmtDur(75))===0);
     A('marca gym//TRK', tx(card,'.shfoot')==='gym//TRK');
-    A('el selector va fuera de la imagen, con la sesión primero', !card.querySelector('.shvt')&&tx(box,'.shvt [role="tab"]')==='cajas,columnas,lista'&&box.querySelector('.shvt .on').dataset.v==='cajas');
-    state._shv='sesion'; box=paint(); A('columnas = la misma tabla sin cajas', box.querySelectorAll('.shxr:not(.hd)').length===7&&!box.querySelector('.shxr.bx')&&box.querySelector('.shvt .on').dataset.v==='sesion'); delete state._shv;
+    A('el selector va fuera de la imagen, con la sesión primero', !card.querySelector('.shvt')&&tx(box,'.shvt [role="tab"]')==='historial,lista');   /* v366 · X11 */
+    state._shv='sesion'; box=paint(); A('columnas = la misma tabla sin cajas', box.querySelectorAll('.shxr:not(.hd)').length===7&&!box.querySelector('.shxr.bx')&&!box.querySelector('.shvt .on')); state._shv='cajas';   /* v366 · X11 */
     s.metric='rpe'; box=paint(); A('una sesión en RPE se lee en RPE', tx(box,'.shxr.hd .c')==='reps,rpe,reps,rpe'&&tx(box,'.shxr:not(.hd) .r').indexOf('9,9,10')===0); delete s.metric;
     let n=0; reRender=function(){ n++; }; btn=document.createElement('button'); btn.type='button'; btn.hidden=true; btn.dataset.act='shview'; btn.dataset.v='lista'; document.getElementById('app').appendChild(btn); btn.click();
     A('tocar [lista] cambia la vista y repinta una vez', state._shv==='lista'&&n===1);
@@ -11474,7 +11726,7 @@ function renderShareSession(id){
   const body=shListHTML(M);   // v345 · X7 · una serie por renglón
   // v307 · "ese formato, el más valioso para mi opinión, es el que se pierde": desde la sesión guardada se abre el ejercicio solo, con su serie marcada
   const one=M.exn?`<button class="b" data-act="shoneex" data-id="${escTxt(String(s.id))}">compartir ejercicio</button>`:'';
-  return summaryShell(top,(shSessView()==='lista'?body:shSessTableHTML(M,shSessView()==='cajas'))||'<div class="empty">sin series registradas</div>',(shSessView()==='lista'?'':shSessLegend(M))+shSessTabsHTML(),one); }
+  const V=shSessView(); return summaryShell(top,(V==='lista'?body:V==='historial'?shHistHTML(s):shSessTableHTML(M,V==='cajas'))||'<div class="empty">sin series registradas</div>',((V==='cajas'||V==='sesion')?shSessLegend(M):''),one,shSessTabsHTML()); }   // v366 · X11 · v367: las pestañas, encima de la tarjeta
 // elegir cuál ejercicio de una sesión guardada se comparte solo (uno → directo; varios → menú con su nombre tal cual)
 function shOneExList(s){ const out=[]; ((s&&s.exercises)||[]).forEach((e,ei)=>{ if(shExModel(e))out.push({ei,name:(latTxt(e)||'')+(e.name||'ejercicio'),cam:exCamGet(e)!=null}); }); return out; }
 function shOneExPick(sid){ const s=exShSess(sid); if(!s||sid==null)return; const L=shOneExList(s); if(!L.length)return; const oid=sid==='live'?null:s.id;
@@ -11520,7 +11772,7 @@ function dayMealParts(iso,food,dayKcal){
 function shareTextFor(){
   if(state.shareType==='macros')return macroShareText();
   if(state.shareType==='session'){
-    const s=(db.sessions||[]).find(x=>x.id===state.shareId)||(db.sessions||[]).filter(x=>x.type!=='rest').slice(-1)[0]; if(!s)return '';
+    const s=state.shareId==='live'?shLiveSess():((db.sessions||[]).find(x=>x.id===state.shareId)||(db.sessions||[]).filter(x=>x.type!=='rest').slice(-1)[0]); if(!s)return '';   // fix366 · MEDIA-9 · 'live' = la sesión en curso, como la tarjeta
     const M=shSessModel(s), pl=(n,w)=>n+' '+w+(n===1?'':'s');
     const dur=M.dur?fmtDur(M.dur.h!=null?M.dur.h*60+(+M.dur.m||0):M.dur.min):'—';
     const L=[]; let pm=null; M.exs.forEach(x=>{ L.push((x.muscle&&x.muscle!==pm?'#'+x.muscle+' ':'')+x.name+' '+x.toks.map(shTokTxt).join(' / ')); pm=x.muscle; });
@@ -11669,7 +11921,9 @@ function renderExHist(){ const key=state._exKey, rows=exHistRows(key); const bac
     +'<div class="mdtabs tall" data-tk="exh-t">'+tabs+'</div><div class="mdtabs tall u-mb8" data-tk="exh-r">'+per+'</div>'+cks+chart+strips+sigNote
     +'<hr class="rule"/><div class="section u-mb10"><div class="h"><span class="s">//</span>LOG</div><div class="meta">'+n+' sesiones · la más nueva arriba</div></div>'+log; }
 // un ejercicio en el formato compacto de compartir: [bi] nombre · músculo · unidad · T (+ extra) y sus series en una línea
-function sessExBlockHTML(e,r,t,extra){ return `<div class="sxr"><div class="sxh"><span class="sxn">${latTxt(e)}${escTxt(e.name)}</span><span class="sxk">${escTxt(e.muscle||'')}${r.unit?' · '+escTxt(r.unit):''}${t||''}${extra||''}</span></div><div class="sxs">${r.lines.join(' · ')}</div></div>`; }
+// v367 · B-12 · el nombre dobla entre palabras: un emoji pegado a su palabra baja de renglón con ella, nunca solo (entra ya escapado: sin etiquetas)
+function nmGlue(h){ return String(h).replace(/\S+/g,w=>/\p{Extended_Pictographic}/u.test(w)&&/[^\p{Extended_Pictographic}\uFE0F\u200D\u{1F3FB}-\u{1F3FF}]/u.test(w)?'<span class="u-nowrap">'+w+'</span>':w); }
+function sessExBlockHTML(e,r,t,extra){ return `<div class="sxr"><div class="sxh"><span class="sxn">${latTxt(e)}${nmGlue(escTxt(e.name))}</span><span class="sxk">${escTxt(e.muscle||'')}${r.unit?' · '+escTxt(r.unit):''}${t||''}${extra||''}</span></div><div class="sxs">${r.lines.join(' · ')}</div></div>`; }
 function renderShareWeight(){
   const ks=Object.keys(db.bodyweight||{}).sort(); const vals=ks.map(k=>db.bodyweight[k]);
   if(vals.length<2)return summaryShell(shTopRow('peso',''),`<div class="empty">registra tu peso varios días<br/><span class="ehint">para compartir tu progreso</span></div>`);
@@ -15014,7 +15268,8 @@ function histBodyHTML(s){ _shM=(s&&s.metric)==='rpe'?'rpe':'rir';
     const t=tn&&tn[ei]&&tn[ei].total>0?' · σ '+fmtSig(tn[ei].total):'';
     let pb=''; try{ pb=progBadgeFromProg(histProgress(s,ei),'capacidad vs sesión equivalente'); }catch(_){}
     const _k=exHistKey(e); b+=sessExBlockHTML(e,r,t,pb?' '+pb:'').replace('<span class="sxn">','<span class="sxn u-tap u-ul" role="button" tabindex="0" data-act="exhist" data-k="'+escTxt(_k)+'">'); });
-  return `<div class="hbody">${b||'<div class="ehint">sin series registradas</div>'}<div class="hacts"><a data-act="vieweditsession" data-id="${s.id}">ver / editar</a></div></div>`;
+  const _tx=tcxOffer(s)?`<a data-act="tcxfor" data-id="${s.id}">importar TCX</a>`:'';   // v366 · HR2 · a la izquierda, en el mismo renglón
+  return `<div class="hbody">${b||'<div class="ehint">sin series registradas</div>'}<div class="hacts${_tx?' two':''}">${_tx}<a data-act="vieweditsession" data-id="${s.id}">ver / editar</a></div></div>`;
 }
 function renderHistory(){
   const sess=(db.sessions||[]).filter(s=>s.type!=='rest').slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
@@ -15046,38 +15301,39 @@ function histGoDay(iso){
   reRender();
   centerEl(document.getElementById('view').querySelector(q(ss[0].id)),'start');   // tocaste un día del calendario: su sesión, arriba
 }
+// v366 · HS1 · la hoja de una sesión del historial. El dueño (16-oct): "el apartado de ver editar, ese sí no me gusta cómo está desplegada la información".
+// Antes: etiquetas en mayúsculas, tarjetas con ▲▼, tres botones principales, close en inglés y una nota larga del gym. Ahora: un renglón de resumen,
+// fecha · inicio · fin · gym en las filas del alta, los ejercicios como en el historial (tocar uno: subir, bajar o su bitácora), lo que explica una baja
+// en una línea tenue, un solo principal (guardar) y lo demás como verbos.
 function openSessionEdit(id){
-  const s=(db.sessions||[]).find(x=>x.id===id); if(!s)return; window._sessId=id;
-  const nEx=(s.exercises||[]).length;
-  const fatCtx=sessionFatigueContext(s);
-  const exHtml=(s.exercises||[]).map((e,ei)=>{
-    const _pr=histProgress(s,ei); const _dn=downNoteFor(s,ei,_pr);
-    const badge=progBadgeFromProg(_pr,'capacidad vs sesión equivalente')+exTensChip(sessionTension(s)[ei]);
-    const exCtx=fatCtx[ei]||[]; const rawAvg=avgE1RM(e.sets,false); let cSum=0,cN=0; e.sets.forEach((st,si)=>{ const v=correctedE1RM(st,exCtx[si]); if(v>0){cSum+=v;cN++;} }); const corrAvg=cN?cSum/cN:0; const fatDiff=rawAvg>0&&corrAvg>rawAvg?Math.round((corrAvg/rawAvg-1)*100):0; const prior=Math.round((exCtx[0]||{}).priorHardSets||0); const restSecs=exCtx.slice(1).map(c=>c.restSec).filter(v=>v!=null&&v>0&&v<600); const avgRest=restSecs.length?Math.round(restSecs.reduce((a,b)=>a+b,0)/restSecs.length):null; const fatNote=fatDiff>=5?`<div class="submeta u-mt2">↑ en fresco habría rendido +${fatDiff}%${prior?' · '+prior+' sets previos':''}${avgRest?' · ~'+Math.round(avgRest/60)+'min descanso':''}</div>`:'';
-    // reorder arrows so legacy sessions (logged before the addex-position fix) can be corrected
-    const up=ei>0?`<span data-act="ss_exup" data-ei="${ei}">▲</span>`:`<span class="off">▲</span>`;
-    const dn=ei<nEx-1?`<span data-act="ss_exdn" data-ei="${ei}">▼</span>`:`<span class="off">▼</span>`;
-    const nsets=(e.sets||[]).length;
-    const _sr=((H().sessHR[s.id]||{}).sets)||{}; const _pk=(e.sets||[]).map((st,si)=>_sr[ei+':'+si]).filter(x=>x&&x.peak!=null);
-    const hrNote=_pk.length?`<div class="submeta u-mt2">FC ${_pk.map(x=>'<span class="u-nowrap">'+hrSetTxt(x)+'</span>').join(' · ')}</div>`:'';   // v361 · HR1 · cada serie: antes → pico
-    return `<div class="card"><div class="sess-exh"><span class="sess-exn">${latTxt(e)}${escTxt(e.name)} <span class="muted">${escTxt(e.muscle||'')} · ${nsets} sets</span>${badge}</span><span class="semv">${up}${dn}</span></div>${fatNote}${hrNote}${_dn?`<div class="submeta u-mt2 u-o50">${escTxt(_dn)}</div>`:''}</div>`;
-  }).join('');
-  // per-set editing lives in the full rich editor (renderHistoryEditor) — same interface as the live
-  // workout, just more compact; this modal stays a quick summary: date/time, per-exercise overview, actions.
-  openModal(`<h3>${escTxt(s.dayName||'sesión')}</h3>
-   <div class="field"><label>FECHA</label><input id="ss_date" type="date" value="${s.date||''}"/></div>
-   <div class="u-flex u-gap8"><div class="field u-f1"><label>INICIO</label><input id="ss_start" type="time" value="${s.startTime||''}"/></div><div class="field u-f1"><label>FIN</label><input id="ss_end" type="time" value="${s.endTime||''}"/></div></div>
-   ${(()=>{ // v225: empezar la sesión en el gym equivocado ya no obliga a borrarla y re-teclearla entera
-     const gs=[...new Set([].concat(db.gyms||[], s.gym?[s.gym]:[]))];
-     if(!gs.length)return '';
-     return `<div class="field"><label>GYM</label><select id="ss_gym">${gs.map(g=>`<option value="${escTxt(g)}"${g===s.gym?' selected':''}>${escTxt(g)}</option>`).join('')}${s.gym?'':'<option value="" selected>— sin gym —</option>'}</select>
-       <div class="submeta u-mt4 u-o40">al cambiarlo se recalculan los ▲▼ contra el historial de ESE gym · la marca de máquina que quedó grabada no cambia (es lo que registraste ese día)</div></div>`;
-   })()}
-   ${sessHRBlock(s)||(s.loggedAfter||!(s.exercises||[]).some(e=>(e.sets||[]).some(st=>st&&st.doneAt))?'':'<div class="secondary u-mb6"><button class="b" data-act="healthtcx">importar FC (TCX)</button></div>')}<div class="submeta gap">${nEx} ejercicios${(()=>{ const t=sessionTensionTotal(s); return t>0?' · σ '+fmtSig(t):''; })()} · ▲▼ reordena</div>
-   ${exHtml||'<div class="submeta">sin ejercicios</div>'}
-   <div class="sheetbtns">${db.activeWork?'':`<button class="ok" data-act="resumesession">▶ continuar</button>`}<button class="ok" data-act="openhistedit" data-id="${s.id}">editar sets</button></div>
-   <div class="sheetbtns u-mt6"><button class="ok" data-act="ss_save">guardar</button><button class="cancel" data-act="sharesession" data-id="${s.id}">compartir</button><button class="cancel danger" data-act="ss_del">borrar</button><button class="cancel" data-act="closemodal">close</button></div>`);
-}
+  const s=(db.sessions||[]).find(x=>x.id===id); if(!s)return; const ty=ssTyped(id); window._sessId=id;   /* v367 · BAJA-N2 */ _shM=(s.metric)==='rpe'?'rpe':'rir';
+  const tn=(()=>{ try{ return sessionTension(s); }catch(_){ return []; } })(), fatCtx=(()=>{ try{ return sessionFatigueContext(s); }catch(_){ return []; } })(), hrS=((H().sessHR[s.id]||{}).sets)||{};
+  const gs=[...new Set([].concat(db.gyms||[], s.gym?[s.gym]:[]))], row=(k,inner)=>'<label class="obr"><span class="obk">'+k+'</span><span class="obv">'+inner+'</span></label>';
+  let ex='';
+  (s.exercises||[]).forEach((e,ei)=>{ const r=shareExLines(e); const t=tn[ei]&&tn[ei].total>0?' · σ '+fmtSig(tn[ei].total):''; let pb='', pr=null; try{ pr=histProgress(s,ei); pb=progBadgeFromProg(pr,'capacidad vs sesión equivalente'); }catch(_){}
+    let dn=''; try{ dn=downNoteFor(s,ei,pr)||''; }catch(_){}
+    const pk=(e.sets||[]).map((st,si)=>hrS[ei+':'+si]).filter(x=>x&&x.peak!=null);
+    let fat=''; try{ const exCtx=fatCtx[ei]||[], raw=avgE1RM(e.sets,false); let cs=0, cn=0; e.sets.forEach((st,si)=>{ const v=correctedE1RM(st,exCtx[si]); if(v>0){ cs+=v; cn++; } }); const ca=cn?cs/cn:0, fd=raw>0&&ca>raw?Math.round((ca/raw-1)*100):0; if(fd>=5)fat='en fresco habría rendido +'+fd+'%'; }catch(_){}
+    const sub=[pk.length?'FC '+pk.map(x=>'<span class="u-nowrap">'+hrSetTxt(x)+'</span>').join(' · '):'', dn?escTxt(dn):'', fat].filter(Boolean).map(x=>'<div class="submeta u-o50 u-mt2">'+x+'</div>').join('');
+    ex+='<button type="button" class="ssx" data-act="ss_exm" data-ei="'+ei+'">'+sessExBlockHTML(e,r.n?r:{lines:['<span class="u-o40">sin series</span>'],unit:''},t,pb?' '+pb.replace(/ (?:data-gloss|title)="[^"]*"/g,''):'')+sub+'</button>'; });   /* v367 · un solo toque por renglón */
+  const sm=[(s.startTime&&s.endTime)||!s.durSec?'':fmtDur(Math.round(s.durSec/60)), (s.exercises||[]).length+' ej',   /* fix366 · la fecha y la duración ya las dicen sus filas */ (()=>{ const t=sessionTensionTotal(s); return t>0?'σ '+fmtSig(t):''; })()].filter(Boolean).join(' · ');
+  const hr=sessHRBlock(s), tcx=tcxOffer(s)?'<div class="secondary"><button class="b" data-act="tcxfor" data-id="'+escTxt(String(s.id))+'">importar TCX</button></div>':'';   // fix366 · junto a las horas: su FC sale en este mismo lugar
+  openModal('<h3>'+escTxt(s.dayName||'sesión')+'</h3><div class="submeta gap">'+escTxt(sm)+'</div>'
+    +row('fecha','<input class="obi" id="ss_date" type="date" value="'+escTxt(s.date||'')+'"/>')
+    +row('inicio','<input class="obi" id="ss_start" type="time" value="'+escTxt(s.startTime||'')+'"/>')
+    +row('fin','<input class="obi" id="ss_end" type="time" value="'+escTxt(s.endTime||'')+'"/>')
+    +(gs.length?row('gym','<select class="obi" id="ss_gym">'+gs.map(g=>'<option value="'+escTxt(g)+'"'+(g===s.gym?' selected':'')+'>'+escTxt(g)+'</option>').join('')+(s.gym?'':'<option value="" selected>— sin gym —</option>')+'</select>'):'')
+    +(hr||'')+tcx
+    +'<div class="ssxl">'+(ex||'<div class="submeta">sin ejercicios</div>')+'</div>'
+    +'<div class="secondary">'+(db.activeWork?'':'<button class="b" data-act="resumesession">continuar</button>')+'<button class="b" data-act="openhistedit" data-id="'+escTxt(String(s.id))+'">editar series</button><button class="b" data-act="sharesession" data-id="'+escTxt(String(s.id))+'">compartir</button><button class="b" data-act="ss_del">borrar</button></div>'
+    +'<div class="sheetbtns"><button class="ok" data-act="ss_save">guardar</button><button class="cancel" data-act="closemodal">cerrar</button></div>'); ssRetype(ty); }
+// tocar un ejercicio de la hoja: subir, bajar o su bitácora (al moverlo, su FC por serie se mueve con él)
+function ssExMenu(i){ const s=(db.sessions||[]).find(x=>x.id===window._sessId), e=s&&s.exercises[i]; if(!e)return;
+  const mv=d=>{ const L=s.exercises, j=i+d; if(j<0||j>=L.length)return; const t=L[j]; L[j]=L[i]; L[i]=t; const hs=(H().sessHR[s.id]||{}).sets;
+    if(hs){ const n={}; Object.keys(hs).forEach(k=>{ const p=k.split(':'); let x=+p[0]; if(x===i)x=j; else if(x===j)x=i; n[x+':'+p[1]]=hs[k]; }); H().sessHR[s.id].sets=n; }
+    save(); openSessionEdit(window._sessId); };
+  const it=[]; if(i>0)it.push(['subir',()=>mv(-1)]); if(i<s.exercises.length-1)it.push(['bajar',()=>mv(1)]); const k=exHistKey(e); if(k)it.push(['su bitácora',()=>openExHist(k)]);
+  trkMenu(e.name||'ejercicio',it); }
 
 // ---------- render: settings ----------
 function renderSettings(){
@@ -16154,10 +16410,11 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='openmerge'){ openMergeModal(); }
   else if(a==='domerge'){ doMerge(); }
   else if(a==='okexedit'){ saveExEdit(); }
-  else if(a==='ss_save'){ const s=db.sessions.find(x=>x.id===window._sessId); if(s){ const dt=document.getElementById('ss_date'); if(dt)s.date=dt.value;
+  else if(a==='ss_save'&&ssTimesBad()){ toast('⚠ el fin va antes del inicio','err'); }   /* v367 · r4 · MEDIA-R4-1: no se guarda una ventana de casi un día */
+  else if(a==='ss_save'){ const s=db.sessions.find(x=>x.id===window._sessId); if(s){ ssApply(s);   /* v367 · BAJA-R3-2: fecha, inicio y fin con la misma regla que el TCX desde la hoja */
     // corregir el gym: save() → bumpIdx() recalcula baselines y ▲▼ contra el historial del gym correcto
     const gs=document.getElementById('ss_gym'); if(gs&&gs.value!==s.gym){ s.gym=gs.value||undefined; }
-    const sst=document.getElementById('ss_start'); if(sst)s.startTime=sst.value||null; const set=document.getElementById('ss_end'); if(set)s.endTime=set.value||null; if(s.startTime&&s.endTime){let d=hm2min(s.endTime)-hm2min(s.startTime);if(d<0)d+=1440;s.durSec=d*60;} savedToast('✓ sesión actualizada'); closeModal(); reRender(); } }
+    savedToast('✓ sesión actualizada'); closeModal(); reRender(); } }
   else if(a==='ss_del'){ holdConfirm({title:'borrar esta sesión',detail:'sale del historial y deja de contar para volumen, progreso y recuperación',verb:'borrar'},()=>{ db.sessions=db.sessions.filter(x=>x.id!==window._sessId); save(); closeModal(); reRender(); }); }
   else if(a==='resumesession'){
     // "jamás perder una sesión" (feedback del dueño, 2026-08-03) — ANY past session is resumable, not
@@ -16181,6 +16438,8 @@ document.getElementById('app').addEventListener('click',e=>{
   // promptIdleSession's modal — see its definition for why this exists instead of a silent timer.
   else if(a==='idle_continue'){ if(db.activeWork){db.activeWork.resumedAt=Date.now(); db.activeWork.lastTouch=Date.now();} closeModal(); save(); reRender(); }
   else if(a==='idle_close'){ const wasWorkout=state.screen==='workout'; finalizeIdleSession(); closeModal(); if(wasWorkout)state.screen='home'; render(); toast('sesión cerrada · '+((db.sessions[db.sessions.length-1]||{}).endTime||'')); }
+  else if(a==='ss_exm'){ ssExMenu(+el.dataset.ei); }   // v366 · HS1
+  else if(a==='tcxfor'){ openTcxImport(el.dataset.id); }   // v366 · HR2
   else if(a==='ss_exup'){ const s=db.sessions.find(x=>x.id===window._sessId); const i=+el.dataset.ei; if(s&&i>0){ const a=s.exercises; const t=a[i-1]; a[i-1]=a[i]; a[i]=t; save(); openSessionEdit(window._sessId); } }
   else if(a==='ss_exdn'){ const s=db.sessions.find(x=>x.id===window._sessId); const i=+el.dataset.ei; if(s&&i<s.exercises.length-1){ const a=s.exercises; const t=a[i+1]; a[i+1]=a[i]; a[i]=t; save(); openSessionEdit(window._sessId); } }
   // v223 · ✓ por serie: un toque confirma la serie COMPLETA (limpia todo lo pendiente), la sella con su
@@ -16282,7 +16541,7 @@ document.getElementById('app').addEventListener('click',e=>{
     try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,()=>trkPrompt({title:'copiar',label:'TEXTO',value:txt,ok:'listo'},()=>{})); }
       else trkPrompt({title:'copiar',label:'TEXTO',value:txt,ok:'listo'},()=>{}); }catch(_){ trkPrompt({title:'copiar',label:'TEXTO',value:txt,ok:'listo'},()=>{}); } }
   else if(a==='shimg'){ shareImage(); }
-  else if(a==='shview'){ state._shv=({lista:'lista',sesion:'sesion'})[el.dataset.v]||'cajas'; reRender(); }   // v285 · sesión (formato de la sesión) | lista
+  else if(a==='shview'){ state._shv=({lista:'lista',historial:'historial'})[el.dataset.v]||'historial'; reRender(); }   // v366 · X11 · v367: encima de la tarjeta, render() deja la pestaña bajo el dedo   // v285 · sesión (formato de la sesión) | lista
   else if(a==='shareweight'){ state.shareType='weight'; go('share'); }
   else if(a==='mealsummary'){ openMealSummary(el.dataset.tag); }
   else if(a==='mealrename'){ const tag=el.dataset.tag; state.renamingTag=tag; render();
@@ -20786,7 +21045,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ cloudBoot(); }catch(_){}   // v352 · cuentas y nube: apagada (CLOUD_CFG vacío) no hace nada
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
