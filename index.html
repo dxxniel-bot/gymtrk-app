@@ -360,7 +360,6 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .cvxfoot{position:sticky; bottom:0; z-index:1; margin-top:var(--s3); padding-top:var(--s1); background:var(--sheet-bg); border-top:var(--bw-sep) solid var(--o10); box-shadow:0 var(--s6) 0 var(--sheet-bg);}
   .cvxfoot .sheetbtns{margin-top:var(--s2);}
   .sheetbtns .ok[aria-disabled="true"]{opacity:var(--op-dim);}
-  .cvuse .k{color:var(--o50);}
   .sph{min-height:44px; align-items:center; border:0; background:none; font-family:inherit; text-align:left; padding:0; cursor:pointer;}   /* v355 · SP6 · cada tanda del historial es un toque de 44 */
   /* v356 · SP8 · el editor de split: cada ejercicio una fila de 44 (⠿ + nombre y su resumen); el día con su ··· */
   .sexr{display:flex; align-items:stretch; gap:var(--s2); min-height:44px; border-bottom:var(--bw-sep) solid var(--o10);} .sexr.dragsrc{opacity:var(--op-dim);}
@@ -1191,7 +1190,8 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .hero.good .ring-fill{stroke:var(--good);} .hero.over .ring-fill{stroke:var(--bad);}   /* v262 · sin brillo */
   .hero-meta .left.under{color:var(--o60);} .hero-meta .left.over{color:var(--bad); font-weight:700;}
   .cell.good .ring-fill{stroke:var(--good);} .cell.over .ring-fill{stroke:var(--bad);} .cell.over .num{color:var(--bad);} .cell.good .num{color:var(--good);}
-  .mrow .bar>i.over{background:var(--bad);} .mrow .bar.lq{position:relative; overflow:visible;} .bar.lq .lqb{position:absolute; left:0; top:-2px; height:7px; background:var(--o20); border-radius:var(--r-sm);} .mrow.lqr{position:relative; border-bottom:0;} .mrow.lqr::after{content:''; position:absolute; left:0; right:0; top:calc(50% - 22px); height:44px;} .bar.lq>i{position:relative; z-index:1;}   /* v363 · LQ1 · franja: todos los líquidos · línea: solo agua */ .mrow .mv.ovr{color:var(--bad);}
+  .mrow .bar>i.over{background:var(--bad);} .cvx .cvxc.adj,.cvx .cvxc.adjw,.cvx .cvxc.adjf{position:relative;} .cvx .cvxc.adj::before,.cvx .cvxc.adjw::after,.cvx .cvxc.adjf::before{content:''; position:absolute; top:50%; width:var(--s2); height:var(--s3); transform:translateY(-50%); background:var(--o30);} .cvx .cvxc.adj::before{right:100%;} .cvx .cvxc.adjw::after{left:100%; width:var(--s1);} .cvx .cvxc.adjf::before{right:100%; width:var(--s1);} /* v366 · B5 · la vuelta: media unión en cada orilla (la del primero no toca el número) */ .cvx .cvxdh{position:relative; cursor:pointer;} .cvx .cvxdh::after{content:''; position:absolute; top:0; bottom:0; left:50%; width:var(--h-pri); transform:translateX(-50%);} .cvx .cvxh>.cvxn+.cvxdh::after{left:0; transform:none;}   /* v365 · SP12 · pegado: una unión tenue y sin color en el hueco entre dos días (adjw: el último con el primero) · el nombre del día, toque de 44 (el primero no tapa «volumen») */
+  .cvx .cvxdh.mv::before{content:''; position:absolute; left:var(--s1); right:var(--s1); bottom:0; border-bottom:var(--bw-dash) dashed var(--fg);} .cvxpend{position:sticky; bottom:calc(-1 * var(--nav-clear)); z-index:2; margin-top:var(--s4); background:var(--bg); border-top:var(--bw-sep) solid var(--o10);}   /* v366 · N1 · un día movido sin aplicar: punteado bajo su nombre (sin color ni alto nuevo) · lo que falta aplicar se pega abajo mientras se ven los renglones del mapa (.cvxw empieza tras la cabecera: nunca tapa los nombres, D1) · D4 · justo sobre la barra de inicio del iPhone: baja solo el relleno de .scroll sin la zona segura, y su relleno es el de .line (en el iPhone medía 87 px) · los avisos quedan encima */ .mrow .bar.lq{position:relative; overflow:visible;} .bar.lq .lqb{position:absolute; left:0; top:-2px; height:7px; background:var(--o20); border-radius:var(--r-sm);} .mrow.lqr{position:relative; border-bottom:0;} .mrow.lqr::after{content:''; position:absolute; left:0; right:0; top:calc(50% - 22px); height:44px;} .bar.lq>i{position:relative; z-index:1;}   /* v363 · LQ1 · franja: todos los líquidos · línea: solo agua */ .mrow .mv.ovr{color:var(--bad);}
   /* add-food: recents fill, controls pinned at bottom, equal buttons */
   .sheet.tall{height:90vh; display:flex; flex-direction:column; padding-bottom:calc(14px + env(safe-area-inset-bottom));}
   .fa-wrap{display:flex; flex-direction:column; height:100%; min-height:0;}
@@ -1562,7 +1562,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v365';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v366';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2706,6 +2706,155 @@ function _v363hSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
 }
 // self-check de v363 (GL2 · LQ1 · H8). Base de juguete; nada llega a disco; todo se restaura en finally.
 // self-check de v364 (SP13 · SP14 · SP15). Base de juguete; nada llega a disco; todo se restaura en finally.
+// self-check de v365 (SP10 · SP11 · SP12). Base de juguete; nada llega a disco; todo se restaura en finally.
+function _v365SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v365: '+nm); }; const real=db, K=['_covOpen','_covUnit','_covPlan','_cvxD','_cvxSort','_cvxS','_cvxO'], s0={}; K.forEach(k=>s0[k]=state[k]);
+  try{ const ex=(id,name,muscle,sets)=>({id,name,muscle,type:'machine',sets});
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',rotIdx:1,split:{name:'s',plan:{mode:'cycle',on:3,off:1,week:{},blocked:[]},days:[
+      {id:'a',name:'push',exercises:[ex('a1','press','chest',4),ex('a2','lateral','delts',3)]},{id:'b',name:'pull',exercises:[ex('b1','row','mback',4)]},{id:'c',name:'arms',exercises:[ex('c1','curl','bicep',3),ex('c2','fly','chest',3)]}]}}); bumpIdx();
+    state._covOpen=true; state._cvxD=null; state._cvxO=null; state._covPlan=null; let h=plannedVolumeSection();
+    A('SP10 · la cabecera dice frecuencia y volumen', /<b>frecuencia<\/b>/.test(h)&&/<b>volumen<\/b>/.test(h)&&!/<b>veces<\/b>/.test(h));
+    A('SP10 · ordenar: split · volumen · frecuencia', /data-act="cvx_sort" data-v="series">volumen</.test(h)&&/data-act="cvx_sort" data-v="veces">frecuencia</.test(h));
+    A('SP11 · arriba dice on/off y no hay usar este', />on\/off</.test(h)&&!/ver con/.test(h)&&!/data-act="cv_use"/.test(h));
+    state._covPlan='2/1'; h=plannedVolumeSection(); const iMap=h.indexOf('class="cvx"'), iUse=h.indexOf('data-act="cv_use"');
+    A('SP11 · v366 · B7 · con otro patrón, [usar] toma el lugar de on/off (arriba, sin renglón de previa)', iMap>0&&iUse>0&&iUse<iMap&&!/>on\/off</.test(h)&&!/previa 2\/1/.test(h)&&/data-act="cv_use" aria-label="usar 2\/1 en tu plan">usar</.test(h));
+    state._covPlan=null;
+    // SP12 · mover un día: el mapa usa el orden del borrador, el split no cambia hasta aplicar
+    cvxMoveDay(2,-1); A('SP12 · el borrador del orden', JSON.stringify(state._cvxO)==='["a","c","b"]'&&db.split.days.map(d=>d.id).join()==='a,b,c');
+    h=plannedVolumeSection(); A('SP12 · el mapa ya va en el orden nuevo y dice que falta aplicar', h.indexOf('>arms<')<h.indexOf('>pull<')&&/>1 sin aplicar</.test(h));
+    A('SP12 · pegado: el pecho dos días de entreno seguidos se marca', /class="cvxc adj"/.test(h));
+    A('SP12 · fuera del mapa los días siguen en su orden (nada se guardó)', db.split.days.map(d=>d.id).join()==='a,b,c'&&db.rotIdx===1);
+    const cur=db.split.days[db.rotIdx].id; cvxOrdApply(); A('SP12 · aplicar escribe el orden y el día que te toca es el mismo', db.split.days.map(d=>d.id).join()==='a,c,b'&&db.split.days[db.rotIdx].id===cur&&!state._cvxO);
+    cvxMoveDay(1,1); cvxMoveDay(1,1); A('SP12 · volver al orden de tu split quita el borrador', !state._cvxO);
+    // fix365 · lo que halló el verificador: con un orden pendiente cada edición cae en el día que eligió y nada se pinta con el orden del borrador
+    { const sv=save, st=toast, rr=reRender, dm=cvxDayMenu, tm=trkMenu, lt=_lastTap, sd0=state.selDay, spw=state._spw, box=document.createElement('div'); let U=null, T='', paint=[], menus=0;
+      try{ save=()=>{ splitWatch(); return true; }; toast=(m,ty,o)=>{ T=String(m); U=o&&o.undo||null; return null; }; reRender=()=>{ paint.push(db.split.days.map(d=>d.id).join()); };
+        const ids=()=>db.split.days.map(d=>d.id).join(), fk=ds=>({dataset:ds||{},closest:()=>null}), due=()=>db.split.days[curDayIdx()].id, abc=()=>['a','b','c'].map(id=>db.split.days.find(d=>d.id===id));
+        const rowOf=(x,k)=>{ const i=x.indexOf('data-k="'+k+'"'); return i<0?'':x.slice(i,x.indexOf('</div>',i)); };
+        db.split.days=abc(); db.split.plan={mode:'cycle',on:3,off:1,week:{},blocked:[]}; db.rotIdx=0; state.selDay=null; state._cvxO=null; state._cvxD=null; state._covPlan=null; state._cvxS=null; bumpIdx();
+        // #1 · el % del cajón con un orden pendiente: la columna 1 es «arms» (c) en el borrador, no «pull» (b)
+        cvxMoveDay(2,-1); cvxPctMenu('chest',1); { const it=[...document.querySelectorAll('#asklayer .nvm')]; A('fix365 · sale el menú de %', it.length>0); it[0].click(); }
+        A('fix365 #1 · % con un orden pendiente: cae en el día que eligió (el del borrador)', !!(state._cvxD&&state._cvxD.c&&state._cvxD.c.chest===1)&&!state._cvxD.b);
+        cvxAct('cvx_inc',fk({k:'chest',i:'1'})); A('fix365 #1 · +/− del cajón con un orden pendiente: también ahí', state._cvxD.c.chest===2&&cvxVal('chest',1)===2&&!state._cvxD.b);
+        // #2 · ordenar y cerrar el cajón repintan con el orden real (//DAYS y sus data-di no se desordenan)
+        paint=[]; cvxAct('cvx_sort',fk({v:'series'})); cvxAct('cvx_close',fk()); cvxAct('cvx_sort',fk({v:'split'}));
+        A('fix365 #2 · con un orden pendiente, lo que se repinta va con el orden real', paint.length===3&&paint.every(p=>p==='a,b,c')&&ids()==='a,b,c');
+        // #13 · el pie del cajón ve el orden · #10 · previa a secas · #15 · on/off dice tuyo
+        state._cvxD=null; { const ft=cvxFoot(); A('fix365 #13 · solo el orden: el pie dice «1 · días movidos» y aplicar está prendido', />1 · días movidos</.test(ft)&&!/aria-disabled/.test(ft)); }
+        state._covPlan='2/1'; { const hp=plannedVolumeSection(); A('fix365 #15 · v366 · on/off: [usar] · tuyo · 2/1 · 4/1; abajo, «1 sin aplicar»', /data-act="cv_use"[^>]*>usar<\/button>/.test(hp)&&/data-v="3\/1">tuyo<\/button>/.test(hp)&&!/>3\/1<\/button>/.test(hp)&&/>1 sin aplicar<\/span>/.test(hp)); } state._covPlan=null;
+        // #4 · el cajón: dos renglones cortos, la vuelta y ~por semana
+        state._cvxO=null; cvxSet('chest',0,5); { const t=document.createElement('div'); t.innerHTML=cvxSheetMHTML('chest',0); const L=[...t.querySelectorAll('.line')].slice(0,2).map(l=>[l.querySelector('.k').textContent,l.querySelector('.v').textContent]);
+          A('fix365 #4 · cajón: volumen 8 ▲ +1 · ~N/sem y frecuencia 2 · ~N/sem, cortos y sin «series»', L.length===2&&L[0][0]==='volumen'&&L[1][0]==='frecuencia'&&/^8 ▲ \+1 · ~\d+\/sem/.test(L[0][1])&&/^2 · ~[\d.]+\/sem$/.test(L[1][1])&&L.every(x=>x[1].length<=24&&!/series/.test(x[1]))); }
+        state._cvxD=null;
+        // #7 · pegado: sin descanso al final, el último día queda pegado al primero (diario); con descanso, no
+        db.split.plan={mode:'daily',on:3,off:1,week:{},blocked:[]}; bumpIdx(); { const r=rowOf(plannedVolumeSection(),'chest'); A('fix365 #7 · diario: el pecho de arms (el último) queda pegado al de push (el primero), con la unión en las dos orillas', /class="cvxc adjw" data-i="2"/.test(r)&&/class="cvxc adjf" data-i="0"/.test(r)&&!/ adj"/.test(r)); }
+        db.split.plan={mode:'cycle',on:3,off:1,week:{},blocked:[]}; bumpIdx(); A('fix365 #7 · con descanso al final, la vuelta no se pega', !/adjw/.test(plannedVolumeSection()));
+        // #5 · el nombre de cada día: toque de 44 sin cambiar el mapa; los vecinos se enciman y gana la columna más cercana al dedo
+        db.split.plan={mode:'daily',on:3,off:1,week:{},blocked:[]}; bumpIdx(); box.style.cssText='position:fixed;left:0;top:0;width:320px;visibility:hidden'; box.innerHTML=plannedVolumeSection(); document.body.appendChild(box);
+        { const hs=[...box.querySelectorAll('.cvxdh[data-i]')], af=getComputedStyle(hs[0],'::after'); let got=null; cvxDayMenu=i=>{ got=i; }; const R1=hs[1].getBoundingClientRect();
+          cvxAct('cvx_dm',hs[2],{clientX:R1.left+R1.width/2+2}); A('fix365 #5 · cabecera del día: toque de 44 y gana la columna más cercana', hs.length===3&&parseFloat(af.width)>=44&&parseFloat(af.height)>=44&&got===1); cvxDayMenu=dm; }
+        box.remove();
+        // #8 · días fijos: tocar un día abre ese día (mover no cambiaría el mapa)
+        db.split.plan={mode:'weekly',on:3,off:1,week:{1:'a',3:'b',5:'c'},blocked:[0]}; bumpIdx(); trkMenu=()=>{ menus++; }; cvxDayMenu(1);
+        A('fix365 #8 · días fijos: el nombre abre su día, sin menú de mover', menus===0&&!!document.querySelector('#modal .sheet.cvxs')&&!!state._cvxS&&state._cvxS.t==='d'&&state._cvxS.i===1); closeModal(); state._cvxS=null; trkMenu=tm;
+        // #3 · rotIdx ≥ N (cerraste el último día): aplicar el orden deja el mismo día que toca · #12 · y el que elegiste en Start
+        db.split.plan={mode:'cycle',on:3,off:1,week:{},blocked:[]}; bumpIdx();
+        for(const r of [3,7]){ db.split.days=abc(); db.rotIdx=r; state.selDay=0; const d0=due(); state._cvxO=['b','c','a']; const inMap=cvxOrdWith(()=>due()); cvxOrdApply();
+          A('fix365 #3 #12 · rotIdx '+r+': el mapa y aplicar dejan el mismo día que toca (y el elegido en Start)', inMap===d0&&due()===d0&&ids()==='b,c,a'&&db.split.days[state.selDay].id==='a'); }
+        // #6 · orden y series juntos: un aviso que dice los dos y un solo deshacer (split, día que toca e historial)
+        db.split.days=abc(); db.rotIdx=1; state.selDay=null; delete db.splitLog; state._spw=true; splitWatchReset(); const sp0=JSON.stringify(db.split);
+        state._cvxO=['a','c','b']; cvxSet('chest',0,5); cvxApply();
+        A('fix365 #6 · aplicar orden + series: se escriben los dos y el aviso los dice', ids()==='a,c,b'&&db.split.days[0].exercises[0].sets===5&&due()==='b'&&T==='✓ tu split · 2 cambios'&&(db.splitLog||[]).length===1&&!state._cvxO&&!state._cvxD);
+        U(); save(); A('fix365 #6 · …y un solo deshacer regresa todo (split, día que toca e historial)', JSON.stringify(db.split)===sp0&&db.rotIdx===1&&(db.splitLog||[]).length===0);
+        // #9 · restaurar del historial borra el borrador del orden y deja el mismo día que toca; cambiar de split también lo borra
+        state._cvxO=['c','a','b']; cvxApply(); const dueR=due(); cvxMoveDay(0,1); A('fix365 · hay un borrador antes de restaurar', !!state._cvxO);
+        splitRestore((db.splitLog||[]).length-1); A('fix365 #9 · restaurar: sin borrador del orden, tu orden de antes y el mismo día que toca', !state._cvxO&&ids()==='a,b,c'&&due()===dueR);
+        A('fix365 #9 · cambiar de split también borra el borrador del orden', /state\._cvxO=null/.test(String(splitSet)));
+      } finally { save=sv; toast=st; reRender=rr; cvxDayMenu=dm; trkMenu=tm; _lastTap=lt; state.selDay=sd0; state._spw=spw; try{ box.remove(); }catch(_){} try{ closeAsk(true); }catch(_){} try{ closeModal(); }catch(_){} } }
+    // fix365b · ronda 2: lo movido se ve «sin aplicar» bajo su nombre y descartar · aplicar se pegan abajo; [usar] en on/off; un vocabulario; duplicar junto a su día; fijos sin previa; la vuelta en las dos orillas
+    { const st=toast, sv=save, rr=reRender, sd0=state.selDay, box=document.createElement('div'); let T='';
+      try{ toast=m=>{ T=String(m); return null; }; save=()=>true; reRender=()=>{};
+        const by=id=>db.split.days.find(d=>d.id===id), ids=()=>db.split.days.map(d=>d.id).join(), nmv=x=>(x.match(/class="cvxdh mv"/g)||[]).length;
+        const hd=(x,i,nm,m)=>x.indexOf('class="cvxdh'+(m?' mv':'')+'" role="button" tabindex="0" data-act="cvx_dm" data-i="'+i+'" aria-label="'+nm)>=0;
+        const put=()=>{ box.style.cssText='position:fixed;left:0;top:0;width:320px;visibility:hidden'; box.innerHTML=plannedVolumeSection(); document.body.appendChild(box); };
+        db.split.days=['a','b','c'].map(by); db.split.plan={mode:'cycle',on:3,off:1,week:{},blocked:[]}; db.rotIdx=0; state.selDay=null; state._cvxO=null; state._cvxD=null; state._covPlan=null; state._cvxS=null; bumpIdx();
+        // N1 · sin nada pendiente: ni punteado ni renglón; al mover, punteado bajo los días que cambiaron de lugar y «1 sin aplicar [descartar] [aplicar]» debajo del mapa
+        let hh=plannedVolumeSection(); A('fix365b N1 · v366 · sin nada pendiente: los renglones van en .cvxw (dentro del mapa, tras «por día»), sin punteado ni renglón', /<\/div><div class="cvxw"><div class="cvxg cvxr"/.test(hh)&&hh.indexOf('class="cvxw"')>hh.indexOf('class="cvxg cvxt"')&&nmv(hh)===0&&!/cvxpend/.test(hh));
+        cvxMoveDay(2,-1); hh=plannedVolumeSection();
+        A('fix365b N1 · al mover: punteado bajo arms y pull (cambiaron de lugar), no bajo push', nmv(hh)===2&&hd(hh,0,'push',0)&&hd(hh,1,'arms',1)&&hd(hh,2,'pull',1));
+        A('fix365b N1 · …y «1 sin aplicar» con descartar · aplicar, debajo del mapa', hh.indexOf('cvxpend')>hh.indexOf('class="cvx"')&&/>1 sin aplicar<\/span><span class="dots"><\/span><button type="button" class="b" data-act="cvx_reset">descartar<\/button><button type="button" class="b" data-act="cvx_apply">aplicar<\/button>/.test(hh));
+        // N1 · medido: el punteado no cambia ningún alto y el renglón se pega abajo (sticky dentro de .cvxw) con botones de 44
+        state._cvxO=null; put(); const geo=()=>[box.querySelector('.cvxh').getBoundingClientRect().height,box.querySelector('.cvxr').getBoundingClientRect().top,box.querySelector('.cvx').getBoundingClientRect().top], g0=geo();
+        cvxMoveDay(2,-1); box.innerHTML=plannedVolumeSection(); const g1=geo(), mh=box.querySelector('.cvxdh.mv'), ps=mh&&getComputedStyle(mh,'::before'), pe=box.querySelector('.cvxw > .cvxpend'), cs=pe&&getComputedStyle(pe);
+        const pr=document.createElement('i'); pr.style.color='var(--fg)'; box.appendChild(pr); const fg=getComputedStyle(pr).color;
+        A('fix365b N1 · el punteado: rayado del color del texto, absoluto (sin alto nuevo); el mapa no se mueve', !!ps&&ps.borderBottomStyle==='dashed'&&ps.position==='absolute'&&ps.borderBottomColor===fg&&g0.every((v,j)=>Math.abs(v-g1[j])<0.5));
+        A('fix365b N1 · el renglón se pega al borde de abajo mientras se ve el mapa (sticky en .cvxw, v366 · justo sobre la barra de inicio) y sus botones miden 44', !!cs&&cs.position==='sticky'&&Math.abs(parseFloat(cs.bottom)+parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-clear')))<0.5&&[...pe.querySelectorAll('button')].every(b=>b.getBoundingClientRect().height>=44));
+        box.remove();
+        // B7 · con otro patrón a la vista, [usar] toma el lugar de «on/off»: mismo renglón y alto; los toggles y el mapa no se mueven
+        state._cvxO=null; put(); const tg=()=>[box.querySelector('[data-act="cv_pat"]').closest('.line').getBoundingClientRect().height,box.querySelector('.toggles').getBoundingClientRect().left,box.querySelector('.cvx').getBoundingClientRect().top], t0=tg();
+        state._covPlan='2/1'; box.innerHTML=plannedVolumeSection(); const t1=tg(), us=box.querySelector('[data-act="cv_use"]'), UR=us&&us.getBoundingClientRect();
+        A('fix365b B7 · [usar] en el renglón on/off: los toggles y el mapa no se mueven; toque de 44; sin renglón de previa', !!us&&us.closest('.line')===box.querySelector('[data-act="cv_pat"]').closest('.line')&&!/on\/off/.test(us.closest('.line').textContent)&&t0.every((v,j)=>Math.abs(v-t1[j])<0.5)&&UR.height>=44&&UR.width>=44&&!box.querySelector('.cvuse'));
+        state._covPlan=null; box.remove();
+        // B4 · un solo vocabulario: «N sin aplicar» abajo, «N · +1 serie · días movidos» en el pie, «✓ tu split · N cambios» en el aviso
+        db.split.days=['a','b','c'].map(by); state._cvxO=null; state._cvxD=null; cvxMoveDay(2,-1); { const ft=cvxFoot(); A('fix365b B4 · solo días movidos: el pie dice «1 · días movidos»', />1 · días movidos</.test(ft)&&!/orden/.test(ft)&&!/aria-disabled/.test(ft)); }
+        cvxSet('chest',0,cvxVal('chest',0)+1); { const ft=cvxFoot(); A('fix365b B4 · v366 · D5 · …y con una serie: «2 · +1 · días movidos»', />2 · \+1 · días movidos</.test(ft)&&!/serie/.test(ft)&&!/orden/.test(ft)); }
+        A('fix365b B4 · abajo: «2 sin aplicar»', />2 sin aplicar<\/span>/.test(plannedVolumeSection())); cvxApply(); A('fix365b B4 · el aviso: «✓ tu split · 2 cambios» (cabe con su [deshacer])', T==='✓ tu split · 2 cambios'&&ids()==='a,c,b');
+        // B1 · con días movidos sin aplicar, la copia de un día va tras él en el borrador (no al final)
+        db.split.days=['a','b','c'].map(by); state._cvxO=['a','c','b']; db.split.days.splice(1,0,{id:'a2',name:'push · copia',exercises:[]});
+        A('fix365b B1 · duplicar: la copia va tras su día en el borrador', cvxOrdIds().join()==='a,a2,c,b'); db.split.days.splice(1,1);
+        // B2 · días fijos sin previa: los días movidos no cuentan (ni punteado ni renglón ni pie) ni se aplican; con la previa 3/1 vuelven
+        db.split.days=['a','b','c'].map(by); db.split.plan={mode:'weekly',on:3,off:1,week:{1:'a',3:'b',5:'c'},blocked:[0]}; state._cvxO=['a','c','b']; state._cvxD=null; bumpIdx(); hh=plannedVolumeSection();
+        A('fix365b B2 · fijos: sin punteado, sin renglón y el pie dice ninguno; aplicar no mueve nada', !cvxOrdOn()&&nmv(hh)===0&&!/cvxpend/.test(hh)&&/ninguno/.test(cvxFoot())&&!cvxOrdApply()&&ids()==='a,b,c'&&!!state._cvxO);
+        state._covPlan='3/1'; A('fix365b B2 · …con la previa 3/1 vuelven a contar', cvxOrdOn()&&/>1 sin aplicar</.test(plannedVolumeSection())); state._covPlan=null; state._cvxO=null;
+        // B5 · la vuelta (diario, sin descanso al final): media unión en las dos orillas
+        db.split.plan={mode:'daily',on:3,off:1,week:{},blocked:[]}; bumpIdx(); { const x=plannedVolumeSection(), i=x.indexOf('data-k="chest"'), r=x.slice(i,x.indexOf('</div>',i)); A('fix365b B5 · la vuelta: el primero lleva adjf y el último adjw', /class="cvxc adjf" data-i="0"/.test(r)&&/class="cvxc adjw" data-i="2"/.test(r)); }
+      } finally { toast=st; save=sv; reRender=rr; state.selDay=sd0; try{ box.remove(); }catch(_){} } }
+    // fix365c · ronda 3: el renglón pegado nunca sube sobre los nombres (D1) y se pega justo sobre la barra de inicio (D4); con previa el aviso dice que ese patrón no entró (D2);
+    // en fijos aplicar se lleva los días movidos escondidos (D3); el pie sin «series» (D5); plegada dice lo que falta aplicar (D6); sin .cvuse (D7); Enter en los nombres (D8)
+    { const st=toast, sv=save, rr=reRender, sd0=state.selDay, sc=document.createElement('div'); let T='', U=null;
+      try{ toast=(m,ty,o)=>{ T=String(m); U=o&&o.undo||null; return null; }; save=()=>true; reRender=()=>{};
+        const by=id=>db.split.days.find(d=>d.id===id), abc=()=>['a','b','c'].map(by), ids=()=>db.split.days.map(d=>d.id).join();
+        db.split.days=abc(); db.split.plan={mode:'cycle',on:3,off:1,week:{},blocked:[]}; db.rotIdx=0; state.selDay=null; state._cvxO=null; state._cvxD=null; state._covPlan=null; state._cvxS=null; state._covOpen=true; bumpIdx();
+        // D1 · medido en un scroll como #view (su relleno de abajo es --nav-clear): con la cabecera abajo el renglón no sube sobre ella; con el mapa arriba se pega al borde
+        cvxMoveDay(2,-1); sc.style.cssText='position:fixed;left:0;top:0;width:320px;height:260px;overflow-y:auto;visibility:hidden;box-sizing:border-box;padding-bottom:var(--nav-clear)';
+        sc.innerHTML=plannedVolumeSection(); [0,1].forEach(j=>{ const d=document.createElement('div'); d.style.height='600px'; if(j)sc.append(d); else sc.prepend(d); }); document.body.appendChild(sc);
+        { const q=s=>sc.querySelector(s), R=e=>e.getBoundingClientRect(), pe=q('.cvxpend'), H=q('.cvxh'), Tt=q('.cvxt'), vb=()=>R(sc).top+sc.clientHeight;
+          A('fix365c D1 · el renglón va en .cvxw, dentro del mapa y después de «por día»', !!pe&&pe.parentElement===q('.cvx > .cvxw')&&q('.cvxw').previousElementSibling===Tt);
+          sc.scrollTop+=R(H).top-(R(sc).top+210); const a=[R(H).top-R(sc).top,R(pe).top,R(Tt).bottom];
+          A('fix365c D1 · con la cabecera abajo, el renglón no sube sobre los nombres ni sobre «por día»', Math.abs(a[0]-210)<1&&a[1]>=a[2]-0.5);
+          sc.scrollTop+=R(H).top-(R(sc).top+10);
+          A('fix365c D1 · con el mapa arriba, se pega al borde de abajo (y sigue bajo «por día»)', Math.abs(R(pe).bottom-vb())<1&&R(pe).top>=R(Tt).bottom-0.5&&[...pe.querySelectorAll('button')].every(b=>R(b).height>=44));
+          let rule=null; [...document.styleSheets].forEach(s=>{ try{ [...s.cssRules].forEach(r=>{ if(r.selectorText==='.cvxpend')rule=r; }); }catch(_){} });
+          const cs=getComputedStyle(pe), nc=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-clear'));
+          A('fix365c D4 · justo sobre la barra de inicio: bottom −nav-clear, el relleno de .line y nada de zona segura', !!rule&&!/safe-area/.test(rule.cssText)&&Math.abs(parseFloat(cs.bottom)+nc)<0.5&&cs.paddingBottom===cs.paddingTop); }
+        sc.remove();
+        // D2 · con otro patrón a la vista, aplicar escribe los días movidos y el aviso dice que ese patrón no entró (el plan no cambia, la previa sigue)
+        state._cvxO=null; db.split.days=abc(); state._covPlan='2/1'; cvxMoveDay(2,-1); const pk=covKeyOf(splitPlan()); cvxApply();
+        A('fix365c D2 · con previa: «✓ tu split · 1 cambio · 2/1 sin usar», el orden escrito y el plan sin tocar', T==='✓ tu split · 1 cambio · 2/1\u00a0sin\u00a0usar'&&ids()==='a,c,b'&&covKeyOf(splitPlan())===pk&&state._covPlan==='2/1');
+        state._covPlan=null;
+        // D3 · fijos: aplicar series se lleva los días movidos escondidos (no vuelven con la previa); [deshacer] los regresa
+        db.split.days=abc(); db.split.plan={mode:'weekly',on:3,off:1,week:{1:'a',3:'b',5:'c'},blocked:[0]}; bumpIdx(); state._cvxO=['a','c','b']; state._cvxD=null;
+        const c0=cvxVal('chest',0); cvxSet('chest',0,c0+1); cvxApply(); state._covPlan='3/1';
+        A('fix365c D3 · fijos: tras aplicar, la previa 3/1 ya no trae «1 sin aplicar»', !state._cvxO&&ids()==='a,b,c'&&cvxVal('chest',0)===c0+1&&!/sin aplicar/.test(plannedVolumeSection()));
+        state._covPlan=null; if(U)U(); A('fix365c D3 · …y [deshacer] los regresa con el split', JSON.stringify(state._cvxO)==='["a","c","b"]'&&cvxVal('chest',0)===c0);
+        // D5 · el pie: «2 · +1 · días movidos» (sin «series»); con el ± en 0 no dice «· 0»
+        db.split.plan={mode:'cycle',on:3,off:1,week:{},blocked:[]}; bumpIdx(); db.split.days=abc(); state._cvxO=null; state._cvxD=null; cvxMoveDay(2,-1); cvxSet('chest',0,cvxVal('chest',0)+1);
+        { const ft=cvxFoot(); A('fix365c D5 · el pie: «2 · +1 · días movidos», sin «series»', />2 · \+1 · días movidos</.test(ft)&&!/serie/.test(ft)); }
+        cvxSet('chest',1,cvxVal('chest',1)-1); { const ft=cvxFoot(); A('fix365c D5 · …y con el ± en 0: «3 · días movidos»', />3 · días movidos</.test(ft)); }
+        // D6 · plegada, el encabezado dice lo que falta aplicar; abierta no (lo dice el renglón); sin nada pendiente, solo los músculos
+        A('fix365c D6 · abierta, el encabezado no lo repite', !/músculos · \d+ sin aplicar/.test(plannedVolumeSection()));
+        state._covOpen=false; A('fix365c D6 · plegada: «N músculos · 3 sin aplicar ›»', /\d músculos · 3 sin aplicar <span class="sefx">›<\/span>/.test(plannedVolumeSection()));
+        state._cvxD=null; state._cvxO=null; { const hf=plannedVolumeSection(); A('fix365c D6 · …y sin nada pendiente, solo los músculos', /\d músculos <span class="sefx">›<\/span>/.test(hf)&&!/sin aplicar/.test(hf)); } state._covOpen=true;
+        // D7 · sin el código muerto de la previa vieja
+        { let css=false; [...document.styleSheets].forEach(s=>{ try{ [...s.cssRules].forEach(r=>{ if(/\.cvuse\b/.test(r.cssText||''))css=true; }); }catch(_){} });
+          A('fix365c D7 · sin .cvuse: ni su regla, ni su rama en cv_pat, ni covControlsHTML', !css&&typeof covControlsHTML==='undefined'&&![...document.scripts].some(s=>s.textContent.indexOf("closest('.cv"+"use')")>=0)); }
+        // D8 · Enter / espacio en el nombre de un día y en el renglón de un músculo
+        { let kn=0; const mk=c=>{ const e=document.createElement('span'); e.className=c; e.setAttribute('role','button'); e.tabIndex=0; e.onclick=()=>kn++; document.body.appendChild(e); return e; }, a=mk('cvxdh'), b=mk('cvxr');
+          try{ a.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true})); b.dispatchEvent(new KeyboardEvent('keydown',{key:' ',bubbles:true})); }finally{ a.remove(); b.remove(); }
+          A('fix365c D8 · Enter en el nombre de un día y espacio en el renglón de un músculo los abren', kn===2); }
+      } finally { toast=st; save=sv; reRender=rr; state.selDay=sd0; try{ sc.remove(); }catch(_){} } }
+    console.log('v365 self-check OK');
+  } finally { try{ closeModal(); }catch(_){} K.forEach(k=>state[k]=s0[k]); db=real; bumpIdx(); }
+}
 function _v364SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v364: '+nm); }; const real=db, rs=state.screen;
   try{ db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',split:{name:'s',days:[{id:'a',name:'push',exercises:[{id:'x1',name:'press banca',muscle:'chest',type:'free',sets:4},{id:'x2',name:'elevaciones laterales',muscle:'delts',type:'free',sets:3}]}]},
       sessions:[{id:'s1',date:todayISO(),dayId:'a',dayName:'push',type:'training',exercises:[{exId:'x2',name:'elevaciones laterales',muscle:'delts',type:'free',sets:[{w:'20',r:'12',rir:'1',unit:'lbs',done:true}]}]}]}); bumpIdx();
@@ -8430,12 +8579,6 @@ function covMatrix(plan){ return covWith(plan,()=>{ const days=(db.split&&db.spl
     D.forEach((d,i)=>{ const n=d.per.get(m)||0; if(n){ fw+=fr[i]||0; sw+=n*(fr[i]||0); } });
     return {k:m,m:lbl.get(m)||m,f,s,fw:r1(fw),sw:Math.round(sw)}; });   // por semana: las veces con un decimal, las series enteras (caben a 320)
   return {plan:P,cols,days:D,rows,tot:rows.reduce((a,r)=>a+r.s,0),totw:rows.reduce((a,r)=>a+r.sw,0)}; }); }
-function covControlsHTML(P,pv){ const ck=covKeyOf(P), sel=pv?covKeyOf(pv):ck, u=state._covUnit==='semana'?'semana':'vuelta';
-  const opts=[]; if(!COV_PATS.some(([a,b])=>a+'/'+b===ck))opts.push([ck,{daily:'diario',weekly:'fijos'}[ck]||ck]); COV_PATS.forEach(([a,b])=>opts.push([a+'/'+b,a+'/'+b]));
-  const tog=(act,list,cur)=>'<div class="toggles">'+list.map(([v,l])=>'<button type="button" class="t'+(v===cur?' on':'')+'" data-act="'+act+'" data-v="'+escTxt(v)+'">'+escTxt(l)+'</button>').join('')+'</div>';
-  const row=(k,v)=>'<div class="line sch"><span class="k">'+k+'</span><span class="dots"></span>'+v+'</div>';
-  return row('ver con',tog('cv_pat',opts,sel))+row('cuenta',tog('cv_unit',[['vuelta','vuelta'],['semana','semana']],u))
-    +(pv?'<div class="line sch cvuse"><span class="k">previa · el tuyo: '+escTxt({daily:'diario',weekly:'fijos'}[ck]||ck)+'</span><span class="dots"></span><button type="button" class="b" data-act="cv_use">usar este</button></div>':''); }
 // ---- v358 · SP9 · //COVERAGE para gestionar tu volumen: el mapa con cajón ----
 // El dueño (15-oct), de la tabla de v352: "no me gustó cómo quedó… quedó todo muy apretado" · "el chiste es que se pueda editar desde ahí…
 // de deltoides tengo que hago 15 series. Poderla distribuir más o poner un porcentaje… que quede el 60% de la carga de ese día" · "si quieres
@@ -8456,7 +8599,8 @@ function cvxClean(){ const D=state._cvxD; if(!D)return; const ds=(db.split&&db.s
   Object.keys(D).forEach(id=>{ const i=ds.findIndex(d=>d&&d.id===id); if(i<0||!M||!M.days[i])return; const o={}; Object.keys(D[id]).forEach(k=>{ if(D[id][k]!==(M.days[i].per.get(k)||0))o[k]=D[id][k]; }); if(Object.keys(o).length)out[id]=o; });
   state._cvxD=Object.keys(out).length?out:null; }
 // covMatrix + el borrador encima: los mismos días, columnas y renglones, con sus cuentas rehechas (y las de tu split al lado, para el ▲▼)
-function cvxModel(pv){ return covWith(pv,()=>{ const M=covMatrix(); if(!M)return null; const fr=splitDayFreq(), D=cvxDraft(), r1=x=>Math.round(x*10)/10;
+function cvxModel(pv){ return cvxOrdWith(()=>cvxModel0(pv)); }   // v365 · SP12 · con un orden pendiente, el mapa y el cajón cuentan en ese orden
+function cvxModel0(pv){ return covWith(pv,()=>{ const M=covMatrix(); if(!M)return null; const fr=splitDayFreq(), D=cvxDraft(), r1=x=>Math.round(x*10)/10;
   const days=M.days.map((d,i)=>{ const per=new Map(d.per), o=D[cvxDayId(i)]||{};
     Object.keys(o).forEach(k=>{ if(o[k]>0)per.set(k,o[k]); else per.delete(k); });
     // el objetivo, con la regla de covMatrix: el que más series tiene; si empatan, el que nombra el día; si no, el primero
@@ -8474,37 +8618,74 @@ function cvxSorted(X,u){ const by=state._cvxSort||'split', ix=new Map(X.rows.map
   if(by==='series')R.sort((a,b)=>s(b)-s(a)||f(b)-f(a)||ix.get(a.k)-ix.get(b.k));
   else if(by==='veces')R.sort((a,b)=>f(b)-f(a)||s(b)-s(a)||ix.get(a.k)-ix.get(b.k));
   return R; }
-function plannedVolumeSection(){
+// ---- v365 · SP12 · mover los días del split viendo cómo quedan antes de aplicar ----
+// El dueño (16-oct): "poder cambiar el orden… desde el nombre del día del split… previsualizar… cómo es que se ajustan las series, si se quedan muy
+// juntas, muy pegadas, antes de poder confirmar". El nombre de un día (arriba del mapa) se toca: mover antes o después. El orden nuevo es un borrador
+// (state._cvxO, ids de los días) que el mapa y el cajón ya usan; aplicar lo escribe con el día que te toca intacto. Una unión tenue (sin color)
+// entre dos celdas = el mismo músculo dos días de entreno seguidos (pegado).
+function cvxOrdIds(){ const ds=(db.split&&db.split.days)||[], O=state._cvxO; if(!O)return ds.map(d=>d.id); const a=O.filter(id=>ds.some(d=>d&&d.id===id));
+  ds.forEach((d,j)=>{ if(a.indexOf(d.id)<0)a.splice(j?a.indexOf(ds[j-1].id)+1:0,0,d.id); }); return a; }   // v366 · el que falta en el borrador (duplicaste) va tras su vecino de verdad
+// v366 · los días movidos cuentan donde cambian el mapa: en días fijos sin previa no lo cambian → ni se cuentan ni se aplican (vuelven con la previa)
+function cvxOrdOn(){ return !!state._cvxO&&(covPreview()||splitPlan()).mode!=='weekly'; }
+function cvxOrdDays(){ const ds=(db.split&&db.split.days)||[]; if(!cvxOrdOn())return null; return cvxOrdIds().map(id=>ds.find(d=>d.id===id)); }
+// todo lo del mapa y del cajón se calcula con el orden del borrador (los días se cambian de lugar un momento y vuelven: nada se guarda aquí)
+function cvxOrdWith(fn){ const nd=cvxOrdDays(); if(!nd)return fn(); const sp=db.split, old=sp.days, r0=db.rotIdx; sp.days=nd; rotKeep(old,nd);
+  try{ return fn(); } finally{ sp.days=old; db.rotIdx=r0; } }   // solo cálculo (modelo y HTML): nunca render() ni un handler que lea data-di de la pantalla
+// v365 · SP12 · al cambiar el orden de los días, el que te toca (rotIdx cuenta de más: va con módulo) y, con sel, el que elegiste en Start siguen siendo los mismos
+function rotKeep(old,nd,sel){ const N=(old||[]).length; if(!N)return; const at=x=>{ const d=old[((x%N)+N)%N]; return d?nd.findIndex(y=>y&&y.id===d.id):-1; };
+  if(db.rotIdx!=null&&isFinite(db.rotIdx)){ const j=at(+db.rotIdx); if(j>=0)db.rotIdx=j; }
+  if(sel&&state.selDay!=null&&isFinite(state.selDay)){ const j=at(+state.selDay); if(j>=0)state.selDay=j; } }
+// el borrador del orden se limpia contra tu split de ahora (restauraste, cambiaste de split…): si ya es tu orden, deja de contar. Fuera de cvxOrdWith
+function cvxOrdClean(){ if(!state._cvxO)return; const cur=((db.split&&db.split.days)||[]).map(d=>d&&d.id); if(cvxOrdIds().join()===cur.join())state._cvxO=null; }
+function cvxMoveDay(i,dir){ const ids=cvxOrdIds(), j=i+dir; if(j<0||j>=ids.length)return; const t=ids[i]; ids[i]=ids[j]; ids[j]=t; const cur=((db.split&&db.split.days)||[]).map(d=>d.id);
+  state._cvxO=ids.join()===cur.join()?null:ids; reRender(); }
+function cvxDayMenu(i){ const ids=cvxOrdIds(), d=((db.split&&db.split.days)||[]).find(x=>x.id===ids[i]); if(!d)return; const see=()=>cvxOpen({t:'d',i,k:null});
+  if((covPreview()||splitPlan()).mode==='weekly'){ see(); return; }   // días fijos: cada día va en su día de la semana y el orden no cambia el mapa → solo ver el día
+  const it=[['ver el día',see]]; if(i>0)it.push(['mover antes',()=>cvxMoveDay(i,-1)]); if(i<ids.length-1)it.push(['mover después',()=>cvxMoveDay(i,1)]); trkMenu(d.name||'día',it); }
+// aplicar el orden: los días del split en el orden del borrador; el día que te toca sigue siendo el mismo
+function cvxOrdApply(){ const nd=cvxOrdDays(); if(!nd)return false; const old=db.split.days; db.split.days=nd; rotKeep(old,nd,1); state._cvxO=null; return true; }
+// v366 · B4 · un solo vocabulario: N cambios, y los días movidos cuentan como uno. Abajo «N sin aplicar»; en el pie del cajón «N · +1 · días movidos» (D5);
+// en el aviso «✓ tu split · N cambios» (más largo se corta a 393 junto a su [deshacer]). «orden» queda para ordenar los renglones
+function cvxNPend(){ return cvxNChg()+(cvxOrdOn()?1:0); }
+function cvxPendTxt(){ const N=cvxNPend(); return N?N+' '+(N===1?'cambio':'cambios'):''; }
+// el mapa se queda donde estaba aunque arriba cambie algo (el renglón del historial, //SCHEDULE): se ancla su primer renglón a la vista
+function cvxAnchor(){ const r=[...document.querySelectorAll('#view .cvxr')].find(x=>x.getBoundingClientRect().top>=0); if(r)rkAnchor(r.dataset.rk); }
+function plannedVolumeSection(){ cvxOrdClean(); const mv=cvxOrdMoved(); return cvxOrdWith(()=>plannedVolumeSection0(mv)); }
+// v366 · N1 · los días que cambian de lugar con los días movidos sin aplicar (sus ids): su nombre lleva el punteado de «sin aplicar». Fuera de cvxOrdWith
+function cvxOrdMoved(){ if(!cvxOrdOn())return null; const ds=(db.split&&db.split.days)||[], s=new Set(); cvxOrdIds().forEach((id,i)=>{ if(!ds[i]||ds[i].id!==id)s.add(id); }); return s.size?s:null; }
+function plannedVolumeSection0(mv){
   // v358 · SP9 · el mapa (abierto de entrada y plegable como antes); otro patrón se ve sin guardarlo (SP4)
   cvxClean(); const P=splitPlan(), pv=covPreview(), X=cvxModel(pv); if(!X||!X.rows.length)return '';
   const open=state._covOpen!==false;
-  const h=`<hr class="rule"/><div class="section sefoldh" role="button" tabindex="0" data-act="sd_cov" aria-expanded="${open}"><div class="h"><span class="s">//</span>COVERAGE</div><div class="meta">${X.rows.length} ${X.rows.length===1?'músculo':'músculos'} <span class="sefx">${open?'▾':'›'}</span></div></div>`;
-  return open?h+cvxControlsHTML(P,pv)+cvxMapHTML(X)+cvxPendHTML():h; }   // lo que falta aplicar va DEBAJO del mapa: si fuera arriba, al salir o quitarse empujaría el mapa bajo el dedo
-function cvxPendHTML(){ const n=cvxNChg(); return n?'<div class="line sch cvxpend"><span class="k">'+n+' sin aplicar</span><span class="dots"></span><button type="button" class="b" data-act="cvx_reset">descartar</button><button type="button" class="b" data-act="cvx_apply">aplicar</button></div>':''; }
+  const h=`<hr class="rule"/><div class="section sefoldh" role="button" tabindex="0" data-act="sd_cov" aria-expanded="${open}"><div class="h"><span class="s">//</span>COVERAGE</div><div class="meta">${X.rows.length} ${X.rows.length===1?'músculo':'músculos'}${open||!cvxNPend()?'':' · '+cvxNPend()+' sin aplicar'} <span class="sefx">${open?'▾':'›'}</span></div></div>`;   /* v366 · D6 · plegada, dice lo que falta aplicar */
+  return open?h+cvxControlsHTML(P,pv)+cvxMapHTML(X,mv,cvxPendHTML()):h; }   // lo que falta aplicar va DEBAJO del mapa: si fuera arriba, al salir o quitarse empujaría el mapa bajo el dedo
+// v366 · N1 · lo que falta aplicar se pega abajo de la pantalla mientras se ve el mapa (descartar · aplicar sin bajar); su lugar sigue siendo debajo
+// del mapa: al salir o irse no empuja nada. Un solo renglón: la previa no lleva el suyo, [usar] vive en on/off junto al patrón que tocaste (B7)
+function cvxPendHTML(){ const N=cvxNPend(); return N?'<div class="line sch cvxpend"><span class="k">'+N+' sin aplicar</span><span class="dots"></span><button type="button" class="b" data-act="cvx_reset">descartar</button><button type="button" class="b" data-act="cvx_apply">aplicar</button></div>':''; }
 function cvxControlsHTML(P,pv){ const ck=covKeyOf(P), sel=pv?covKeyOf(pv):ck, by=state._cvxSort||'split';
-  const opts=[]; if(!COV_PATS.some(([a,b])=>a+'/'+b===ck))opts.push([ck,{daily:'diario',weekly:'fijos'}[ck]||ck]); COV_PATS.forEach(([a,b])=>opts.push([a+'/'+b,a+'/'+b]));
+  const opts=[[ck,'tuyo']]; COV_PATS.forEach(([a,b])=>{ if(a+'/'+b!==ck)opts.push([a+'/'+b,a+'/'+b]); });   // v365 · SP11 · el tuyo dice «tuyo»
   const tog=(act,list,cur)=>'<div class="toggles">'+list.map(([v,l])=>'<button type="button" class="t'+(v===cur?' on':'')+'" data-act="'+act+'" data-v="'+escTxt(v)+'">'+escTxt(l)+'</button>').join('')+'</div>';
   const row=(k,v,c)=>'<div class="line sch'+(c?' '+c:'')+'"><span class="k">'+k+'</span><span class="dots"></span>'+v+'</div>';
-  return row('ver con',tog('cv_pat',opts,sel))
-    +row('orden',tog('cvx_sort',[['split','split'],['series','series'],['veces','veces']],by))
-    +(pv?row('previa · el tuyo: '+escTxt({daily:'diario',weekly:'fijos'}[ck]||ck),'<button type="button" class="b" data-act="cv_use">usar este</button>','cvuse'):''); }
+  return row(pv?'<button type="button" class="b" data-act="cv_use" aria-label="usar '+escTxt(sel)+' en tu plan">usar</button>':'on/off',tog('cv_pat',opts,sel))   // v366 · B7 · con otro patrón a la vista, [usar] toma el lugar de «on/off»: mismo ancho, los toggles no se mueven
+    +row('orden',tog('cvx_sort',[['split','split'],['series','volumen'],['veces','frecuencia']],by)); }   // v365 · SP10 · SP11
 // ▲ / ▼ junto a un total que cambió con el borrador (contra tu split)
 function cvxMk(a,b){ return a===b?'':'<i class="cvxu">'+(a>b?'▲':'▼')+'</i>'; }
-function cvxMapHTML(X){ const u=state._covUnit==='semana', R=cvxSorted(X,u), di=c=>c.dow!=null?DOW_INI[c.dow]:'';
+function cvxMapHTML(X,mv,tail){ const u=state._covUnit==='semana', R=cvxSorted(X,u), di=c=>c.dow!=null?DOW_INI[c.dow]:'';
   // la columna del músculo mide su nombre más largo (sin cortar, B-12); los días se reparten el resto; el descanso es una franja
   // con un nombre muy largo, la columna se topa al 32 % y el nombre baja de renglón en sus espacios (no se corta); cada día conserva un mínimo
   const lw=Math.max(7,...X.rows.map(r=>[...String(r.m)].length))+1, tpl='minmax(7ch,min('+lw+'ch,32%)) 3ch 4ch '+X.cols.map(c=>c.idx<0?'var(--s4)':'minmax(var(--s4),1fr)').join(' ');
-  let h='<div class="cvx" data-n="'+X.cols.length+'" style="--cvxc:'+tpl+'"><div class="cvxg cvxh"><span class="cvxl" data-gloss="cov"><span class="u-dash">músculo</span></span><span class="cvxn"><b>'+(u?'veces/sem':'veces')+'</b></span><span class="cvxn"><b>'+(u?'series/sem':'series')+'</b></span>';
+  let h='<div class="cvx" data-n="'+X.cols.length+'" style="--cvxc:'+tpl+'"><div class="cvxg cvxh"><span class="cvxl" data-gloss="cov"><span class="u-dash">músculo</span></span><span class="cvxn"><b>'+(u?'frec/sem':'frecuencia')+'</b></span><span class="cvxn"><b>'+(u?'vol/sem':'volumen')+'</b></span>';
   // la cabecera de cada día con su nombre completo (B-12), de abajo hacia arriba
-  X.cols.forEach(c=>{ h+=c.idx<0?'<span class="cvxz">'+(c.dow!=null?'<b>'+di(c)+'</b>':'')+'</span>':'<span><b>'+escTxt((c.dow!=null?di(c)+' ':'')+(X.days[c.idx].name||'día'))+'</b></span>'; });
+  X.cols.forEach(c=>{ h+=c.idx<0?'<span class="cvxz">'+(c.dow!=null?'<b>'+di(c)+'</b>':'')+'</span>':'<span class="cvxdh'+(mv&&mv.has(cvxDayId(c.idx))?' mv':'')+'" role="button" tabindex="0" data-act="cvx_dm" data-i="'+c.idx+'" aria-label="'+escTxt(X.days[c.idx].name||'día')+(X.plan.mode==='weekly'?'':' · mover')+'"><b>'+escTxt((c.dow!=null?di(c)+' ':'')+(X.days[c.idx].name||'día'))+'</b></span>'; });   // v365 · SP12
   h+='</div><div class="cvxg cvxt"><span class="cvxl">por día</span><span class="cvxn"></span><span class="cvxn s">'+cvxMk(u?X.totw:X.tot,u?X.totw0:X.tot0)+(u?X.totw:X.tot)+'</span>';
   X.cols.forEach(c=>{ h+=c.idx<0?'<span class="cvxz"></span>':'<span>'+cvxMk(X.days[c.idx].tot,X.days[c.idx].tot0)+X.days[c.idx].tot+'</span>'; });
-  h+='</div>';
+  h+='</div><div class="cvxw">';   /* v366 · D1 · los renglones y lo que falta aplicar (tail) van en .cvxw, que empieza DESPUÉS de la cabecera y de «por día»: el renglón pegado no puede subir sobre los nombres */
   R.forEach(r=>{ h+='<div class="cvxg cvxr" role="button" tabindex="0" data-act="cvx_m" data-k="'+escTxt(r.k)+'" data-rk="cvx:'+escTxt(r.k)+'" aria-label="'+escTxt(r.m)+'"><span class="cvxl">'+escTxt(r.m)+'</span><span class="cvxn">'+cvxMk(u?r.fw:r.f,u?r.fw0:r.f0)+(u?r.fw:r.f)+'</span><span class="cvxn s">'+cvxMk(u?r.sw:r.s,u?r.sw0:r.s0)+(u?r.sw:r.s)+'</span>';
-    X.cols.forEach(c=>{ if(c.idx<0){ h+='<span class="cvxz"></span>'; return; } const d=X.days[c.idx], v=d.per.get(r.k)||0, chg=v!==(d.base.get(r.k)||0);
-      h+='<span class="cvxc" data-i="'+c.idx+'">'+(v||chg?'<i class="l'+cvxLv(v)+(v&&d.tgt===r.k?' t':'')+(v&&d.first===r.k?' f':'')+(chg?' c':'')+'">'+(v?'<b>'+v+'</b>':'')+'</i>':'')+'</span>'; });
+    const C=X.cols, F=C[0], L=C[C.length-1], fv=C.length>1&&F.idx>=0&&L.idx>=0?(X.days[F.idx].per.get(r.k)||0):0;   // v365 · SP12 · sin descanso al final la vuelta sigue: el último día va pegado al primero
+    let pv0=fv?(X.days[L.idx].per.get(r.k)||0):0; /* v366 · B5 · el primero, pegado al último */ C.forEach((c,ci)=>{ if(c.idx<0){ h+='<span class="cvxz"></span>'; pv0=0; return; } const d=X.days[c.idx], v=d.per.get(r.k)||0, chg=v!==(d.base.get(r.k)||0), adj=v>0&&pv0>0, adjw=v>0&&fv>0&&ci===C.length-1; pv0=v;   // v365 · SP12 · pegado al día anterior
+      h+='<span class="cvxc'+(adj?(ci?' adj':' adjf'):'')+(adjw?' adjw':'')+'" data-i="'+c.idx+'">'+(v||chg?'<i class="l'+cvxLv(v)+(v&&d.tgt===r.k?' t':'')+(v&&d.first===r.k?' f':'')+(chg?' c':'')+'">'+(v?'<b>'+v+'</b>':'')+'</i>':'')+'</span>'; });
     h+='</div>'; });
-  return h+'</div>'; }
+  return h+(tail||'')+'</div></div>'; }
 // ---- el cajón ----
 function cvxDelta(a,b){ const d=Math.round((a-b)*10)/10; return d?' <span class="u-o50">'+(d>0?'▲ +':'▼ −')+Math.abs(d)+'</span>':''; }
 function cvxLine(k,v){ return '<div class="line"><span class="k">'+k+'</span><span class="dots"></span><span class="v">'+v+'</span></div>'; }
@@ -8537,13 +8718,13 @@ function cvxRowHTML(o){ const ka=' data-k="'+escTxt(o.k)+'" data-i="'+o.i+'"';
     +'<button type="button" class="cvxst" data-act="cvx_inc"'+ka+' aria-label="una serie más"'+(o.noadd?' disabled':'')+'>+</button>'
     +'<button type="button" class="cvxpc" data-act="cvx_pct"'+ka+'>'+(o.v?o.pct+'% ▾':'—')+'</button></div>'; }
 // el pie: cuántos cambios lleva el borrador (y cuántas series de más o de menos) y el único primario
-function cvxFoot(){ const n=cvxNChg(), X=n?cvxModel(covPreview()):null, d=X?X.tot-X.tot0:0;
+function cvxFoot(){ const n=cvxNChg(), o=cvxOrdOn(), N=n+(o?1:0), X=n?cvxModel(covPreview()):null, d=X?X.tot-X.tot0:0;   // v365 · SP12 · v366 · los días movidos cuentan como un cambio · D5 · el ± sin «series» (cabe a 320)
   // el renglón de cambios siempre está (con "ninguno") y va fijo abajo con los botones: la hoja no cambia de alto al repartir y nada lo tapa
-  return '<div class="cvxfoot">'+cvxLine('cambios',n?n+' · '+(d>0?'+':d<0?'−':'')+Math.abs(d)+' '+(Math.abs(d)===1?'serie':'series'):'<span class="u-o40">ninguno</span>')
-    +'<div class="sheetbtns"><button type="button" class="ok" data-act="cvx_apply"'+(n?'':' aria-disabled="true"')+'>✓ aplicar al split</button><button type="button" class="cancel" data-act="cvx_close">cerrar</button></div></div>'; }
+  return '<div class="cvxfoot">'+cvxLine('cambios',N?N+(d?' · '+(d>0?'+':'−')+Math.abs(d):'')+(o?' · días movidos':''):'<span class="u-o40">ninguno</span>')
+    +'<div class="sheetbtns"><button type="button" class="ok" data-act="cvx_apply"'+(N?'':' aria-disabled="true"')+'>✓ aplicar al split</button><button type="button" class="cancel" data-act="cvx_close">cerrar</button></div></div>'; }
 // el cajón del músculo: sus totales (vuelta y semana, con su ▲▼ contra tu split) y, por día, sus series y su % de la carga de ese día
 function cvxSheetMHTML(k,fi){ const X=cvxModel(covPreview()); if(!X)return ''; const r=X.rows.find(x=>x.k===k); if(!r)return ''; const W=cvxWrites(), RS=cvxRests(X);
-  let h='<h3>'+escTxt(r.m)+'</h3>'+cvxLine('vuelta',r.s+' series'+cvxDelta(r.s,r.s0)+' · '+r.f+' '+(r.f===1?'vez':'veces')+cvxDelta(r.f,r.f0))+cvxLine('semana','~'+r.sw+' series'+cvxDelta(r.sw,r.sw0)+' · ~'+r.fw+' veces'+cvxDelta(r.fw,r.fw0))
+  let h='<h3>'+escTxt(r.m)+'</h3>'+cvxLine('volumen',r.s+cvxDelta(r.s,r.s0)+' · ~'+r.sw+'/sem'+cvxDelta(r.sw,r.sw0))+cvxLine('frecuencia',r.f+cvxDelta(r.f,r.f0)+' · ~'+r.fw+'/sem'+cvxDelta(r.fw,r.fw0))
     +'<div class="cvxk"><span>día</span><span>series</span><span>del día</span></div>';
   cvxOrder(X).forEach(i=>{ const d=X.days[i], v=d.per.get(k)||0, what=cvxWhat(W,i,k), noadd=!v&&!(d.base.get(k)||0)&&!cvxPick(k,i);
     if(RS[i])h+='<div class="cvxrest">descanso'+(RS[i]>1?' ×'+RS[i]:'')+'</div>';
@@ -8557,7 +8738,7 @@ function cvxSheetDHTML(i,fk){ const X=cvxModel(covPreview()); if(!X)return ''; c
     +'<div class="cvxk"><span>músculo</span><span>series</span><span>del día</span></div>';
   ks.forEach(k=>{ const v=d.per.get(k)||0, what=cvxWhat(W,i,k); h+=cvxRowHTML({k,i,v,on:k===fk,t:!!v&&d.tgt===k,pct:d.tot?Math.round(v/d.tot*100):0,label:escTxt(lbl.get(k)||k),sub:what?escTxt(what):'',nav:'data-act="cvx_m" data-k="'+escTxt(k)+'" data-i="'+i+'"'}); });
   return h+cvxFoot(); }
-function cvxHTML(S){ return S.t==='d'?cvxSheetDHTML(S.i,S.k):cvxSheetMHTML(S.k,S.i); }
+function cvxHTML(S){ return cvxOrdWith(()=>S.t==='d'?cvxSheetDHTML(S.i,S.k):cvxSheetMHTML(S.k,S.i)); }   // v365 · SP12
 // abre el cajón y le fija el alto con el que abrió: si al repartir un renglón crece (el ejercicio que cambia), la hoja corre por dentro y nada
 // de lo de arriba se mueve (una hoja de abajo crece hacia arriba)
 function cvxOpen(S){ const html=cvxHTML(S); if(!html)return; state._cvxS=S; openModal(html,'cvxs'); const sh=document.querySelector('#modal .sheet.cvxs'); if(sh)sh.style.height=Math.ceil(sh.getBoundingClientRect().height)+'px'; }
@@ -8566,7 +8747,8 @@ function cvxDayNm(n){ return escTxt(n||'día').replace(/ /g,'\u00a0').replace(/\
 // en vivo: la hoja se repinta en su sitio (mismos renglones, mismo alto: nada se mueve bajo el dedo)
 function cvxRefresh(){ const S=state._cvxS, sh=document.querySelector('#modal .sheet.cvxs'); if(!S||!sh)return; const html=cvxHTML(S); if(html)sh.innerHTML=html; }
 function cvxVal(k,i){ const X=cvxModel(covPreview()), d=X&&X.days[i]; return d?(d.per.get(k)||0):0; }
-function cvxSet(k,i,n){ const id=cvxDayId(i), M=covMatrix(); if(id==null||!M||!M.days[i])return; n=Math.max(0,Math.min(99,Math.round(+n||0)));
+function cvxSet(k,i,n){ cvxOrdWith(()=>cvxSet0(k,i,n)); }   // v365 · SP12 · i es la columna del mapa (orden del borrador), también desde el menú de %
+function cvxSet0(k,i,n){ const id=cvxDayId(i), M=covMatrix(); if(id==null||!M||!M.days[i])return; n=Math.max(0,Math.min(99,Math.round(+n||0)));
   const b=M.days[i].per.get(k)||0, D=Object.assign({},cvxDraft()), o=Object.assign({},D[id]||{});
   if(n===b)delete o[k]; else o[k]=n; if(Object.keys(o).length)D[id]=o; else delete D[id]; state._cvxD=Object.keys(D).length?D:null; }
 // repartir parejo: el mismo total del músculo entre los días que ya lo tienen (lo que sobra, a los que más tenían)
@@ -8584,14 +8766,17 @@ function cvxPctMenu(k,i){ const X=cvxModel(covPreview()), d=X&&X.days[i]; if(!d)
   trkMenu(lbl+' · % de '+(d.name||'día'),items); }
 // aplicar: escribe en el split (series de cada ejercicio, el que se agrega, el que sale en 0). Pasa por splitWatch (v355): el día gana su
 // hora (Start sale con tu split) y la tanda queda en el historial. [deshacer] lo deja como estaba.
-function cvxApply(){ cvxClean(); const n=cvxNChg(), W=cvxWrites(); if(!W.length){ state._cvxD=null; toast('sin cambios'); return false; }
-  const miss=W.filter(w=>w.add&&!w.pick); if(miss.length){ toast('⚠ no hay ejercicio de '+miss[0].k+' para agregar','err'); return false; }
-  const prev=JSON.stringify(db.split), days=db.split.days;
+function cvxApply(){ cvxOrdClean(); cvxClean(); const lbl=cvxPendTxt(), pv=covPreview(), prev=JSON.stringify(db.split), r0=db.rotIdx, s0=state.selDay, O=state._cvxO, d0=db.split.days, ord=cvxOrdApply();   // v365 · SP12 · primero el orden
+  const n=cvxNChg(), W=cvxWrites(); if(!W.length&&!ord){ state._cvxD=null; toast('sin cambios'); return false; }
+  const miss=W.filter(w=>w.add&&!w.pick); if(miss.length){ if(ord){ db.split.days=d0; db.rotIdx=r0; state.selDay=s0; state._cvxO=O; } toast('⚠ no hay ejercicio de '+miss[0].k+' para agregar','err'); return false; }
+  const days=db.split.days;
   W.forEach(w=>{ const d=days[w.di]; if(!d)return; if(w.add){ const e=w.pick; e.sets=w.to; (d.exercises=d.exercises||[]).push(e); } else { const e=d.exercises[w.ei]; if(e){ if(w.to>0)e.sets=w.to; else e._cvx0=1; } } });
   days.forEach(d=>{ if((d.exercises||[]).some(e=>e&&e._cvx0))d.exercises=d.exercises.filter(e=>!(e&&e._cvx0)); });
-  state._cvxD=null; const ok=save(); reRender();
-  if(ok)toast('✓ tu split · '+n+' '+(n===1?'cambio':'cambios'),'ok',{undo:()=>{ db.split=JSON.parse(prev); }}); else toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err');
+  state._cvxD=null; state._cvxO=null; const ok=save(); reRender();   // v366 · D3 · también los días movidos escondidos (fijos sin previa): no reviven con la previa; [deshacer] los regresa
+  // v366 · D2 · con otro patrón a la vista, el aviso dice que ese patrón no entró (lo usa [usar], en on/off)
+  if(ok)toast('✓ tu split · '+lbl+(pv?' · '+covKeyOf(pv)+'\u00a0sin\u00a0usar':''),'ok',{undo:()=>{ cvxAnchor(); db.split=JSON.parse(prev); if(ord){ db.rotIdx=r0; state.selDay=s0; } else if(O)state._cvxO=O; }}); else toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err');
   return ok; }
+// v365 · SP12 · los handlers corren con el orden REAL (repintar con el del borrador desordenaba //DAYS); lo que lee una columna del mapa se envuelve solo
 function cvxAct(a,el,e){ const k=el.dataset.k, i=el.dataset.i!=null&&el.dataset.i!==''?+el.dataset.i:null, inSheet=!!(el.closest&&el.closest('#modal'));
   if(a==='cvx_sort'){ const v=el.dataset.v; state._cvxSort=v==='series'||v==='veces'?v:'split'; reRender(); return; }
   if(a==='cvx_m'){ let fi=i; if(!inSheet){ fi=null; const x=e&&e.clientX; if(x){ const c=[...el.querySelectorAll('.cvxc[data-i]')].find(c=>{ const R=c.getBoundingClientRect(); return x>=R.left-2&&x<=R.right+2; }); if(c)fi=+c.dataset.i; } }
@@ -8602,10 +8787,11 @@ function cvxAct(a,el,e){ const k=el.dataset.k, i=el.dataset.i!=null&&el.dataset.
   if(a==='cvx_even'){ cvxEven(k); cvxRefresh(); return; }
   if(a==='cvx_undo1'){ if(el.getAttribute('aria-disabled')==='true')return; cvxUndo1(k); cvxRefresh(); return; }
   if(a==='cvx_close'){ state._cvxS=null; closeModal(); reRender(); return; }
-  if(a==='cvx_reset'){ const old=state._cvxD; state._cvxD=null; reRender(); toast('reparto descartado','ok',{undo:()=>{ state._cvxD=old; }}); return; }
+  if(a==='cvx_dm'){ let di=i; const x=e&&e.clientX; if(x){ let b=1e9; el.parentElement.querySelectorAll('.cvxdh[data-i]').forEach(c=>{ const R=c.getBoundingClientRect(), dx=Math.abs(x-R.left-R.width/2); if(dx<b){ b=dx; di=+c.dataset.i; } }); } cvxDayMenu(di); return; }   // v365 · SP12 · los toques de 44 se enciman: gana la columna más cercana al dedo
+  if(a==='cvx_reset'){ const old=state._cvxD, oo=state._cvxO; state._cvxD=null; state._cvxO=null; reRender(); toast('cambios descartados','ok',{undo:()=>{ state._cvxD=old; state._cvxO=oo; }}); return; }
   if(a==='cvx_apply'){ if(el.getAttribute('aria-disabled')==='true')return; if(inSheet){ state._cvxS=null; closeModal(); }
     { const r=[...document.querySelectorAll('#view .cvxr')].find(x=>x.getBoundingClientRect().top>=0); if(r)rkAnchor(r.dataset.rk); }   // el mapa se queda donde estaba aunque arriba aparezca el historial (v355)
-    cvxApply(); return; } }
+    cvxApply(); return; } }   // v365 · SP12 · el orden va dentro de cvxApply
 // self-check de v352 (SP3 · SP4 · E11). Base de juguete; nada llega a disco; todo se restaura en finally.
 function _v352SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v352: '+nm); }; const real=db, K=['_covOpen','_covUnit','_covPlan','_cvxD','_cvxSort','_cvxS'], s0={}; K.forEach(k=>s0[k]=state[k]);
   try{ const ex=(id,name,muscle,sets,type)=>({id,name,muscle,type:type||'machine',sets});
@@ -8642,12 +8828,12 @@ function _v352SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('SP3 · cabecera con el nombre completo del día (B-12)', /<b>chest\/push A<\/b>/.test(h)&&/<b>hams\/legs B<\/b>/.test(h));
     A('SP3 · el renglón de pecho: veces 2 · series 6, y el renglón entero es el toque', /data-act="cvx_m" data-k="chest"[^>]*><span class="cvxl">chest<\/span><span class="cvxn">2<\/span><span class="cvxn s">6<\/span>/.test(h));
     state._covOpen=false; A('SP3 · se pliega', !/class="cvx"/.test(plannedVolumeSection())); state._covOpen=undefined;
-    state._covUnit='semana'; h=plannedVolumeSection(); A('SP3 · semana: veces/sem', /veces\/sem/.test(h)); state._covUnit=undefined;
+    state._covUnit='semana'; h=plannedVolumeSection(); A('SP3 · semana: frec/sem (v365 · SP10)', /frec\/sem/.test(h)); state._covUnit=undefined;
     // el cajón: reparte en memoria con los totales en vivo; nada llega al split hasta [aplicar]
     { const sp0=JSON.stringify(db.split); cvxSet('chest',0,6); const X=cvxModel(), R2=X.rows.find(r=>r.k==='chest');
       A('SP9 · pecho a 6 en push A: 8 en la vuelta y el día en 12', R2.s===8&&R2.s0===6&&X.days[0].tot===12&&X.days[0].tot0===10&&cvxNChg()===1);
       h=plannedVolumeSection(); A('SP9 · el mapa marca la celda cambiada y dice que falta aplicar', /<i class="l4 t c"><b>6<\/b><\/i>/.test(h)&&/>1 sin aplicar</.test(h));
-      A('SP9 · el cajón del músculo: el total con su cambio y el % del día', /8 series <span class="u-o50">▲ \+2<\/span>/.test(cvxSheetMHTML('chest',0))&&/data-act="cvx_pct" data-k="chest" data-i="0">50% ▾</.test(cvxSheetMHTML('chest',0)));
+      A('SP9 · el cajón del músculo: el total con su cambio y el % del día', /"v">8 <span class="u-o50">▲ \+2<\/span>/.test(cvxSheetMHTML('chest',0))&&/data-act="cvx_pct" data-k="chest" data-i="0">50% ▾</.test(cvxSheetMHTML('chest',0)));
       A('SP9 · el cajón del día: su total con su cambio y el objetivo subrayado', /12 series <span class="u-o50">▲ \+2<\/span>/.test(cvxSheetDHTML(0,'chest'))&&/data-act="cvx_m" data-k="chest"[^>]*><span class="cvxnm t">/.test(cvxSheetDHTML(0,'chest')));
       A('SP9 · nada llega al split sin aplicar', JSON.stringify(db.split)===sp0);
       const W=cvxWrites(); A('SP9 · aplicar: el cambio cae en el último ejercicio de pecho del día', W.length===1&&W[0].ei===1&&W[0].from===4&&W[0].to===6);
@@ -8662,11 +8848,11 @@ function _v352SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     const plan0=JSON.stringify(db.split.plan); state._covPlan='2/1'; h=plannedVolumeSection();
     A('SP4 · ver con 2/1: 9 columnas y tres descansos, sin tocar tu plan', /data-n="9"/.test(h)&&(h.match(/class="cvxz"/g)||[]).length===3*(2+M.rows.length)&&JSON.stringify(db.split.plan)===plan0&&/data-act="cv_use"/.test(h));
     state._covPlan='3/1'; A('SP4 · ver con el tuyo no es vista previa', covPreview()==null&&!/data-act="cv_use"/.test(plannedVolumeSection()));
-    state._covPlan=null; db.split.plan={mode:'daily'}; bumpIdx(); h=plannedVolumeSection(); A('SP4 · en diario, la opción "diario" es la tuya', /data-v="daily">diario<\/button>/.test(h)&&/class="t on" data-act="cv_pat" data-v="daily"/.test(h));
+    state._covPlan=null; db.split.plan={mode:'daily'}; bumpIdx(); h=plannedVolumeSection(); A('SP4 · en diario, la opción "tuyo" es la tuya (v365 · SP11)', /data-v="daily">tuyo<\/button>/.test(h)&&/class="t on" data-act="cv_pat" data-v="daily"/.test(h));
     { const days1=JSON.parse(JSON.stringify(db.split.days)); days1[4].exercises[0].muscle='Chest'; db.split.days=days1; bumpIdx(); const Mc=covMatrix();
       A('SP3 · "Chest" y "chest" son la misma fila (con la etiqueta que escribiste primero)', Mc.rows.filter(r=>mNorm(r.m)==='chest').length===1&&Mc.rows.find(r=>r.k==='chest').s===6&&Mc.rows.find(r=>r.k==='chest').m==='chest'); days1[4].exercises[0].muscle='chest'; bumpIdx(); }
     db.split.plan={mode:'weekly',week:{1:'a',3:'b'},blocked:[0]}; bumpIdx(); state._covPlan=null; h=plannedVolumeSection();
-    A('SP3 · días fijos: la inicial del día en cada columna, también en las franjas', /<b>L chest\/push A<\/b>/.test(h)&&/<b>X hams\/legs B<\/b>/.test(h)&&/<span class="cvxz"><b>D<\/b><\/span>/.test(h)&&/<span class="cvxz"><b>M<\/b><\/span>/.test(h)&&/data-v="weekly">fijos<\/button>/.test(h));
+    A('SP3 · días fijos: la inicial del día en cada columna, también en las franjas', /<b>L chest\/push A<\/b>/.test(h)&&/<b>X hams\/legs B<\/b>/.test(h)&&/<span class="cvxz"><b>D<\/b><\/span>/.test(h)&&/<span class="cvxz"><b>M<\/b><\/span>/.test(h)&&/data-v="weekly">tuyo<\/button>/.test(h));
     A('SP3 · "músculo" lleva su punteado (se toca para saber qué es cada marca)', /data-gloss="cov"><span class="u-dash">músculo<\/span>/.test(h));
     console.log('v352 self-check OK');
   } finally { db=real; K.forEach(k=>state[k]=s0[k]); bumpIdx(); }
@@ -8856,9 +9042,9 @@ function openSplitHist(){ const L=db.splitLog||[]; if(!L.length)return; const cu
 function splitRestoreObj(J){ const o=JSON.parse(J), now=Date.now(), cur=new Map(((db.split&&db.split.days)||[]).map(d=>[d&&d.id,d]));
   (o.days||[]).forEach(d=>{ if(!d)return; const c=cur.get(d.id); if(!c||splitSig(c)!==splitSig(d))d.mt=now; else if(c.mt!=null)d.mt=c.mt; }); return o; }
 function splitRestore(i){ const L=db.splitLog||[], F=splitLogFulls(); if(!L[i]||!F[i])return; const cur=splitJSON(db.split), mts=new Map(((db.split&&db.split.days)||[]).map(d=>[d&&d.id,d&&d.mt])); let nx=null; try{ nx=splitRestoreObj(F[i]); }catch(_){ return; }
-  const last=L[L.length-1], lf=last&&last.fixed, n0=L.length; if(last)last.fixed=true; db.split=nx; state._cvxD=null; closeModal(); const ok=save(); reRender();
+  const last=L[L.length-1], lf=last&&last.fixed, n0=L.length; if(last)last.fixed=true; const d0=(db.split&&db.split.days)||[], r0=db.rotIdx, s0=state.selDay; db.split=nx; rotKeep(d0,nx.days||[],1); state._cvxD=null; state._cvxO=null; closeModal(); const ok=save(); reRender();
   // deshacer: el split exacto de antes, con las horas de cada día como estaban, y sin la tanda de "volver"
-  if(ok)toast('✓ el split como estaba · '+fmtShort(todayISO(new Date(L[i].t))),'ok',{undo:()=>{ const sp=JSON.parse(cur); (sp.days||[]).forEach(d=>{ const v=d&&mts.get(d.id); if(v!=null)d.mt=v; }); db.split=sp;
+  if(ok)toast('✓ el split como estaba · '+fmtShort(todayISO(new Date(L[i].t))),'ok',{undo:()=>{ const sp=JSON.parse(cur); (sp.days||[]).forEach(d=>{ const v=d&&mts.get(d.id); if(v!=null)d.mt=v; }); db.split=sp; db.rotIdx=r0; state.selDay=s0;
     const L2=db.splitLog||[]; if(L2.length>n0)splitLogPop(L2); if(last){ if(lf)last.fixed=lf; else delete last.fixed; } splitWatchReset(); }}); else toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err'); }
 // self-check de v355 (SP5 · SP6). Base de juguete; nada llega a disco; todo se restaura en finally.
 function _v355SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v355: '+nm); }; const real=db, spw=state._spw, aw=db.activeWork;
@@ -8925,7 +9111,7 @@ function splitSet(next,list,msg){ if(db.activeWork){ toast('⚠ termina o guarda
   const prev=splitClone(db.split), prevL=splitClone(splitsSaved()), prevR=db.rotIdx, hadL=Array.isArray(db.splits), prevLog=Array.isArray(db.splitLog)?db.splitLog:null, drop=_spDropped; try{ idbSnap('split',db); }catch(_){}
   const log=Array.isArray(next.log)?next.log:[], rot=+next.rotIdx||0; delete next.log; delete next.rotIdx; delete next.savedAt;
   db.splits=list; db.split=next; db.splitLog=log; db.rotIdx=rot<(next.days||[]).length?rot:0; splitWatchReset(); const nextJ=splitJSON(next);
-  state.selDay=null; state._covPlan=null; state._cvxD=null; state._sdOpen={}; closeModal(); const ok=save(); reRender();
+  state.selDay=null; state._covPlan=null; state._cvxD=null; state._cvxO=null; state._sdOpen={}; closeModal(); const ok=save(); reRender();
   // deshacer: vuelve el de antes con su historial y su día; si ya editaste el nuevo, ese se queda guardado en tus splits
   if(ok)toast(msg+(drop?' · se borró «'+drop+'» (guardas 12)':''),'ok',{undo:()=>{ const now=db.split, keep=!!now&&splitJSON(now)!==nextJ&&(now.days||[]).some(d=>(d.exercises||[]).length), kept=keep?splitArchived(now):null;
       db.split=prev; if(hadL)db.splits=prevL; else delete db.splits; if(kept)db.splits=splitsSaved().concat([kept]).slice(-12);
@@ -9348,7 +9534,7 @@ function sdExMenu(di,ei){ const d=db.split.days[di], x=d&&(d.exercises||[])[ei];
   it.push(['quitar del split',()=>{ d.exercises.splice(ei,1); save(); reRender(); toast((x.name||'ejercicio')+' · fuera del split','',{undo:()=>{ d.exercises.splice(Math.min(ei,d.exercises.length),0,x); }}); }]);
   trkMenu(x.name||'ejercicio',it); }
 function sdDayMenu(di){ const D=db.split.days, d=D[di]; if(!d)return; const it=[];
-  const swap=j=>{ const t=D[j]; D[j]=D[di]; D[di]=t; if(db.rotIdx===di)db.rotIdx=j; else if(db.rotIdx===j)db.rotIdx=di; save(); reRender(); };
+  const swap=j=>{ const o=D.slice(), t=D[j]; D[j]=D[di]; D[di]=t; rotKeep(o,D,1); save(); reRender(); };   // v365 · rotIdx con módulo
   if(di>0)it.push(['subir',()=>swap(di-1)]); if(di<D.length-1)it.push(['bajar',()=>swap(di+1)]);
   it.push(['duplicar',()=>{ const c=splitClone(d); c.id='d'+uid(); c.name=(d.name||'día')+' · copia'; delete c.mt; (c.exercises||[]).forEach(x=>{ x.id='e'+uid(); }); D.splice(di+1,0,c); if(typeof db.rotIdx==='number'&&db.rotIdx>di)db.rotIdx++; (state._sdOpen=state._sdOpen||{})[c.id]=true; save(); reRender(); toast('✓ día duplicado','',{undo:()=>{ const k=D.indexOf(c); if(k>=0){ D.splice(k,1); if(typeof db.rotIdx==='number'&&db.rotIdx>k)db.rotIdx--; } }}); }]);   // el día que toca sigue siendo el mismo
   if(D.length>1)it.push(['borrar el día',()=>holdConfirm({title:'borrar este día del split',detail:'sus sesiones pasadas se quedan en el historial',verb:'borrar'},()=>{ D.splice(di,1); if(typeof db.rotIdx==='number'){ if(di<db.rotIdx)db.rotIdx--; if(db.rotIdx>=D.length)db.rotIdx=Math.max(0,D.length-1); } save(); reRender(); })]);
@@ -9471,8 +9657,8 @@ function _v358SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('SP9 · la columna del músculo se topa al 32 % y cada día conserva su mínimo', /--cvxc:minmax\(7ch,min\(\d+ch,32%\)\) 3ch 4ch minmax\(var\(--s4\),1fr\)/.test(plannedVolumeSection()));
     // el cajón
     cvxSet('chest',0,6); h=cvxSheetMHTML('chest',0);
-    A('SP9 · el cajón: % con ▾, el total del día bajo su nombre, el ejercicio que cambia y los descansos de tu plan', /data-act="cvx_pct" data-k="chest" data-i="0">50% ▾</.test(h)&&/12 en el día · → press banca/.test(h)&&/<div class="cvxrest">descanso<\/div>/.test(h)&&/~\d+ series/.test(h));
-    A('SP9 · el pie dice cuántos cambios y cuántas series, y aplicar está prendido', /cambios<\/span><span class="dots"><\/span><span class="v">1 · \+2 series/.test(h)&&!/data-act="cvx_apply" aria-disabled/.test(h));
+    A('SP9 · el cajón: % con ▾, el total del día bajo su nombre, el ejercicio que cambia y los descansos de tu plan', /data-act="cvx_pct" data-k="chest" data-i="0">50% ▾</.test(h)&&/12 en el día · → press banca/.test(h)&&/<div class="cvxrest">descanso<\/div>/.test(h)&&/~\d+\/sem/.test(h));
+    A('SP9 · el pie dice cuántos cambios y cuántas series (v366 · D5 · el ± sin la palabra), y aplicar está prendido', /cambios<\/span><span class="dots"><\/span><span class="v">1 · \+2<\/span>/.test(h)&&!/data-act="cvx_apply" aria-disabled/.test(h));
     h=plannedVolumeSection(); A('SP9 · el mapa: ▲ en los totales que cambiaron', /<span class="cvxn s"><i class="cvxu">▲<\/i>8<\/span>/.test(h));
     // aplicar: sube, agrega y quita; el día gana su hora y la tanda queda en el historial; deshacer lo deja como estaba
     cvxSet('delts',0,3); cvxSet('calfs',0,0); const sp0=JSON.stringify(db.split);
@@ -13893,7 +14079,7 @@ function openProgAdd(){ const e=state.progEdit; if(!e)return; const hid=['consis
 PROG_KEYS.push('recov'); PROG_LBL.recov='recovery · readiness'; PROG_KEYS.push('compare'); PROG_LBL.compare='comparar'; PROG_KEYS.push('age'); PROG_LBL.age='fitness age';
 const RV_LADDER=[30,90,180];
 // lo que se toca en E5/E6 (role="button") también responde a Enter / espacio con teclado
-const RV_KEYS='.ready.rec,.dmus,.rvr[role="button"],.ptile[data-act="recovdetail"]';
+const RV_KEYS='.ready.rec,.dmus,.rvr[role="button"],.ptile[data-act="recovdetail"],.cvxdh[role="button"],.cvxr[role="button"]';   /* v366 · D8 · y en //COVERAGE el nombre de un día y el renglón de un músculo */
 document.addEventListener('keydown',e=>{ const t=e.target; if((e.key!=='Enter'&&e.key!==' ')||!t||!t.matches||!t.matches(RV_KEYS))return; e.preventDefault(); t.click(); });
 function preSeries(days,end){ end=end||todayISO(); const from=daysEnding(days,end)[0];
   return (db.sessions||[]).filter(s=>s&&s.date>=from&&s.date<=end).map(sessionPre).filter(p=>p&&(p.rec!=null||p.rdy!=null)).sort((a,b)=>a.t-b.t); }
@@ -15898,8 +16084,8 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='sd_delex'){ const _d=db.split.days[+el.dataset.di], _i=+el.dataset.ei, _x=_d&&_d.exercises&&_d.exercises[_i]; if(!_x)return; _d.exercises.splice(_i,1); save(); reRender();   // v280 · la ✕ va en el borde derecho (donde descansa el pulgar) y borraba sin aviso ni vuelta atrás
     toast((_x.name||'ejercicio')+' · fuera del split','',{undo:()=>{ _d.exercises.splice(Math.min(_i,_d.exercises.length),0,_x); }}); }
   else if(a==='sd_addex'){ openExEdit(+el.dataset.di,-1); }
-  else if(a==='sd_dayup'){ const i=+el.dataset.di, d=db.split.days; if(i>0){ const t=d[i-1];d[i-1]=d[i];d[i]=t; if(db.rotIdx===i)db.rotIdx=i-1; else if(db.rotIdx===i-1)db.rotIdx=i; save(); reRender(); } }
-  else if(a==='sd_daydn'){ const i=+el.dataset.di, d=db.split.days; if(i<d.length-1){ const t=d[i+1];d[i+1]=d[i];d[i]=t; if(db.rotIdx===i)db.rotIdx=i+1; else if(db.rotIdx===i+1)db.rotIdx=i; save(); reRender(); } }
+  else if(a==='sd_dayup'){ const i=+el.dataset.di, d=db.split.days; if(i>0){ const o=d.slice(), t=d[i-1];d[i-1]=d[i];d[i]=t; rotKeep(o,d,1); save(); reRender(); } }
+  else if(a==='sd_daydn'){ const i=+el.dataset.di, d=db.split.days; if(i<d.length-1){ const o=d.slice(), t=d[i+1];d[i+1]=d[i];d[i]=t; rotKeep(o,d,1); save(); reRender(); } }
   else if(a==='sd_exup'){ const di=+el.dataset.di,ei=+el.dataset.ei, ex=db.split.days[di].exercises; if(ei>0){ const t=ex[ei-1];ex[ei-1]=ex[ei];ex[ei]=t; save(); reRender(); } }
   else if(a==='sd_exdn'){ const di=+el.dataset.di,ei=+el.dataset.ei, ex=db.split.days[di].exercises; if(ei<ex.length-1){ const t=ex[ei+1];ex[ei+1]=ex[ei];ex[ei]=t; save(); reRender(); } }
   else if(a==='sd_ex'){ openExEdit(+el.dataset.di,+el.dataset.ei); }
@@ -15910,7 +16096,7 @@ document.getElementById('app').addEventListener('click',e=>{
     trkMenu(DOW_LONG[d],[['descanso',()=>pick('')]].concat((db.split.days||[]).map(x=>[x.name,()=>pick(x.id)]))); }
   else if(a==='sp_metric'){ db.split.metric=el.dataset.v==='rpe'?'rpe':'rir'; save(); reRender(); }
   else if(a==='sp_allowf'){ db.split.allowF=el.dataset.v==='1'; save(); reRender(); }
-  else if(a==='sd_addday'){ const _nd={id:'d'+uid(),name:sdNewDayName(),tag:'@ RIR · F',metric:'rir',allowFailure:true,exercises:[]}; db.split.days.push(_nd); (state._sdOpen=state._sdOpen||{})[_nd.id]=true; state._enter={sel:'.seday[data-id="'+_nd.id+'"]'}; save(); reRender(); }
+  else if(a==='sd_addday'){ const _nd={id:'d'+uid(),name:sdNewDayName(),tag:'@ RIR · F',metric:'rir',allowFailure:true,exercises:[]}; db.split.days.push(_nd); if(state._cvxO)state._cvxO=state._cvxO.concat(_nd.id); /* v366 · con días movidos sin aplicar, el día nuevo va al final también ahí */ (state._sdOpen=state._sdOpen||{})[_nd.id]=true; state._enter={sel:'.seday[data-id="'+_nd.id+'"]'}; save(); reRender(); }
   else if(a==='sd_fold'){ const _d=db.split.days[+el.dataset.di]; if(_d){ const _op=!sdOpen(_d,db.split); (state._sdOpen=state._sdOpen||{})[_d.id]=_op; if(_op)state._enter={sel:'.seday[data-id="'+(window.CSS&&CSS.escape?CSS.escape(_d.id):_d.id)+'"] > :not(.sehead)'}; reRender(); } }   // v285 · SP1
   else if(a==='sd_cov'){ state._covOpen=!(state._covOpen!==false); if(state._covOpen)state._enter={sel:'.sefoldh ~ .line.sch, .sefoldh ~ .cvx'}; reRender(); }   // v285 · SP2 · v352: abre desplegada
   else if(a==='sd_exmenu'){ sdExMenu(+el.dataset.di,+el.dataset.ei); }   // v356 · SP8
@@ -15924,13 +16110,13 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='sp_pick'){ const _i=+el.dataset.i, _s=splitsSaved()[_i]; if(_s)trkMenu(_s.name||'split',[['usar este',()=>splitSwitch(_i)],['borrar',()=>splitDelete(_i)]]); }
   else if(a==='sp_hist'){ openSplitHist(); }   // v355 · SP6
   else if(a==='sp_histpick'){ const _i=+el.dataset.i, _e=(db.splitLog||[])[_i]; if(_e){ const _n=(db.splitLog||[]).length-1-_i; trkMenu(fmtShort(todayISO(new Date(_e.t2||_e.t)))+' · '+hhmm(_e.t2||_e.t),[['volver a como estaba antes'+(_n>0?' · deshace también '+_n+(_n===1?' cambio después':' cambios después'):''),()=>splitRestore(_i)]]); } }
-  else if(a==='cv_pat'){ const v=el.dataset.v; state._covPlan=v===covKeyOf(splitPlan())?null:v; reRender(); }   // v352 · SP4 · ver otro patrón (no se guarda)
+  else if(a==='cv_pat'){ const v=el.dataset.v; state._covPlan=v===covKeyOf(splitPlan())?null:v; reRender(); }   /* v365 · SP11 · v366 · D7 · sin la rama de la previa vieja */   // v352 · SP4 · ver otro patrón (no se guarda)
   else if(a==='cv_unit'){ state._covUnit=el.dataset.v==='semana'?'semana':'vuelta'; reRender(); }
   else if(a==='cv_use'){ const pv=covPreview(); if(!pv)return; const had=Object.prototype.hasOwnProperty.call(db.split,'plan'), old=had?JSON.parse(JSON.stringify(db.split.plan)):null;
     db.split.plan=Object.assign({},db.split.plan||{},{mode:'cycle',on:pv.on,off:pv.off}); state._covPlan=null; state.selDay=null;
     { const v=document.getElementById('view'), b=v&&v.querySelector('[data-act="cv_pat"].on'); if(b)_lastTap={sig:tapSig(b),sel:sigSel(b),el:b,sheet:null,view:true,off:b.getBoundingClientRect().top-v.getBoundingClientRect().top,rk:'',rkOff:0}; }   // el patrón que elegiste no se mueve aunque //SCHEDULE crezca arriba (v285)
     const ok=save(); reRender();
-    if(ok)toast('✓ tu plan · '+pv.on+' on / '+pv.off+' off','ok',{undo:()=>{ if(had)db.split.plan=old; else delete db.split.plan; }}); else toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err'); }
+    if(ok)toast('✓ tu plan · '+pv.on+' on / '+pv.off+' off','ok',{undo:()=>{ cvxAnchor(); if(had)db.split.plan=old; else delete db.split.plan; }}); else toast('⚠ no se guardó · '+(saveErrTxt()||'error'),'err'); }
   else if(a.indexOf('cvx_')===0){ cvxAct(a,el,e); }   // v358 · SP9 · el mapa con cajón
   else if(a==='exdirectory'){ window._mgSel=[]; openExerciseDirectory(); }
   else if(a==='muscledetail'){ openMuscleDetail(el.dataset.id); }
@@ -20204,7 +20390,7 @@ const GLOSS={
   rirjump:'fallo anotado · tus series a F o RIR 0: si con el mismo peso suben 2 reps o más de una sesión a la siguiente, probablemente quedaba alguna.',
   racha:'racha: días seguidos con comida o gym registrados a mano. Solo se corta el día sin ninguno de los dos; hoy cuenta hasta medianoche.',
   stim:'σ · unidades de tensión mecánica: una medida propia de gym//TRK que estima el estímulo de cada serie, sumado por músculo en 7 días. Cada serie cuenta según su peso relativo y su cercanía al fallo; las indirectas, con su peso. Es un cálculo de la app, no una medida de laboratorio. En cada músculo, la línea llena es tu σ de 7 días; la franja de atrás, tu habitual (de tus 8 semanas anteriores, del cuartil bajo al alto); el tramo más claro de la línea, tu meta (lo que pide tu split, con 1 RIR más o 1 menos que el tuyo), y la raya que lo cruza, la meta exacta.',   // v353 · E10
-  cov:'columnas: los días de una vuelta (franja = descanso); bloque: las series de ese día (más claro, más). Raya: el que más trabaja ese día. Punto: el primer ejercicio. Punteado y ▲▼: sin aplicar. Toca un músculo para repartirlo; aplicar lo escribe en tu split.',   // v358 · SP9
+  cov:'Columnas: una vuelta (franja = descanso); bloque: series del día (más claro, más). Raya: el que más trabaja. Punto: primer ejercicio. Unión: dos días de entreno seguidos (pegado). Punteado y ▲▼: sin aplicar. Toca un músculo para repartirlo o un día para moverlo.',   // v358 · SP9
   stimh:'series duras de 7 días por músculo: las que quedaron a RIR 4 o menos (o sin RIR anotado). Par unilateral = 1, drop = 0.5; las indirectas cuentan con su peso.',
   stima:'series totales de 7 días por músculo: todas las registradas, a cualquier RIR. Par unilateral = 1, drop = 0.5; las indirectas cuentan con su peso.',
 };
@@ -20600,7 +20786,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ cloudBoot(); }catch(_){}   // v352 · cuentas y nube: apagada (CLOUD_CFG vacío) no hace nada
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
