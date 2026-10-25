@@ -288,7 +288,7 @@
   .strk-row .cd.t{box-shadow:0 0 0 1px var(--o40);} .strk-row .cd.t.l0::after{content:''; position:absolute; left:50%; top:50%; width:3px; height:3px; margin:-1.5px 0 0 -1.5px/*ds:exempt*/; border-radius:50%; background:var(--fg);}
   .line .v .u{font-weight:400; color:var(--o40);}
   .tselo.hs{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--s1); line-height:1.1;} .tselo .tsub{font-size:var(--t-label); font-weight:400; color:var(--o50);} .tselo.on .tsub{color:inherit; opacity:.7;}
-  .line.lnav{min-height:44px; align-items:center; padding:0; cursor:pointer;} .line.lnav .v{font-weight:700;} .line .rchev{color:var(--o40); margin-left:var(--s2);} .line.lnav:active{opacity:var(--op-press);}
+  .line.lnav{min-height:44px; align-items:center; padding:0; cursor:pointer;} .line.lnav .v{font-weight:700;} .line .rchev{color:var(--o40); margin-left:var(--s2);} .line.lnav:active{opacity:var(--op-press);} .line.bwr{min-height:44px; align-items:center; padding:0;} .line.bwr .k{flex:0 1 auto; min-width:0;} .line.bwr .dots{min-width:var(--s3);} .line.bwr .v{flex:0 0 auto; white-space:nowrap;} .line.bwr[data-gloss]{border-bottom:0;}   /* v369 · H9 · qué trae el atajo: filas de 44; toda la fila abre su glosario y el punteado va solo bajo el nombre (.u-dash) */
   .cm .cmh{font-size:var(--t-label); letter-spacing:var(--ls-caps); text-transform:uppercase; color:var(--o50); margin-bottom:6px;}
   .cm .cmw,.cm .cmg{display:grid; grid-template-columns:repeat(7,1fr); gap:var(--s2);}
   .cm .cmw{margin-bottom:var(--s2);} .cm .cmw b{font-size:var(--t-label); font-weight:400; color:var(--o40); text-align:center;}
@@ -1570,7 +1570,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v368';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v369';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -1822,7 +1822,7 @@ function _idSelfCheck(){
   A('gated: a second call is a no-op once _idfix is set', JSON.stringify(fx)===before);
   console.log('id self-check OK');
 }
-function migrate(d){ if(!d.version){d.version=1;} if(d.adhoc&&typeof d.adhoc==='object')Object.keys(d.adhoc).forEach(k=>{ if(Array.isArray(d.adhoc[k]))d.adhoc[k].forEach((a,i)=>{ if(a&&!a.id)a.id='ad_'+k+'_'+i; }); });   /* v326 · un extra de antes sin id: se le da el suyo (para tocarlo y quitarlo) */ if(d.profile&&d.profile.username&&!(d.onb&&d.onb.done))d.onb={done:true,at:'antes'};   /* v277 · quien ya tiene perfil nunca ve el alta */ if(!d.tour||typeof d.tour!=='object'||Array.isArray(d.tour))d.tour={v:1,seen:{home:1,homeEmpty:1,workout:1,macros:1,progress:1,settings:1},step:{},skipped:false};   /* v278 · quien ya usaba la app no ve el tour */  if(!d._meta||typeof d._meta!=='object')d._meta={seq:0,t:0}; if(!d.meals||typeof d.meals!=='object'||Array.isArray(d.meals))d.meals={}; if(!Array.isArray(d.foods))d.foods=[]; d.foods=d.foods.map(f=>(f&&f.per100)?f:asCanonical(f)); if(!Array.isArray(d.sessions))d.sessions=[]; if(!d.split||typeof d.split!=='object')d.split={name:'',days:[]}; if(!Array.isArray(d.split.days))d.split.days=[]; d.split.days.forEach(day=>{ if(!Array.isArray(day.exercises))day.exercises=[]; day.exercises.forEach(e=>{ if(e&&!e.id)e.id='e'+uid(); }); }); fixDuplicateExIds(d); fixLeakedFullStack(d); fixStraySides(d); purgeMood(d); d.health=healthShape((d.health&&typeof d.health==='object'&&!Array.isArray(d.health))?d.health:{}); sleepFix349(d); if(!d.steps||typeof d.steps!=='object')d.steps={}; if(!d.machines||typeof d.machines!=='object')d.machines={}; if(!d.exCat||typeof d.exCat!=='object')d.exCat={}; if(!d.muscleMap||typeof d.muscleMap!=='object')d.muscleMap={}; if(!d.muscleNames||typeof d.muscleNames!=='object')d.muscleNames={}; if(!d.bodyweight||typeof d.bodyweight!=='object')d.bodyweight={}; if(!d.sleep||typeof d.sleep!=='object')d.sleep={}; if('selfcheck' in d)delete d.selfcheck;/* v263 · la auto-percepción estética se retira: el dato se borra una vez y no vuelve (boot, respaldo, log in, sync y archivo pasan por aquí) */ if(!d.adhoc||typeof d.adhoc!=='object')d.adhoc={}; if(!Array.isArray(d.mealTags))d.mealTags=['breakfast','lunch','snack','dinner']; if(!Array.isArray(d.stack))d.stack=[]; subHygiene(d); if(!d.lastUsed||typeof d.lastUsed!=='object')d.lastUsed={}; if(!d.settings||typeof d.settings!=='object')d.settings={goals:seed().settings.goals}; if(d.settings&&d.settings.goals&&d.settings.goals.alcohol==null)d.settings.goals.alcohol=(d.profile&&d.profile.sex==='F')?14:28; if(d.settings&&d.settings.restSec==null)d.settings.restSec=90; if(d.settings&&d.settings.restBeep==null)d.settings.restBeep=true; if(d.settings&&d.settings.goals&&d.settings.goals.sleep==null)d.settings.goals.sleep=8; if(d.profile&&!d.profile.since){ try{ const _cd=[]; (d.sessions||[]).forEach(s=>{if(s.date)_cd.push(s.date);}); Object.keys(d.meals||{}).forEach(k=>_cd.push(k)); Object.keys(d.bodyweight||{}).forEach(k=>_cd.push(k)); if(_cd.length)d.profile.since=_cd.sort()[0]; }catch(_){} }
+function migrate(d){ if(!d.version){d.version=1;} if(d.adhoc&&typeof d.adhoc==='object')Object.keys(d.adhoc).forEach(k=>{ if(Array.isArray(d.adhoc[k]))d.adhoc[k].forEach((a,i)=>{ if(a&&!a.id)a.id='ad_'+k+'_'+i; }); });   /* v326 · un extra de antes sin id: se le da el suyo (para tocarlo y quitarlo) */ if(d.profile&&d.profile.username&&!(d.onb&&d.onb.done))d.onb={done:true,at:'antes'};   /* v277 · quien ya tiene perfil nunca ve el alta */ if(!d.tour||typeof d.tour!=='object'||Array.isArray(d.tour))d.tour={v:1,seen:{home:1,homeEmpty:1,workout:1,macros:1,progress:1,settings:1},step:{},skipped:false};   /* v278 · quien ya usaba la app no ve el tour */  if(!d._meta||typeof d._meta!=='object')d._meta={seq:0,t:0}; if(!d.meals||typeof d.meals!=='object'||Array.isArray(d.meals))d.meals={}; if(!Array.isArray(d.foods))d.foods=[]; d.foods=d.foods.map(f=>(f&&f.per100)?f:asCanonical(f)); if(!Array.isArray(d.sessions))d.sessions=[]; if(!d.split||typeof d.split!=='object')d.split={name:'',days:[]}; if(!Array.isArray(d.split.days))d.split.days=[]; d.split.days.forEach(day=>{ if(!Array.isArray(day.exercises))day.exercises=[]; day.exercises.forEach(e=>{ if(e&&!e.id)e.id='e'+uid(); }); }); fixDuplicateExIds(d); fixLeakedFullStack(d); fixStraySides(d); purgeMood(d); d.health=healthShape((d.health&&typeof d.health==='object'&&!Array.isArray(d.health))?d.health:{}); sleepFix349(d); if(typeof hpCovSeed==='function')hpCovSeed(d); if(!d.steps||typeof d.steps!=='object')d.steps={}; if(!d.machines||typeof d.machines!=='object')d.machines={}; if(!d.exCat||typeof d.exCat!=='object')d.exCat={}; if(!d.muscleMap||typeof d.muscleMap!=='object')d.muscleMap={}; if(!d.muscleNames||typeof d.muscleNames!=='object')d.muscleNames={}; if(!d.bodyweight||typeof d.bodyweight!=='object')d.bodyweight={}; if(!d.sleep||typeof d.sleep!=='object')d.sleep={}; if('selfcheck' in d)delete d.selfcheck;/* v263 · la auto-percepción estética se retira: el dato se borra una vez y no vuelve (boot, respaldo, log in, sync y archivo pasan por aquí) */ if(!d.adhoc||typeof d.adhoc!=='object')d.adhoc={}; if(!Array.isArray(d.mealTags))d.mealTags=['breakfast','lunch','snack','dinner']; if(!Array.isArray(d.stack))d.stack=[]; subHygiene(d); if(!d.lastUsed||typeof d.lastUsed!=='object')d.lastUsed={}; if(!d.settings||typeof d.settings!=='object')d.settings={goals:seed().settings.goals}; if(d.settings&&d.settings.goals&&d.settings.goals.alcohol==null)d.settings.goals.alcohol=(d.profile&&d.profile.sex==='F')?14:28; if(d.settings&&d.settings.restSec==null)d.settings.restSec=90; if(d.settings&&d.settings.restBeep==null)d.settings.restBeep=true; if(d.settings&&d.settings.goals&&d.settings.goals.sleep==null)d.settings.goals.sleep=8; if(d.profile&&!d.profile.since){ try{ const _cd=[]; (d.sessions||[]).forEach(s=>{if(s.date)_cd.push(s.date);}); Object.keys(d.meals||{}).forEach(k=>_cd.push(k)); Object.keys(d.bodyweight||{}).forEach(k=>_cd.push(k)); if(_cd.length)d.profile.since=_cd.sort()[0]; }catch(_){} }
   // recompute alcohol for old meal items logged before alcohol was in MACROKEYS
   try{ Object.values(d.meals||{}).forEach(arr=>arr.forEach(m=>{ if(m.alcohol==null){ if(m._food&&m._food.per100&&m._food.per100.alcohol&&m._unit){ m.alcohol=computeNutrients(m._food,m._unit,m.qty||1).alcohol; } else m.alcohol=0; } })); }catch(e){}
   // goalHist: snapshot of intake goals at the moment of first logging that day (history is FROZEN — past days never re-read the current goal)
@@ -2371,7 +2371,7 @@ function cloudBaseGet(){ const ok=v=>(v&&_cl&&v.uid===_cl.uid&&v.srv===_cl.srv&&
 function cloudBaseDel(){ _clBaseMem=null; if(_sbx||cloudMode()==='fake')return; idbDel('base',CLOUD_KV).catch(()=>{}); }
 function cloudErr(code,msg,st){ const e=new Error(msg||code||'error'); e.code=code||''; e.st=st||0; return e; }
 function cloudErrTxt(e){ const c=String((e&&e.code)||''); if(c==='v')return e.message;
-  const T={offline:'sin conexión',off:'la nube está apagada',invalid_credentials:'correo o contraseña incorrectos',invalid_grant:'correo o contraseña incorrectos',email_not_confirmed:'falta confirmar tu correo',otp_expired:'código incorrecto o vencido',over_email_send_rate_limit:'espera unos minutos para pedir otro código',over_request_rate_limit:'demasiados intentos · espera unos minutos',weak_password:'contraseña muy corta · mínimo 8',user_already_exists:'ese correo ya tiene cuenta',email_exists:'ese correo ya tiene cuenta',same_password:'usa una contraseña distinta a la anterior',validation_failed:'ese correo no es válido',email_address_invalid:'ese correo no es válido',signup_disabled:'el registro está cerrado',session:'tu sesión venció · entra de nuevo',too_big:'tus datos no caben en la nube',empty:'no hay nada que subir',corrupt:'la copia de la nube no se puede leer',busy:'la nube está ocupada · intenta de nuevo',email_address_not_authorized:'la app todavía no puede mandar códigos a ese correo',down:'la nube no responde · intenta en un rato',weak_pwned:'esa contraseña es muy común · usa otra',weak_chars:'usa letras y números en tu contraseña',reauthentication_needed:'por seguridad, entra de nuevo y repite el cambio',current_password_required:'falta tu contraseña actual'};   /* v362 */
+  const T={offline:'sin conexión',off:'la nube está apagada',invalid_credentials:'correo o contraseña incorrectos',invalid_grant:'correo o contraseña incorrectos',email_not_confirmed:'falta confirmar tu correo',otp_expired:'código incorrecto o vencido',over_email_send_rate_limit:'espera unos minutos para pedir otro código',over_request_rate_limit:'demasiados intentos · espera unos minutos',weak_password:'contraseña muy corta · mínimo 8',user_already_exists:'ese correo ya tiene cuenta',email_exists:'ese correo ya tiene cuenta',same_password:'usa una contraseña distinta a la anterior',validation_failed:'ese correo no es válido',email_address_invalid:'ese correo no es válido',signup_disabled:'el registro está cerrado',session:'tu sesión venció · entra de nuevo',too_big:'tus datos no caben en la nube',empty:'no hay nada que subir',corrupt:'la copia de la nube no se puede leer',busy:'la nube está ocupada · intenta de nuevo',email_address_not_authorized:'la app todavía no puede mandar códigos a ese correo',down:'la nube no responde · intenta en un rato',weak_pwned:'esa contraseña es muy común · usa otra',weak_chars:'usa letras y números en tu contraseña',reauthentication_needed:'por seguridad, entra de nuevo y repite el cambio',current_password_required:'falta tu contraseña actual',nouser:'tu cuenta ya no existe · sesión cerrada'};   /* v362 · v369 nouser (SEC6) */
   return T[c]||'no se pudo · intenta de nuevo'; }   // v362 · nunca el mensaje crudo del servidor (en inglés)   // v352 · solo el motivo de la red, nunca un error de JS
 // fetch a Supabase (Auth REST y PostgREST rpc), sin SDK. Devuelve el JSON o lanza un error con `code` (el error_code de
 // Supabase) y `st` (HTTP). Sin red = code 'offline'. En 'fake' no sale ninguna petición: contesta FakeSB.
@@ -2381,7 +2381,7 @@ async function sbFetch(path,o){ o=o||{}; const srv=cloudSrv(); if(!srv)throw clo
   if(srv==='fake'){ const r=await cloudFake().handle(o.method||'POST',path,o.body||{},h); st=r.status; body=r.body; }
   else { try{ if(navigator.onLine===false)throw 0; }catch(_){ throw cloudErr('offline'); }
     const ac=typeof AbortController==='function'?new AbortController():null, tm=setTimeout(()=>{ try{ if(ac)ac.abort(); }catch(_){} },o.ms||25000);
-    let res=null; try{ res=await fetch(srv+path,{method:o.method||'POST',headers:h,body:JSON.stringify(o.body||{}),signal:ac?ac.signal:undefined,cache:'no-store',credentials:'omit'}); }
+    let res=null; try{ res=await fetch(srv+path,{method:o.method||'POST',headers:h,body:o.method==='GET'?undefined:JSON.stringify(o.body||{}),signal:ac?ac.signal:undefined,cache:'no-store',credentials:'omit'}); }
     catch(_){ throw cloudErr('offline'); } finally{ clearTimeout(tm); }
     st=res.status; let tx=''; try{ tx=await res.text(); }catch(_){} try{ body=tx?JSON.parse(tx):null; }catch(_){ body=null; } }
   if(st>=200&&st<300)return body;
@@ -2414,9 +2414,21 @@ function authRefresh(){ if(_clRefP)return _clRefP;
       return (await cloudTake(r)).at; })();
   const p=_clRefP, done=()=>{ if(_clRefP===p)_clRefP=null; }; p.then(done,done); return p; }
 async function cloudToken(){ if(!cloudIn())throw cloudErr('session'); if((_cl.exp||0)-Date.now()/1000>90)return _cl.at; return authRefresh(); }
-async function cloudRpc(fn,args){ let t=await cloudToken();
-  try{ return await sbFetch('/rest/v1/rpc/'+fn,{body:args||{},token:t}); }
-  catch(e){ if(e.st!==401)throw e; t=await authRefresh(); return sbFetch('/rest/v1/rpc/'+fn,{body:args||{},token:t}); } }
+async function cloudRpc(fn,args){ try{ let t=await cloudToken();
+    try{ return await sbFetch('/rest/v1/rpc/'+fn,{body:args||{},token:t}); }
+    catch(e){ if(e.st!==401)throw e; t=await authRefresh(); return await sbFetch('/rest/v1/rpc/'+fn,{body:args||{},token:t}); } }
+  catch(e){ if(cloudGone(e)){ cloudLost(); throw cloudErr('nouser'); } throw e; } }   // v369 · SEC6 · el servidor dice que la cuenta ya no existe
+// v369 · SEC6 · una cuenta borrada por fuera (el panel de Supabase o un comando) deja vivo su token de acceso hasta que vence (~1 h). Al abrir y al
+// volver a la app (cada 10 min como mucho) se le pregunta a Supabase si sigue existiendo (GET /auth/v1/user). Solo un `user_not_found` explícito
+// (Auth, o state_push / state_pull con tools/supabase/sec6-usuario-borrado.sql) cierra la sesión; los datos se quedan en el teléfono. Sin red o con
+// la nube caída no se decide nada.
+let _clAliveT=0;
+function cloudGone(e){ const c=String((e&&e.code)||''); return c==='user_not_found'||(c==='28000'&&/user_not_found/.test(String((e&&e.message)||''))); }
+function cloudLost(){ if(!_cl||!_cl.at)return; cloudForget(true); cloudSave(); if(!_sbx)toast('⚠ tu cuenta ya no existe · sesión cerrada'); cloudUi(); }
+async function cloudAlive(force){ if(!cloudIn())return false; if(!force&&Date.now()-_clAliveT<600000)return true; _clAliveT=Date.now(); const g=_clGen;
+  try{ const t=await cloudToken(); await sbFetch('/auth/v1/user',{method:'GET',token:t}); }
+  catch(e){ if(cloudGone(e)&&g===_clGen&&cloudIn())cloudLost(); }
+  return cloudIn(); }
 // ---- lo que viaja: el JSON de db sin la sesión viva ni la cuenta, en gzip → base64 (JSON plano si el navegador no comprime) ----
 function b64Enc(u){ let s=''; for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000)); return btoa(s); }
 function b64Dec(b){ const s=atob(b), u=new Uint8Array(s.length); for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i); return u; }
@@ -2512,6 +2524,7 @@ function cloudMerge(loc,inc,base){ const st={took:0,both:0,kept:0}, out={}, B=ba
     if(k==='meals'||k==='adhoc')v=m3Moves(v,B[k],loc[k],inc[k],st);
     if(k==='sessions'&&Array.isArray(v)&&v!==loc.sessions){ const d=s=>String((s&&s.date)||''); v=v.map((s,i)=>[s,i]).sort((a,b)=>d(a[0])<d(b[0])?-1:d(a[0])>d(b[0])?1:a[1]-b[1]).map(x=>x[0]); }   // por fecha, estable
     out[k]=(k==='health'&&m3Obj(v)&&loc.health&&loc.health.shortcut)?Object.assign({},v,{shortcut:loc.health.shortcut}):(k==='settings'&&m3Obj(v)&&loc.settings&&loc.settings.acInv)?Object.assign({},v,{acInv:loc.settings.acInv}):v; });
+  cuKeep(out,loc,inc,false,B);   // v369 · H9 · lo tecleado gana, contra la base (lo que se borró a propósito no vuelve)
   return {db:out,took:st.took,both:st.both,kept:st.kept}; }
 async function cloudPull(have){ const r=(await cloudRpc('state_pull',{have_rev:have==null?-1:have}))||{};
   const out={has:!!(r.found&&r.rev>0&&r.size>0),raw:+r.rev||0,rev:+r.rev||0,t:r.updated_at||'',inc:null};
@@ -2556,7 +2569,52 @@ function cuStack(w,l,st){ const out=cuArr(w,l,st), lm={}; (Array.isArray(l)?l:[]
   return out.map(x=>{ const y=x&&x.id!=null?lm[String(x.id)]:null; if(!y||y===x)return x; const z=Object.assign({},x);
     ['ticks','tickTimes','tickEdited'].forEach(k=>{ if(y[k]&&typeof y[k]==='object')z[k]=Object.assign({},y[k],x[k]||{}); }); return z; }); }   // las tomas marcadas de las dos
 function cuHealth(w,l,st){ const isO=x=>!!x&&typeof x==='object'&&!Array.isArray(x); w=isO(w)?w:{}; l=isO(l)?l:{}; const o=Object.assign({},l,w);
-  Object.keys(o).forEach(k=>{ if(k==='shortcut')return; const a=w[k], b=l[k]; if(a===undefined||b===undefined)return; if(Array.isArray(a)&&Array.isArray(b))o[k]=cuArr(a,b,st); else if(isO(a)&&isO(b))o[k]=cuMap(a,b,st); }); return o; }
+  Object.keys(o).forEach(k=>{ if(k==='shortcut')return; const a=w[k], b=l[k]; if(a===undefined||b===undefined)return; if(Array.isArray(a)&&Array.isArray(b))o[k]=cuArr(a,b,st); else if(k==='src'&&isO(a)&&isO(b)){ const s=cuMap(a,b,st); Object.keys(s).forEach(x=>{ if(isO(a[x])&&isO(b[x]))s[x]=cuMap(a[x],b[x],{n:0}); }); o[k]=s; }   /* v369 · H9 · las marcas de origen de cada día se juntan (antes ganaba el mapa entero de una copia y los días de la otra se quedaban sin marca) */
+    else if(isO(a)&&isO(b))o[k]=cuMap(a,b,st); }); return o; }
+// v369 · H9 · regla dura (22-oct): al juntar dos copias, un día tecleado en una no lo reemplaza lo que el atajo trajo en la otra. Pasos y peso
+// (con marca 'manual' o sin marca), noches tecleadas o mixtas, y FC / HRV / energía tecleadas en health.daily. El valor y su marca van juntos: un día
+// cuenta como tecleado solo si su valor es IGUAL (el JSON entero, también el objeto del HRV) al tecleado de alguna de las dos copias (la unión de 3
+// vías junta por separado el número y su marca y podía dejar el número del atajo marcado 'manual', congelado). Si no, vuelve el tecleado con su marca:
+// el de la copia que lo tecleó o lo cambió respecto a la base (O; si las dos, la de este teléfono). Lo que una copia dejó igual a la base no se
+// restaura: si la otra lo borró a propósito y Salud lo volvió a llenar, gana ese cambio. union = sin base (cloudUnion: el día de una copia gana
+// entero, así que un campo tecleado que falta también se restaura); en 3 vías lo que se borró no vuelve.
+function cuKeep(out,A,B,union,O){ const isO=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
+  const J=x=>{ try{ return JSON.stringify(x===undefined?null:x,(k,v)=>isO(v)?Object.keys(v).sort().reduce((o,kk)=>(o[kk]=v[kk],o),{}):v); }catch(_){ return ''; } };   // con las llaves en orden: la unión arma objetos nuevos
+  const src=(x,k)=>(x&&isO(x.health)&&isO(x.health.src)&&isO(x.health.src[k]))?x.health.src[k]:{}, own=(o,k)=>(o[k]=Object.assign({},isO(o[k])?o[k]:{})), hsrc=()=>{ const hh=out.health=Object.assign({},out.health); return hh.src=Object.assign({},hh.src); };
+  const manNight=v=>{ const b=sleepBlocks(v); return b.length>0&&!b.every(slSyn); }, dly=(x,d)=>(x&&isO(x.health)&&isO(x.health.daily)&&isO(x.health.daily[d]))?x.health.daily[d]:null;
+  const XS=[A,B].filter(isO), base=!union&&isO(O)?O:null;
+  let n=0;
+  // r1b · una noche que las dos copias corrigieron distinto (cada una cambió el mismo bloque de la base): la unión de 3 vías juntaba los dos bloques
+  // nuevos y la noche sumaba las dos (860 min). Queda entera la de este teléfono (A); la otra queda en la foto 'nube'. Si solo una cambió un bloque y
+  // la otra agregó una siesta, se juntan como siempre.
+  if(base&&isO(A)&&isO(B)&&isO(A.sleep)&&isO(B.sleep)&&isO(base.sleep)&&isO(out.sleep))Object.keys(A.sleep).forEach(d=>{ const a=sleepBlocks(A.sleep[d]), b=sleepBlocks(B.sleep[d]), o=sleepBlocks(base.sleep[d]); if(!a.length||!b.length||!o.length||J(a)===J(b))return;
+    const ja=new Set(a.map(J)), jb=new Set(b.map(J)), jo=new Set(o.map(J)); if(!o.some(x=>!ja.has(J(x))&&!jb.has(J(x)))||!a.some(x=>!jo.has(J(x)))||!b.some(x=>!jo.has(J(x))))return;
+    own(out,'sleep')[d]=A.sleep[d]; n++; });
+  [['steps','steps'],['bodyweight','weight']].forEach(([dk,sk])=>{ const val=(x,d)=>(x&&isO(x[dk]))?x[dk][d]:undefined, mk=(x,d)=>src(x,sk)[d], man=(x,d)=>{ const v=val(x,d), m=mk(x,d); return v!=null&&v!==''&&(m==='manual'||!m); }, pair=(x,d)=>J([val(x,d),mk(x,d)||null]);
+    const days=new Set(); XS.forEach(X=>{ if(isO(X[dk]))Object.keys(X[dk]).forEach(d=>days.add(d)); });
+    days.forEach(d=>{ const ov=val(out,d); if(ov==null||ov==='')return; const ms=XS.filter(X=>man(X,d)); if(!ms.length)return;
+      if(man(out,d)&&ms.some(X=>J(val(X,d))===J(ov)))return;   // ya está uno de los tecleados, con su marca
+      const X=ms.find(Y=>!base||!man(base,d)||pair(Y,d)!==pair(base,d)); if(!X)return;   // esa copia no lo cambió: gana el cambio de la otra
+      own(out,dk)[d]=X[dk][d]; const s=hsrc(), mm=s[sk]=Object.assign({},s[sk]), xm=mk(X,d); if(xm)mm[d]=xm; else delete mm[d]; n++; }); });
+  XS.forEach(X=>{ if(!isO(X.sleep))return; Object.keys(X.sleep).forEach(d=>{ if(!manNight(X.sleep[d]))return; const ov=isO(out.sleep)?out.sleep[d]:undefined; if(ov==null)return;
+    if(!sleepBlocks(ov).some(b=>b&&typeof b==='object'&&b.src))return; if(XS.some(Y=>isO(Y.sleep)&&manNight(Y.sleep[d])&&J(Y.sleep[d])===J(ov)))return;
+    if(base&&isO(base.sleep)&&J(base.sleep[d])===J(X.sleep[d]))return;   // esta copia no la cambió: si la otra la borró y Salud la llenó, gana ese cambio
+    own(out,'sleep')[d]=X.sleep[d]; n++; }); });
+  XS.forEach(X=>{ const XD=isO(X.health)&&isO(X.health.daily)?X.health.daily:null; if(!XD)return; Object.keys(XD).forEach(d=>{ const xr=XD[d]; if(!isO(xr)||!isO(xr.src))return;
+    Object.keys(xr.src).forEach(f=>{ if(xr.src[f]!=='manual'||xr[f]==null)return; const od=dly(out,d), has=!!od&&od[f]!=null;
+      if(has&&isO(od.src)&&od.src[f]==='manual'&&XS.some(Y=>{ const yr=dly(Y,d); return !!yr&&isO(yr.src)&&yr.src[f]==='manual'&&J(yr[f])===J(od[f]); }))return;   // ya está uno de los tecleados
+      if(!has&&!union)return;
+      if(base){ const br=dly(base,d); if(br&&isO(br.src)&&br.src[f]==='manual'&&J(br[f])===J(xr[f]))return; }   // esta copia no lo cambió: gana el cambio de la otra
+      const hh=out.health=Object.assign({},out.health), D=hh.daily=Object.assign({},hh.daily), r=D[d]=Object.assign({},isO(od)?od:{}); r[f]=xr[f]; r.src=Object.assign({},isO(r.src)?r.src:{},{[f]:'manual'}); n++; }); }); });
+  // r2 · una noche o un peso del atajo que borraste en una copia (queda vacío con la marca 'del') no lo regresa lo que el atajo trajo en la otra: el
+  // día se queda vacío y con su marca, en la unión y en 3 vías. Lo que la otra copia tecleó ahí sí se queda (no es del atajo).
+  [['sleep','sleep'],['bodyweight','weight']].forEach(([dk,sk])=>{ const has=(x,d)=>isO(x[dk])&&(dk==='sleep'?sleepBlocks(x[dk][d]).length>0:(x[dk][d]!=null&&x[dk][d]!==''));
+    const synW=(x,d,v)=>{ const m=src(x,sk)[d]; return isO(x[dk])&&J(x[dk][d])===J(v)&&!!m&&m!=='manual'&&m!=='del'; }, manW=(x,d,v)=>{ const m=src(x,sk)[d]; return isO(x[dk])&&J(x[dk][d])===J(v)&&(!m||m==='manual'); };
+    const days=new Set(); XS.forEach(X=>{ const s=src(X,sk); Object.keys(s).forEach(d=>{ if(s[d]==='del'&&!has(X,d))days.add(d); }); });
+    days.forEach(d=>{ if(!has(out,d))return; const ov=out[dk][d];
+      if(dk==='sleep'?!sleepBlocks(ov).every(slSyn):(!XS.some(X=>synW(X,d,ov))||XS.some(X=>manW(X,d,ov))))return;   // solo lo del atajo
+      delete own(out,dk)[d]; const s=hsrc(); s[sk]=Object.assign({},s[sk],{[d]:'del'}); n++; }); });
+  return n; }
 function cloudWinner(loc,inc){ const ml=dbMass(loc), mi=dbMass(inc);
   if(mi>=20&&ml<mi*0.25)return 'inc'; if(ml>=20&&mi<ml*0.25)return 'loc';   // una copia casi vacía nunca manda
   const a=loc&&loc.account; return (a&&+a.rev>0)?'loc':'inc'; }   // la hora de la copia no sirve: la mueven los guardados de mantenimiento (entrar, migrar)
@@ -2564,6 +2622,7 @@ function cloudUnion(loc,inc){ const st={n:0}, who=cloudWinner(loc,inc), W=who===
   new Set(Object.keys(W).concat(Object.keys(L))).forEach(k=>{ if(CLOUD_LOCAL[k]){ if(k in loc)out[k]=loc[k]; return; }
     const a=cloudOwn(k,W[k]), b=cloudOwn(k,L[k]); if(a===undefined){ if(b!==undefined)out[k]=b; return; } if(b===undefined){ out[k]=a; return; }
     out[k]=k==='stack'?cuStack(a,b,st):CU_ARR[k]?cuArr(a,b,st):CU_DAYS[k]?cuDays(a,b,st):CU_MAP[k]?cuMap(a,b,st):k==='health'?cuHealth(a,b,st):a; });
+  cuKeep(out,loc,inc,true);   // v369 · H9 · lo tecleado gana
   if(Array.isArray(out.sessions)){ const d=s=>String((s&&s.date)||''); out.sessions=out.sessions.map((s,i)=>[s,i]).sort((p,q)=>d(p[0])<d(q[0])?-1:d(p[0])>d(q[0])?1:p[1]-q[1]).map(x=>x[0]); }
   if(loc.health&&loc.health.shortcut)out.health=Object.assign({},out.health||{},{shortcut:loc.health.shortcut});
   if(out.settings&&typeof out.settings==='object'){ out.settings=Object.assign({},out.settings); if(loc.settings&&loc.settings.acInv)out.settings.acInv=loc.settings.acInv; else delete out.settings.acInv; }
@@ -2601,7 +2660,7 @@ function cloudSync(why,opt){ opt=opt||{}; if(cloudMode()==='off'||!cloudIn())ret
   if(_clHold&&!opt.ui)return Promise.resolve('hold');
   if(!opt.ui&&(why==='hide'||why==='tick'||why==='save')&&cloudBaseOk()&&!cloudDirty()){ _clNote=0; return Promise.resolve('clean'); }
   _clTry=Date.now(); const n0=_clNote; clearInterval(_clWaitT); _clWaitT=null;
-  const p=_clBusy=cloudRun(opt).then(r=>{ _clErr=''; if((r==='ok'||r==='merge'||r==='adopt'||r==='union')&&_clNote===n0)_clNote=0; if(r==='wait')cloudWait(); return r; },e=>{ if(e&&e.code==='gone')return 'skip'; _clErr=cloudErrTxt(e); return 'err'; })
+  const p=_clBusy=cloudRun(opt).then(r=>{ _clErr=''; if((r==='ok'||r==='merge'||r==='adopt'||r==='union')&&_clNote===n0)_clNote=0; if(r==='wait')cloudWait(); return r; },e=>{ if(e&&(e.code==='gone'||e.code==='nouser'))return 'skip'; _clErr=cloudErrTxt(e); return 'err'; })
     .then(r=>{ if(_clBusy===p)_clBusy=null; cloudUi(); return r; });
   return p; }
 // quedó pendiente porque estabas a media sesión o con una hoja abierta: se reintenta en cuanto se desocupa (sin red de por medio)
@@ -2612,7 +2671,7 @@ function cloudChoose(which){ if(_clBusy)return _clBusy; if(!cloudIn())return Pro
       if(which==='cloud'){ const inc=h.inc?migrate(h.inc):null; if(!h.has||!inc||!(inc.profile&&inc.profile.username))throw cloudErr('corrupt'); await cloudAdopt(inc,h.rev); }
       else { if(h.inc)idbSnap('nube',h.inc);   // v352 · la de la nube, que no elegiste, queda guardada aquí (`de la nube · no elegida`)
         let rev=h.raw, ok=false; for(let i=0;i<3&&!ok;i++){ const r=await cloudPush(rev); if(r.ok){ ok=true; cloudSave(); await cloudKvPut(_cl); } else rev=r.rev; } if(!ok)throw cloudErr('busy'); }
-      _clHold=false; _clAskO=null; _clErr=''; return 'ok'; })().then(r=>r,e=>{ if(e&&e.code==='gone')return 'skip'; _clErr=cloudErrTxt(e); return 'err'; })
+      _clHold=false; _clAskO=null; _clErr=''; return 'ok'; })().then(r=>r,e=>{ if(e&&(e.code==='gone'||e.code==='nouser'))return 'skip'; _clErr=cloudErrTxt(e); return 'err'; })
     .then(r=>{ if(_clBusy===p)_clBusy=null; cloudUi(); return r; });
   return p; }
 function cloudAsk(o,head){ _clHold=true; _clAskO={o:o,head:head}; if(_sbx)return;
@@ -2669,11 +2728,11 @@ function rescueWhen(s){ let a=0, b=0; (s.exercises||[]).forEach(e=>(e.sets||[]).
 function cloudBoot(){ if(cloudMode()==='off')return; try{ if(!localStorage.getItem('gymtrk_v363_t'))localStorage.setItem('gymtrk_v363_t',String(Date.now())); }catch(_){}   // v363 · el sello del primer arranque de esta versión (el rescate solo mira copias de antes)
   try{ const s=ONB_STEPS.find(x=>x.k==='body'); if(s)s.why='para calcular tus calorías de mantenimiento'; }catch(_){}   // con cuenta ya no "se queda en tu teléfono"
   const t0=Date.now(), go1=()=>{ if((_idbHold||document.getElementById('bootov'))&&Date.now()-t0<15000){ setTimeout(go1,300); return; }
-    cloudKvGet().then(v=>{ if(v&&v.uid&&v.srv===cloudSrv())_cl=v; _clSess=(db.sessions||[]).length; if(cloudResetCheck())return; if(cloudIn()){ cloudUi(); cloudSync('boot'); setTimeout(cloudRescueOffer,5000); } else acctInviteMaybe(); }).catch(()=>{}); };   /* v362 · AC-INV */
+    cloudKvGet().then(v=>{ if(v&&v.uid&&v.srv===cloudSrv())_cl=v; _clSess=(db.sessions||[]).length; if(cloudResetCheck())return; if(cloudIn()){ cloudUi(); cloudAlive(true).then(ok=>{ if(!ok)return; cloudSync('boot'); setTimeout(cloudRescueOffer,5000); }); } else acctInviteMaybe(); }).catch(()=>{}); };   /* v362 · AC-INV · v369 · SEC6: antes, ¿la cuenta sigue existiendo? */
   go1();
   document.addEventListener('visibilitychange',()=>{ if(!cloudIn())return;
     if(document.hidden){ try{ flushSave(); }catch(_){} if(_clNote)cloudSync('hide'); }
-    else if(_clNote||Date.now()-_clTry>60000)cloudSoon(800,'show'); });
+    else cloudAlive(false).then(ok=>{ if(ok&&(_clNote||Date.now()-_clTry>60000))cloudSoon(800,'show'); }); });
   window.addEventListener('online',()=>{ if(cloudIn())cloudSoon(1500,'online'); });
   setInterval(()=>{ if(cloudIn()&&!document.hidden&&_clNote&&Date.now()-_clTry>=300000)cloudSync('tick'); },60000); }
 // ---- FakeSB · el mismo contrato que Supabase Auth (GoTrue) y PostgREST rpc, en memoria. Solo para `?cloud=fake` y
@@ -3442,6 +3501,9 @@ function FakeSB(){ this.users={}; this.rows={}; this.hist={}; this.tok={}; this.
 FakeSB.prototype.byId=function(id){ return Object.keys(this.users).map(k=>this.users[k]).find(u=>u.id===id)||null; };
 FakeSB.prototype.code=function(email){ const u=this.users[String(email||'').toLowerCase()]; return (u&&u.otp)||''; };
 FakeSB.prototype.expire=function(){ Object.keys(this.tok).forEach(k=>{ this.tok[k].exp=0; }); };
+// v369 · SEC6 · borrar la cuenta por fuera (panel o SQL): se van el usuario, sus datos y sus refresh tokens (cascada), pero el token de acceso
+// firmado sigue valiendo hasta que vence, como en Supabase
+FakeSB.prototype.purge=function(email){ const x=this.users[String(email||'').toLowerCase()]; if(!x)return; delete this.users[x.email]; delete this.rows[x.id]; delete this.hist[x.id]; Object.keys(this.rt).forEach(k=>{ if(this.rt[k]===x.id)delete this.rt[k]; }); };
 FakeSB.prototype.handle=async function(method,path,b,h){ b=b||{}; const J=(s,x)=>({status:s,body:x}), now=Date.now(), E=(s,c,m)=>J(s,{code:s,error_code:c,msg:m});
   const em=String(b.email||'').trim().toLowerCase(), u=this.users[em];
   const pub=x=>({id:x.id,aud:'authenticated',role:'authenticated',email:x.email,email_confirmed_at:x.ok?new Date(x.t).toISOString():null,identities:[{id:x.id,provider:'email'}],user_metadata:x.meta||{}});
@@ -3464,10 +3526,13 @@ FakeSB.prototype.handle=async function(method,path,b,h){ b=b||{}; const J=(s,x)=
   if(path==='/auth/v1/token?grant_type=refresh_token'){ const x=this.byId(this.rt[b.refresh_token]);   // cada dispositivo tiene su propio refresh token, de un solo uso
     if(!x)return E(400,'refresh_token_not_found','Invalid Refresh Token: Refresh Token Not Found'); delete this.rt[b.refresh_token]; this.refreshes++; return sess(x); }
   if(path==='/auth/v1/recover'){ if(u&&u.ok)otp(u,'recovery'); return J(200,{}); }
-  if(path==='/auth/v1/user'){ const x=who(); if(!x)return E(401,'bad_jwt','invalid JWT'); const p=String(b.password||'');
+  const orphan=()=>{ const s=this.tok[String(h.Authorization||'').replace(/^Bearer /,'')]; return !!(s&&s.exp>now&&!this.byId(s.uid)); };   // v369 · SEC6 · token vigente de una cuenta que ya no existe
+  if(path==='/auth/v1/user'&&method==='GET'){ if(orphan())return E(403,'user_not_found','User from sub claim in JWT does not exist'); const x=who(); if(!x)return E(401,'bad_jwt','invalid JWT'); return J(200,pub(x)); }
+  if(path==='/auth/v1/user'){ if(orphan())return E(403,'user_not_found','User from sub claim in JWT does not exist'); const x=who(); if(!x)return E(401,'bad_jwt','invalid JWT'); const p=String(b.password||'');
     if(p.length<8)return E(422,'weak_password','Password should be at least 8 characters.'); if(p===x.pw)return E(422,'same_password','New password should be different from the old password.'); x.pw=p; return J(200,pub(x)); }
   if(path.indexOf('/auth/v1/logout')===0){ const k=String(h.Authorization||'').replace(/^Bearer /,''), s=this.tok[k]; if(s&&s.rt)delete this.rt[s.rt]; delete this.tok[k]; return J(204,null); }   // v352 · como Supabase: salir revoca el refresh token
-  if(path.indexOf('/rest/v1/rpc/')===0){ const x=who(); if(!x)return J(401,{code:'PGRST301',message:'JWT expired'}); const fn=path.slice(13), row=this.rows[x.id];
+  if(path.indexOf('/rest/v1/rpc/')===0){ if(this.sec6&&orphan()&&/^state_(push|pull)$/.test(path.slice(13)))return J(403,{code:'28000',details:null,hint:null,message:'user_not_found'});   // v369 · SEC6 · con sec6-usuario-borrado.sql
+    const x=who(); if(!x)return J(401,{code:'PGRST301',message:'JWT expired'}); const fn=path.slice(13), row=this.rows[x.id];
     if(fn==='state_pull')return J(200,row?{found:true,rev:row.rev,seq:row.seq,enc:row.enc,size:row.size,device:row.device,updated_at:row.updated_at,data:(b.have_rev!=null&&b.have_rev===row.rev)?null:row.data}:{found:false,rev:0});
     if(fn==='delete_my_account'){ delete this.rows[x.id]; delete this.hist[x.id]; delete this.users[x.email]; Object.keys(this.tok).forEach(k=>{ if(this.tok[k].uid===x.id)delete this.tok[k]; }); Object.keys(this.rt).forEach(k=>{ if(this.rt[k]===x.id)delete this.rt[k]; }); return J(200,{ok:true}); }
     if(fn==='state_push'){ if(this.hook){ const f=this.hook; this.hook=null; await f(this,x); }
@@ -3483,7 +3548,7 @@ FakeSB.prototype.handle=async function(method,path,b,h){ b=b||{}; const J=(s,x)=
 // mismo abre (_sbx): nada llega a disco, a IndexedDB ni a la red, y al terminar restaura la base y la cuenta reales.
 // Devuelve true, o el texto del fallo (y lo deja en la consola).
 async function _cuentasSelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK cuentas: '+n); };
-  const real=db, R={cl:_cl,mem:_clMem,base:_clBaseMem,fake:_clFake,force:_clForce,hold:_clHold,err:_clErr,note:_clNote,ask:_clAskO,sess:_clSess,tr:_clTry,sbx:_sbx,lc:_lastClosed};
+  const real=db, R={cl:_cl,mem:_clMem,base:_clBaseMem,fake:_clFake,force:_clForce,hold:_clHold,err:_clErr,note:_clNote,ask:_clAskO,sess:_clSess,tr:_clTry,sbx:_sbx,lc:_lastClosed,alive:_clAliveT};
   let rawLive=null, rawMain=null; try{ rawLive=localStorage.getItem(LS_LIVE); rawMain=localStorage.getItem(LS_KEY); }catch(_){}
   const dev=d=>({db:d,cl:null,mem:null,base:null}), keep=d=>{ d.db=db; d.cl=_cl; d.mem=_clMem; d.base=_clBaseMem; }, use=d=>{ db=d.db; _cl=d.cl; _clMem=d.mem; _clBaseMem=d.base; _clHold=false; _clAskO=null; bumpIdx(); };
   const S=(id,date)=>({id:id,date:date,dayId:'d1',dayName:'A',type:'training',exercises:[{name:'press',muscle:'chest',type:'machine',unilateral:false,sets:[{w:'100',r:'8',rir:'1',unit:'lbs',side:null,done:true}]}]});
@@ -3621,9 +3686,19 @@ async function _cuentasSelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELF
     await authSignIn(em,pw2); const mD=dbMass(db); await cloudDelete();
     A('borrar la cuenta borra la nube y el acceso, no el teléfono', !F.rows[uA]&&!F.hist[uA]&&!F.byId(uA)&&!cloudIn()&&!db.account&&dbMass(db)===mD&&!!(db.profile&&db.profile.username));
     A('…y ya no se puede entrar', !!(await fails(()=>authSignIn(em,pw2))));
+    // v369 · SEC6 · la cuenta borrada por fuera (panel o SQL): su token sigue valiendo hasta que vence; al volver a la app la sesión se cierra
+    { const e6='sec6@example.test', Q=dev(mk('sec',['q1'])); use(Q); await authSignUp(e6,pw); await authVerify(e6,F.code(e6),'email'); cloudLink(); await cloudSync('t',{ui:true}); const mQ=dbMass(db);
+      A('SEC6 · con la cuenta viva, preguntar no cierra nada', (await cloudAlive(true))===true&&cloudIn()&&!!db.account);
+      F.purge(e6); _clAliveT=Date.now();
+      A('SEC6 · no se vuelve a preguntar antes de 10 min', (await cloudAlive(false))===true&&cloudIn());
+      { const h0=F.handle; F.handle=async()=>({status:503,body:{}}); try{ A('SEC6 · con la nube caída no se decide nada', (await cloudAlive(true))===true&&cloudIn()); } finally{ F.handle=h0; } }
+      A('SEC6 · borrada por fuera: la sesión se cierra y tus datos se quedan en el teléfono', (await cloudAlive(true))===false&&!cloudIn()&&!db.account&&_clMem===null&&dbMass(db)===mQ&&!!(db.profile&&db.profile.username));
+      await authSignUp(e6,pw); await authVerify(e6,F.code(e6),'email'); cloudLink(); await cloudSync('t',{ui:true}); F.purge(e6); F.sec6=true;
+      try{ A('SEC6 · …y si lo dice la nube al sincronizar (sec6-usuario-borrado.sql), igual y sin error en pantalla', (await cloudSync('t',{ui:true}))==='skip'&&!cloudIn()&&!db.account&&!_clErr&&dbMass(db)===mQ); } finally{ F.sec6=false; }
+      A('SEC6 · solo un user_not_found explícito cuenta, y el aviso cabe', cloudGone({code:'user_not_found'})&&cloudGone({code:'28000',message:'user_not_found'})&&!cloudGone({code:'28000',message:'sin sesion'})&&!cloudGone({code:'offline'})&&!cloudGone({code:'down'})&&('⚠ '+cloudErrTxt({code:'nouser'})).length<=42); }
     console.log('cuentas self-check OK'); return true;
   }catch(e){ console.error(e); return String((e&&e.message)||e); }
-  finally{ db=real; _cl=R.cl; _clMem=R.mem; _clBaseMem=R.base; _clFake=R.fake; _clForce=R.force; _clHold=R.hold; _clErr=R.err; _clNote=R.note; _clAskO=R.ask; _clSess=R.sess; _clTry=R.tr; _lastClosed=R.lc; _clBusy=null; _clRefP=null;
+  finally{ db=real; _cl=R.cl; _clMem=R.mem; _clBaseMem=R.base; _clFake=R.fake; _clForce=R.force; _clHold=R.hold; _clErr=R.err; _clNote=R.note; _clAskO=R.ask; _clSess=R.sess; _clTry=R.tr; _lastClosed=R.lc; _clAliveT=R.alive; _clBusy=null; _clRefP=null;
     try{ if(rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,rawLive); }catch(_){}
     _sbx=R.sbx; bumpIdx(); let after=null; try{ after=localStorage.getItem(LS_KEY); }catch(_){} if(after!==rawMain)console.error(new Error('SELFCHECK cuentas: una base de juguete llegó a tu disco')); } }
 
@@ -6745,7 +6820,9 @@ function _healthPasteSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELF
     A('pasos al registro del día', db.steps['2026-09-20']===8200);
     A('marca el Atajo como en uso', H().shortcut.setup===true&&H().shortcut.lastPaste>0);
     delete H().src.weight['2026-09-21']; healthPasteApply(T);
-    A('sin tecleo, el Atajo pone el peso', Math.abs(db.bodyweight['2026-09-21']-68.04)<0.01);
+    A('sin marca, el peso que ya estaba también gana (v369 · H9: puede ser tuyo, de antes de las marcas)', db.bodyweight['2026-09-21']===70);
+    delete db.bodyweight['2026-09-21']; healthPasteApply(T);
+    A('un día vacío lo llena el Atajo', Math.abs(db.bodyweight['2026-09-21']-68.04)<0.01);
     A('pegar dos veces no duplica', db.steps['2026-09-20']===8200&&Object.keys(H().sleep).length===1);
   } finally { db=real; }
   console.log('health paste self-check OK'); }
@@ -6823,11 +6900,283 @@ function _v293SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     try{ if(live0==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,live0); }catch(_){}
     try{ render(); }catch(_){} }
 }
+// v369 · H9 · el atajo de mentira: lo que copiaría TRK Salud (tools/shortcut/build.cjs, run()) con el plan de la app y una Salud inventada.
+// S = {sleep:{día:[[inicioISO,finISO,fase],…]}, steps:{día:n}, act:{día:kcal}, weight:{día:kg}, rhr:{día:lpm}, hrv:{día:ms}}. o.read = cómo lee iOS
+// «en los últimos N días» (1: medianoche de hoy−N+1 · 2: medianoche de hoy−N · 3: ahora−N×24 h); o.cut = el dato donde iOS corta la corrida;
+// o.lim = {dato:N}: la corta si pide más de N. o.R (r2): vuelves a la app tras R vueltas del Repetir (una por muestra o por día agrupado): llega lo
+// copiado hasta el último dato que terminó. Sin muestras se detiene, como el iPhone («No Samples Found»); lo copiado hasta ahí se queda.
+// También para probar con un respaldo (consola): _sbx=true; bioRun(); _fakeAtajo(S,H().shortcut.plan.p).
+function _hpZ(d,hm){ const z=-new Date(d+'T'+hm+':00').getTimezoneOffset(), a=Math.abs(z); return d+'T'+hm+':00'+(z<0?'-':'+')+pad(Math.floor(a/60))+':'+pad(a%60); }
+function _h9Night(d){ const p=shiftDate(d,-1); return [[_hpZ(p,'23:00'),_hpZ(d,'00:30'),'Esencial'],[_hpZ(d,'00:30'),_hpZ(d,'01:30'),'Profundo'],[_hpZ(d,'01:30'),_hpZ(d,'02:30'),'REM'],[_hpZ(d,'02:30'),_hpZ(d,'05:30'),'Esencial'],[_hpZ(d,'05:30'),_hpZ(d,'05:40'),'Despierto'],[_hpZ(d,'05:40'),_hpZ(d,'06:30'),'Esencial']]; }   // dormido 7 h 20 min (440)
+function _fakeAtajo(S,plan,o){ o=o||{}; const now=o.now||Date.now(), T=isoOfMs(now), rd=o.read||3, out=['trk2','ok in','ok id '+plan.id,'ok cfg'], ms=s=>new Date(s).getTime(); let it=0;
+  for(const k of HP_ORDER){ const N=+plan[k]||0; if(!(N>0))continue;
+    const from=rd===1?new Date(shiftDate(T,1-N)+'T00:00:00').getTime():rd===2?new Date(shiftDate(T,-N)+'T00:00:00').getTime():now-N*864e5, inW=s=>{ const t=ms(s); return t>=from&&t<=now; }, L=[];
+    if(k==='sleep')Object.keys(S.sleep||{}).sort().forEach(d=>(S.sleep[d]||[]).forEach(x=>{ if(inW(x[0])&&ms(x[1])<=now)L.push('sleep '+x[0]+' '+x[1]+' '+x[2]); }));
+    else { const src=S[k]||{}, hm={weight:'07:05',rhr:'06:00',hrv:'03:00'}[k]||'12:00'; Object.keys(src).sort().forEach(d=>{ if(!inW(_hpZ(d,hm)))return; L.push(k+' '+((k==='steps'||k==='act')?_hpZ(d,'00:00'):_hpZ(d,hm))+' '+src[d]+(k==='act'?' kcal':k==='weight'?' kg':'')); }); }
+    if(!L.length||o.cut===k||(o.lim&&o.lim[k]&&N>o.lim[k]))return out.join('\n');
+    it+=L.length; if(o.R&&it>o.R)return out.join('\n');
+    out.push.apply(out,L); out.push('ok '+k); }
+  out.push('ok end'); return out.join('\n'); }
+// v369 · H9 · self-check: su caso con fechas relativas (tecleadas D130…D68 y D44…D16, hueco D67…D45, sincronizadas D15…D1 con D9 que llega tarde y D11
+// mixta, D20 vacía, pasos y peso con marca y sin marca dentro de los historiales) contra una Salud de mentira y el atajo de mentira, por el camino real
+// (bioRun → el portapapeles → bioFetch). Sandbox: nada llega a disco; todo se repone en finally. r1: volver antes de tiempo (6p, 6q), el corte sin
+// datos en pasos (6s), el freno del historial días después (6q, 9), [rehacer historial] (9) y la nube con base (13b, 13c).
+function _h9SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK h9: '+nm); };
+  const real=db, sb0=_sbx, ios0=isIOS, sta0=isStandalone, go0=bioGo, tt=toast, bf0=bfBudget, K=['screen','_scroll','_paintedKey','_viewScroll'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
+  let live0=null; try{ live0=localStorage.getItem(LS_LIVE); }catch(_){}
+  const md=()=>document.getElementById('modal'), sh=()=>{ const m=md(); return m?m.textContent:''; }, tap=e=>e.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+  const T=todayISO(), D=k=>shiftDate(T,-k), R=(a,b)=>{ const o=[]; for(let i=a;i>=b;i--)o.push(D(i)); return o; }, J=x=>JSON.stringify(x===undefined?null:x), said=[]; let paste='', undo=null;
+  _sbx=true;
+  try{ try{ if(md())closeModal(); }catch(_){}
+    isIOS=()=>true; isStandalone=()=>false; bioGo=()=>{}; toast=(m,t,o)=>{ said.push(String(m)); if(o&&o.undo)undo=o.undo; return null; }; bfBudget=()=>1e9; state.screen='progress';
+    Object.defineProperty(navigator,'clipboard',{configurable:true,value:{readText:()=>({then:ok=>{ ok(paste); }})}});
+    // la Salud de mentira: sueño desde D67 (sin D9 todavía ni D20), pasos desde D270, energía desde D37, FC desde D68, peso cada 3 días desde D500, sin HRV
+    const S={sleep:{},steps:{},act:{},weight:{},rhr:{}}; R(67,1).forEach(d=>{ if(d!==D(9)&&d!==D(20))S.sleep[d]=_h9Night(d); });
+    R(270,0).forEach((d,i)=>{ S.steps[d]=8000+(i*37)%900; }); R(37,0).forEach((d,i)=>{ S.act[d]=400+(i*13)%90; }); R(68,0).forEach((d,i)=>{ S.rhr[d]=52+i%5; });
+    for(let k=500;k>=1;k-=3)S.weight[D(k)]=(62+(k%7)/10).toFixed(1);
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',age:30,sex:'m',weightKg:62},gyms:['g'],activeGym:'g',sessions:[]}); db.sleep={}; db.steps={}; db.bodyweight={}; db.health=healthShape({}); bumpIdx();
+    const pick=(o,ds)=>{ const r={}; ds.forEach(d=>{ if(o[d]!=null)r[d]=o[d]; }); return r; }, rec=R(30,1);
+    ingestHealth(parseHealthPaste(_fakeAtajo({sleep:pick(S.sleep,R(15,1).filter(d=>d!==D(11))),steps:pick(S.steps,rec),act:pick(S.act,rec),weight:pick(S.weight,rec),rhr:pick(S.rhr,rec)},{id:'b',steps:40,act:40,weight:40,sleep:40,rhr:40},{read:2})).payload,{silent:true});
+    R(130,68).forEach(d=>{ db.sleep[d]=[{start:'23:30',end:'07:00',date:d,type:'nocturno',hours:7.5}]; });
+    R(44,16).forEach(d=>{ if(d!==D(20))db.sleep[d]=[{start:'23:10',end:'06:50',date:d,type:'nocturno',hours:6.2,ph:{awake:20,rem:90,core:200,deep:60},inBed:7.7}]; });
+    { const d=D(11), s=new Date(_hpZ(D(12),'23:00')).getTime(), e=new Date(_hpZ(d,'06:30')).getTime(); db.sleep[d]=[{start:'23:00',end:'06:30',date:d,type:'nocturno',hours:7.5,src:'shortcut'},{start:'15:00',end:'15:40',date:d,type:'siesta',hours:0.7}]; H().sleep[d]=[{startMs:s,endMs:e,stages:[[s,e,'asleep']],src:'shortcut'}]; }
+    db.steps[D(150)]=5555; H().src.steps[D(150)]='manual'; db.steps[D(200)]=4321;
+    db.bodyweight[D(101)]=61; H().src.weight[D(101)]='manual'; db.bodyweight[D(401)]=63.3;
+    { const a=H().daily[D(25)]=H().daily[D(25)]||{}; a.activeKcal=999; a.src=Object.assign({},a.src,{activeKcal:'manual'}); const b=H().daily[D(50)]=H().daily[D(50)]||{}; b.rhr=49; b.src=Object.assign({},b.src,{rhr:'manual'}); }
+    { const s=H().shortcut; s.got={steps:D(1),act:D(1),weight:D(2),sleep:D(2),rhr:D(1)}; s.skip={hrv:{t:Date.now(),n:2}}; s.bio=Date.now(); s.bioName=BIO_NAME; s.fix349=1; delete s.covV; delete s.cov; }
+    hpCovSeed(db); bumpIdx();
+    const sc=()=>H().shortcut, cv=k=>(sc().cov||{})[k]||{};
+    A('10 · la migración siembra de dónde a dónde ya trajo cada dato (lo más viejo que escribió un sync)', cv('sleep').from===D(15)&&cv('steps').from===D(30)&&cv('act').from===D(30)&&cv('rhr').from===D(30)&&cv('weight').from===D(29)&&cv('sleep').deep===0&&cv('sleep').n===HP_DEEP.sleep.n0&&!sc().cov.hrv);
+    { const j=J(sc()); migrate(db); A('10 · …una sola vez: migrar otra vez no cambia nada', J(sc())===j); }
+    const B=J(db), base=JSON.parse(B), MAN=R(130,68).concat(R(44,16).filter(d=>d!==D(20)),[D(11)]);
+    const snap=()=>{ const o={}; MAN.forEach(d=>{ o[d]=[J(db.sleep[d]),sleepMinOf(db.sleep[d]),J(sleepPhDay(d)),Math.round(rdySleepH(d)*60)]; });
+      o.st=[db.steps[D(150)],H().src.steps[D(150)],db.steps[D(200)],H().src.steps[D(200)]]; o.bw=[db.bodyweight[D(101)],H().src.weight[D(101)],db.bodyweight[D(401)],H().src.weight[D(401)]];
+      o.dl=[H().daily[D(25)].activeKcal,H().daily[D(25)].src.activeKcal,H().daily[D(50)].rhr,H().daily[D(50)].src.rhr]; return J(o); };
+    const xs=()=>{ const m=buildExportMd(db), a=m.indexOf('## //SUEÑO'), b=m.indexOf('## //HÁBITOS'), sec=m.slice(a,b).split('\n'); return J(MAN.map(d=>sec.filter(l=>l.indexOf('| '+fmtDate(d)+' |')===0))); };
+    const cnt=()=>[Object.keys(db.sleep).length,Object.keys(db.steps).length,Object.keys(db.bodyweight).length,Object.keys(H().daily).length], ge=(a,b)=>a.every((x,i)=>x>=b[i]);
+    const s0=snap(), x0=xs(), c0=cnt();
+    const reset=()=>{ try{ closeModal(); }catch(_){} db=JSON.parse(B); bumpIdx(); paste=''; said.length=0; undo=null; };
+    const run=o=>{ o=o||{}; try{ closeModal(); }catch(_){} said.length=0; bioRun(); const p=sc().plan.p; paste=_fakeAtajo(o.S||S,Object.assign({},p),o); bioFetch(); return p; };
+    // 1 · su hueco en una corrida, con las tres lecturas de «en los últimos N días»; 2 · lo tecleado idéntico; 8 · pegar dos veces
+    [1,2,3].forEach(rd=>{ reset(); const p0=bioPlan();
+      A('1 · su caso: el plan trae el historial de sueño (120) y lo demás con su traslape de 7 días (lectura '+rd+')', p0.deep==='sleep'&&p0.sleep===HP_DEEP.sleep.n0&&p0.steps===8&&p0.act===8&&p0.weight===8&&p0.rhr===8&&p0.hrv===0);
+      run({read:rd}); const r=sc().learn||{};
+      A('1 · su hueco se llena en una corrida: 23 noches del atajo (lectura '+rd+')', R(67,45).every(d=>{ const b=sleepBlocks(db.sleep[d]); return b.length>0&&b.every(x=>x&&x.src==='shortcut'); }));
+      A('1 · …el aviso dice +23 noches y la hoja, desde cuándo', said.some(m=>/^✓ Salud · \d+ días · \+23 noches$/.test(m))&&/historial de sueño · desde /.test(sh())&&sh().indexOf('desde '+hpDayTxt(D(67)))>=0);
+      A('1 · …el historial de sueño queda completo, con su piso en lo más viejo que tiene Salud', cv('sleep').deep===2&&cv('sleep').floor===D(67)&&!!r.deep&&r.deep.k==='sleep');
+      A('2 · lo tecleado queda idéntico: cada noche, su número, sus fases, readiness y el export (lectura '+rd+')', snap()===s0&&xs()===x0);
+      A('2 · nada se borra', ge(cnt(),c0));
+      A('4 · la corrida del historial cubre de paso la noche que llega tarde (D9) y la vacía (D20): no gasta sus 2 pedidos (r1b)', !cv('sleep').ask[D(9)]&&!cv('sleep').ask[D(20)]);
+      if(rd===3){ const j=J([db.sleep,db.steps,db.bodyweight,H().daily,H().sleep,sc().cov]); healthPasteApply(paste); A('8 · pegar dos veces deja todo igual', J([db.sleep,db.steps,db.bodyweight,H().daily,H().sleep,sc().cov])===j); } });
+    // 3 · un historial por corrida, en orden; 4 · la noche tardía; 5 · la vacía, dos veces como mucho
+    const need=()=>{ const g=sc().got||{}, o={}; HP_ORDER.forEach(k=>{ o[k]=g[k]?hpNeed(k,g[k],T):HP_HIST[k]; }); return o; }, one=(p,n)=>HP_ORDER.filter(k=>p[k]>n[k]).length;
+    const shiftAsk=ms=>{ HP_DEEP_ORD.forEach(k=>{ const c=(sc().cov||{})[k]; if(c)Object.keys(c.ask||{}).forEach(d=>{ c.ask[d][1]+=ms; }); }); }, back=()=>shiftAsk(-(HP_HOLE_GAP+3600000));
+    let n0=need(), p=run();
+    A('3 · la 2.ª corrida trae el historial de pasos y solo ese', p.deep==='steps'&&p.steps===HP_DEEP.steps.n0&&one(p,n0)===1&&p.hrv===0);
+    A('4 · la 2.ª corrida pide por 1.ª vez los huecos fuera del traslape (la tardía y la vacía)', p.sleep===hpDays(D(20),T)+2&&(cv('sleep').ask[D(9)]||[])[0]===1&&(cv('sleep').ask[D(20)]||[])[0]===1&&Object.keys(cv('sleep').ask).every(d=>d<shiftDate(T,1-HP_OV.sleep)));
+    A('4 · …y no se vuelven a pedir antes de 3 días (ni al día siguiente)', bioPlan().sleep===4&&(()=>{ shiftAsk(-25*3600000); const q=bioPlan().sleep; shiftAsk(25*3600000); return q===4; })());
+    A('3 · pasos completo desde lo más viejo de Salud; lo tecleado y lo que no tiene marca, idénticos', cv('steps').deep===2&&cv('steps').floor===D(270)&&snap()===s0&&ge(cnt(),c0));
+    S.sleep[D(9)]=_h9Night(D(9)); back(); n0=need(); p=run();
+    A('3 · la 3.ª: energía activa', p.deep==='act'&&one(p,n0)===1&&cv('act').deep===2&&cv('act').floor===D(37));
+    A('4 · pasados 3 días se vuelve a pedir y entra', p.sleep===hpDays(D(20),T)+2&&sleepBlocks(db.sleep[D(9)]).length>0&&sleepBlocks(db.sleep[D(9)]).every(x=>x.src==='shortcut')&&!cv('sleep').ask[D(9)]);
+    A('5 · la vacía lleva 2 pedidas', (cv('sleep').ask[D(20)]||[])[0]===2);
+    back(); n0=need(); p=run();
+    A('3 · la 4.ª: peso (730 días), completo; tu peso tecleado y el que no tiene marca, idénticos', p.deep==='weight'&&p.weight===HP_DEEP.weight.n0&&cv('weight').deep===2&&cv('weight').floor===D(500)&&snap()===s0);
+    A('5 · …y la vacía ya no se pide (la ventana de sueño vuelve a la de siempre)', p.sleep===4);
+    n0=need(); p=run(); A('3 · la 5.ª: FC en reposo', p.deep==='rhr'&&one(p,n0)===1&&cv('rhr').deep===2&&cv('rhr').floor===D(68));
+    n0=need(); p=run(); A('3 · la 6.ª ya no trae historial; HRV saltado, nunca', !p.deep&&p.hrv===0&&one(p,n0)===0);
+    A('2 · tras todos los historiales, lo tecleado sigue idéntico y nada se borró', snap()===s0&&xs()===x0&&ge(cnt(),c0));
+    // 11 · la espera: 40 min con historial, 10 sin él
+    sc().wait=Date.now()-11*60000; A('11 · una corrida de siempre espera 10 min', sc().waitMs===BIO_WAIT&&!bioWaiting());
+    // 6 · el corte: iOS corta la corrida a media búsqueda del historial (aquí, si pide más de 88 noches). La 1.ª vez que llega detenida ahí queda
+    // pendiente (pudo ser que volviste antes de que acabara); si vuelve a llegar así, es el corte
+    reset(); { const S2=Object.assign({},S,{sleep:{}}); R(300,1).forEach(d=>{ if(d!==D(9)&&d!==D(20))S2.sleep[d]=_h9Night(d); }); R(130,68).forEach(d=>{ delete db.sleep[d]; }); bumpIdx();
+      p=run({S:S2,lim:{sleep:88}}); let r=sc().learn||{};
+      A('6 · la 1.ª vez que llega detenida en el historial queda pendiente: no se aprende nada, lo de antes llegó y al volver se ofrece traer otra vez', p.deep==='sleep'&&p.sleep===120&&r.part==='sleep'&&!r.cut&&!r.stop&&!(sc().skip||{}).sleep&&!cv('sleep').cut&&cv('sleep').deep===0&&!!sc().plan&&bioWaiting()&&(sc().lastKinds||[]).indexOf('steps')>=0&&/el atajo aún no acababa/.test(sh()));
+      A('11 · una corrida con historial espera 40 min', sc().waitMs===BIO_WAIT_DEEP);
+      p=run({S:S2,lim:{sleep:88}}); r=sc().learn||{};
+      A('6 · r2 · tras la pendiente la siguiente va sin historial: el sueño de siempre llega y lo pendiente se queda', !p.deep&&p.sleep<=88&&(sc().lastKinds||[]).indexOf('sleep')>=0&&!r.part&&!r.pend&&!r.stop&&!sc().rest&&!!sc().partial&&cv('sleep').deep===0);
+      p=run({S:S2,lim:{sleep:88}}); r=sc().learn||{};
+      A('6 · la siguiente con historial vuelve a llegar detenida ahí: es el corte; no se deja de pedir, lo de antes llegó y la hoja lo dice', p.deep==='sleep'&&p.sleep===120&&r.cut==='sleep'&&!r.stop&&!(sc().skip||{}).sleep&&cv('sleep').cut===120&&cv('sleep').n<120&&cv('sleep').deep===1&&(sc().lastKinds||[]).indexOf('steps')>=0&&(sc().lastKinds||[]).indexOf('weight')>=0&&/se cortó: la próxima pide menos noches/.test(sh())&&!sc().plan&&!bioWaiting()&&!!sc().rest);
+      let i=0, miss=0; for(;i<30&&cv('sleep').deep!==3;i++){ p=run({S:S2,lim:{sleep:88}}); const L=sc().learn||{}; A('6 · después del corte nunca vuelve a pedir 120', !(p.deep==='sleep'&&p.sleep>=120));
+        miss=(sc().lastKinds||[]).indexOf('sleep')>=0?0:miss+1; A('6 · r2 · nunca dos corridas seguidas sin el sueño de siempre', miss<2&&!(sc().skip||{}).sleep);
+        if(!(L.cut||L.part)&&p.deep==='sleep'){ const e=shiftDate(T,1-p.sleep); A('6 · la noche de la orilla (cortada a medianoche) no se escribe', !sleepBlocks(db.sleep[e]).length&&sleepBlocks(db.sleep[shiftDate(e,1)]).length>0);
+          A('6 · r2 · el piso es una noche guardada (no la de la orilla)', sleepBlocks(db.sleep[cv('sleep').floor]).length>0); } }
+      A('6 · al final queda topado y la hoja dice cuántas noches trae cada corrida, sin culpar al iPhone (r2) ni afirmar que falte algo', cv('sleep').deep===3&&cv('sleep').ok>0&&cv('sleep').ok<=88&&sh().indexOf('cada corrida trae hasta '+cv('sleep').ok+' noches')>=0&&hpResultTxt(sc().learn).indexOf('iPhone')<0&&!(sc().skip||{}).sleep);
+      A('6 · lo tecleado sigue idéntico', R(44,16).concat([D(11)]).every(d=>J(db.sleep[d])===J(base.sleep[d])));
+      // 6v · un tope vuelve a probar UNA vez, 7 días después, la ventana que se cortó; si iOS la vuelve a cortar, queda pendiente y ya no se insiste
+      { const c=hpCov('sleep'), cut=c.cut; A('6v · (preparación) topado, sin volver a probar todavía', c.deep===3&&cut>88&&!c.re&&bioPlan().deep!=='sleep');
+        c.t-=HP_CAP_RETRY+60000; const q=bioPlan(); A('6v · a los 7 días el tope vuelve a probar la ventana que se cortó', q.deep==='sleep'&&q.sleep===cut);
+        p=run({S:S2,lim:{sleep:88}}); A('6v · …llega detenida ahí: la 1.ª vez queda pendiente y la vuelta a probar no se gasta (r2)', (sc().learn||{}).part==='sleep'&&!cv('sleep').re&&cv('sleep').deep===3&&!!sc().rest&&bioPlan().deep!=='sleep'&&!(sc().skip||{}).sleep);
+        p=run({S:S2,lim:{sleep:88}}); A('6v · …la siguiente va sin historial', !p.deep&&(sc().lastKinds||[]).indexOf('sleep')>=0);
+        p=run({S:S2,lim:{sleep:88}}); A('6v · …la siguiente vuelve a probar la misma ventana: cortada otra vez, sigue topado y ya no se insiste', p.deep==='sleep'&&p.sleep===cut&&(sc().learn||{}).cut==='sleep'&&cv('sleep').re===1&&cv('sleep').deep===3&&!(sc().skip||{}).sleep);
+        run({S:S2,lim:{sleep:88}}); A('6v · …(después de su corrida sin historial) el sueño ya no pide historial', bioPlan().deep!=='sleep'); } }
+    // 6w · un tope que no era de iOS (dos regresos antes de tiempo): a los 7 días la ventana llega entera, el corte se olvida y el historial se completa
+    reset(); Object.assign(hpCov('sleep'),{deep:3,cut:64,ok:60,n:64,t:Date.now()-HP_CAP_RETRY-60000}); p=run();
+    A('6w · un tope falso: la vuelta a probar llega entera y el corte se olvida', p.deep==='sleep'&&p.sleep===64&&!cv('sleep').cut&&cv('sleep').deep===1&&cv('sleep').re===1);
+    for(let i=0;i<4&&cv('sleep').deep!==2;i++)run();
+    A('6w · …y el historial se completa con su hueco entero', cv('sleep').deep===2&&cv('sleep').floor===D(67)&&R(67,45).every(d=>sleepBlocks(db.sleep[d]).length>0)&&snap()===s0);
+    // 6p · volviste a la app antes de que el atajo acabara (el portapapeles llega hasta ok weight): queda pendiente; al traer la misma corrida ya
+    // completa, entra todo y no queda ningún corte
+    reset(); p=run({cut:'sleep'}); { const r=sc().learn||{};
+      const tb=md()&&md().querySelector('[data-act="biofetch"]');
+      A('6p · volver antes de tiempo no es un corte: nada se aprende, la corrida sigue pendiente, la hoja lo dice con [traer otra vez] y al volver se ofrece traer', r.part==='sleep'&&!r.cut&&!r.stop&&!cv('sleep').cut&&cv('sleep').deep===0&&!!sc().plan&&sc().plan.id===p.id&&bioWaiting()&&!(sc().skip||{}).sleep&&/el atajo aún no acababa/.test(sh())&&!!tb&&tb.classList.contains('cancel')&&!md().querySelector('.ok,[data-act="biounskip"]'));
+      said.length=0; tap(tb); const r2=sc().learn||{}, tb2=md()&&md().querySelector('[data-act="biofetch"]');
+      A('6p · …traer otra vez el MISMO portapapeles antes de los 40 min sigue pendiente: no es un corte (el atajo puede seguir corriendo)', r2.part==='sleep'&&!r2.cut&&!cv('sleep').cut&&cv('sleep').deep===0&&!!sc().plan&&sc().plan.id===p.id&&!!sc().partial&&!!tb2);
+      paste=_fakeAtajo(S,Object.assign({},p)); said.length=0; tap(tb2);
+      A('6p · …al traer la misma corrida ya completa entran sus 23 noches y el historial queda completo, sin corte', R(67,45).every(d=>{ const b=sleepBlocks(db.sleep[d]); return b.length>0&&b.every(x=>x.src==='shortcut'); })&&cv('sleep').deep===2&&cv('sleep').floor===D(67)&&!cv('sleep').cut&&!sc().partial&&said.some(m=>/ · \+\d+ noches$/.test(m))&&snap()===s0&&ge(cnt(),c0)); }
+    // 6t · si llega detenida ahí 40 min o más después de mandarla, el atajo ya acabó: es el corte a la primera
+    reset(); { try{ closeModal(); }catch(_){} said.length=0; bioRun(); sc().plan.t-=BIO_WAIT_DEEP+60000; paste=_fakeAtajo(S,Object.assign({},sc().plan.p),{cut:'sleep'}); bioFetch();
+      A('6t · …detenida en el historial 40 min o más después de mandarla: es el corte a la primera', (sc().learn||{}).cut==='sleep'&&!(sc().learn||{}).part&&cv('sleep').cut===120&&!sc().partial&&!sc().plan); }
+    // 6q · volviste antes de tiempo dos corridas seguidas: ahí sí se toma como corte; aun así, aunque pasen días sin sync, el historial se sigue pidiendo,
+    // su hueco entra entero y termina completo (nunca topado)
+    reset(); run({cut:'sleep'}); run(); run({cut:'sleep'});
+    A('6q · dos corridas con historial detenidas ahí (con una sin historial en medio): es el corte', (sc().learn||{}).cut==='sleep'&&cv('sleep').cut===120&&cv('sleep').n<120&&cv('sleep').deep===1);
+    run(); { const c=hpCov('sleep'); c.from=shiftDate(c.from,-60); }   // (su corrida sin historial) y 60 días después: lo cubierto (bfHave) ya pasa de lo que se quiere pedir
+    A('6q · …aunque pasen días sin sync, lo ya cubierto no frena el historial ni se dice «espacio»', bioPlan().deep==='sleep'&&bioPlan().sleep===cv('sleep').n&&hpHistTxt('sleep',bfBudget()).indexOf('espacio')<0&&!/espacio/.test(hpHistRowTxt()));
+    for(let i=0;i<6&&cv('sleep').deep!==2;i++)run();
+    A('6q · …su hueco entra entero y el historial queda completo, nunca topado', R(67,45).every(d=>sleepBlocks(db.sleep[d]).length>0)&&cv('sleep').deep===2&&cv('sleep').floor===D(67)&&snap()===s0);
+    // 6r · un corte que no era de iOS se olvida en cuanto una corrida así de grande llega entera
+    reset(); run({cut:'sleep'}); run(); run({cut:'sleep'}); run(); { const c=hpCov('sleep'); c.n=120; } p=run();
+    A('6r · …una corrida de 120 que llega entera borra ese corte', p.deep==='sleep'&&p.sleep===120&&!cv('sleep').cut&&cv('sleep').deep===2);
+    // 6s · el historial de pasos (el primer dato del atajo) se detiene antes de copiar nada: la 1.ª vez queda pendiente (la hoja lo dice, no el aviso
+    // de desbloquear el iPhone); a la 2.ª es el corte y la siguiente pide menos
+    reset(); hpCov('sleep').deep=2; p=run({cut:'steps'});
+    A('6s · el historial de pasos detenido sin datos: la 1.ª vez queda pendiente y la hoja lo dice', p.deep==='steps'&&(sc().learn||{}).part==='steps'&&(sc().learn||{}).empty===true&&!said.some(m=>/desbloquea/.test(m))&&/historial de pasos · aún no llega nada/.test(sh())&&sh().indexOf('pasos ✓')<0&&bioWaiting()&&!cv('steps').cut);
+    { const n1=p.steps; run(); run({cut:'steps'});
+      A('6s · …a la siguiente con historial es el corte (aunque no llegó nada)', (sc().learn||{}).cut==='steps'&&cv('steps').cut===n1&&!said.some(m=>/desbloquea/.test(m))&&/se cortó: la próxima pide menos días/.test(sh()));
+      run(); const q=bioPlan(); A('6s · …y la siguiente con historial pide menos pasos', q.deep==='steps'&&q.steps<n1); }
+    // 6u · en la corrida del historial de pasos volviste antes de que acabara el sueño de siempre (que sí tienes): queda pendiente, no se deja de pedir
+    // el sueño 3 días; si otra corrida vuelve a detenerse ahí, la regla de siempre
+    reset(); hpCov('sleep').deep=2; p=run({cut:'sleep'}); { let r=sc().learn||{};
+      A('6u · detenida en el sueño durante la corrida del historial de pasos: pendiente, sin dejar de pedir el sueño', p.deep==='steps'&&r.part==='steps'&&!r.stop&&!(sc().skip||{}).sleep&&cv('steps').deep===2&&!!sc().plan&&/historial de pasos · el atajo aún no acababa/.test(sh()));
+      p=run({cut:'sleep'}); r=sc().learn||{};
+      A('6u · r2 · la siguiente va sin historial; si también vuelve antes del sueño (que sí tienes), queda pendiente: no 3 días sin pedirlo, y el pedido de huecos se encoge', !p.deep&&r.pend==='sleep'&&!r.stop&&!(sc().skip||{}).sleep&&!!sc().pend&&cv('sleep').lim===p.sleep&&/sueño · el atajo aún no acababa/.test(sh())&&!!md().querySelector('[data-act="biofetch"]')&&!!sc().plan);
+      run({cut:'sleep'}); p=run({cut:'sleep'}); r=sc().learn||{};
+      A('6u · …si otra corrida sin historial vuelve a detenerse en el sueño, la regla de siempre (3 días sin pedirlo)', !p.deep&&r.stop==='sleep'&&!!(sc().skip||{}).sleep&&!sc().pend); }
+    // 6z · r2 · un corte sin que nunca haya llegado nada de ese historial (c.ok = 0) no da tope: nada prueba cuánto alcanza una corrida
+    reset(); { const c=hpCov('sleep'); Object.assign(c,{deep:1,ok:0,cut:0,n:10}); hpHoles('sleep',T).forEach(d=>{ c.ask[d]=[HP_HOLE_ASK,Date.now()]; });
+      p=run({lim:{sleep:5}}); const r1=sc().learn||{}; delete sc().rest; p=run({lim:{sleep:5}}); const r2=sc().learn||{};
+      A('6z · con c.ok en 0 un corte no topa: la siguiente pide menos y la hoja no dice cuánto trae', p.deep==='sleep'&&p.sleep===10&&r1.part==='sleep'&&r2.cut==='sleep'&&cv('sleep').deep===1&&cv('sleep').n<10&&cv('sleep').n>=hpNeed('sleep',sc().got.sleep,T)&&!/trae hasta/.test(sh())); }
+    // 5b · un hueco dentro del traslape no gasta pedidos (el traslape lo cubre de paso); uno más viejo, sí
+    reset(); hpCov('sleep').deep=2; { const S3=Object.assign({},S,{sleep:Object.assign({},S.sleep)}); [D(2),D(5)].forEach(d=>{ delete db.sleep[d]; delete H().sleep[d]; delete S3.sleep[d]; }); run({S:S3});
+      A('5b · un hueco dentro del traslape no gasta sus pedidos; uno de fuera, sí', !cv('sleep').ask[D(2)]&&hpHoles('sleep',T).indexOf(D(2))>=0&&(cv('sleep').ask[D(5)]||[])[0]===1); }
+    // 7 · el espacio
+    reset(); bfBudget=()=>20*HP_COST.sleep; { const q=bioPlan(); A('7 · con poco espacio el historial pide solo lo que cabe', q.deep==='sleep'&&q.sleep===bfHave('sleep')+20); }
+    { const c=hpCov('weight'), f0=c.from; c.from=shiftDate(T,-4000); [-50000,NaN].forEach(rm=>{ bfBudget=()=>rm; const q=bioPlan();
+        A('7 · con el almacén ya pasado del 60 % (o sin medida) ningún plan pide más de lo que se quería (r1b: un peso de hace 11 años pedía 4000 días)', HP_ORDER.every(k=>Number.isInteger(q[k])&&q[k]>=0&&q[k]<=3650)&&q.weight<=HP_DEEP.weight.n0&&q.deep!=='sleep'&&q.sleep===hpNeed('sleep',sc().got.sleep,T)); }); c.from=f0; }
+    bfBudget=()=>0; { const q=bioPlan(); A('7 · sin espacio: ningún historial, y //HEALTH y qué trae el atajo lo dicen', !q.deep&&/sin espacio ›/.test(healthSettingsHTML())&&hpHistTxt('sleep',0)==='sin espacio'); }
+    { const rm=3*HP_COST.sleep; bfBudget=()=>rm; const q=bioPlan(); A('7b · r2 · si solo cabe avanzar 1 o 2 noches, el historial de sueño no se pide (relee cientos para nada) y dice «sin espacio»', q.deep!=='sleep'&&q.sleep===hpNeed('sleep',sc().got.sleep,T)&&hpHistTxt('sleep',rm)==='sin espacio'); }
+    bfBudget=()=>1e9;
+    // 9 · [rehacer historial] y [deshacer]
+    reset(); run(); { const j=J(sc().cov), d=J([db.sleep,db.steps,db.bodyweight,H().daily]), fl={}; HP_DEEP_ORD.forEach(k=>{ fl[k]=cv(k).floor||null; }); closeModal();
+      const fake=document.createElement('div'); fake.innerHTML='<div class="line lnav" data-act="biowhat"><span class="k">qué trae el atajo</span><span class="dots"></span><span class="v">'+hpHistRowTxt()+' ›</span></div>'; document.body.appendChild(fake);   // la fila de //HEALTH
+      try{ openBioWhat(); const b=md()&&md().querySelector('[data-act="biohist"]');
+        A('9 · qué trae el atajo: filas de 44 con desde cuándo, el glosario en toda la fila (punteado solo bajo el nombre) y [rehacer historial]', !!b&&sh().indexOf('desde '+hpDayTxt(D(67)))>=0&&md().querySelectorAll('.line.bwr[data-gloss]').length===6&&md().querySelectorAll('.line.bwr .k .u-dash').length===6&&!md().querySelector('.line.bwr .k [data-gloss]'));
+        const v0=fake.querySelector('.v').textContent; tap(b);
+        A('9 · [rehacer historial] vuelve a pedirlo todo hasta su máximo sin borrar nada ni olvidar desde cuándo hay datos', HP_DEEP_ORD.every(k=>!sc().cov[k]||(sc().cov[k].deep===0&&(sc().cov[k].floor||null)===fl[k]&&sc().cov[k].n===HP_DEEP[k].max&&!sc().cov[k].re))&&!!cv('sleep').from&&J([db.sleep,db.steps,db.bodyweight,H().daily])===d&&said.some(m=>/^✓ el historial se vuelve a traer$/.test(m))&&!!undo);
+        A('9 · …la fila de //HEALTH cambia en su lugar', fake.querySelector('.v').textContent===hpHistRowTxt()+' ›'&&fake.querySelector('.v').textContent!==v0);
+        openBioWhat(); A('9 · …y qué trae el atajo solo muestra fechas de datos que llegaron (ninguna anterior a su piso)', HP_DEEP_ORD.every(k=>!fl[k]||hpHistTxt(k,bfBudget())==='desde ~'+hpDayTxt(fl[k]))&&sh().indexOf('desde ~'+hpDayTxt(D(67)))>=0); closeModal();
+        { const c=sc().cov.sleep, f0=c.floor; c.floor=null; A('9 · …y sin un dato que haya llegado no muestra fecha (nunca la del inicio de una ventana)', hpHistTxt('sleep',bfBudget())==='—'&&!!c.from); c.floor=f0; }
+        A('9 · …la siguiente corrida pide el historial de sueño hasta su máximo', bioPlan().deep==='sleep'&&bioPlan().sleep===HP_DEEP.sleep.max);
+        HP_DEEP_ORD.forEach(k=>{ const c=sc().cov[k]; if(c&&c.from)c.from=shiftDate(c.from,-30); });   // días después: lo cubierto crece
+        A('9 · …también días después: lo ya cubierto no se confunde con falta de espacio', bioPlan().deep==='sleep'&&bioPlan().sleep===HP_DEEP.sleep.max&&!/espacio/.test(hpHistRowTxt()));
+        undo(); A('9 · …y [deshacer] lo deja como estaba', J(sc().cov)===j&&fake.querySelector('.v').textContent===v0);
+      } finally { fake.remove(); } }
+    // 12 · el pegado viejo por URL: solo llena lo vacío
+    reset(); { const m=importHealth(new URLSearchParams('sleeph='+D(30)+':7.5,'+D(20)+':6&stepsh='+D(150)+':9999,'+D(151)+':8888&weighth='+D(101)+':70,'+D(102)+':71'));
+      A('12 · ?sleeph= ?stepsh= ?weighth= llenan lo vacío y nunca pisan lo tecleado', J(db.sleep[D(30)])===J(base.sleep[D(30)])&&db.sleep[D(20)]===6&&db.steps[D(150)]===5555&&db.steps[D(151)]===8888&&H().src.steps[D(151)]==='shortcut'&&db.bodyweight[D(101)]===61&&db.bodyweight[D(102)]===71&&m.some(x=>/tuyos se quedan/.test(x)));
+      db.steps[T]=1234; H().src.steps[T]='manual'; db.sleep[T]=[{start:'23:00',end:'07:00',date:T,type:'nocturno',hours:8}]; importHealth(new URLSearchParams('steps=9000&sleep=6'));
+      A('12 · …?steps= y ?sleep= tampoco pisan lo de hoy', db.steps[T]===1234&&db.sleep[T][0].hours===8); }
+    // 13 · la nube: lo tecleado en una copia gana a lo que el atajo trajo en la otra (y lo que se borró a propósito no vuelve)
+    { const d1=D(3), mk=(st,sm,sl,dl)=>migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',sessions:[],steps:st,sleep:sl,health:{src:{steps:sm,sleep:{},weight:{}},daily:dl}});
+      const man=[{start:'23:30',end:'07:00',date:d1,type:'nocturno',hours:7.5}], syn=[{start:'23:00',end:'06:30',date:d1,type:'nocturno',hours:7.3,asl:440,src:'shortcut'}];
+      const L=mk({[d1]:7000},{[d1]:'manual'},{[d1]:man},{[d1]:{rhr:50,src:{rhr:'manual'}}}), I=mk({[d1]:9000},{[d1]:'shortcut'},{[d1]:syn},{[d1]:{steps:9000,src:{steps:'shortcut'}}});
+      const u=cloudUnion(L,I).db; A('13 · al juntar la nube, lo tecleado en una copia no lo reemplaza lo del atajo en la otra', u.steps[d1]===7000&&u.health.src.steps[d1]==='manual'&&J(u.sleep[d1])===J(man)&&u.health.daily[d1].rhr===50&&u.health.daily[d1].src.rhr==='manual');
+      const u2=cloudUnion(I,L).db; A('13 · …gane la copia que gane', u2.steps[d1]===7000&&J(u2.sleep[d1])===J(man)&&u2.health.daily[d1].rhr===50);
+      const m3=cloudMerge(I,L,mk({},{},{},{})).db; A('13 · …también en la unión de 3 vías', m3.steps[d1]===7000&&J(m3.sleep[d1])===J(man)&&m3.health.daily[d1].rhr===50);
+      const gone=cloudMerge(mk({},{},{},{}),L,L).db; A('13 · …y lo que borraste a propósito no vuelve', gone.steps[d1]==null&&!(gone.sleep||{})[d1]); }
+    // 13b · la base ya traía el número del atajo; este teléfono lo volvió a sincronizar con otro número y en la otra copia lo tecleaste: la unión de
+    // 3 vías junta por separado el número y su marca (quedaba el del atajo marcado 'manual', congelado). Gana lo tecleado, con su marca, en los 4 sentidos
+    { const d1=D(3), mk2=o=>migrate(JSON.parse(JSON.stringify(Object.assign({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',sessions:[],steps:{},bodyweight:{},sleep:{},health:{src:{steps:{},weight:{},sleep:{}},daily:{}}},o))));
+      const dl=(f,v,m)=>({health:{daily:{[d1]:{[f]:v,src:{[f]:m}}}}}), gd=f=>x=>[x.health.daily[d1][f],x.health.daily[d1].src[f]];
+      const S1=[{start:'23:00',end:'06:30',date:d1,type:'nocturno',hours:7.3,asl:440,src:'shortcut'}], S2=[{start:'23:00',end:'06:40',date:d1,type:'nocturno',hours:7.5,asl:452,src:'shortcut'}], TY=[{start:'23:30',end:'07:00',date:d1,type:'nocturno',hours:7.5}];
+      [['pasos',{steps:{[d1]:8000},health:{src:{steps:{[d1]:'shortcut'}}}},{steps:{[d1]:9000},health:{src:{steps:{[d1]:'shortcut'}}}},{steps:{[d1]:7000},health:{src:{steps:{[d1]:'manual'}}}},x=>[x.steps[d1],x.health.src.steps[d1]]],
+       ['peso',{bodyweight:{[d1]:61},health:{src:{weight:{[d1]:'shortcut'}}}},{bodyweight:{[d1]:61.4},health:{src:{weight:{[d1]:'shortcut'}}}},{bodyweight:{[d1]:60.5},health:{src:{weight:{[d1]:'manual'}}}},x=>[x.bodyweight[d1],x.health.src.weight[d1]]],
+       ['peso sin marca',{bodyweight:{[d1]:61},health:{src:{weight:{[d1]:'shortcut'}}}},{bodyweight:{[d1]:61.4},health:{src:{weight:{[d1]:'shortcut'}}}},{bodyweight:{[d1]:60.5}},x=>[x.bodyweight[d1],x.health.src.weight[d1]||null]],
+       ['FC en reposo',dl('rhr',55,'shortcut'),dl('rhr',57,'shortcut'),dl('rhr',44,'manual'),gd('rhr')],
+       ['HRV',dl('hrv',{v:40,kind:'sdnn'},'shortcut'),dl('hrv',{v:42,kind:'sdnn'},'shortcut'),dl('hrv',{v:50,kind:'rmssd'},'manual'),gd('hrv')],
+       ['energía activa',dl('activeKcal',400,'shortcut'),dl('activeKcal',520,'shortcut'),dl('activeKcal',300,'manual'),gd('activeKcal')],
+       ['noche',{sleep:{[d1]:S1}},{sleep:{[d1]:S2}},{sleep:{[d1]:TY}},x=>[x.sleep[d1]]]].forEach(([nm,b,y,m,get])=>{ const want=J(get(mk2(m)));
+        A('13b · la base traía el número del atajo, una copia lo volvió a sincronizar y en la otra lo tecleaste: gana lo tecleado con su marca, en los 4 sentidos ('+nm+')', [cloudMerge(mk2(y),mk2(m),mk2(b)),cloudMerge(mk2(m),mk2(y),mk2(b)),cloudUnion(mk2(y),mk2(m)),cloudUnion(mk2(m),mk2(y))].every(x=>J(get(x.db))===want)); });
+      // 13c · lo que borraste a propósito en una copia (para que Salud lo vuelva a llenar) no lo regresa la copia que no lo tocó
+      [['noche',{sleep:{[d1]:TY}},{sleep:{[d1]:S2},health:{src:{sleep:{[d1]:'shortcut'}}}},x=>[sleepBlocks(x.sleep[d1]).every(b=>b.src==='shortcut'),sleepMinOf(x.sleep[d1])]],
+       ['FC en reposo',dl('rhr',44,'manual'),dl('rhr',57,'shortcut'),gd('rhr')],
+       ['peso sin marca',{bodyweight:{[d1]:61}},{bodyweight:{[d1]:61.4},health:{src:{weight:{[d1]:'shortcut'}}}},x=>[x.bodyweight[d1],x.health.src.weight[d1]||null]]].forEach(([nm,b,l,get])=>{ const want=J(get(mk2(l)));
+        A('13c · lo que borraste a propósito y Salud volvió a llenar no lo regresa la copia que no lo tocó ('+nm+')', [cloudMerge(mk2(l),mk2(b),mk2(b)),cloudMerge(mk2(b),mk2(l),mk2(b))].every(x=>J(get(x.db))===want)); });
+      // 13d · r1b · una noche tecleada que las dos copias corrigieron distinto: queda entera la de este teléfono (antes se sumaban: 860 min)
+      { const T1=[{start:'23:30',end:'07:00',date:d1,type:'nocturno',hours:7.5}], T2=[{start:'23:40',end:'07:00',date:d1,type:'nocturno',hours:7.3}], T3=[{start:'23:30',end:'06:30',date:d1,type:'nocturno',hours:7}];
+        const W=x=>J(mk2({sleep:{[d1]:x}}).sleep[d1]), a=cloudMerge(mk2({sleep:{[d1]:T2}}),mk2({sleep:{[d1]:T3}}),mk2({sleep:{[d1]:T1}})).db, b=cloudMerge(mk2({sleep:{[d1]:T3}}),mk2({sleep:{[d1]:T2}}),mk2({sleep:{[d1]:T1}})).db;
+        A('13d · una noche que las dos copias corrigieron distinto no se suma: queda la de este teléfono', J(a.sleep[d1])===W(T2)&&J(b.sleep[d1])===W(T3)&&sleepMinOf(a.sleep[d1])===sleepMinOf(T2));
+        const NAPt={start:'15:00',end:'15:30',date:d1,type:'siesta',hours:0.5}, c=cloudMerge(mk2({sleep:{[d1]:[T1[0],NAPt]}}),mk2({sleep:{[d1]:T2}}),mk2({sleep:{[d1]:T1}})).db, cb=sleepBlocks(c.sleep[d1]);
+        A('13d · …pero si una agregó una siesta y la otra corrigió la noche, se juntan como siempre', cb.length===2&&cb.some(x=>x.start==='23:40')&&cb.some(x=>x.start==='15:00'));
+        // 13e · una noche del atajo a la que le quitaste la siesta en una copia (ed) y la otra volvió a sincronizar: gana la tuya, en los 4 sentidos
+        const N0=[{start:'23:00',end:'06:30',date:d1,type:'nocturno',hours:7.3,asl:440,src:'shortcut'},{start:'14:00',end:'14:40',date:d1,type:'siesta',hours:0.7,asl:40,src:'shortcut'}];
+        const ED=[Object.assign({},N0[0],{ed:1})], RS=[Object.assign({},N0[0],{asl:452}),Object.assign({},N0[1],{asl:42})];
+        A('13e · la noche a la que le quitaste la siesta gana a la que la otra copia volvió a sincronizar, en los 4 sentidos', [cloudMerge(mk2({sleep:{[d1]:ED}}),mk2({sleep:{[d1]:RS}}),mk2({sleep:{[d1]:N0}})),cloudMerge(mk2({sleep:{[d1]:RS}}),mk2({sleep:{[d1]:ED}}),mk2({sleep:{[d1]:N0}})),cloudUnion(mk2({sleep:{[d1]:ED}}),mk2({sleep:{[d1]:RS}})),cloudUnion(mk2({sleep:{[d1]:RS}}),mk2({sleep:{[d1]:ED}}))].every(x=>J(x.db.sleep[d1])===W(ED))); }
+      // 13f · r2 · la noche y el peso del atajo que borraste en una copia (vacíos, marca 'del') no los regresa la otra, que los tiene del atajo (sin
+      // tocar o vueltos a sincronizar): se quedan vacíos y con su marca, en la unión y en 3 vías; lo que la otra tecleó ahí sí se queda
+      { const DL={health:{src:{sleep:{[d1]:'del'},weight:{[d1]:'del'}}}}, SY={sleep:{[d1]:S2},bodyweight:{[d1]:61.4},health:{src:{sleep:{[d1]:'shortcut'},weight:{[d1]:'shortcut'}}}}, BS={sleep:{[d1]:S1},bodyweight:{[d1]:61},health:{src:{sleep:{[d1]:'shortcut'},weight:{[d1]:'shortcut'}}}};
+        const g=x=>J([sleepBlocks(x.sleep&&x.sleep[d1]).length,x.health.src.sleep[d1],(x.bodyweight||{})[d1]==null,x.health.src.weight[d1]]), want=J([0,'del',true,'del']);
+        A('13f · lo del atajo que borraste en una copia no vuelve al juntar la nube, en los 4 sentidos (sin tocar o vuelto a sincronizar en la otra)', [cloudUnion(mk2(DL),mk2(SY)),cloudUnion(mk2(SY),mk2(DL)),cloudMerge(mk2(DL),mk2(SY),mk2(BS)),cloudMerge(mk2(SY),mk2(DL),mk2(BS))].every(x=>g(x.db)===want));
+        const TW={sleep:{[d1]:TY},bodyweight:{[d1]:60.5},health:{src:{weight:{[d1]:'manual'}}}};
+        A('13f · …pero lo que la otra copia tecleó ese día se queda', [cloudUnion(mk2(DL),mk2(TW)),cloudUnion(mk2(TW),mk2(DL))].every(x=>J(x.db.sleep[d1])===J(mk2(TW).sleep[d1])&&x.db.bodyweight[d1]===60.5)); } }
+    // 14 · r1b · lo que corriges a mano sobre lo del atajo es tuyo: quitarle la siesta a una noche, borrar una noche y borrar un peso (por la hoja,
+    // ✕ y confirmar). Ningún historial, ni [rehacer historial], ni el pegado viejo por URL lo regresa
+    reset(); { const dn=D(5), dz=D(6), dw=D(8), Sn=Object.assign({},S,{sleep:Object.assign({},S.sleep)}), ok=()=>{ const a=document.querySelector('#asklayer [data-ask="ok"]'); if(a)tap(a); };
+      Sn.sleep[dn]=_h9Night(dn).concat([[_hpZ(dn,'14:00'),_hpZ(dn,'14:40'),'Esencial']]);
+      ingestHealth(parseHealthPaste(['trk2'].concat(Sn.sleep[dn].map(x=>'sleep '+x[0]+' '+x[1]+' '+x[2])).join('\n')).payload,{silent:true});
+      const b0=sleepBlocks(db.sleep[dn]), m0=b0.length?sleepMinOf([b0[0]]):0, ph0=J(b0.length?phaseMin(b0[0]):null);
+      A('14 · (preparación) la noche del atajo llega con su siesta; la noche y el peso que vas a borrar son del atajo', b0.length===2&&b0.every(slSyn)&&sleepBlocks(db.sleep[dz]).every(slSyn)&&db.bodyweight[dw]>0&&H().src.weight[dw]==='shortcut');
+      openSleepLog(dn); { const xs=md().querySelectorAll('#sl_blocks .slx'); tap(xs[1]); } document.getElementById('sl_save').click(); try{ closeModal(); }catch(_){}
+      const st=()=>{ const b=sleepBlocks(db.sleep[dn]); return J([b.length,b.length&&b[0].ed,sleepMinOf(db.sleep[dn]),J(sleepPhDay(dn)),db.sleep[dz]===undefined,H().src.sleep[dz],db.bodyweight[dw]===undefined,H().src.weight[dw]]); };
+      openSleepLog(dn); tap(md().querySelector('[data-act="delsleep"][data-d="'+dz+'"]')); ok(); try{ closeModal(); }catch(_){}
+      openWeightLog(dw); tap(md().querySelector('[data-act="delbw"][data-d="'+dw+'"]')); ok(); try{ closeModal(); }catch(_){}
+      const s1=st(); A('14 · sin la siesta la noche es tuya (sus minutos y fases no cambian) y lo que borraste queda vacío con su marca', s1===J([1,1,m0,J(phaseMin(b0[0])),true,'del',true,'del'])&&J(sleepPhDay(dn))===ph0);
+      // 14b · r2 · una noche del atajo a la que le cambiaste la hora (ya es tuya: sin src) y luego borraste: también queda 'del' (el día fue del atajo)
+      const de=D(7), sv=()=>[sleepBlocks(db.sleep[de]).length,H().src.sleep[de]];
+      openSleepLog(de); { const i=md().querySelectorAll('#sl_blocks input[type="time"]'); i[0].value='22:05'; i[0].dispatchEvent(new Event('input')); } document.getElementById('sl_save').click(); try{ closeModal(); }catch(_){}
+      A('14b · (preparación) la noche del atajo con la hora cambiada ya es tuya', sleepBlocks(db.sleep[de]).length>0&&sleepBlocks(db.sleep[de]).every(b=>!b.src)&&sleepBlocks(db.sleep[de])[0].start==='22:05'&&H().src.sleep[de]==='shortcut');
+      openSleepLog(de); tap(md().querySelector('[data-act="delsleep"][data-d="'+de+'"]')); ok(); try{ closeModal(); }catch(_){}
+      A('14b · …al borrarla queda vacía y con la marca del', J(sv())===J([0,'del']));
+      for(let i=0;i<4;i++){ const q=run({S:Sn}); A('14 · …el historial ('+(q.deep||'—')+') no lo regresa', st()===s1&&snap()===s0&&J(sv())===J([0,'del'])); }
+      hpRedo(); run({S:Sn}); A('14 · …ni [rehacer historial]', st()===s1&&cv('sleep').deep===2&&J(sv())===J([0,'del']));
+      { const m=importHealth(new URLSearchParams('sleeph='+dn+':9,'+dz+':7&weighth='+dw+':70')); A('14 · …ni el pegado viejo por URL', st()===s1&&m.some(x=>/tuyos se quedan/.test(x))); }
+      openSleepLog(dz); { const i=md().querySelectorAll('#sl_blocks input[type="time"]'); i[0].value='23:15'; i[0].dispatchEvent(new Event('input')); i[1].value='06:45'; i[1].dispatchEvent(new Event('input')); } document.getElementById('sl_save').click(); try{ closeModal(); }catch(_){}
+      A('14 · …y si tecleas la noche que borraste, se queda la tuya', sleepBlocks(db.sleep[dz]).length===1&&!sleepBlocks(db.sleep[dz])[0].src&&sleepBlocks(db.sleep[dz])[0].start==='23:15'); }
+    // 15 · con una corrida pendiente, un pegado corrido desde Atajos (sin la lista de la app: ok cfg sin ok in) entra como siempre y olvida lo pendiente
+    reset(); run({cut:'sleep'}); { sc().plan=null; const t=_fakeAtajo(S,{id:'z',steps:7,act:7,weight:7,sleep:7}).split('\n').filter(l=>!/^ok (in|id)\b/.test(l)).join('\n'); let e=null; try{ healthPasteApply(t); }catch(x){ e=x; }
+      A('15 · corrido desde Atajos con una corrida pendiente: entra sin error y lo pendiente se olvida', !e&&!sc().partial&&!(sc().learn||{}).part); }
+    // 16 · r2 · el que siempre vuelve a la app tras R vueltas del atajo y no hace caso de la hoja (la siguiente vez sincroniza otra vez, sin [traer otra
+    // vez]). Aquí caben ~21 noches por corrida y el hueco de D20 pide 22. El sueño de siempre llega una corrida sí y la otra a lo más no (lo que faltó
+    // entra en la siguiente), nunca se deja de pedir, el historial baja hasta lo que sí cabe y la hoja lo dice sin culpar al iPhone; lo tecleado, idéntico
+    reset(); { const R0=150, lg=[]; let miss=0, i=0;
+      for(;i<40&&cv('sleep').deep!==3;i++){ const q=run({R:R0}), L=sc().learn||{}; lg.push((q.deep?'H':'')+q.sleep+(L.part?'p':L.pend?'q':L.cut?'c':L.stop?'!':''));
+        miss=(sc().lastKinds||[]).indexOf('sleep')>=0?0:miss+1; A('16 · nunca dos corridas seguidas sin el sueño de siempre ni 3 días sin pedirlo ('+lg.join(' ')+')', miss<2&&!(sc().skip||{}).sleep); }
+      const ok=cv('sleep').ok; run({R:R0});
+      A('16 · …el historial queda topado en lo que cabe por corrida y la hoja lo dice sin culpar al iPhone ('+lg.join(' ')+')', cv('sleep').deep===3&&ok>0&&ok<=21&&hpResultTxt({deep:{k:'sleep'}}).indexOf('cada corrida trae hasta '+ok+' noches')>=0&&hpResultTxt({deep:{k:'sleep'}}).indexOf('iPhone')<0);
+      A('16 · …las noches recientes están todas (menos la que Salud no tiene) y lo tecleado sigue idéntico', R(17,1).filter(d=>d!==D(20)&&d!==D(11)).every(d=>sleepBlocks(db.sleep[d]).length>0)&&snap()===s0&&ge(cnt(),c0)); }
+    console.log('h9 self-check OK'); return true;
+  } finally { isIOS=ios0; isStandalone=sta0; bioGo=go0; toast=tt; bfBudget=bf0; try{ delete navigator.clipboard; }catch(_){} try{ if(md())closeModal(); }catch(_){}
+    db=real; K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; _sheetMem=null; bumpIdx(); _sbx=sb0;
+    try{ if(live0==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,live0); }catch(_){}
+    try{ render(); }catch(_){} }
+}
 // v294 · self-check: la app le dice al atajo qué buscar y cuántos días; aprende de las marcas `ok` (con el número de corrida) dónde se detuvo;
 // lo que no tienes deja de pedirse (un mes; a la 2ª, hasta [buscar todo]); la primera vez pide el historial; pegar nunca borra días ni deja que
 // el día más viejo, que llega cortado, pise uno completo; un atajo viejo pide instalar el nuevo. Sandbox; restaura todo.
 function _v294SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v294: '+nm); };
-  const real=db, sb0=_sbx, ios0=isIOS, sta0=isStandalone, go0=bioGo, K=['screen','_scroll','_paintedKey','_viewScroll'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
+  const real=db, sb0=_sbx, ios0=isIOS, sta0=isStandalone, go0=bioGo, bf0=bfBudget, K=['screen','_scroll','_paintedKey','_viewScroll'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
   let live0=null; try{ live0=localStorage.getItem(LS_LIVE); }catch(_){}
   const md=()=>document.getElementById('modal'), tap=e=>e.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})), sc=()=>H().shortcut;
   const D=k=>shiftDate(todayISO(),-k), T=(k,hm)=>D(k)+'T'+hm+':00-06:00', DAY=86400000;
@@ -6840,6 +7189,7 @@ function _v294SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
   const sheet=()=>{ openBioResult(); const t=md().textContent, b=md(); return {t,ok:b.querySelectorAll('.ok').length,run:!!b.querySelector('.ok[data-act="biorun"]'),inst:!!b.querySelector('.ok[data-act="biosetup"]'),unskip:!!b.querySelector('[data-act="biounskip"]'),close:()=>closeModal()}; };
   _sbx=true;
   try{ try{ if(md()&&md().classList.contains('open'))closeModal(); }catch(_){}
+    bfBudget=()=>1e9;   // v369 · H9 · el espacio del almacén real no decide esta prueba
     A('el orden del atajo es el de la app: 6 datos, sin grasa ni energía en reposo', HP_ORDER.length===6&&HP_ORDER.slice().sort().join()===HP_KINDS.map(x=>x[0]).sort().join()&&HP_ORDER.every(k=>HP_HIST[k]>0)&&HP_ORDER.indexOf('fat')<0&&HP_ORDER.indexOf('bas')<0&&HP_OPT.join()==='rhr,hrv'&&HP_GONE.join()==='fat,bas');
     A('el ejemplo del atajo trae las marcas: ok in · ok id · ok cfg · ok <dato> · ok end', HP_EXAMPLE.split('\n').slice(0,4).join('|')==='trk2|ok in|ok id demo|ok cfg'&&HP_ORDER.every(k=>HP_EXAMPLE.indexOf('\nok '+k+'\n')>0)&&/\nok end$/.test(HP_EXAMPLE)&&parseHealthPaste(HP_EXAMPLE).kinds.length===6&&!/\n(fat|bas) /.test(HP_EXAMPLE));
     db=migrate({profile:{username:'t',weightKg:61}}); bumpIdx(); isIOS=()=>true; isStandalone=()=>false; const went=[]; bioGo=u=>{ went.push(u); };
@@ -6851,7 +7201,7 @@ function _v294SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     let r=healthPasteApply(out(['steps','act','weight','sleep']));
     A('se detuvo en FC reposo: entra lo fijo y la app sabe dónde paró', !!r&&r.stop==='rhr'&&r.kinds.length===4&&sc().skip.rhr&&sc().skip.rhr.n===1&&!sc().plan&&sc().learn.stop==='rhr');
     const g=sc().got; A('anota lo más reciente de cada dato', g.steps===D(1)&&g.act===D(1)&&g.weight===D(1)&&!!g.sleep&&!g.rhr);
-    let p1=bioPlan(); A('el siguiente plan: FC reposo ya no; ahora toca probar HRV; pasos desde ayer (2 o 3 días)', p1.rhr===0&&p1.hrv===60&&p1.steps>=2&&p1.steps<=3&&p1.weight<=3&&p1.fat===0&&p1.bas===0);
+    let p1=bioPlan(); A('el siguiente plan: FC reposo ya no; ahora toca probar HRV; lo demás con su traslape de 7 días y, v369 · H9, el historial de sueño', p1.rhr===0&&p1.hrv===60&&p1.steps===8&&p1.weight===8&&p1.act===8&&p1.deep==='sleep'&&p1.sleep===HP_DEEP.sleep.n0&&p1.fat===0&&p1.bas===0);
     { const s=sheet(); A('la hoja dice que tu Salud no la tiene, sin pedirte correr otra vez (lo demás ya llegó)', s.t.indexOf('tu Salud no tiene FC en reposo (o falta su permiso): ya no se pide.')>=0&&s.ok===0&&!s.run&&!s.unskip); s.close(); }
     // 3 · otra corrida: ahora se prueba HRV y tampoco está; a la tercera ya no se prueba nada y llega al final
     went.length=0; bioRun(); A('la segunda corrida pide HRV y ya no FC reposo', sc().plan.p.hrv===60&&sc().plan.p.rhr===0); r=healthPasteApply(out(['steps','act','weight','sleep']));
@@ -6859,7 +7209,7 @@ function _v294SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     went.length=0; bioRun(); r=healthPasteApply(out(['steps','act','weight','sleep'],false,true));
     A('tercera corrida: llega al final sin detenerse', !!r&&r.stop===null&&!sc().learn.noread&&bioPlan().rhr===0&&bioPlan().hrv===0);
     { const s=sheet(); A('sin detenerse: [buscar todo] y lo que no se busca, sin primario', s.unskip&&s.ok===0&&s.t.indexOf('no se busca: FC · HRV')>=0); s.close(); }
-    { openBioWhat(); const t=md().textContent; A('qué trae el atajo: los 6 datos y lo que ya no se pide', ['pasos','energía activa','peso','sueño con fases','FC en reposo','HRV'].every(x=>t.indexOf(x)>=0)&&t.indexOf('grasa')<0&&(t.match(/opcional/g)||[]).length===2&&md().querySelectorAll('.line').length===6&&md().classList.contains('low')); closeModal(); }
+    { openBioWhat(); const m=md(), t=m.textContent; A('qué trae el atajo: los 6 datos, desde cuándo, lo que ya no se pide y el para qué en el glosario (v369 · H9)', ['pasos','energía activa','peso','sueño con fases','FC en reposo','HRV'].every(x=>t.indexOf(x)>=0)&&t.indexOf('grasa')<0&&m.querySelectorAll('.line').length===6&&HP_ORDER.every(k=>!!m.querySelector('[data-gloss="bwt_'+k+'"]')&&!!GLOSS['bwt_'+k])&&/opcional/.test(GLOSS.bwt_rhr)&&/opcional/.test(GLOSS.bwt_hrv)&&/desde /.test(t)&&(t.match(/—/g)||[]).length>=2&&m.classList.contains('low')); closeModal(); }
     A('[buscar todo] también está al traer datos y al pegar a mano', (()=>{ openBioFetch(); const a=!!md().querySelector('[data-act="biounskip"]'); closeModal(); return a&&hpLastHTML().indexOf('biounskip')>0; })());
     // 4 · pegar nunca borra ni pisa: el día más viejo de la ventana de pasos llega cortado aunque otro dato traiga días más viejos
     went.length=0; bioRun(); r=healthPasteApply(['trk2','ok in','ok id '+sc().plan.id,'ok cfg','steps '+T(2,'18:00')+' 4000','steps '+T(1,'12:14')+' 13393','ok steps','rhr '+T(5,'12:00')+' 57','ok rhr'].join('\n'));
@@ -6871,7 +7221,7 @@ function _v294SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     { const g0=sc().got.sleep; delete sc().got.sleep; sc().skip.sleep={t:Date.now()-31*DAY,n:1}; A('un dato fijo que nunca llegó se vuelve a pedir al mes', bioPlan().sleep===30);
       sc().skip.sleep={t:Date.now()-400*DAY,n:2}; A('…y a la segunda ya no, aunque pase el tiempo', bioPlan().sleep===0); delete sc().skip.sleep; sc().got.sleep=g0; }
     sc().skip.weight={t:Date.now(),n:1}; A('un dato que sí había llegado y no apareció: espera 3 días', bioPlan().weight===0);
-    sc().skip.weight.t=Date.now()-4*DAY; A('…y luego se pide desde lo último que llegó', bioPlan().weight>=2&&bioPlan().weight<=3);
+    sc().skip.weight.t=Date.now()-4*DAY; A('…y luego se pide desde lo último que llegó, con su traslape de 7 días (v369 · H9)', bioPlan().weight===8);
     tap((()=>{ openBioFetch(); return md().querySelector('[data-act="biounskip"]'); })()); A('[buscar todo] vuelve a probar los opcionales (de uno en uno); grasa y reposo, nunca', !Object.keys(sc().skip).length&&bioPlan().rhr===365&&bioPlan().hrv===0&&bioPlan().fat===0&&bioPlan().bas===0);
     // 6 · lo que NO enseña nada: un portapapeles viejo (otro número de corrida), un pegado sin marcas, una corrida sin la app
     went.length=0; bioRun(); const id1=sc().plan.id; r=healthPasteApply(out(['steps','act']).replace('ok id '+id1,'ok id otro'));
@@ -6892,7 +7242,7 @@ function _v294SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     sc().skip={}; went.length=0; bioRun(); r=healthPasteApply('trk2\n'+part.steps.join('\n'));
     A('el atajo de antes (datos sin marcas, tras correrlo la app): lo dice y ofrece instalar el nuevo', !!r&&sc().learn.old&&bioHas()&&(()=>{ const s=sheet(), x=s.inst&&s.t.indexOf('tu atajo es de antes')>=0&&s.t.indexOf('pasos ✓')>=0; s.close(); return x; })());
     console.log('v294 self-check OK');
-  } finally { isIOS=ios0; isStandalone=sta0; bioGo=go0; try{ if(md()&&md().classList.contains('open'))closeModal(); }catch(_){}
+  } finally { isIOS=ios0; isStandalone=sta0; bioGo=go0; bfBudget=bf0; try{ if(md()&&md().classList.contains('open'))closeModal(); }catch(_){}
     db=real; K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; _sheetMem=null; bumpIdx(); _sbx=sb0;
     try{ if(live0==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,live0); }catch(_){}
     try{ render(); }catch(_){} }
@@ -7040,6 +7390,7 @@ function _bioSyncSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHEC
     closeModal(); back(); A('y tras salir por [pegar a mano] tampoco vuelve a salir sola', !sheet()&&!bioWaiting());
     tap(row()); back(); A('la fila lo corre de nuevo y al volver ofrece traer', went.length===3&&has('▶ traer datos'));
     // 5 · traer: el pegado del atajo entra completo y dice qué llegó
+    { const p=H().shortcut.plan.p; p.sleep=Math.max(+p.sleep||0,hpDays('2026-09-23',todayISO())+2); }   // v369 · la noche del ejemplo es del 23-sep: desde el 22-oct quedaba fuera de las 30 noches de la primera vez y esta prueba fallaba sola
     paste=HP_EXAMPLE.replace('ok id demo','ok id '+H().shortcut.plan.id); const y1=row().getBoundingClientRect().top; tap(sheet().querySelector('[data-act="biofetch"]'));
     const h=H(), night=Object.keys(h.sleep);
     A('el pegado del atajo entra completo (6 clases de dato)', h.shortcut.lastKinds.length===6&&db.steps['2026-09-22']===8214&&db.steps['2026-09-23']===902&&db.bodyweight['2026-09-23']===61.2);
@@ -7047,6 +7398,7 @@ function _bioSyncSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHEC
     A('avisa y dice qué llegó, sin primario', said.some(x=>/^✓ Salud · \d+ días$/.test(x))&&has('pasos ✓')&&has('activa ✓')&&sheet().textContent.indexOf('—')<0&&pri()===0&&!bioWaiting());
     A('traer los datos no mueve la fila', near(row().getBoundingClientRect().top,y1));
     // 6 · ya instalado: la fila corre el atajo directo; si llega lo mismo, solo el aviso
+    HP_DEEP_ORD.forEach(k=>{ hpCov(k).deep=2; });   // v369 · H9 · los historiales ya se trajeron (el ejemplo fijo trae hasta HRV): esta corrida es la de siempre; la del historial se prueba en _h9SelfCheck
     closeModal(); went.length=0; said.length=0; const y2=row().getBoundingClientRect().top; tap(row());
     A('instalado: tocar la fila corre el atajo sin hoja y sin mover nada', went.length===1&&went[0].indexOf(bioRunURL().split('&text=')[0]+'&text=')===0&&!sheet()&&near(row().getBoundingClientRect().top,y2));
     back(); paste=HP_EXAMPLE.replace('ok id demo','ok id '+H().shortcut.plan.id); tap(sheet().querySelector('[data-act="biofetch"]'));
@@ -8476,6 +8828,16 @@ function sleepFix349(d){ const h=d.health; if(!h||!h.shortcut||h.shortcut.fix349
   Object.keys(dly).forEach(dd=>{ const r=dly[dd]||{}, s=r.src||{}; if(r.activeKcal&&s.activeKcal==='shortcut')up('act',dd); if(r.rhr&&s.rhr==='shortcut')up('rhr',dd); if(r.hrv&&s.hrv==='shortcut')up('hrv',dd); });
   if(Object.keys(last).length){ sc.skip=Object.assign({},sc.skip); sc.got=Object.assign({},sc.got); Object.keys(last).forEach(k=>{ delete sc.skip[k]; if(!sc.got[k]||last[k]>sc.got[k])sc.got[k]=last[k]; }); }
   if(last.sleep)sc.sleepFix=lim; }
+// v369 · H9 · una vez (migrate): de dónde a dónde ya trajo el atajo cada dato (lo más viejo que escribió un sync), para que el siguiente sync sepa
+// qué historial le falta. Con su respaldo del 16-oct: sueño desde el 25-sep (su siguiente sync sale con 120 noches), pasos 24-ene, peso 8-oct-2025,
+// energía 25-sep, FC 14-ago; HRV no (está saltado).
+function hpCovSeed(d){ const h=d&&d.health; if(!h||!h.shortcut||typeof h.shortcut!=='object'||h.shortcut.covV)return; const sc=h.shortcut; sc.covV=1;
+  const got=sc.got||{}, src=h.src||{}, dly=h.daily||{}, old={}, iso=/^\d{4}-\d{2}-\d{2}$/, dn=(k,x)=>{ if(iso.test(x)&&(!old[k]||x<old[k]))old[k]=x; }, syn=m=>!!m&&m!=='manual';
+  Object.keys(h.sleep||{}).forEach(x=>{ if((h.sleep[x]||[]).length)dn('sleep',x); });
+  Object.keys(src.steps||{}).forEach(x=>{ if(syn(src.steps[x]))dn('steps',x); }); Object.keys(src.weight||{}).forEach(x=>{ if(syn(src.weight[x]))dn('weight',x); });
+  Object.keys(dly).forEach(x=>{ const r=dly[x]||{}, s=r.src||{}; if(+r.activeKcal>0&&syn(s.activeKcal))dn('act',x); if(+r.rhr>0&&syn(s.rhr))dn('rhr',x); if(r.hrv&&syn(s.hrv))dn('hrv',x); });
+  const cov=sc.cov=Object.assign({},(sc.cov&&typeof sc.cov==='object')?sc.cov:{});
+  HP_DEEP_ORD.forEach(k=>{ if(!got[k]||!old[k]||cov[k])return; cov[k]={from:old[k],to:null,floor:old[k],deep:0,n:HP_DEEP[k].n0,ok:0,cut:0,t:0,dur:0,ask:{}}; }); }
 // el registro de una noche: lo de v338 y, v349, lo que cuenta la regla (un escritor por noche), lo que no cuenta y los tramos (noche / siesta)
 function sleepRawStats(day){ const raw=(((db.health&&db.health.sleepRaw)||{})[day]||[]).slice().sort((a,b)=>a[0]-b[0]); if(!raw.length)return null;
   const asl=raw.filter(x=>SLEEP_ASLEEP[x[2]]), ib=raw.filter(x=>x[2]==='inBed'), sum=asl.reduce((a,x)=>a+(x[1]-x[0])/60000,0), ph={awake:0,rem:0,core:0,deep:0,asleep:0};
@@ -13163,22 +13525,22 @@ function ingestHealth(p,opts){ opts=opts||{}; const h=H(); const out={daily:0,sl
   (p.daily||[]).forEach(r=>{ if(!r||!/^\d{4}-\d{2}-\d{2}$/.test(r.date||''))return; const d=h.daily[r.date]||(h.daily[r.date]={}); d.src=d.src||{};
     ['steps','activeKcal','basalKcal','rhr','hrMin','hrAvg','hrMax'].forEach(k=>{ const v=+r[k]; if(isFinite(v)&&v>0&&d.src[k]!=='manual'){ d[k]=Math.round(v*10)/10; d.src[k]=r.src||plat; } });
     if(+r.hrv>0&&d.src.hrv!=='manual'){ d.hrv={v:Math.round(+r.hrv*10)/10,kind:r.hrvKind==='rmssd'?'rmssd':'sdnn'}; d.src.hrv=r.src||plat; }
-    if(+r.steps>0&&+r.steps<200000&&h.src.steps[r.date]!=='manual'){ db.steps=db.steps||{}; db.steps[r.date]=Math.round(+r.steps); h.src.steps[r.date]=plat; }
+    if(+r.steps>0&&+r.steps<200000&&hpFree('steps',r.date)){ db.steps=db.steps||{}; db.steps[r.date]=Math.round(+r.steps); h.src.steps[r.date]=plat; }   // v369 · H9 · un valor sin marca también es tuyo
     out.daily++; });
   // v270 · peso y grasa corporal: lo tecleado a mano gana (h.src.weight[fecha]==='manual'); el perfil toma el último peso
   (p.body||[]).forEach(r=>{ if(!r||!/^\d{4}-\d{2}-\d{2}$/.test(r.date||''))return;
-    if(+r.kg>=20&&+r.kg<=400&&h.src.weight[r.date]!=='manual'){ db.bodyweight=db.bodyweight||{}; db.bodyweight[r.date]=Math.round(+r.kg*100)/100; h.src.weight[r.date]=r.src||plat; out.body=(out.body||0)+1; }
+    if(+r.kg>=20&&+r.kg<=400&&hpFree('weight',r.date)){   /* v369 · H9 · un peso sin marca también es tuyo */ db.bodyweight=db.bodyweight||{}; db.bodyweight[r.date]=Math.round(+r.kg*100)/100; h.src.weight[r.date]=r.src||plat; out.body=(out.body||0)+1; }
     if(+r.fat>0&&+r.fat<80){ const d=h.daily[r.date]||(h.daily[r.date]={}); d.src=d.src||{}; if(d.src.fat!=='manual'){ d.fat=Math.round(+r.fat*10)/10; d.src.fat=r.src||plat; } } });
   if(out.body){ const ks=Object.keys(db.bodyweight).sort(); if(ks.length&&db.profile)db.profile.weightKg=db.bodyweight[ks[ks.length-1]]; }
   if(p.sleepRaw)sleepRawStore(p.sleepRaw,p.sleepAll||p.sleep,p.sleepDrop);   // v338 · H6 · lo que trajo el atajo, tal cual (14 noches)
   const byDay={}; (p.sleep||[]).forEach(r=>{ if(!r||!(r.endMs>r.startMs))return; const k=r.day||isoOfMs(r.endMs); (byDay[k]=byDay[k]||[]).push(r); });
   Object.keys(byDay).forEach(day=>{
     const segs=byDay[day].sort((a,b)=>a.startMs-b.startMs).map(r=>({startMs:r.startMs,endMs:r.endMs,stages:Array.isArray(r.stages)?r.stages.filter(x=>Array.isArray(x)&&x[1]>x[0]):[],src:r.src||plat,asl:r.asl!=null&&isFinite(+r.asl)?Math.round(+r.asl):undefined}));
-    h.sleep[day]=segs;
-    const cur=sleepBlocks(db.sleep&&db.sleep[day]); const auto=!cur.length||cur.every(b=>b&&typeof b==='object'&&b.src);
+    const cur=sleepBlocks(db.sleep&&db.sleep[day]); const auto=sleepAuto(day,cur), was=!cur.length;   // v369 · H9 · también es tuya la noche que corregiste o borraste (sleepAuto)
+    if(auto||!cur.some(b=>b&&typeof b==='object'&&b.src&&b.asl==null))h.sleep[day]=segs;   // v369 · H9 · una noche mixta cuyo tramo sincronizado aún lee sus minutos de aquí (sin asl) conserva la copia con la que la ves: su número no cambia
     if(auto){ db.sleep=db.sleep||{};
-      db.sleep[day]=segs.map(sg=>{ const st=hmOfMs(sg.startMs), ph=segPh(sg), _am=sg.asl!=null?sg.asl:Math.round(asleepMin(sg)); return Object.assign({start:st,end:hmOfMs(sg.endMs),date:day,type:isNocturnal(st)?'nocturno':'siesta',hours:Math.round(_am/6)/10,asl:_am,src:sg.src},ph?Object.assign({ph,inBed:Math.round((sg.endMs-sg.startMs)/360000)/10},segWk(sg)!=null?{wk:segWk(sg)}:{}):{}); }).filter(b=>b.hours>0);
-      h.src.sleep[day]=plat; }
+      const nb=segs.map(sg=>{ const st=hmOfMs(sg.startMs), ph=segPh(sg), _am=sg.asl!=null?sg.asl:Math.round(asleepMin(sg)); return Object.assign({start:st,end:hmOfMs(sg.endMs),date:day,type:isNocturnal(st)?'nocturno':'siesta',hours:Math.round(_am/6)/10,asl:_am,src:sg.src},ph?Object.assign({ph,inBed:Math.round((sg.endMs-sg.startMs)/360000)/10},segWk(sg)!=null?{wk:segWk(sg)}:{}):{}); }).filter(b=>b.hours>0);
+      if(nb.length||!cur.length){ db.sleep[day]=nb; h.src.sleep[day]=plat; if(was&&nb.length)out.sleepNew=(out.sleepNew||0)+1; } }   // v369 · H9 · una noche suya no se vacía
     out.sleep++; });
   (p.workouts||[]).forEach(r=>{ if(!r||!r.id||!(r.endMs>r.startMs))return; const o=h.workouts[r.id]||{};
     Object.assign(o,{type:r.type||o.type||'',startMs:r.startMs,endMs:r.endMs,kcal:+r.kcal||o.kcal||0,dist:+r.dist||o.dist||0,src:r.src||o.src||plat}); h.workouts[r.id]=o; out.workouts++; });
@@ -13216,6 +13578,7 @@ async function healthSyncNative(reason){ const Hp=capP('Health'); const h=H();
     if(!h.enabled||reason==='connect'){ await withTO(Hp.requestAuthorization({read:HEALTH_READ,requestHistoryAccess:true}),180000); h.enabled=true; h.askedAt=Date.now(); }
     h.platform=plat;
     const now=new Date(), first=!h.sync.lastOk, days=first?(plat==='ios'?90:30):3;
+    // H9 · si vuelve: la ventana sale de cov (no de lastOk, que también lo ponen los pegados → hoy empezaría en 3 días) y el sueño se pagina (limit 5000 ascendente cortaría las noches NUEVAS)
     const from=new Date(now); from.setHours(0,0,0,0); from.setDate(from.getDate()-days+1);
     const iso=d=>new Date(d).toISOString();
     const P={v:1,platform:tag,sources:[],daily:[],sleep:[],workouts:[],hr:[]}; const seen={};
@@ -13287,7 +13650,7 @@ function healthSettingsHTML(){ const h=H(); const nat=isNative();
   s+=L('último sync', agoTxt(h.sync.lastRun));
   if(srcs)s+=L('fuentes', srcs);
   s+=L('datos', Object.keys(h.daily).length+' días · '+Object.keys(h.sleep).length+' noches · '+Object.keys(h.workouts).length+' entrenos · FC en '+Object.keys(h.sessHR).length+' sesiones');
-  s+=`<div class="line lnav" role="button" tabindex="0" data-act="biowhat"><span class="k">qué trae el atajo</span><span class="dots"></span><span class="v">${HP_ORDER.length} datos ›</span></div>`;
+  s+=`<div class="line lnav" role="button" tabindex="0" data-act="biowhat"><span class="k">qué trae el atajo</span><span class="dots"></span><span class="v">${hpHistRowTxt()} ›</span></div>`;
   s+=`<div class="line lnav" role="button" tabindex="0" data-act="sleepraw"><span class="k">registro del sueño</span><span class="dots"></span><span class="v">${Object.keys(h.sleepRaw||{}).length} noches ›</span></div>`;   // v338 · H6
   if(isIOS()&&!nat)s+=`<div class="line lnav" role="button" tabindex="0" data-act="biosetup"><span class="k">atajo</span><span class="dots"></span><span class="v">${BIO_NAME} · instalar ›</span></div>`;   // v337 · H5 · reinstalarlo, siempre a la mano
   s+=`<div class="cta"><div class="secondary">${nat?(h.enabled?'<button class="b" data-act="healthnative">sincronizar ahora</button>':'<button class="b" data-act="healthconnect">conectar Salud</button>')+(h.platform==='android'?'<button class="b" data-act="healthhc">Health Connect</button>':''):''}<button class="b" data-act="biosync">sync biometrics</button><button class="b" data-act="healthimport">pegar a mano</button><button class="b" data-act="healthjson">importar JSON</button><button class="b" data-act="healthtcx">importar TCX</button></div></div>`;
@@ -13309,14 +13672,15 @@ function sessHRBlock(s){ const h=H(); const r=h.sessHR[s.id]; const wo=workoutOf
   return `<div class="hrblk">${r&&r.pts?hrChartSVG(s,r):''}<div class="submeta">${bits.join(' · ')}${sn?' · '+escTxt(sn):''}${note}</div>${offT}</div>`; }
 function hrTag(x){ if(!x||x.peak==null)return ''; const t=(x.pre!=null?x.pre+'→':'')+x.peak+(x.rec60>0?' · −'+x.rec60:'');   /* v361 · la bajada solo si bajó */
   return `<span class="sethr" title="FC: antes → pico${x.rec60!=null?' · recuperación a 60 s':''}${x.q<0.6?' · pocas muestras':''}">FC ${t}</span>`; }
-function importHealth(sp){ const msg=[];
-  if(sp.has('steps')){ const n=parseInt(sp.get('steps'),10); if(!isNaN(n)&&n>=0&&n<200000){ db.steps=db.steps||{}; db.steps[todayISO()]=n; H().src.steps[todayISO()]='shortcut'; msg.push(n.toLocaleString()+' pasos · hoy'); } }
-  if(sp.has('stepsh')){ db.steps=db.steps||{}; const c=importPairs(sp.get('stepsh'),(k,v)=>{ const n=parseInt(v,10); if(isNaN(n)||n<0||n>=200000)return false; db.steps[k]=n; return true; }); if(c)msg.push(c+' días de pasos'); }
-  if(sp.has('weight')){ const w=parseFloat(sp.get('weight')); if(w>=20&&w<=400){ db.bodyweight=db.bodyweight||{}; if(H().src.weight[todayISO()]==='manual'){ msg.push('peso de hoy: se queda el tuyo'); } else { db.bodyweight[todayISO()]=Math.round(w*10)/10; H().src.weight[todayISO()]='shortcut'; if(db.profile)db.profile.weightKg=Math.round(w*10)/10; } if(false)msg.push((Math.round(w*10)/10)+' kg · hoy'); } }
-  if(sp.has('weighth')){ db.bodyweight=db.bodyweight||{}; const c=importPairs(sp.get('weighth'),(k,v)=>{ const w=parseFloat(v); if(!(w>=20&&w<=400))return false; db.bodyweight[k]=Math.round(w*10)/10; return true; }); if(c){ const ks=Object.keys(db.bodyweight).sort(); if(ks.length&&db.profile)db.profile.weightKg=db.bodyweight[ks[ks.length-1]]; msg.push(c+' registros de peso'); } }
-  if(sp.has('stepsq')){ const arr=(sp.get('stepsq')||'').split(','); const N=arr.length; let end=sp.get('qend'); const _tst=end&&/^\d{4}-\d{2}-\d{2}$/.test(end)?new Date(end+'T12:00:00'):null; if(!_tst||isNaN(_tst.getTime()))end=todayISO(); db.steps=db.steps||{}; let c=0; for(let i=0;i<N;i++){ const n=parseInt(arr[i],10); if(isNaN(n)||n<0||n>=200000)continue; const d=shiftDate(end,-(N-1-i)); if(!/^\d{4}-\d{2}-\d{2}$/.test(d))continue; db.steps[d]=n; c++; } if(c)msg.push(c+' días de pasos'); }
-  if(sp.has('sleep')){ const v=parseSleepVal(sp.get('sleep'), todayISO()); if(v!=null){ db.sleep=db.sleep||{}; db.sleep[todayISO()]=v; msg.push(fmtSleep(v)+' de sueño · hoy'); } }
-  if(sp.has('sleeph')){ db.sleep=db.sleep||{}; const c=importPairs(sp.get('sleeph'),(k,val)=>{ const v=parseSleepVal(val,k); if(v==null)return false; db.sleep[k]=v; return true; }); if(c)msg.push(c+' días de sueño'); }
+function importHealth(sp){ const msg=[]; let kept=0;   // v369 · H9 · como el atajo: un día lo llena solo si está vacío o ya era suyo (lo tecleado gana)
+  if(sp.has('steps')){ const n=parseInt(sp.get('steps'),10); if(!isNaN(n)&&n>=0&&n<200000){ db.steps=db.steps||{}; if(!hpFree('steps',todayISO())){ msg.push('pasos de hoy: se quedan los tuyos'); } else { db.steps[todayISO()]=n; H().src.steps[todayISO()]='shortcut'; msg.push(n.toLocaleString()+' pasos · hoy'); } } }
+  if(sp.has('stepsh')){ db.steps=db.steps||{}; const c=importPairs(sp.get('stepsh'),(k,v)=>{ const n=parseInt(v,10); if(isNaN(n)||n<0||n>=200000)return false; if(!hpFree('steps',k)){ kept++; return false; } db.steps[k]=n; H().src.steps[k]='shortcut'; return true; }); if(c)msg.push(c+' días de pasos'); }
+  if(sp.has('weight')){ const w=parseFloat(sp.get('weight')); if(w>=20&&w<=400){ db.bodyweight=db.bodyweight||{}; if(!hpFree('weight',todayISO())){ msg.push('peso de hoy: se queda el tuyo'); } else { db.bodyweight[todayISO()]=Math.round(w*10)/10; H().src.weight[todayISO()]='shortcut'; if(db.profile)db.profile.weightKg=Math.round(w*10)/10; } if(false)msg.push((Math.round(w*10)/10)+' kg · hoy'); } }
+  if(sp.has('weighth')){ db.bodyweight=db.bodyweight||{}; const c=importPairs(sp.get('weighth'),(k,v)=>{ const w=parseFloat(v); if(!(w>=20&&w<=400))return false; if(!hpFree('weight',k)){ kept++; return false; } db.bodyweight[k]=Math.round(w*10)/10; H().src.weight[k]='shortcut'; return true; }); if(c){ const ks=Object.keys(db.bodyweight).sort(); if(ks.length&&db.profile)db.profile.weightKg=db.bodyweight[ks[ks.length-1]]; msg.push(c+' registros de peso'); } }
+  if(sp.has('stepsq')){ const arr=(sp.get('stepsq')||'').split(','); const N=arr.length; let end=sp.get('qend'); const _tst=end&&/^\d{4}-\d{2}-\d{2}$/.test(end)?new Date(end+'T12:00:00'):null; if(!_tst||isNaN(_tst.getTime()))end=todayISO(); db.steps=db.steps||{}; let c=0; for(let i=0;i<N;i++){ const n=parseInt(arr[i],10); if(isNaN(n)||n<0||n>=200000)continue; const d=shiftDate(end,-(N-1-i)); if(!/^\d{4}-\d{2}-\d{2}$/.test(d))continue; if(!hpFree('steps',d)){ kept++; continue; } db.steps[d]=n; H().src.steps[d]='shortcut'; c++; } if(c)msg.push(c+' días de pasos'); }
+  if(sp.has('sleep')){ const v=parseSleepVal(sp.get('sleep'), todayISO()); if(v!=null){ db.sleep=db.sleep||{}; if(!hpFree('sleep',todayISO()))msg.push('sueño de hoy: se queda el tuyo'); else { db.sleep[todayISO()]=v; msg.push(fmtSleep(v)+' de sueño · hoy'); } } }
+  if(sp.has('sleeph')){ db.sleep=db.sleep||{}; const c=importPairs(sp.get('sleeph'),(k,val)=>{ const v=parseSleepVal(val,k); if(v==null)return false; if(!hpFree('sleep',k)){ kept++; return false; } db.sleep[k]=v; return true; }); if(c)msg.push(c+' días de sueño'); }
+  if(kept)msg.push(kept+(kept===1?' día tuyo se queda':' días tuyos se quedan'));
   return msg; }
 // ---------- v270 · Atajo de Salud: pegar todo de un toque ----------
 // Una web no puede leer Apple Salud: un Atajo de iOS arma un texto línea por línea y lo copia; aquí se pega de un toque
@@ -13374,6 +13738,80 @@ const HP_ORDER=['steps','act','weight','sleep','rhr','hrv'];
 // no los tiene no se vuelven a pedir (antes se reintentaba al mes). Atajos no tiene "intentar y seguir": esa única prueba es el costo.
 const HP_OPT=['rhr','hrv'], HP_GONE=['fat','bas'];
 const HP_HIST={steps:365,act:365,weight:365,sleep:30,rhr:365,hrv:60};
+// v369 · H9 · el dueño (21-oct): "en gym trk no salen los datos del 15 agosto hasta 07 septiembre y en la app de health justo empiezan a salir el
+// 15 de agosto" · "el sync tiene que jalar bien y pasar todo el historial y ir metiendo solo la data nueva/restante cada que se sincronice". Y (22-oct,
+// regla dura): "lo que se haya logeado de forma manual no se tiene que borrar ni reemplazar". La app nunca pedía hacia atrás: pedía desde lo último
+// que trajo (got) y la primera vez solo 30 noches de sueño. Ahora cada dato pide la mayor de tres ventanas: lo nuevo desde got, un traslape (3 noches
+// o 7 días) para lo que llega tarde, y el hueco reciente más viejo (días sin dato de los últimos 30; cada uno se pide 2 veces como mucho, con 3 días
+// entre una y otra; solo cuenta la corrida que se alargó por él). Y, una vez por dato y UNO por corrida (HP_DEEP_ORD), su historial: sueño 120 → 240 → 365 noches; pasos y energía 3650 días;
+// peso y FC 730 → 3650; HRV 120 → 365, hasta que lo más viejo que regresa queda a «gap» días o más del inicio de la ventana (Salud ya no tiene nada
+// más viejo: completo). Si la corrida llega detenida en el dato del historial, la 1.ª vez puede ser que volviste antes de que acabara: queda pendiente
+// y no se aprende nada; si OTRA corrida vuelve a llegar así (o la misma pasados 40 min), iOS la cortó: la siguiente pide la mitad del camino; si ya
+// no hay camino, queda topado (y 7 días después se vuelve a probar una vez, por si el corte no era de iOS).
+// El historial nunca lleva el almacén arriba del 60 % de sus 5 MB (bfFit). Lo tecleado nunca se pisa ni se borra (hpFree): un día lo llena el atajo
+// solo si está vacío o ya era suyo. db.health.shortcut.cov[dato] = {from, to, floor, deep 0|1|2|3, n, ok, cut, t, dur, ask}: de este teléfono, como
+// got / skip / plan (no viaja a la nube; los datos sí). El atajo NO cambia: solo sabe «en los últimos N días» y para rellenar basta un N más grande.
+const HP_OV={sleep:3,_:7}, HP_HOLE={sleep:1,steps:1,rhr:1}, HP_HOLE_D=30, HP_HOLE_ASK=2, HP_HOLE_GAP=72*3600000;   // r1b · el 2.º pedido, 3 días después del 1.º (lo que llega 1 o 2 días tarde ya lo cubre el traslape)
+const HP_DEEP={sleep:{n0:120,max:365,gap:30},steps:{n0:3650,max:3650,gap:30},act:{n0:3650,max:3650,gap:60},weight:{n0:730,max:3650,gap:180},rhr:{n0:730,max:3650,gap:30},hrv:{n0:120,max:365,gap:60}};
+const HP_DEEP_ORD=['sleep','steps','act','weight','rhr','hrv'];
+const HP_COST={sleep:3400,steps:320,act:100,weight:130,rhr:100,hrv:120};   // bytes (UTF-16) que suma cada noche o día nuevo (medido con su respaldo del 16-oct, con margen)
+const HP_BF_MAX=0.6, BIO_WAIT_DEEP=40*60000, HP_CAP_RETRY=7*864e5;
+const HP_HNAME={steps:'pasos',act:'energía activa',weight:'peso',sleep:'sueño',rhr:'FC en reposo',hrv:'HRV'};
+function hpDays(a,b){ return Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5); }
+function hpCovR(k){ const sc=H().shortcut, c=sc&&sc.cov; return (c&&typeof c==='object'&&c[k])||{}; }
+function hpCov(k){ const sc=H().shortcut; if(!sc.cov||typeof sc.cov!=='object')sc.cov={}; const c=sc.cov[k]||(sc.cov[k]={from:null,to:null,floor:null,deep:0,n:0,ok:0,cut:0,t:0,dur:0,ask:{}}); if(!c.ask||typeof c.ask!=='object')c.ask={}; return c; }
+// ¿hay dato ese día? Una noche tecleada CUENTA: un hueco es un día sin nada, no uno que no vino del atajo
+function hpHas(k,d){ const h=H(), r=h.daily[d]||{};
+  return k==='sleep'?(sleepBlocks(db.sleep&&db.sleep[d]).length>0||(h.sleep[d]||[]).length>0):k==='steps'?+(db.steps&&db.steps[d])>0:k==='rhr'?+r.rhr>0:true; }
+function hpHoles(k,T){ const got=(H().shortcut.got||{})[k]; if(!HP_HOLE[k]||!got)return []; const c=hpCovR(k), f=c.floor||c.from;
+  let lo=shiftDate(T,-HP_HOLE_D); if(f&&f>lo)lo=f; const y=shiftDate(T,-1), hi=got<y?got:y, out=[];
+  for(let d=lo; d<=hi; d=shiftDate(d,1))if(!hpHas(k,d))out.push(d); return out; }
+function hpHoleN(k,T){ const ask=hpCovR(k).ask||{}, now=Date.now();
+  const d=hpHoles(k,T).find(x=>{ const a=ask[x]; return !a||(a[0]<HP_HOLE_ASK&&now-a[1]>=HP_HOLE_GAP); }); return d?hpDays(d,T)+2:0; }   // +2: la noche de d queda después del corte de la orilla (hpCutDay)
+// r2 · tras un alto en ese dato (c.lim: la ventana que no llegó, por 7 días), el pedido de huecos no pasa de la mayor ventana que ya llegó entera
+// (c.ok): a quien vuelve a la app antes de que el atajo acabe, el hueco no le cuesta la noche nueva. Lo nuevo y el traslape se piden siempre.
+function hpNeed(k,got,T){ const b=Math.max(2,hpDays(got,T)+1,(HP_OV[k]||HP_OV._)+1); let x=hpHoleN(k,T);
+  if(x>b){ const c=hpCovR(k), lim=+c.lim||0; if(lim&&Date.now()-(+c.limT||0)<HP_CAP_RETRY)x=Math.min(x,Math.max(b,Math.min(+c.ok||0,lim-1))); }
+  return Math.min(3650,Math.max(b,x)); }
+function hpLim(k,N){ if(!HP_DEEP[k]||!(N>0))return; const c=hpCov(k), now=Date.now(), on=+c.lim>0&&now-(+c.limT||0)<HP_CAP_RETRY; c.lim=on?Math.min(+c.lim,N):N; c.limT=now; }
+let bfBudget=()=>Math.floor(LS_QUOTA*HP_BF_MAX-storageTotal());   // let: la prueba la cambia
+function bfHave(k){ const c=hpCovR(k), x=c.from?hpDays(c.from,todayISO())+1:0; return x>0?x:0; }
+// r1b · con el almacén ya arriba del 60 % (espacio negativo) o sin medida, nada nuevo cabe: lo ya cubierto se puede volver a pedir (no suma), pero
+// nunca más de lo que se quería (antes devolvía todo lo cubierto: con un peso de hace 11 años, un plan de 4000 días)
+function bfFit(k,n,room){ const have=bfHave(k), r0=room==null?bfBudget():room, r=r0>0?r0:0, cost=HP_COST[k]||200, add=Math.max(0,n-have)*cost;
+  return add<=r?n:Math.min(n,have+Math.floor(r/cost)); }
+// r2 · ¿vale la pena? Con el almacén casi lleno, un historial que solo avanza 1 o 2 noches (y la de la orilla no se escribe) relee cientos de noches
+// para nada: se pide si llega a todo lo que quiere, o si avanza un mínimo útil (7, o el 10 % de lo que quiere); si no, «sin espacio»
+function hpAdv(k,want,n){ return n>=want||n-bfHave(k)-1>=Math.max(7,Math.ceil(want*.1)); }
+// lo más viejo que llegó de cada dato en un pegado. El sueño: con all, antes del corte de la orilla (para saber si Salud ya no tiene más atrás); sin
+// all, lo que sí se escribió (r2: el piso que se muestra es siempre una noche guardada)
+function hpOldest(p,all){ const o={}, dn=(k,d)=>{ if(d&&(!o[k]||d<o[k]))o[k]=d; };
+  (p.daily||[]).forEach(x=>{ if(x.steps)dn('steps',x.date); if(x.activeKcal)dn('act',x.date); if(x.rhr)dn('rhr',x.date); if(x.hrv)dn('hrv',x.date); });
+  (p.body||[]).forEach(x=>{ if(x.kg)dn('weight',x.date); }); ((all&&p.sleepAll)||p.sleep||[]).forEach(b=>dn('sleep',sleepDayOf(b))); return o; }
+// ¿el atajo puede escribir ese día? Solo si está vacío o ya era suyo. Pasos y peso: lo que tiene marca 'manual' y también un valor SIN marca (lo
+// tecleado antes de que hubiera marcas, o lo que llegó de la nube sin la suya). Sueño: la regla de siempre (una noche es suya si todos sus bloques
+// traen src; una mixta cuenta como tecleada) y, r1b, lo que corregiste a mano sobre lo del atajo también es tuyo: una noche a la que le quitaste un
+// tramo (sus bloques quedan con ed) y un día del atajo que borraste (marca 'del': la noche o el peso que borras no vuelven; lo tecleas si quieres).
+function slSyn(b){ return !!b&&typeof b==='object'&&!!b.src&&!b.ed; }   // un bloque del atajo que no corregiste
+function sleepAuto(d,cur){ cur=cur||sleepBlocks(db.sleep&&db.sleep[d]); return cur.length?cur.every(slSyn):H().src.sleep[d]!=='del'; }
+function hpFree(k,d){ if(k==='sleep')return sleepAuto(d);
+  const h=H(), m=(k==='steps'?h.src.steps:h.src.weight)[d], v=k==='steps'?(db.steps&&db.steps[d]):(db.bodyweight&&db.bodyweight[d]);
+  return m!=='manual'&&m!=='del'&&(!!m||v==null||v===''); }
+// cómo va el historial de un dato: full (completo) · cap (el iPhone ya no alcanza) · run (en curso) · space (espera espacio) · skip · opt · none
+function hpHist(k,room){ const got=(H().shortcut.got||{})[k];
+  if(!got)return {st:bioSkipped(k)?'skip':HP_OPT.indexOf(k)>=0?'opt':'none'};
+  const c=hpCovR(k), D=HP_DEEP[k], d=c.floor||null, dg=+c.deep||0;   // la fecha es siempre la de un dato que sí llegó (floor), nunca el inicio de una ventana (from)
+  if(dg===2)return {st:'full',d}; if(dg===3)return {st:'cap',d};
+  const want=Math.min(D.max,Math.max(+c.n||D.n0,1)), n=bfFit(k,want,room); return {st:hpAdv(k,want,n)?'run':'space',d}; }   // espacio = no cabe lo que quiere y ya no puede avanzar algo útil (con poco, pide lo que cabe y sigue; lo ya cubierto cabe siempre)
+function hpDayTxt(d){ return d.slice(0,4)!==todayISO().slice(0,4)?fmtShort(d).replace(/^\d+\s+/,'')+' '+d.slice(0,4):fmtShort(d); }   // de otro año, solo mes y año («jun 2025»: a 320 la fila no se aprieta)
+function hpHistTxt(k,room){ const s=hpHist(k,room); if(s.st==='opt')return 'opcional'; if(s.st==='space')return 'sin espacio'; if(s.st==='skip'||s.st==='none'||!s.d)return '—';   // sin espacio: corto, para que la fila no se parta a 320
+  return 'desde '+(s.st==='full'?'':'~')+hpDayTxt(s.d); }
+function hpHistRowTxt(){ const room=bfBudget(); let E=0, C=0, sp=false; HP_ORDER.forEach(k=>{ const s=hpHist(k,room); if(s.st==='skip'||s.st==='opt'||s.st==='none')return; E++; if(s.st==='full'||s.st==='cap')C++; else if(s.st==='space')sp=true; });
+  return !E||C===E?HP_ORDER.length+' datos':sp?'sin espacio':'historial '+C+' / '+E; }
+// [rehacer historial]: la siguiente corrida de cada dato pide hasta su máximo (así también encuentra lo que Salud tenga detrás de un hueco de 30 días
+// o más, que pudo dar un «completo» antes de tiempo); from se queda (lo guardado sigue contando en el espacio) y floor también (es una fecha que sí
+// llegó y solo se mueve hacia atrás). No borra datos ni regresa lo que borraste.
+function hpRedo(){ const sc=H().shortcut; if(!sc.cov||typeof sc.cov!=='object')return; HP_DEEP_ORD.forEach(k=>{ const c=sc.cov[k]; if(!c)return; c.deep=0; c.n=HP_DEEP[k].max; c.ok=0; c.cut=0; c.re=0; c.ask={}; }); }
 function parseHealthPaste(text){ const lines=String(text||'').replace(/[\u200b\u200e\u200f\u202a-\u202e\ufeff]/g,'').replace(/[\u00a0\u2007\u202f]/g,' ').split(/\r\n?|\n|\u2028|;/).map(l=>l.trim()).filter(Boolean); if(!lines.length)return null;
   const hdr=/^trk\s*2\b/i.test(lines[0]); const acc={steps:{},weight:{},rhr:{},hrv:{},act:{},bas:{},fat:{}}, sleep=[], rows=[], vals=[]; let n=0;
   lines.forEach(l=>{ const m=l.match(/^([a-zñáéíóúü]+)(?:\s*[:=]\s*|\s+)(.+)$/i); if(!m)return; const k=HP_KEY[m[1].toLowerCase()]; if(k)rows.push({k,rest:m[2]}); });
@@ -13444,21 +13882,82 @@ function hpLearn(t,r){ const ok=new Set(); let id=''; String(t||'').split(/\r\n?
   if(L.stop&&HP_OPT.indexOf(L.stop)>=0&&HP_GONE.some(k=>+plan[k]>0))L.stop=null;   // v318 · un plan de antes (pedía grasa o reposo): el atajo pudo detenerse AHÍ, no en el opcional
   // dos niveles: si nunca había llegado, un mes sin pedirlo; la 2ª vez seguida, ya no (hasta [buscar todo]). Si sí había llegado, 3 días.
   // si no llegó NINGÚN dato no se aprende la parada: con el iPhone bloqueado Salud no deja leer y el atajo se detiene en el primero
+  Object.defineProperty(L,'_ok',{value:ok,configurable:true}); Object.defineProperty(L,'_plan',{value:{t:sent?+sent.t:now,p:plan},configurable:true});   // v369 · H9 · para hpCover (no se guardan)
+  // v369 · H9 · el corte. Una corrida con historial se detuvo en un dato que sí tienes (lo último que ya tenías cae dentro de su ventana: «No Samples
+  // Found» es imposible): o volviste a la app antes de que el atajo acabara, o iOS cortó la corrida. La 1.ª vez, dentro de los 40 min de la espera, no
+  // se aprende nada (L.part): la corrida queda pendiente (sc.plan se queda, sc.partial la anota) y al volver se ofrece traer otra vez; traer otra vez
+  // el MISMO portapapeles antes de los 40 min sigue pendiente (el atajo puede seguir corriendo). Si OTRA corrida vuelve a llegar detenida ahí, o llega
+  // así pasados los 40 min (el atajo ya acabó), y es el dato del historial, es el corte: no se deja de pedir (no hay skip), la siguiente pide la mitad
+  // del camino y, si ya casi no hay camino, queda topado. Si es otro dato (el sueño de siempre en la corrida del historial de pasos), la regla de
+  // siempre: 3 días sin pedirlo. Vale aunque no haya llegado nada si el que se detuvo es el del historial (el de pasos es el primero que busca el
+  // atajo); de otro dato, sin nada, sigue siendo el iPhone bloqueado. Una corrida con historial que llega entera borra lo pendiente.
+  // r2 · lo pendiente del historial (sc.partial) sobrevive a las corridas normales de en medio: el que siempre vuelve antes de tiempo y no hace caso de
+  // la hoja también llega al corte. Tras una corrida con historial que no llegó entera (pendiente, corte o alto), la siguiente va sin historial
+  // (sc.rest): la noche nueva no se queda esperando. Un alto en una corrida normal en un dato que sí tienes, con algo copiado, también queda pendiente
+  // la 1.ª vez (sc.pend, L.pend; no 3 días sin pedirlo); si otra corrida vuelve a detenerse ahí (o la misma pasados 10 min), la regla de siempre. Todo
+  // alto deja c.lim (hpNeed: el pedido de huecos se encoge). Un tope solo con algo que sí llegó (c.ok > 0) y la vuelta a probar de un tope no se gasta
+  // en una pendiente.
+  { const k=L.stop, N=k?+plan[k]||0:0, dk=plan.deep, pa=sc.partial, pn=sc.pend, el=sent?now-(+sent.t||0):0, app=ok.has('in');   // sin ok in (corrido desde Atajos) no hay plan mandado ni historial
+    const inW=!!k&&app&&!!got[k]&&got[k]>=shiftDate(isoOfMs(Math.max(+sent.t||0,now)),1-N);   // lo que ya tenías cae en su ventana: «No Samples Found» es imposible
+    if(!app){ delete sc.partial; delete sc.pend; }
+    else if(dk){ const cap0=(+hpCovR(dk).deep||0)>=3;   // ¿esta corrida era la vuelta a probar de un tope?
+      if(k&&inW&&(k===dk||r)){ hpLim(k,N); const again=!!pa&&pa.k===k&&pa.dk===dk&&(pa.id!==id||el>=BIO_WAIT_DEEP);
+        if(!again&&el<BIO_WAIT_DEEP){ sc.partial={id,k,dk,t:now}; L.part=dk; L.stop=null; if(!r)L.empty=true; }   // L.part = el historial de la corrida (para la hoja)
+        else if(k===dk){ delete sc.partial; const c=hpCov(k), lo=Math.max(+c.ok||0,hpNeed(k,got[k],todayISO()));
+          c.cut=c.cut?Math.min(c.cut,N):N; c.t=now; if(+c.ok>0&&c.cut-lo<=Math.max(7,Math.round(lo*.1)))c.deep=3; else { c.deep=1; c.n=Math.max(lo,Math.floor((lo+c.cut)/2)); }   // r2 · sin nada que haya llegado no hay tope
+          L.cut=k; L.stop=null; if(!r)L.empty=true; }
+        else delete sc.partial; }
+      else if(!k)delete sc.partial;
+      if(L.part||L.cut||(L.stop&&!ok.has(dk)))sc.rest=1; else delete sc.rest;
+      if(cap0&&!L.part&&!hpCovR(dk).re)hpCov(dk).re=1; }   // la vuelta a probar de un tope se gasta al llegar (o al cortarse), no en una pendiente
+    else { delete sc.rest;
+      if(k&&inW&&r){ hpLim(k,N); const again=!!pn&&pn.k===k&&(pn.id!==id||el>=BIO_WAIT);
+        if(!again&&el<BIO_WAIT){ sc.pend={id,k,t:now}; L.pend=k; L.stop=null; } else delete sc.pend; }
+      else if(pn&&!(k&&pn.k===k))delete sc.pend; } }
   if(L.stop&&r)skip[L.stop]={t:now,n:((skip[L.stop]&&+skip[L.stop].n)||0)+1};
-  sc.plan=null; return L; }
+  if(!L.part&&!L.pend)sc.plan=null; return L; }   // v369 · H9 · una corrida pendiente conserva su plan: al traerla otra vez sigue siendo la misma
 function bioSkipped(k){ const sc=H().shortcut, s=sc.skip&&sc.skip[k]; if(!s)return false; const had=!!(sc.got&&sc.got[k]); if(!had&&(HP_OPT.indexOf(k)>=0||(+s.n||0)>=2))return true; return Date.now()-(+s.t||0)<(had?3:30)*86400000; }   // v318 · un opcional que faltó no se reintenta solo
-// cuántos días pedir de cada dato: 0 si no se busca; si ya llegó alguna vez, desde esa muestra (más uno); si nunca, el historial
-function bioPlan(){ const sc=H().shortcut, got=sc.got||{}, now=Date.now(), o={}; let probe=false;
+// cuántos días pedir de cada dato: 0 si no se busca; si nunca llegó, el historial de la primera vez (HP_HIST); si ya llegó, la ventana normal
+// (hpNeed: lo nuevo, el traslape y el hueco reciente) y, v369 · H9, un solo dato por corrida trae además su historial (o.deep = cuál; no viaja en la
+// URL porque bioWire solo manda números > 0)
+function bioPlan(){ const sc=H().shortcut, got=sc.got||{}, now=Date.now(), T=todayISO(), o={}; let probe=false;
   HP_ORDER.forEach(k=>{ if(bioSkipped(k)){ o[k]=0; return; }
     if(HP_OPT.indexOf(k)>=0&&!got[k]){ if(probe){ o[k]=0; return; } probe=true; }   // un opcional que nunca ha llegado: UNA prueba por corrida (si falta, iOS detiene el atajo ahí)
-    o[k]=got[k]?Math.min(3650,Math.max(2,Math.ceil((now-new Date(got[k]+'T00:00:00').getTime())/86400000)+1)):HP_HIST[k]; });
+    o[k]=got[k]?hpNeed(k,got[k],T):HP_HIST[k]; });
   if(sc.sleepFix&&o.sleep>0)o.sleep=Math.max(o.sleep,Math.ceil((now-new Date(sc.sleepFix+'T00:00:00').getTime())/86400000)+1);   // v349 · H6 · una vez: las últimas 14 noches otra vez
+  if(!sc.rest)for(const k of HP_DEEP_ORD){ const c=hpCovR(k), dg=+c.deep||0; if(!(o[k]>0)||!got[k]||dg===2||(dg>=3&&(c.re||now-(+c.t||0)<HP_CAP_RETRY)))continue;   // v369 · H9 · el primero que falta y cabe (todo lo que quiere, aunque ya esté cubierto; o, si no cabe todo, lo que avance algo útil); un tope, una sola vez y 7 días después, vuelve a probar la ventana que se cortó. r2 · tras una corrida con historial que no llegó entera, la siguiente va sin historial (sc.rest): la noche nueva entra siempre
+    const want=Math.min(HP_DEEP[k].max,Math.max(dg>=3?(+c.cut||HP_DEEP[k].n0):(+c.n||HP_DEEP[k].n0),o[k])), n=bfFit(k,want); if(n>o[k]&&hpAdv(k,want,n)){ o[k]=n; o.deep=k; break; } }
   HP_GONE.forEach(k=>{ o[k]=0; }); return o; }
-function healthPasteApply(t){ const pl=hpPlanFor(t), r=parseHealthPaste(t), L=hpLearn(t,r); if(!r)return null; ingestHealth(hpEdge(r.payload,pl)); hpArrived(r,pl); const h=H(); h.shortcut=Object.assign({},h.shortcut,{setup:true,lastPaste:Date.now(),lastSummary:r.summary,lastKinds:r.kinds}); if(/^[ \t]*ok[ \t]+cfg[ \t]*$/im.test(String(t)))h.shortcut.miss=0; /* v337 · lo que copió el atajo de ahora (con sus marcas) dice que sí existe, aunque se pegue a mano */ r.stop=L.stop; return r; }
+// v369 · H9 · qué cubrió esta corrida, dato por dato: de dónde a dónde (from · to), lo más viejo que regresó (floor), cómo va su historial (deep) y
+// qué huecos se pidieron (ask). Un historial queda completo si lo más viejo que regresó cae a «gap» días o más del inicio de la ventana (Salud ya no
+// tiene nada más viejo); si no, la siguiente pide el doble (o el punto medio si ya hubo un corte). Una ventana grande que ya llega a donde Salud no
+// tiene nada (la primera vez, HP_HIST) también lo cierra. Solo aprende de la corrida que mandó la app (hpLearn deja _ok y _plan).
+function hpCover(r,L){ const ok=L&&L._ok, pl=L&&L._plan; if(!ok||!pl)return; const P=pl.p||{}, run=isoOfMs(Math.max(+pl.t||0,Date.now())), O=hpOldest(r.payload,true), F=hpOldest(r.payload), T=todayISO(), now=Date.now();
+  HP_ORDER.forEach(k=>{ const N=+P[k]||0, D=HP_DEEP[k]; if(!(N>0)||!D||!ok.has(k))return; const c=hpCov(k), start=shiftDate(run,2-N), far=O[k]?hpDays(start,O[k]):-1;
+    if(!c.from||start<c.from)c.from=start; c.to=run; c.ok=Math.max(+c.ok||0,N); if(F[k]&&(!c.floor||F[k]<c.floor))c.floor=F[k]; if(c.cut&&N>=c.cut)c.cut=0;   // una corrida así de grande llegó entera: ese corte no era de iOS. r2 · el piso, de lo que sí se escribió (no de la noche de la orilla)
+    if(+c.lim>0&&N>=+c.lim){ c.lim=0; c.limT=0; }   // r2 · una ventana así de grande llegó entera: el alto ya no encoge el pedido de huecos
+    if(P.deep===k){ const full=(O[k]?far:1e9)>=D.gap||N>=D.max;
+      if(full)c.deep=2; else if(c.cut&&c.cut-N<=Math.max(7,Math.round(N*.1)))c.deep=3; else { c.deep=1; c.n=Math.min(D.max,c.cut?Math.floor((N+c.cut)/2):N*2); }
+      c.t=now; c.dur=Math.round((now-(+pl.t||now))/1000); L.deep={k,st:c.deep,floor:c.floor,n:N}; }
+    else if((+c.deep||0)<2&&(N>=D.max||(N>D.gap&&far>=D.gap)))c.deep=2;
+    if(HP_HOLE[k]&&P.deep!==k){ const ov=shiftDate(run,1-(HP_OV[k]||HP_OV._)); hpHoles(k,T).forEach(d=>{ if(d<start||d>=ov)return; const a=c.ask[d]||[0,0]; if(now-a[1]>=HP_HOLE_GAP)c.ask[d]=[a[0]+1,now]; }); }   // r1b · un pedido = una corrida que se alargó por ese hueco: la del historial y el traslape lo cubren de paso (no gastan sus 2 pedidos; así una noche que llega tarde aún entra)
+    Object.keys(c.ask).forEach(d=>{ if(hpHas(k,d)||d<shiftDate(T,-HP_HOLE_D-5))delete c.ask[d]; }); }); }
+function hpHistLog(L){ if(!L||!(L.deep||L.cut||L.part))return; const k=(L.deep&&L.deep.k)||L.cut||L.part, c=hpCovR(k), u=k==='sleep'?' noches':' días';
+  healthLog('historial · '+(HP_HNAME[k]||k)+' · '+(L.part?'pendiente: el atajo aún no acababa':L.cut&&!L.deep?'se cortó en '+(+c.cut||0)+u:(L.deep.st===2?'completo':L.deep.st===3?'tope':'sigue')+(c.floor?' · desde '+hpDayTxt(c.floor):'')+' · '+L.deep.n+u+' · '+((+c.dur||0)<60?'menos de 1 min':fmtDur(c.dur/60)))); }   // cuánto tarda una corrida con historial (cota: de mandarla a pegarla)
+// el renglón de la hoja del resultado (sin la fecha de una ventana: solo la de un dato que llegó). Topado: cuántos trae el iPhone por corrida (no
+// afirma que falte algo más atrás: puede que Salud tampoco lo tenga)
+function hpResultTxt(L){ const k=(L.deep&&L.deep.k)||L.cut||L.part||L.pend; if(!k||!HP_HNAME[k])return ''; const c=hpCovR(k), st=+c.deep||0, d=c.floor, u=k==='sleep'?'noches':'días', h='historial de '+HP_HNAME[k];
+  if(L.part)return h+(L.empty?' · aún no llega nada: deja que el atajo acabe (iPhone desbloqueado) y vuelve':' · el atajo aún no acababa: déjalo terminar en Atajos y vuelve');
+  if(L.pend)return HP_HNAME[k]+' · el atajo aún no acababa: déjalo terminar en Atajos y vuelve';   // r2 · una corrida normal que volvió antes de tiempo
+  if(st===3)return h+(d?' · desde ~'+hpDayTxt(d):'')+(+c.ok>0?' · cada corrida trae hasta '+c.ok+' '+u:'');   // r2 · no culpa al iPhone: también puede ser que volviste antes de que acabara
+  if(L.cut)return h+' · la corrida se cortó: la próxima pide menos '+u;
+  return h+(st===2?(d?' · desde '+hpDayTxt(d):' · completo'):(d?' · desde ~'+hpDayTxt(d):'')+' · sigue en el próximo sync'); }
+function hpFetchTxt(){ const sc=H().shortcut, k=sc.plan&&sc.plan.p&&sc.plan.p.deep; return k&&HP_HNAME[k]?'<div class="line u-mb10"><span class="k">historial</span><span class="dots"></span><span class="v u-o60">'+HP_HNAME[k]+'</span></div>':''; }
+function healthPasteApply(t){ const pl=hpPlanFor(t), r=parseHealthPaste(t), L=hpLearn(t,r); if(!r)return null; const o=ingestHealth(hpEdge(r.payload,pl)); hpArrived(r,pl); hpCover(r,L); const h=H(); h.shortcut=Object.assign({},h.shortcut,{setup:true,lastPaste:Date.now(),lastSummary:r.summary,lastKinds:r.kinds}); if(/^[ \t]*ok[ \t]+cfg[ \t]*$/im.test(String(t)))h.shortcut.miss=0; /* v337 · lo que copió el atajo de ahora (con sus marcas) dice que sí existe, aunque se pegue a mano */ r.stop=L.stop; r.cut=L.cut||null; r.deep=L.deep||null; r.sleepNew=(o&&o.sleepNew)||0; hpHistLog(L); return r; }
 function healthPasteNow(fromBio){ const done=t=>{ t=String(t||'');
     if(fromBio&&bioMissed(t)){ const sc=H().shortcut; sc.miss=(+sc.miss||0)+1; sc.wait=0; sc.plan=null; healthLog('el atajo no corrió (sin lo que copia esta corrida)'); saveSoon(); openBioMiss(); return; }   // v337 · H5
     const k0=(H().shortcut.lastKinds||[]).join(), r=healthPasteApply(t); if(r){ bioDone(r,k0); return; }
-    { const L=H().shortcut.learn; if(L&&L.noread){ H().shortcut.wait=0; saveSoon(); reRender(); openBioResult(); return; } }   // no leyó la lista: decirlo (sin datos por otra razón: el aviso de siempre)
+    { const L=H().shortcut.learn; if(L&&(L.noread||L.part||L.cut)){ H().shortcut.wait=L.part?Date.now():0; saveSoon(); reRender(); openBioResult(); return; } }   /* v369 · H9 · pendiente: al volver se ofrece traer otra vez */   // no leyó la lista: decirlo (sin datos por otra razón: el aviso de siempre)
     let msg=[]; try{ const q=t.trim().replace(/^\?/,''); if(/stepsh=|weighth=|stepsq=|sleeph=|(^|&)steps=|(^|&)weight=|(^|&)sleep=/.test(q))msg=importHealth(new URLSearchParams(q)); }catch(_){}
     if(msg.length){ savedToast('✓ '+msg.join(' · ')); reRender(); return; } openHealthImport(); if(hpEmpty(t))toast('⚠ Atajo sin datos · desbloquea el iPhone','err'); };
   try{ if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(done,()=>openHealthImport()); else openHealthImport(); }catch(_){ openHealthImport(); } }
@@ -13480,7 +13979,7 @@ let bioGo=u=>{ try{ location.href=u; }catch(_){} };   // salir a la app Atajos (
 // v294 · la entrada del atajo es el plan (texto JSON): `input=text&text=` es la forma documentada por Apple de pasarle texto a un atajo por URL
 function bioRunURL(p){ return 'shortcuts://run-shortcut?name='+encodeURIComponent(BIO_NAME)+'&input=text&text='+encodeURIComponent(JSON.stringify(bioWire(p||bioPlan()))); }
 // shortcut.bio = cuándo dijo "ya lo tengo" (el atajo que se descarga está en su iPhone) · shortcut.bioName = con qué nombre (v293, aditivo: otro nombre = hay que instalar el nuevo) · shortcut.wait = cuándo se mandó a correr (0 en cuanto se ofrece traer). Campos nuevos, sin migración.
-function bioWaiting(){ const sc=H().shortcut, w=+sc.wait||0; return w>0&&Date.now()-w<BIO_WAIT&&!(+sc.lastPaste>w); }   // corrió hace poco y todavía no trae los datos
+function bioWaiting(){ const sc=H().shortcut, w=+sc.wait||0; return w>0&&Date.now()-w<(+sc.waitMs||BIO_WAIT)&&!(+sc.lastPaste>w); }   // v369 · H9 · una corrida con historial espera 40 min (sc.waitMs)   // corrió hace poco y todavía no trae los datos
 // v337 · H5 · el dueño (14-oct): "al picarle directamente me manda a ejecutar el shortcut pero como no hay no pasa nada". Una vez instalado,
 // nada volvía a decir que no lo estaba: la fila corría un atajo borrado y, al volver, un portapapeles viejo se re-ingería con un ✓ engañoso.
 // El atajo copia `ok id <n>` (el número de esta corrida) ANTES de buscar nada: si al traer no viene ese número (portapapeles vacío o de
@@ -13499,10 +13998,10 @@ function bioHas(){ const sc=H().shortcut; return !!sc.bio&&sc.bioName===BIO_NAME
 function bioMark(){ const sc=H().shortcut; if(!bioHas()){ sc.bio=Date.now(); sc.bioName=BIO_NAME; } sc.miss=0; return sc; }
 function bioSync(){ if(isNative()){ healthSync(); return; } if(!isIOS()){ openHealthImport(); return; }   // sin Atajos (Android, computadora): pegar a mano
   if(bioWaiting()){ openBioFetch(); return; } if(!bioHas()){ openBioInstall(); return; } bioRun(); }
-function bioRun(){ if(!isIOS()){ openHealthImport(); return; } const sc=bioMark(), p=Object.assign({id:Date.now().toString(36)},bioPlan()); sc.wait=Date.now(); sc.plan={t:Date.now(),id:p.id,p}; saveSoon(); closeModal(); bioGo(bioRunURL(p)); }   // shortcuts:// solo existe en iOS: en otro sistema nunca se navega ahí
+function bioRun(){ if(!isIOS()){ openHealthImport(); return; } const sc=bioMark(), p=Object.assign({id:Date.now().toString(36)},bioPlan()); sc.wait=Date.now(); sc.waitMs=p.deep?BIO_WAIT_DEEP:BIO_WAIT; sc.plan={t:Date.now(),id:p.id,p}; saveSoon(); closeModal(); bioGo(bioRunURL(p)); }   // shortcuts:// solo existe en iOS: en otro sistema nunca se navega ahí
 function bioFetch(){ H().shortcut.wait=0; closeModal(); healthPasteNow(true); }
 // la lista de qué llegó sale la primera vez y cada vez que cambia; si llegó lo mismo que la vez pasada, basta el aviso
-function bioDone(r,k0){ H().shortcut.wait=0; H().shortcut.miss=0; savedToast('✓ Salud · '+r.days+(r.days===1?' día':' días')); reRender(); const L=H().shortcut.learn||{}; if(r.kinds.join()!==k0||L.stop||L.old||L.noread||H().shortcut.noInput)openBioResult(); }
+function bioDone(r,k0){ const sc=H().shortcut, L=sc.learn||{}, hist=!!(L.deep||L.cut||L.part||L.pend), sn=+r.sleepNew||0; sc.wait=(L.part||L.pend)?Date.now():0; sc.miss=0; savedToast('✓ Salud · '+r.days+(r.days===1?' día':' días')+(hist&&sn>0?' · +'+sn+(sn===1?' noche':' noches'):'')); reRender(); if(r.kinds.join()!==k0||L.stop||L.old||L.noread||sc.noInput||hist)openBioResult(); }   // v369 · H9 · una corrida con historial dice cuántas noches llegaron y abre la hoja con su renglón; una pendiente vuelve a esperar (al regresar a la app se ofrece traer otra vez)
 // ▶ instalar atajo es un enlace de verdad (el navegador baja el archivo o abre iCloud): la app no hace nada con ese toque y la hoja
 // se queda, así al volver de instalarlo [ya lo tengo] lo anota y lo corre. En el alta solo se instala; se corre después, desde la app.
 // v288 · el dueño: "le doy a instalar atajo y sí me abre como que el archivo, el HTML… no me sale la opción de shortcut". Dentro de la app del
@@ -13550,21 +14049,24 @@ function renderAtajo(){ bioGate(); const g=SHORTCUT_URL?'ok':(_bioGate||'ok'), w
     <div class="submeta u-mt16">${BIO_PERM}</div>
     ${SHORTCUT_URL||wait?'':'<div class="u-mt16"><button type="button" class="b" data-act="atajohtml">bajar como antes</button></div><div class="submeta">llega como .html. en Archivos:<br/>··· › opciones de visualización<br/>› mostrar todas las extensiones<br/>y quítale .html al nombre</div>'}
     ${db.profile.username?'<div class="u-mt32"><button type="button" class="b" data-act="atajoback">abrir gym//TRK</button></div>':''}</div>`; }
-function openBioFetch(){ H().shortcut.wait=0; saveSoon(); openModal('<h3>sync biometrics</h3>'+hpSkipHTML()+'<div class="sheetbtns"><button class="ok" data-act="biofetch">▶ traer datos</button><button class="cancel" data-act="healthimport">pegar a mano</button></div>'); }
+function openBioFetch(){ H().shortcut.wait=0; saveSoon(); openModal('<h3>sync biometrics</h3>'+hpSkipHTML()+hpFetchTxt()+'<div class="sheetbtns"><button class="ok" data-act="biofetch">▶ traer datos</button><button class="cancel" data-act="healthimport">pegar a mano</button></div>'); }
 // v294 · si se detuvo en un dato: lo dice, ya no se busca, y ▶ correr otra vez trae lo que faltó. [buscar todo] vuelve a pedir lo que se dejó de buscar.
 // v318 · H4 · "te pedí que me analizaras de forma puntual realmente qué parámetros se van a estar extrayendo": qué trae el atajo y para qué
 const BIO_WHAT=[['steps','pasos','recuadro de pasos'],['act','energía activa','recuadro de energía activa'],['weight','peso','peso corporal · composición'],['sleep','sueño con fases','readiness · hoja de sueño'],['rhr','FC en reposo','readiness · opcional'],['hrv','HRV','readiness · opcional']];
-function openBioWhat(){ const got=(H().shortcut||{}).got||{};
-  openModal('<h3>qué trae el atajo</h3>'+BIO_WHAT.map(x=>'<div class="line"><span class="k">'+(got[x[0]]?'<b>✓</b> ':bioSkipped(x[0])?'<span class="u-o40">—</span> ':'')+x[1]+'</span><span class="dots"></span><span class="v u-o60">'+x[2]+'</span></div>').join('')
-    +'<div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div>'); }
+// v369 · H9 · a la derecha, desde cuándo trae cada dato: «desde 15 ago» = completo; «~» = aún trae su historial o cada corrida ya no alcanza
+// más atrás; «sin espacio» = el historial espera espacio (corto: a 320 la fila no se parte). El «para qué» vive en el glosario: toda la fila de 44 lo abre (el punteado va solo bajo el nombre).
+// [rehacer historial] lo vuelve a traer sin borrar nada.
+function openBioWhat(){ const got=(H().shortcut||{}).got||{}, room=bfBudget(), any=HP_ORDER.some(k=>got[k]);
+  openModal('<h3>qué trae el atajo</h3>'+BIO_WHAT.map(x=>'<div class="line bwr" data-gloss="bwt_'+x[0]+'"><span class="k">'+(got[x[0]]?'<b>✓</b> ':bioSkipped(x[0])?'<span class="u-o40">—</span> ':'')+'<span class="u-dash">'+x[1]+'</span></span><span class="dots"></span><span class="v u-o60">'+hpHistTxt(x[0],room)+'</span></div>').join('')
+    +'<div class="sheetbtns u-mt12">'+(any?'<button class="cancel" data-act="biohist">rehacer historial</button>':'')+'<button class="cancel" data-act="closemodal">cerrar</button></div>'); }
 function openBioResult(){ const sc=H().shortcut, L=sc.learn||{}, stop=L.stop, N=k=>(HP_KINDS.find(x=>x[0]===k)||[k,k])[1], sk=HP_ORDER.filter(k=>k!==stop&&bioSkipped(k));
-  openModal('<h3>sync biometrics</h3><div class="submeta u-o60 u-mb10">'+bioKindsTxt(sc.lastKinds)
+  openModal('<h3>sync biometrics</h3><div class="submeta u-o60 u-mb10">'+[L.empty?'':bioKindsTxt(sc.lastKinds),hpResultTxt(L)].filter(Boolean).join('<br/>')
     +(L.old?'<br/>tu atajo es de antes y no sabe qué buscar: instala '+BIO_NAME+' (y borra el anterior).':'')
     +(stop?(HP_OPT.indexOf(stop)>=0?'<br/>tu Salud no tiene '+(stop==='rhr'?'FC en reposo':N(stop))+' (o falta su permiso): ya no se pide. lo demás ya llegó.':'<br/>se detuvo en '+N(stop)+': sin datos o sin permiso en Salud. ya no se pide.'):'')
     +(L.noread?'<br/>el atajo no leyó la lista de la app.':'')+(sc.noInput?'<br/>el atajo no recibió la lista de la app (buscó 7 días por omisión).':'')
     +(sk.length?'<br/>no se busca: '+sk.map(N).join(' · '):'')+'</div><div class="sheetbtns">'
     +(L.old?'<button class="ok" data-act="biosetup">▶ instalar '+BIO_NAME+'</button>':stop&&HP_OPT.indexOf(stop)<0?'<button class="ok" data-act="biorun">▶ correr otra vez</button>':'')
-    +(sk.length&&!stop&&!L.old?'<button class="cancel" data-act="biounskip">buscar todo</button>':'')+'<button class="cancel" data-act="closemodal">cerrar</button></div>'); }
+    +(L.part||L.pend?'<button class="cancel" data-act="biofetch">traer otra vez</button>':'')+(sk.length&&!stop&&!L.old&&!L.part&&!L.pend?'<button class="cancel" data-act="biounskip">buscar todo</button>':'')+'<button class="cancel" data-act="closemodal">cerrar</button></div>'); }   /* v369 · H9 · pendiente: [traer otra vez] al volver de Atajos */
 // al volver de Atajos: si se mandó a correr, ofrece traer los datos. No se abre con algo encima (otra hoja, una confirmación, el tour, la tarjeta de
 // compartir, un menú, la portada) ni en plena sesión: ahí la espera sigue viva y la fila `sync biometrics` lo ofrece en el siguiente toque.
 function bioCovered(){ return ['modal','asklayer','tour','exsh','tsel','bootov'].some(id=>!!document.getElementById(id)); }
@@ -13778,7 +14280,7 @@ function openSleepLog(day,chain){ day=day||todayISO();   /* v364 · H8 · chain 
       else { const mh=Math.round((+b.hours)*10)/10; if(mh>0&&mh<24)out.push({date:d,type:'nocturno',hours:mh}); } });
     if(!out.length){ const nb=blocks.find(b=>blkTimed(b)&&(!b.start||!b.end));   /* v364 · H8 · lo que falta, corto */
       toast(!blocks.length?'⚠ agrega un bloque':nb?'⚠ falta la hora de '+(nb.start?'despertar':nb.end?'dormir':'dormir y de despertar'):'⚠ revisa las horas','err'); return; }
-    db.sleep=db.sleep||{}; db.sleep[d]=out; savedToast('✓ sueño guardado'); if(window._logBack){ openSleepLog(shiftDate(d,-1),true); return; } closeModal(); reRender();   // v363 · H8 · desde la gráfica: la noche anterior, lista
+    db.sleep=db.sleep||{}; { const was=sleepBlocks(db.sleep[d]).filter(b=>b&&typeof b==='object'&&b.src).length, kept=out.filter(b=>b&&b.src); if(kept.length&&kept.length<was)kept.forEach(b=>{ b.ed=1; }); }   /* v369 · H9 · le quitaste un tramo del atajo: la noche es tuya */ db.sleep[d]=out; savedToast('✓ sueño guardado'); if(window._logBack){ openSleepLog(shiftDate(d,-1),true); return; } closeModal(); reRender();   // v363 · H8 · desde la gráfica: la noche anterior, lista
   };
   load(day);
 }
@@ -16277,7 +16779,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='logweight'){ logBackMark(); openWeightLog(); }
   else if(a==='logsleep'){ logBackMark(); openSleepLog(); }
   else if(a==='editsleep'){ const d=el.dataset.d; const dt=document.getElementById('sl_date'); if(dt){ dt.value=d; dt.dispatchEvent(new Event('change')); } }
-  else if(a==='delsleep'){ const d=el.dataset.d; trkAsk({title:'borrar el sueño del '+fmtShort(d),ok:'borrar',danger:true},()=>{ if(db.sleep)delete db.sleep[d]; save(); { const dt=document.getElementById('sl_date'); openSleepLog(dt&&dt.value||null,!!(dt&&dt.dataset.chain)); } }); }   /* v364 · H8 · se queda en su fecha */
+  else if(a==='delsleep'){ const d=el.dataset.d; trkAsk({title:'borrar el sueño del '+fmtShort(d),ok:'borrar',danger:true},()=>{ if(db.sleep){ const m=H().src.sleep[d]; if(sleepBlocks(db.sleep[d]).some(b=>b&&typeof b==='object'&&b.src)||(m&&m!=='del'))H().src.sleep[d]='del'; delete db.sleep[d]; } save();   /* v369 · H9 · la del atajo que borras no vuelve (r2: también si ya la habías corregido: el día fue del atajo) */ { const dt=document.getElementById('sl_date'); openSleepLog(dt&&dt.value||null,!!(dt&&dt.dataset.chain)); } }); }   /* v364 · H8 · se queda en su fecha */
   else if(a==='logrhr'||a==='loghrv'||a==='logkcalact'){ const fb=faHold(); logBackMark(); openHealthNumLog(a.slice(3)); if(fb){ const b=document.getElementById('hl_save'); if(b)b.dataset.fa='1'; } }
   else if(a==='edithlog'){ const dt=document.getElementById('hl_date'); if(dt){ dt.value=el.dataset.d; dt.dispatchEvent(new Event('change')); } }
   else if(a==='delhlog'){ const d=el.dataset.d, m=el.dataset.m, C=HLOG[m]; if(!C)return; trkAsk({title:'borrar '+C.t+' del '+fmtShort(d),ok:'borrar',danger:true},()=>{ const day=H().daily[d]; if(day){ delete day[C.fld]; if(day.src)delete day.src[C.fld]; } save(); openHealthNumLog(m,(document.getElementById('hl_date')||{}).value||null); }); }
@@ -16336,7 +16838,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='sefold'){ const b=document.getElementById('se_sec_'+el.dataset.k); if(b){ const op=b.hidden; keepUnder(el,()=>{ b.hidden=!op; el.setAttribute('aria-expanded',op?'true':'false'); const c=el.querySelector('.rchev'); if(c)c.textContent=op?'▾':'›'; if(window._seSum)window._seSum(); }); if(op)revealAnim(b); } }
   else if(a==='chartpt'){ try{ const pts=JSON.parse(el.dataset.pts||'[]'); if(pts.length){ const r=el.getBoundingClientRect(); const x=(e.clientX-r.left)/(r.width||1); let best=pts[0],bd=9; pts.forEach(p=>{ const d=Math.abs(p.f-x); if(d<bd){bd=d;best=p;} }); if(best&&best.l)toast(best.l); } }catch(_){} }
   else if(a==='editbw'){ const d=el.dataset.d; const dt=document.getElementById('bw_date'), kg=document.getElementById('bw_kg'); if(dt)dt.value=d; if(kg){ kg.value=(db.bodyweight&&db.bodyweight[d])||''; focusEl(kg); } }
-  else if(a==='delbw'){ const d=el.dataset.d; trkAsk({title:'borrar el peso del '+fmtShort(d),ok:'borrar',danger:true},()=>{ if(db.bodyweight)delete db.bodyweight[d]; const allk=Object.keys(db.bodyweight||{}).sort(); if(db.profile)db.profile.weightKg=allk.length?db.bodyweight[allk[allk.length-1]]:db.profile.weightKg; save(); openWeightLog((document.getElementById('bw_date')||{}).value||null); }); }   /* v364 · H8 · se queda en su fecha */
+  else if(a==='delbw'){ const d=el.dataset.d; trkAsk({title:'borrar el peso del '+fmtShort(d),ok:'borrar',danger:true},()=>{ if(db.bodyweight){ const m=H().src.weight[d]; if(m&&m!=='manual')H().src.weight[d]='del'; delete db.bodyweight[d]; }   /* v369 · H9 · el del atajo que borras no vuelve */ const allk=Object.keys(db.bodyweight||{}).sort(); if(db.profile)db.profile.weightKg=allk.length?db.bodyweight[allk[allk.length-1]]:db.profile.weightKg; save(); openWeightLog((document.getElementById('bw_date')||{}).value||null); }); }   /* v364 · H8 · se queda en su fecha */
   else if(a==='settings'){ go('settings'); }
   else if(a==='profile'||a==='editprofile'){ goPerfil(); }
   else if(a==='navmenu'){ openNavMenu(); }
@@ -16613,6 +17115,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='biofetch'){ bioFetch(); }
   else if(a==='biowhat'){ openBioWhat(); }
   else if(a==='biounskip'){ H().shortcut.skip={}; saveSoon(); closeModal(); toast('✓ se buscará todo otra vez'); }
+  else if(a==='biohist'){ const was=JSON.stringify(H().shortcut.cov||{}), row=()=>{ document.querySelectorAll('[data-act="biowhat"] .v').forEach(v=>{ v.textContent=hpHistRowTxt()+' ›'; }); }; hpRedo(); saveSoon(); closeModal(); row(); toast('✓ el historial se vuelve a traer','ok',{undo:()=>{ H().shortcut.cov=JSON.parse(was); saveSoon(); row(); }}); }   // v369 · H9 · no borra datos: solo los vuelve a pedir; la fila de //HEALTH cambia en su lugar (sin render: nada se mueve)
   else if(a==='biosetup'){ openBioInstall(); }
   else if(a==='sleepraw'){ openSleepRaw(el.dataset.d||''); }   // v338 · H6
   else if(a==='slphavg'){ slPhPick(''); sleepRawRowSync(''); }   // v338 · GR7
@@ -20695,6 +21198,12 @@ const GLOSS={
   cov:'Columnas: una vuelta (franja = descanso); bloque: series del día (más claro, más). Raya: el que más trabaja. Punto: primer ejercicio. Unión: dos días de entreno seguidos (pegado). Punteado y ▲▼: sin aplicar. Toca un músculo para repartirlo o un día para moverlo.',   // v358 · SP9
   stimh:'series duras de 7 días por músculo: las que quedaron a RIR 4 o menos (o sin RIR anotado). Par unilateral = 1, drop = 0.5; las indirectas cuentan con su peso.',
   stima:'series totales de 7 días por músculo: todas las registradas, a cualquier RIR. Par unilateral = 1, drop = 0.5; las indirectas cuentan con su peso.',
+  bwt_steps:'pasos · se usa en el recuadro de pasos.',   // v369 · H9 · el «para qué» de qué trae el atajo
+  bwt_act:'energía activa · se usa en el recuadro de energía activa.',
+  bwt_weight:'peso · se usa en peso corporal y su composición.',
+  bwt_sleep:'sueño con fases · se usa en readiness y en la hoja de sueño.',
+  bwt_rhr:'FC en reposo · se usa en readiness · opcional: solo si tu Salud lo tiene.',
+  bwt_hrv:'HRV · se usa en readiness · opcional: solo si tu Salud lo tiene.',
 };
 const glossWrap=(t,k)=>'<span data-gloss="'+k+'">'+t+'</span>';
 function popClose(){ const g=document.getElementById('gloss'); if(g)g.remove(); window._glossEl=null; const t=document.getElementById('tsel'); if(t)t.remove(); window._tselEl=null; }
@@ -21088,7 +21597,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ cloudBoot(); }catch(_){}   // v352 · cuentas y nube: apagada (CLOUD_CFG vacío) no hace nada
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); _v367SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); _v367SelfCheck(); _h9SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
