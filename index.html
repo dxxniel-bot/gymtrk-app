@@ -1577,7 +1577,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v371';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v372';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -6994,6 +6994,69 @@ function _v371SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     console.log('v371 self-check OK');
   } finally { toast=ts0; try{ closeAsk(true); }catch(_){} try{ closeModal(); }catch(_){} db=real; K.forEach(k=>{ state[k]=st0[k]; }); _lastClosed=lc0; bumpIdx(); try{ render(); }catch(_){} }
 }
+// v372 · WS4 · PDF, Word y la FC como imagen. El PDF se lee de vuelta (xref, longitudes, páginas), el .docx se desarma (crc de cada parte, XML bien formado) y la
+// imagen se mide; todo de una sesión de juguete con nombres con acentos, & y <.
+function _v372Sess(n,hr){ const t0=Date.now()-3000000, mk=(nm,m,k)=>({exId:'x'+nm,name:nm,muscle:m,type:'machine',unilateral:false,sets:Array.from({length:k},(_,i)=>({w:String(100+i*10),r:'8',rir:String(1+(i%2)),unit:'lbs',side:null,done:true,doneAt:t0+(5+i*3)*60000}))});
+  const ex=[mk('extensión de piernas → ñandú & <b>','quads',3),mk('curl','biceps',3)]; for(let i=0;i<(n||0);i++)ex.push(mk('ejercicio '+i,'chest',4));
+  return {id:'s372',date:todayISO(),dayId:'d1',dayName:'quads · legs A',gym:'g',type:'training',startMs:t0,endMs:t0+2400000,startTime:'17:05',endTime:'17:45',durSec:2400,exercises:ex}; }
+function _v372SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v372: '+nm); }; const real=db, td=new TextDecoder();
+  try{ db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',split:{name:'s',days:[{id:'d1',name:'quads · legs A',exercises:[]}]},rotIdx:0,sessions:[_v372Sess(0)]}); bumpIdx();
+    const s=db.sessions[0]; let D=shDocModel(s);
+    A('WS4 · el modelo: título, resumen y un bloque por ejercicio con una línea por serie', D.title==='quads · legs A'&&/40 min|0:40|40/.test(D.sum)&&D.exs.length===2&&D.exs[0].lines.length===3&&/100 lbs × 8/.test(D.exs[0].lines[0])&&/RIR/.test(D.exs[0].lines[0]));
+    A('WS4 · sin FC no hay sección de FC', D.fc.length===0);
+    // con FC
+    const T0=s.startMs, pts=[]; for(let t=0;t<=2400;t+=10)pts.push([t,95+Math.round(25*Math.sin(t/200))+(t>300&&t<420?30:0)]);
+    H().sessHR[s.id]={avg:112,max:151,t0:T0,pts,perSet:true,off:14,offN:5,setN:6,src:'fitbit',sets:{'0:0':{pre:98,peak:142,rec60:20,q:1},'0:1':{pre:101,peak:147,rec60:0,q:1},'1:0':{pre:99,peak:139,rec60:11,q:1}}}; H().sources.fitbit={name:'Fitbit'};
+    D=shDocModel(s); A('WS4 · con FC: la media, el máx, la fuente y el pico por serie', /FC media 112 · máx 151 · Fitbit/.test(D.fc[0])&&/pico de FC llega ~14 s tras tu ✓/.test(D.fc[1])&&/FC 98→142/.test(D.exs[0].lines[0])&&/FC 99→139/.test(D.exs[1].lines[0]));
+    // PDF
+    let u=pdfBuild(D), tx=''; for(let i=0;i<u.length;i++)tx+=String.fromCharCode(u[i]);
+    A('WS4 · PDF: encabezado, %%EOF y solo bytes Latin-1 (nada fuera de 0–255)', tx.slice(0,8)==='%PDF-1.4'&&/%%EOF\n$/.test(tx));
+    { const sx=+/startxref\n(\d+)\n%%EOF/.exec(tx)[1]; A('WS4 · PDF: startxref apunta a la tabla', tx.slice(sx,sx+4)==='xref');
+      const n=+/^xref\n0 (\d+)\n/.exec(tx.slice(sx))[1], rows=tx.slice(sx).split('\n').slice(2,2+n); let okOff=true; rows.slice(1).forEach((r,i)=>{ const o=+r.slice(0,10); if(tx.slice(o,o+((i+1)+' 0 obj').length)!==(i+1)+' 0 obj')okOff=false; });
+      A('WS4 · PDF: cada objeto está donde dice la tabla', okOff&&n===rows.length&&/\/Size \d+/.test(tx));
+      A('WS4 · PDF: el largo de cada contenido es el real', [...tx.matchAll(/<< \/Length (\d+) >>\nstream\n([\s\S]*?)\nendstream/g)].every(m=>m[2].length===+m[1]));
+      A('WS4 · PDF: una página con este contenido y su pie', (tx.match(/\/Type \/Page /g)||[]).length===1&&/\/Count 1/.test(tx)&&/gym\/\/TRK/.test(tx)); }
+    A('WS4 · PDF: título, ejercicios, series y FC como texto; los acentos van en Latin-1 y lo que no cabe se transcribe', /quads \\267 legs A|quads \\267 legs A/.test(tx)||/quads/.test(tx));
+    A('WS4 · PDF: ñ y ó en su byte (\\361 \\363), → como ->, σ como sig, y los paréntesis escapados', /\\361and/.test(tx)&&/extensi\\363n/.test(tx)&&/->/.test(tx)&&pdfStr('a(b)\\c')==='(a\\(b\\)\\\\c)'&&pdfLatin('σ ▲ ▼ ✓ ·')==='sig ^ v check ·');
+    // varias páginas
+    db.sessions=[_v372Sess(30)]; bumpIdx(); { const D2=shDocModel(db.sessions[0]), u2=pdfBuild(D2); let t2=''; for(let i=0;i<u2.length;i++)t2+=String.fromCharCode(u2[i]); const np=(t2.match(/\/Type \/Page /g)||[]).length;
+      A('WS4 · PDF: una sesión larga pasa a más páginas y cada una dice su número', np>=3&&new RegExp('\\(gym//TRK[^)]*'+np+'/'+np+'\\)').test(t2.replace(/\\267/g,'·'))&&new RegExp('/Count '+np+'\\b').test(t2));
+      const sx=+/startxref\n(\d+)\n%%EOF/.exec(t2)[1]; A('WS4 · PDF largo: la tabla sigue cuadrando', t2.slice(sx,sx+4)==='xref'); }
+    db.sessions=[s]; bumpIdx();
+    // Word
+    const z=docxBuild(D), dv=new DataView(z.buffer,z.byteOffset,z.byteLength); let eo=z.length-22; A('WS4 · Word: es un zip (fin de directorio y 3 partes)', dv.getUint32(eo,true)===0x06054b50&&dv.getUint16(eo+10,true)===3);
+    const cdOff=dv.getUint32(eo+16,true), files={}; { let p=cdOff; for(let i=0;i<3;i++){ A('WS4 · Word: entrada de directorio', dv.getUint32(p,true)===0x02014b50); const crc=dv.getUint32(p+16,true), sz=dv.getUint32(p+24,true), nl=dv.getUint16(p+28,true), lo=dv.getUint32(p+42,true), name=td.decode(z.subarray(p+46,p+46+nl));
+        A('WS4 · Word: encabezado local en su lugar', dv.getUint32(lo,true)===0x04034b50&&dv.getUint16(lo+8,true)===0); const ds=lo+30+dv.getUint16(lo+26,true)+dv.getUint16(lo+28,true), data=z.subarray(ds,ds+sz); A('WS4 · Word: crc de '+name, crc32(data)===crc&&dv.getUint32(lo+14,true)===crc); files[name]=td.decode(data); p+=46+nl; } }
+    A('WS4 · Word: las tres partes que pide un .docx', ['[Content_Types].xml','_rels/.rels','word/document.xml'].every(k=>k in files));
+    { const bad=k=>{ const d=new DOMParser().parseFromString(files[k],'application/xml'); return !!d.querySelector('parsererror'); }; A('WS4 · Word: los tres XML están bien formados (con & y < en un nombre)', !bad('[Content_Types].xml')&&!bad('_rels/.rels')&&!bad('word/document.xml')); }
+    { const d=new DOMParser().parseFromString(files['word/document.xml'],'application/xml'), W='http://schemas.openxmlformats.org/wordprocessingml/2006/main', ts=[...d.getElementsByTagNameNS(W,'t')].map(x=>x.textContent);
+      A('WS4 · Word: el título, el nombre tal cual (ñ, →, &, <), sus series y la FC', ts.indexOf('quads · legs A')>=0&&ts.some(x=>x.indexOf('extensión de piernas → ñandú & <b>')>=0)&&ts.some(x=>/100 lbs × 8/.test(x))&&ts.some(x=>/FC media 112/.test(x))&&ts.some(x=>/FC 98→142/.test(x))); }
+    A('WS4 · crc32 conocido', crc32(new TextEncoder().encode('123456789'))===0xCBF43926);
+    // imagen de FC
+    { const c=shHRCanvas(s); A('WS4 · la imagen de FC: 1080 de ancho y con la gráfica pintada', !!c&&c.width===1080&&c.height>700); const px=c.getContext('2d').getImageData(0,0,c.width,c.height).data; let lit=0; for(let i=0;i<px.length;i+=4*97)if(px[i]+px[i+1]+px[i+2]>60)lit++; A('WS4 · …no es un lienzo en blanco', lit>50);
+      delete H().sessHR[s.id]; A('WS4 · sin FC no hay imagen de FC', shHRCanvas(s)===null); }
+    // botones de la tarjeta
+    state.shareType='session'; state.shareId=s.id; { const h=renderShareSession(s.id); A('WS4 · la tarjeta: copiar texto, imagen, PDF, Word y compartir ejercicio (sin FC no hay botón de FC)', ['shcopy','shimg','shpdf','shdoc','shoneex'].every(k=>h.indexOf('data-act="'+k+'"')>=0)&&h.indexOf('data-act="shhr"')<0); }
+    H().sessHR[s.id]={avg:112,max:151,t0:T0,pts,perSet:true,sets:{}}; A('WS4 · …con FC sí sale [imagen de FC]', renderShareSession(s.id).indexOf('data-act="shhr"')>=0); delete H().sessHR[s.id];
+    console.log('v372 self-check OK');
+  } finally { db=real; bumpIdx(); }
+}
+// la entrega de verdad: el archivo llega a la hoja de compartir con su nombre y su tipo (navigator.share de juguete). Asíncrona, como la de cuentas
+async function _v372ShareCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v372 share: '+nm); }; const real=db, sb=_sbx, ts0=toast, K=['shareType','shareId','screen'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
+  const own=k=>Object.getOwnPropertyDescriptor(navigator,k), sh0=own('share'), cs0=own('canShare'); let got=null;
+  try{ _sbx=true; toast=()=>null; db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g'],activeGym:'g',split:{name:'s',days:[]},sessions:[_v372Sess(0)]}); bumpIdx(); state.shareType='session'; state.shareId='s372';
+    Object.defineProperty(navigator,'canShare',{configurable:true,value:d=>!!(d&&d.files&&d.files.length)}); Object.defineProperty(navigator,'share',{configurable:true,value:async d=>{ got=d; }});
+    await shareDoc('pdf'); A('PDF: llega a la hoja de compartir con su nombre y su tipo', !!got&&got.files.length===1&&/^gymtrk-quads-legs-a-\d{4}-\d{2}-\d{2}\.pdf$/.test(got.files[0].name)&&got.files[0].type==='application/pdf'&&got.files[0].size>400);
+    A('PDF: el archivo empieza como un PDF', (await got.files[0].text()).slice(0,5)==='%PDF-'); got=null;
+    await shareDoc('docx'); A('Word: llega con su nombre y su tipo', !!got&&/\.docx$/.test(got.files[0].name)&&got.files[0].type==='application/vnd.openxmlformats-officedocument.wordprocessingml.document'&&got.files[0].size>400);
+    A('Word: es un zip (PK)', new Uint8Array(await got.files[0].arrayBuffer()).slice(0,2).join()==='80,75'); got=null;
+    H().sessHR.s372={avg:112,max:151,t0:Date.now()-2400000,pts:[[0,95],[600,130],[1200,110],[2400,100]],perSet:true,sets:{'0:0':{pre:98,peak:142}}}; await shareHRImage();
+    A('imagen de FC: sale como PNG por la hoja de compartir', !!got&&/^gymtrk-fc-.*\.png$/.test(got.files[0].name)&&got.files[0].type==='image/png'&&got.files[0].size>2000); delete H().sessHR.s372; got=null;
+    // sin compartir de archivos en la app instalada: ni `<a download>` ni nada atrapado, el texto en una hoja
+    Object.defineProperty(navigator,'canShare',{configurable:true,value:()=>false}); const sa0=isStandalone; isStandalone=()=>true; try{ await shareDoc('pdf'); } finally{ isStandalone=sa0; }
+    A('sin compartir archivos en la app instalada: te deja el texto en una hoja', !!document.getElementById('modal')&&/\.txt/.test(document.querySelector('#modal h3').textContent)&&got===null); closeModal();
+    console.log('v372 share self-check OK');
+  } finally { toast=ts0; _sbx=sb; try{ closeModal(); }catch(_){} if(sh0)Object.defineProperty(navigator,'share',sh0); else delete navigator.share; if(cs0)Object.defineProperty(navigator,'canShare',cs0); else delete navigator.canShare; db=real; K.forEach(k=>{ state[k]=st0[k]; }); bumpIdx(); } }
 function _h9SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK h9: '+nm); };
   const real=db, sb0=_sbx, ios0=isIOS, sta0=isStandalone, go0=bioGo, tt=toast, bf0=bfBudget, K=['screen','_scroll','_paintedKey','_viewScroll'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
   let live0=null; try{ live0=localStorage.getItem(LS_LIVE); }catch(_){}
@@ -12203,7 +12266,9 @@ function renderShareSession(id){
   const top=`<div class="shst"><div class="shsn">${escTxt(M.title)}</div>${M.meta?`<div class="shsm">${escTxt(M.meta)}</div>`:''}<div class="shsum">${[dur,pl(M.series,'serie'),pl(M.exn,'ejercicio')].filter(Boolean).join(' · ')}</div></div>`;
   const body=shListHTML(M);   // v345 · X7 · una serie por renglón
   // v307 · "ese formato, el más valioso para mi opinión, es el que se pierde": desde la sesión guardada se abre el ejercicio solo, con su serie marcada
-  const one=M.exn?`<button class="b" data-act="shoneex" data-id="${escTxt(String(s.id))}">compartir ejercicio</button>`:'';
+  const _hr=(H().sessHR||{})[s.id], one=(M.exn?`<button class="b" data-act="shpdf">guardar PDF</button><button class="b" data-act="shdoc">guardar Word</button>`:'')   // v372 · WS4 · PDF y Word
+    +(_hr&&_hr.pts&&_hr.pts.length>1?`<button class="b" data-act="shhr">imagen de FC</button>`:'')   // …y la FC como imagen
+    +(M.exn?`<button class="b" data-act="shoneex" data-id="${escTxt(String(s.id))}">compartir ejercicio</button>`:'');
   const V=shSessView(); return summaryShell(top,(V==='lista'?body:V==='historial'?shHistHTML(s):shSessTableHTML(M,V==='cajas'))||'<div class="empty">sin series registradas</div>',((V==='cajas'||V==='sesion')?shSessLegend(M):''),one,shSessTabsHTML()); }   // v366 · X11 · v367: las pestañas, encima de la tarjeta
 // elegir cuál ejercicio de una sesión guardada se comparte solo (uno → directo; varios → menú con su nombre tal cual)
 function shOneExList(s){ const out=[]; ((s&&s.exercises)||[]).forEach((e,ei)=>{ if(shExModel(e))out.push({ei,name:(latTxt(e)||'')+(e.name||'ejercicio'),cam:exCamGet(e)!=null}); }); return out; }
@@ -12306,13 +12371,108 @@ async function shareImage(){
       let px=rects[0].left, txt=n.nodeValue.replace(/\s+/g,' '); const cy=(rects[0].top+rects[0].height/2-box.top)*K;
       for(const ch of txt){ x.fillText(ch,(px-box.left)*K,cy); px+=adv; } x.restore(); }
     const blob=await new Promise(r=>c.toBlob(r,'image/png')); if(!blob)throw new Error('sin imagen');
-    const name='gymtrk-'+todayISO()+'.png', file=new File([blob],name,{type:'image/png'});
-    if(NATIVE_APP){ const rd=new FileReader(); rd.onload=()=>{ nativeShareFile(name,String(rd.result).split(',')[1],'base64'); }; rd.readAsDataURL(blob); job.done('✓ imagen lista'); return; }
-    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){ job.done('✓ imagen lista'); await navigator.share({files:[file],title:name}).catch(()=>{}); return; }
-    const url=URL.createObjectURL(blob);
-    openModal(`<h3>imagen lista</h3><div class="submeta u-mb8">mantén presionada la imagen → Guardar en Fotos</div><img class="shimgv" src="${url}" alt="tarjeta para compartir"/><div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div>`);
-    job.done('✓ imagen lista');
+    await shipPng(blob,'gymtrk-'+todayISO()+'.png',job,'tarjeta para compartir');
   }catch(e){ job.fail('⚠ no se pudo generar la imagen'); } }
+// la entrega de una imagen: la hoja de compartir (PNG sí está permitido); si no se puede, una hoja con la imagen para mantenerla presionada
+async function shipPng(blob,name,job,alt){ const file=new File([blob],name,{type:'image/png'});
+  if(NATIVE_APP){ const rd=new FileReader(); rd.onload=()=>{ nativeShareFile(name,String(rd.result).split(',')[1],'base64'); }; rd.readAsDataURL(blob); job.done('✓ imagen lista'); return; }
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){ job.done('✓ imagen lista'); await navigator.share({files:[file],title:name}).catch(()=>{}); return; }
+  const url=URL.createObjectURL(blob);
+  openModal(`<h3>imagen lista</h3><div class="submeta u-mb8">mantén presionada la imagen → Guardar en Fotos</div><img class="shimgv" src="${url}" alt="${escTxt(alt||'imagen para compartir')}"/><div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div>`);
+  job.done('✓ imagen lista'); }
+// v372 · WS4 · "los formatos de compartir la sesión en formato doc, PDF, etcétera". Además de la imagen y el texto, la sesión sale como PDF y como Word (.docx)
+// y su FC como imagen. Sin librerías ni red (la CSP no cambia): el PDF se escribe a mano (texto en Courier, Latin-1: lo que no cabe se transcribe) y el .docx es
+// un zip «sin comprimir» de tres partes XML. Los dos salen del MISMO modelo (shDocModel) que lee la tarjeta: nunca dicen cosas distintas.
+function shSessOf(){ return state.shareId==='live'?shLiveSess():((db.sessions||[]).find(x=>x.id===state.shareId)||(db.sessions||[]).filter(x=>x.type!=='rest').slice(-1)[0])||null; }
+function shDocModel(s){ const M=shSessModel(s), lb=_shM==='rpe'?'RPE':'RIR', pl=(n,w)=>n+' '+w+(n===1?'':'s'), R=(H().sessHR||{})[s.id]||null, hs=(R&&R.sets)||{};
+  let T=[]; try{ T=sessionTension(s)||[]; }catch(_){}
+  const exs=[]; (s.exercises||[]).forEach((e,ei)=>{ const x=shExModel(e,T[ei]); if(!x)return; const sg=T[ei]&&T[ei].total>0?' · σ '+fmtSig(T[ei].total):'';
+    exs.push({head:((x.lat?x.lat+' ':'')+x.name).trim()+(x.muscle?' · '+x.muscle:'')+' · '+pl(x.series,'serie')+sg,
+      lines:x.toks.map(t=>{ const f=hs[ei+':'+t.si]; return (t.ord+'    ').slice(0,5)+(t.drop?'↓ ':'')+t.w+' '+t.unit+' × '+t.r+(t.rir?'   '+lb+' '+t.rir:'')+(t.sg?'   σ '+fmtSig(t.sg.t):'')+(f&&f.peak!=null?'   FC '+hrSetTxt(f):''); }) }); });
+  const dur=M.dur?fmtDur(M.dur.h!=null?M.dur.h*60+(+M.dur.m||0):M.dur.min):'';
+  const fc=[]; if(R){ const wo=workoutOfSession(s.id), sk=R.src||(wo&&wo.src)||'', sn=sk?((H().sources[sk]&&H().sources[sk].name)||sk):'';
+    fc.push([R.avg?'FC media '+R.avg:'',R.max?'máx '+R.max:'',sn].filter(Boolean).join(' · '));
+    if(R.perSet&&R.off!=null)fc.push('el pico de FC llega ~'+Math.abs(R.off)+' s '+(R.off>=0?'tras':'antes de')+' tu ✓ · '+R.offN+'/'+R.setN+' series'); }
+  return {title:M.title, meta:M.meta, sum:[dur,pl(M.series,'serie'),pl(M.exn,'ejercicio')].filter(Boolean).join(' · '), exs, fc:fc.filter(Boolean), date:s.date||todayISO()}; }
+// ---- PDF · una columna de texto en Courier (10 pt, A4). Latin-1 (WinAnsi): el resto se transcribe
+function pdfLatin(str){ const M={'→':'->','σ':'sig','▲':'^','▼':'v','↓':'v','–':'-','—':'-','−':'-','≈':'~','…':'...','’':"'",'‘':"'",'“':'"','”':'"','•':'·','≥':'>=','≤':'<=','✓':'check','‹':'<','›':'>','⠿':''}; let o='';
+  for(const ch of String(str)){ if(M[ch]!=null)o+=M[ch]; else { const c=ch.codePointAt(0); o+=(c>=32&&c<=255&&!(c>=127&&c<160))?ch:'?'; } } return o; }
+function pdfStr(s){ let o='('; for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i); if(c===40||c===41||c===92)o+='\\'+s[i]; else if(c>126||c<32)o+='\\'+('00'+c.toString(8)).slice(-3); else o+=s[i]; } return o+')'; }
+function pdfWrap(t,w){ const out=[]; t=String(t); if(t.length<=w)return [t]; const ind=(/^\s*/.exec(t)||[''])[0]; let cur='';
+  t.split(/(\s+)/).forEach(p=>{ if((cur+p).length>w&&cur.trim()){ out.push(cur.replace(/\s+$/,'')); cur=ind+p.replace(/^\s+/,''); } else cur+=p; while(cur.length>w){ out.push(cur.slice(0,w)); cur=ind+cur.slice(w); } }); if(cur.trim())out.push(cur.replace(/\s+$/,'')); return out; }
+function pdfBuild(D){ const PW=595, PH=842, MX=48, TOP=56, BOT=56, CH=83, rows=[];   // CH = caracteres por renglón: (595-96)/6 de Courier a 10 pt
+  const put=(t,o)=>{ o=o||{}; pdfWrap(pdfLatin(t),o.w||CH).forEach(x=>rows.push({t:x,b:!!o.b,s:o.s||10,lh:o.lh||13})); }, gap=(n)=>rows.push({t:'',b:false,s:10,lh:n||8});
+  put(D.title,{b:1,s:15,lh:20,w:55}); if(D.meta)put(D.meta); put(D.sum,{b:1}); gap(10);
+  D.exs.forEach(x=>{ put(x.head,{b:1}); x.lines.forEach(l=>put(l)); gap(); });
+  if(D.fc.length){ put('FC',{b:1}); D.fc.forEach(l=>put(l)); gap(); }
+  const pages=[[]]; let y=PH-TOP; rows.forEach(r=>{ if(y-r.lh<BOT){ pages.push([]); y=PH-TOP; } pages[pages.length-1].push({r,y}); y-=r.lh; });
+  const N=pages.length, objs=[]; objs[1]='<< /Type /Catalog /Pages 2 0 R >>'; objs[3]='<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>'; objs[4]='<< /Type /Font /Subtype /Type1 /BaseFont /Courier-Bold /Encoding /WinAnsiEncoding >>';
+  const kids=[]; pages.forEach((pg,i)=>{ const po=5+2*i, co=po+1; kids.push(po+' 0 R'); let c='BT\n';
+    pg.forEach(({r,y})=>{ if(r.t)c+='/'+(r.b?'F2':'F1')+' '+r.s+' Tf 1 0 0 1 '+MX+' '+y+' Tm '+pdfStr(r.t)+' Tj\n'; });
+    c+='/F1 8 Tf 1 0 0 1 '+MX+' 30 Tm '+pdfStr('gym//TRK · '+pdfLatin(D.date)+' · '+(i+1)+'/'+N)+' Tj\nET';
+    objs[po]='<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+PW+' '+PH+'] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents '+co+' 0 R >>';
+    objs[co]='<< /Length '+c.length+' >>\nstream\n'+c+'\nendstream'; });
+  objs[2]='<< /Type /Pages /Kids ['+kids.join(' ')+'] /Count '+N+' >>';
+  let out='%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'; const off=[]; for(let i=1;i<objs.length;i++){ off[i]=out.length; out+=i+' 0 obj\n'+objs[i]+'\nendobj\n'; }
+  const xr=out.length; out+='xref\n0 '+objs.length+'\n0000000000 65535 f \n'; for(let i=1;i<objs.length;i++)out+=('0000000000'+off[i]).slice(-10)+' 00000 n \n';
+  out+='trailer\n<< /Size '+objs.length+' /Root 1 0 R >>\nstartxref\n'+xr+'\n%%EOF\n';
+  const u=new Uint8Array(out.length); for(let i=0;i<out.length;i++)u[i]=out.charCodeAt(i)&255; return u; }
+// ---- Word (.docx) · un zip sin comprimir (método 0) con [Content_Types].xml, _rels/.rels y word/document.xml
+const _crcT=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1; t[n]=c>>>0; } return t; })();
+function crc32(u){ let c=0xFFFFFFFF; for(let i=0;i<u.length;i++)c=_crcT[(c^u[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
+function zipStore(files){ const te=new TextEncoder(), d=new Date(), dt=((d.getFullYear()-1980)<<9|(d.getMonth()+1)<<5|d.getDate())&0xFFFF, tm=(d.getHours()<<11|d.getMinutes()<<5|(d.getSeconds()>>1))&0xFFFF;
+  const parts=[], cen=[]; let off=0;
+  files.forEach(f=>{ const nm=te.encode(f.name), data=typeof f.data==='string'?te.encode(f.data):f.data, crc=crc32(data);
+    const lh=new DataView(new ArrayBuffer(30)); lh.setUint32(0,0x04034b50,true); lh.setUint16(4,20,true); lh.setUint16(6,0x0800,true); lh.setUint16(8,0,true); lh.setUint16(10,tm,true); lh.setUint16(12,dt,true); lh.setUint32(14,crc,true); lh.setUint32(18,data.length,true); lh.setUint32(22,data.length,true); lh.setUint16(26,nm.length,true); lh.setUint16(28,0,true);
+    const ch=new DataView(new ArrayBuffer(46)); ch.setUint32(0,0x02014b50,true); ch.setUint16(4,20,true); ch.setUint16(6,20,true); ch.setUint16(8,0x0800,true); ch.setUint16(10,0,true); ch.setUint16(12,tm,true); ch.setUint16(14,dt,true); ch.setUint32(16,crc,true); ch.setUint32(20,data.length,true); ch.setUint32(24,data.length,true); ch.setUint16(28,nm.length,true); ch.setUint32(42,off,true);
+    parts.push(new Uint8Array(lh.buffer),nm,data); cen.push(new Uint8Array(ch.buffer),nm); off+=30+nm.length+data.length; });
+  const cl=cen.reduce((a,x)=>a+x.length,0), eo=new DataView(new ArrayBuffer(22)); eo.setUint32(0,0x06054b50,true); eo.setUint16(8,files.length,true); eo.setUint16(10,files.length,true); eo.setUint32(12,cl,true); eo.setUint32(16,off,true);
+  const all=parts.concat(cen,[new Uint8Array(eo.buffer)]), out=new Uint8Array(all.reduce((a,x)=>a+x.length,0)); let p=0; all.forEach(x=>{ out.set(x,p); p+=x.length; }); return out; }
+function xmlEsc(t){ return String(t==null?'':t).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function docxBuild(D){ const run=(t,o)=>{ o=o||{}; return '<w:r><w:rPr><w:rFonts w:ascii="Courier New" w:hAnsi="Courier New" w:cs="Courier New"/>'+(o.b?'<w:b/>':'')+'<w:sz w:val="'+(o.sz||20)+'"/></w:rPr><w:t xml:space="preserve">'+xmlEsc(t)+'</w:t></w:r>'; };
+  const para=(t,o)=>'<w:p><w:pPr><w:spacing w:before="'+((o&&o.before)||0)+'" w:after="'+((o&&o.after)||0)+'"/></w:pPr>'+(t===''?'':run(t,o))+'</w:p>';
+  let b=para(D.title,{b:1,sz:32,after:60}); if(D.meta)b+=para(D.meta); b+=para(D.sum,{b:1,after:200});
+  D.exs.forEach(x=>{ b+=para(x.head,{b:1,before:160,after:40}); x.lines.forEach(l=>{ b+=para(l); }); });
+  if(D.fc.length){ b+=para('FC',{b:1,before:200,after:40}); D.fc.forEach(l=>{ b+=para(l); }); }
+  b+=para('gym//TRK · '+D.date,{sz:16,before:300});
+  const W='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"', H='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+  return zipStore([{name:'[Content_Types].xml',data:H+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'},
+    {name:'_rels/.rels',data:H+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
+    {name:'word/document.xml',data:H+'<w:document '+W+'><w:body>'+b+'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>'}]); }
+// entrega de un archivo binario: la hoja de compartir; en el navegador, descarga; en la app instalada nunca `<a download>` (se queda atrapada): el texto en una hoja
+function saveBlobSafe(name,blob,mime,fallbackText){
+  if(NATIVE_APP){ const rd=new FileReader(); rd.onload=()=>{ nativeShareFile(name,String(rd.result).split(',')[1],'base64'); }; rd.readAsDataURL(blob); return Promise.resolve('native'); }
+  const file=new File([blob],name,{type:mime});
+  try{ if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]}))return navigator.share({files:[file],title:name}).then(()=>'shared',e=>{ if(e&&e.name==='AbortError')return 'abort'; throw e; }); }catch(e){ if(e&&e.name==='AbortError')return Promise.resolve('abort'); }
+  if(!isStandalone()){ const url=URL.createObjectURL(blob), a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),4000); return Promise.resolve('download'); }
+  if(fallbackText){ openTextSheet(name.replace(/\.[a-z0-9]+$/i,'')+'.txt',fallbackText); return Promise.resolve('text'); }
+  return Promise.reject(new Error('sin compartir')); }
+function shDocName(s,ext){ const n=String(s.dayName||'sesion').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/gi,'-').replace(/^-+|-+$/g,'').toLowerCase()||'sesion'; return 'gymtrk-'+n+'-'+(s.date||todayISO())+'.'+ext; }
+async function shareDoc(kind){ const s=shSessOf(); if(!s){ toast('⚠ nada que compartir','err'); return; } const pdf=kind==='pdf', job=toastTask('armando el '+(pdf?'PDF':'Word'));
+  try{ const D=shDocModel(s), u=pdf?pdfBuild(D):docxBuild(D), mime=pdf?'application/pdf':'application/vnd.openxmlformats-officedocument.wordprocessingml.document', blob=new Blob([u],{type:mime});
+    const r=await saveBlobSafe(shDocName(s,pdf?'pdf':'docx'),blob,mime,shareTextFor()); job.done(r==='abort'?'listo':r==='text'?'✓ no se pudo el archivo · te dejo el texto':'✓ '+(pdf?'PDF':'Word')+' listo'); return u; }
+  catch(e){ job.fail('⚠ no se pudo armar el '+(pdf?'PDF':'Word')); } }
+// la FC de la sesión como imagen (1080 de ancho): la gráfica con tus ✓, su media y máx y el pico por serie. Mismos colores de la app
+function shHRCanvas(s){ const R=(H().sessHR||{})[s.id]; if(!R||!R.pts||R.pts.length<2)return null; const S=1080, P=64, css=getComputedStyle(document.documentElement), col=k=>(css.getPropertyValue(k)||'').trim();
+  const fg=col('--fg')||'#f3f3f3', dim=col('--o50')||'rgba(243,243,243,.5)', faint=col('--o20')||'rgba(243,243,243,.2)', bg=getComputedStyle(document.body).backgroundColor||'#000', F='"JetBrains Mono", ui-monospace, monospace';
+  const D=shDocModel(s), pk=[]; (s.exercises||[]).forEach((e,ei)=>{ const L=(e.sets||[]).map((st,si)=>R.sets&&R.sets[ei+':'+si]).filter(x=>x&&x.peak!=null).filter((x,i,a)=>a.indexOf(x)===i); if(L.length)pk.push((e.name||'ejercicio')+'   '+L.map(hrSetTxt).join(' · ')); });
+  const wrapN=44, rows=[]; pk.forEach(t=>pdfWrap(t,wrapN).forEach(x=>rows.push(x)));
+  const CH=300, H0=P+210+CH+90, HT=H0+(rows.length?60+rows.length*44:0)+110, c=document.createElement('canvas'); c.width=S; c.height=HT; const x=c.getContext('2d');
+  x.fillStyle=bg; x.fillRect(0,0,S,HT); x.textBaseline='alphabetic';
+  x.fillStyle=fg; x.font='800 54px '+F; x.fillText(D.title.slice(0,30),P,P+56); x.fillStyle=dim; x.font='400 30px '+F; x.fillText(D.meta,P,P+104);
+  x.fillStyle=fg; x.font='800 40px '+F; x.fillText(D.fc[0]||'FC',P,P+170);
+  const pts=R.pts, t1=pts[pts.length-1][0]||1, vs=pts.map(p=>p[1]), lo=Math.min.apply(null,vs)-5, hi=Math.max.apply(null,vs)+5, X0=P, X1=S-P, Y0=P+210, Y1=Y0+CH, X=t=>X0+t/t1*(X1-X0), Y=v=>Y1-(v-lo)/(hi-lo)*(Y1-Y0);
+  x.strokeStyle=faint; x.lineWidth=2; x.beginPath(); x.moveTo(X0,Y1); x.lineTo(X1,Y1); x.stroke();
+  if(!s.loggedAfter)(s.exercises||[]).forEach(e=>(e.sets||[]).forEach(st=>{ if(!st||!st.doneAt)return; const dt=(st.doneAt-R.t0)/1000; if(dt<0||dt>t1)return; x.strokeStyle=dim; x.globalAlpha=st.isDrop?0.3:0.6; x.lineWidth=3; x.beginPath(); x.moveTo(X(dt),Y1); x.lineTo(X(dt),Y1-26); x.stroke(); x.globalAlpha=1; }));
+  x.strokeStyle=fg; x.lineWidth=4; x.lineJoin='round'; x.beginPath(); pts.forEach((p,i)=>{ if(i)x.lineTo(X(p[0]),Y(p[1])); else x.moveTo(X(p[0]),Y(p[1])); }); x.stroke();
+  x.fillStyle=dim; x.font='400 26px '+F; x.textAlign='left'; x.fillText(String(Math.round(hi)),X0,Y0-10); x.fillText(String(Math.round(lo)),X0,Y1+34); const a=new Date(R.t0), b=new Date(R.t0+t1*1000); x.textAlign='right'; x.fillText(hhmm(a.getTime())+' → '+hhmm(b.getTime()),X1,Y1+34); x.textAlign='left';
+  let y=Y1+110; if(rows.length){ x.fillStyle=fg; x.font='800 30px '+F; x.fillText('FC por serie · antes → pico',P,y); y+=52; x.fillStyle=dim; x.font='400 28px '+F; rows.forEach(t=>{ x.fillText(t,P,y); y+=44; }); }
+  x.fillStyle=dim; x.font='400 26px '+F; x.fillText('gym',P,HT-48); const w1=x.measureText('gym').width; x.fillStyle=faint; x.fillText('//',P+w1,HT-48); const w2=x.measureText('//').width; x.fillStyle=dim; x.fillText('TRK',P+w1+w2,HT-48);
+  return c; }
+async function shareHRImage(){ const s=shSessOf(); if(!s){ toast('⚠ nada que compartir','err'); return; } const job=toastTask('generando imagen');
+  try{ if(document.fonts&&document.fonts.ready)await document.fonts.ready; const c=shHRCanvas(s); if(!c){ job.fail('⚠ esta sesión aún no tiene FC'); return; }
+    const blob=await new Promise(r=>c.toBlob(r,'image/png')); if(!blob)throw new Error('sin imagen'); await shipPng(blob,'gymtrk-fc-'+(s.date||todayISO())+'.png',job,'FC de la sesión'); }
+  catch(e){ job.fail('⚠ no se pudo generar la imagen'); } }
 // historial: el formato compacto de una sesión (se conserva tal cual)
 function _shWR(x,showU){ return numTxt(effW(x))+(showU?escTxt(x.unit||''):'')+'×'+((x.r!=null&&x.r!=='')?escTxt(String(x.r)):'-'); }
 function _shRir(x){ const f=String(x.rir==null?'':x.rir).trim().toUpperCase(); return f===''?'':(f==='F'?' F':(_shM==='rpe'?' RPE':' RIR')+escTxt(rirShow(f,_shM))); }
@@ -17184,6 +17344,9 @@ document.getElementById('app').addEventListener('click',e=>{
     try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,()=>trkPrompt({title:'copiar',label:'TEXTO',value:txt,ok:'listo'},()=>{})); }
       else trkPrompt({title:'copiar',label:'TEXTO',value:txt,ok:'listo'},()=>{}); }catch(_){ trkPrompt({title:'copiar',label:'TEXTO',value:txt,ok:'listo'},()=>{}); } }
   else if(a==='shimg'){ shareImage(); }
+  else if(a==='shpdf'){ shareDoc('pdf'); }   // v372 · WS4
+  else if(a==='shdoc'){ shareDoc('docx'); }
+  else if(a==='shhr'){ shareHRImage(); }
   else if(a==='shview'){ state._shv=({lista:'lista',historial:'historial'})[el.dataset.v]||'historial'; reRender(); }   // v366 · X11 · v367: encima de la tarjeta, render() deja la pestaña bajo el dedo   // v285 · sesión (formato de la sesión) | lista
   else if(a==='shareweight'){ state.shareType='weight'; go('share'); }
   else if(a==='mealsummary'){ openMealSummary(el.dataset.tag); }
@@ -21696,7 +21859,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()); }catch(_){ idbReleaseHold(); }
 try{ cloudBoot(); }catch(_){}   // v352 · cuentas y nube: apagada (CLOUD_CFG vacío) no hace nada
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); _v367SelfCheck(); _h9SelfCheck(); _v370SelfCheck(); _v371SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search)){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); _v367SelfCheck(); _h9SelfCheck(); _v370SelfCheck(); _v371SelfCheck(); _v372SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()).then(()=>_v372ShareCheck()).catch(e=>console.error(e)); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
