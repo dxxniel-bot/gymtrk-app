@@ -1,9 +1,11 @@
-﻿const C = 'gymtrk-v373';
+﻿const C = 'gymtrk-v374';
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(C).then(c => c.addAll(['./', './index.html', './manifest.json'].map(x => new Request(x, { cache: 'reload' })))
       // v295 · las fichas del catálogo de sustancias: con 'no-cache' el servidor contesta 304 si no cambiaron; si faltan, no frena la versión
       .then(() => c.add(new Request('./substances.json', { cache: 'no-cache' })).catch(() => {}))
+      // v374 · los micros de los alimentos básicos (USDA): sin red tiene que estar guardado; si falta, no frena la versión
+      .then(() => c.add(new Request('./usda-basics.json', { cache: 'no-cache' })).catch(() => {}))
       // v362 · el aviso de privacidad: en la app instalada se abre ahí mismo y sin red tiene que estar guardado; si falta, no frena la versión
       .then(() => c.add(new Request('./privacy.html', { cache: 'no-cache' })).catch(() => {})))
       .then(() => self.skipWaiting()).catch(() => {})
