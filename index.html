@@ -1550,7 +1550,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
      (iba pegado: su caja tapaba 16 px del toque de esos botones) y su toque mide 45 (B-11). En el enfoque, el ejercicio que ya no es el actual no
      lo muestra: sus ▲▼ tampoco se ven (antes se desvanecía con `.exclosing` y volvía a aparecer, tenue, al cerrarse el ejercicio). */
   .submeta.whyln{padding:var(--s1) 0 var(--s2);} .addrow + .whyln{padding:var(--s5) 0;}
-  .wfocus .ex:not(.current) .whyln{display:none;}
+  .wfocus .ex:not(.current) .whyln{display:none;} .wfocus .ex:not(.current) .flxctx{display:none;}   /* FLX */
   /* v305 · cambio de ejercicio en dos tiempos: primero lo que se va a cerrar se desvanece EN SU LUGAR (nada se mueve); luego el hueco se cierra deslizando y el siguiente se enciende, todo con --dur-calm */
   @keyframes exfade{to{opacity:0}} .wfocus .ex.exclosing .exsub,.wfocus .ex.exclosing .setprogline,.wfocus .ex.exclosing .addrow,.wfocus .ex.exclosing .swipehint,.wfocus .ex.exclosing .whyln,.wfocus .ex.exclosing .exholdc{animation:exfade var(--dur-2) var(--ease-in) forwards;}
   .pair.phead{margin-bottom:var(--s2);} .pair.phead .thead{margin-bottom:0;} .pair.phead .setn,.pair.phead .pairdone{cursor:default;}   /* v256: cabecera unilateral con la envoltura del par */
@@ -1610,7 +1610,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v379';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v380';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -6141,15 +6141,15 @@ function _baselineSelfCheck(){
     const cur=S(100,8,'2'), prev=S(90,8,'2');
     const farCtx1={priorHardSets:0,orderIdx:0,restSec:null}, farCtx2={priorHardSets:15,orderIdx:6,restSec:null};
     const html=setBadgeHTML(cur,prev,farCtx1,farCtx2,'id');
-    A('wildly different context -> no percentage, direction only', !/\d+%/.test(html));
+    A('FLX · contexto muy distinto: sin %, sin flecha y con los números de la vez pasada', !/\d+%/.test(html)&&!/[▲▼]/.test(html)&&html.indexOf('≈ 90×8 @2')>=0);
     // the reported bug (2026-08-13): same reps/RIR but MORE weight (100 vs 90) still showed ▼ because the
     // baseline (farCtx2: fatigued deep into ITS session) got fatigue-corrected far above the fresh current
     // set (farCtx1) — the correction inflated the wrong side and flipped a real raw improvement into a
     // false decline. Direction must follow the RAW numbers whenever confidence is too low to trust %.
-    A('a raw improvement never shows ▼ just because the baseline was logged more fatigued', html.includes('▲') && !html.includes('▼'));
+    A('FLX · una mejora cruda nunca sale ▼ por el cansancio de la base', !html.includes('▼'));
     // and the inverse must still correctly show ▼ — the fix must not just force every 'dir' badge to ▲
     const worse=S(80,8,'2'); const htmlDown=setBadgeHTML(worse,prev,farCtx1,farCtx2,'id');
-    A('a genuine raw decline still shows ▼ under low confidence', htmlDown.includes('▼') && !htmlDown.includes('▲'));
+    A('FLX · con contexto muy distinto una baja cruda tampoco sale ▲: «≈» con los números', !htmlDown.includes('▲')&&htmlDown.indexOf('≈ 90×8 @2')>=0);
     // day-2 multi-exercise: EVERY exercise on a repeat day must resolve baseline (reported: only 1 of N did)
     db.sessions=[{id:'sDay2',date:'2026-08-01',dayId:'d2',type:'training',exercises:[
       {exId:'eA',name:'squat',type:'free',unilateral:false,sets:[S(100,5,'2')]},
@@ -8659,6 +8659,165 @@ function _gy8SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK gy
     A('marcado en los dos gyms: las ▲▼ comparan contra esa vez', baselineSetsFor({gym:'SP',name:'raro rises',variant:variantKey(ex)}).sets!==null);
     A('NO marcado en el gym de hoy: no cruza nada', !xx.some(s=>String(s.w)==='20')&&baselineSetsFor({gym:'XX',name:'raro rises',variant:variantKey(ex)}).sets===null);
     console.log('gy8 self-check OK'); } finally{ window.exCatRec=sx; db=real; bumpIdx(); } }
+// FLX · el contexto del día: sale SOLO lo que está fuera de lo tuyo. Sueño de anoche < tu habitual (14 noches) − 1 h o < 6 h · readiness
+// bajo tu normal (la franja p15–p85 de 21 días, normalBandRolling, la misma «tu normal» de progreso) · déficit de ayer (o del día, si ya
+// terminó) ≥ 800 kcal contra tu mantenimiento (estimateTDEE o maintenanceKcal) y ≥ 300 más que tu déficit habitual. Un día con < 35 % de tu
+// mantenimiento registrado se toma por incompleto y no cuenta. No cambia ningún número. flxDayCtx(fecha) → {items:[{k,v,norm,txt}], txt}.
+const _flxDC={}, _flxRB={};
+function flxHM(hh){ const m=Math.round(hh*60); return Math.floor(m/60)+':'+String(m%60).padStart(2,'0'); }
+function flxMS(sec){ const s=Math.round(sec); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function flxRdyBand(date){ if(_flxRB[date]!==undefined)return _flxRB[date]; const a=[]; for(let i=21;i>=1;i--){ const x=readinessScore(shiftDate(date,-i)); a.push(x&&x.score!=null?x.score:null); } a.push(0);
+  return (_flxRB[date]=normalBandRolling(a,1,21).bands[0]||null); }
+function flxDayCtx(date){ date=date||todayISO(); const c=_flxDC[date]; if(c&&Date.now()-c.at<60000)return c.v; const items=[];
+  try{ const hh=rdySleepH(date); if(hh>0){ const b=meanSd(priorDays(date,14,rdySleepH)); if(hh<6||(b.n>=5&&hh<b.m-1))items.push({k:'sleep',v:hh,norm:b.n>=5?b.m:null,txt:'sueño '+flxHM(hh)}); } }catch(_){}
+  try{ const md=((estimateTDEE(90)||{}).tdee)||maintenanceKcal(); if(md>0){ const kc=d=>{ const n=dayNutr(d); return n._n?n.kcal:0; }, ok=k=>k>=md*0.35;
+      const ua=[]; for(let i=2;i<=15;i++){ const k=kc(shiftDate(date,-i)); if(ok(k))ua.push(md-k); } const usual=ua.length>=5?median(ua):null; let best=null;
+      [[shiftDate(date,-1),'ayer']].concat(date<todayISO()?[[date,'']]:[]).forEach(([d,l])=>{ const k=kc(d); if(!ok(k))return; const df=md-k; if(df>=800&&(usual==null||df>=usual+300)&&(!best||df>best.df))best={df,l}; });
+      if(best)items.push({k:'kcal',v:-best.df,norm:usual!=null?-usual:null,txt:'déficit'+(best.l?' '+best.l:'')+' −'+(Math.round(best.df/50)*50).toLocaleString('en-US')}); } }catch(_){}
+  try{ const r=readinessScore(date); if(r&&r.score!=null){ const bd=flxRdyBand(date); if(bd&&r.score<bd[0])items.push({k:'ready',v:r.score,norm:bd,txt:'readiness '+r.score}); } }catch(_){}
+  const v={items,txt:items.length?'rendimiento comprometido por: '+items.map(x=>x.txt).join(' · '):''}; _flxDC[date]={at:Date.now(),v}; return v; }
+// por ejercicio: descanso mucho menor que la vez pasada (mediana < 60 % y ≥ 45 s menos) · ≥ 4 series duras más antes de empezarlo (y ≥ 1.5×).
+// Las series de más se heredan a todo lo que sigue: solo se dice en el PRIMER ejercicio donde aparecen (en vivo y en la hoja).
+function flxHard(cc,bc){ const hc=((cc||[])[0]||{}).priorHardSets, hb=((bc||[])[0]||{}).priorHardSets; return hc!=null&&hb!=null&&hc-hb>=4&&hc>=hb*1.5; }
+function flxExCtx(e,cc,base,bc){ const out=[]; try{ if(!e||isCardio(e)||!base||!base.sets)return out; cc=cc||[]; bc=bc||[];
+    const med=a=>{ const v=a.filter(x=>x>0&&x<1800); return v.length?median(v):null; };
+    const rc=med((e.sets||[]).map((s,i)=>(s&&!s._pf&&s.doneAt&&setReps(s)>0)?(cc[i]||{}).restSec:null)), rb=med((base.sets||[]).map((s,i)=>(bc[i]||{}).restSec));
+    if(rc!=null&&rb!=null&&rc<rb*0.6&&rb-rc>=45)out.push({k:'rest',v:rc,norm:rb,txt:'descanso '+flxMS(rc)+' (la vez pasada '+flxMS(rb)+')'});
+    const hc=(cc[0]||{}).priorHardSets, hb=(bc[0]||{}).priorHardSets;
+    if(flxHard(cc,bc))out.push({k:'hard',v:hc,norm:hb,txt:(Math.round(hc*10)/10)+' series duras antes (la vez pasada '+(Math.round(hb*10)/10)+')'}); }catch(_){} return out; }
+function flxLineHTML(txt){ return txt?'<div class="submeta u-o50 u-mt6 flxctx">'+escTxt(txt)+'</div>':''; }
+function flxDayLineHTML(w){ try{ return flxLineHTML(flxDayCtx((w&&w.date)||todayISO()).txt); }catch(_){ return ''; } }
+function flxExLineHTML(ex,cc,bl,bc,exi){ try{ let it=flxExCtx(ex,cc,bl,bc); const A=state._align||{};
+    if(exi>0&&it.some(x=>x.k==='hard')){ for(let j=0;j<exi;j++){ const a=A[j]; if(a&&a.prevSets&&flxHard(a.curFatCtx,a.baseFatCtx)){ it=it.filter(x=>x.k!=='hard'); break; } } } return it.length?flxLineHTML('rendimiento comprometido por: '+it.map(x=>x.txt).join(' · ')):''; }catch(_){ return ''; } }
+// la hoja de cierre: lo del día y, por ejercicio, su descanso / sus series previas (con su nombre)
+function flxSessCtx(s){ const D=flxDayCtx(s.date||todayISO()), items=D.items.slice(); const sIdx=(db.sessions||[]).indexOf(s), F=fatCtxOf(s)||[]; let hard=null;
+  (s.exercises||[]).forEach((e,ei)=>{ if(!e||isCardio(e))return; try{ const b=baselineSetsFor(Object.assign(exIdentity(s,ei),{orderIdx:ei,excludeSessionId:s.id,beforeDate:s.date,beforeSIdx:sIdx<0?1e9:sIdx})); if(!b.sets||!b.sess)return;
+      flxExCtx(e,F[ei],b,(fatCtxOf(b.sess)||[])[b.ei]).forEach(x=>{ if(x.k==='hard'&&hard){ hard.more++; return; } const y=Object.assign({},x,{ex:e.name,txt:e.name+': '+x.txt}); if(x.k==='hard'){ hard=y; y.more=0; } items.push(y); }); }catch(_){} });
+  if(hard&&hard.more)hard.txt+=' (y '+hard.more+' ejercicio'+(hard.more===1?'':'s')+' después)';
+  return {items,txt:items.length?'rendimiento comprometido por: '+items.map(x=>x.txt).join(' · '):''}; }
+function flxSessLineHTML(s){ try{ return flxLineHTML(flxSessCtx(s).txt); }catch(_){ return ''; } }
+function _flxSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK flx: '+nm); }; const real=db, fz=window.faseSetTag;
+  try{ const S=(w,r,rir,o)=>Object.assign({w:String(w),r:String(r),rir:String(rir),unit:'lbs',done:true},o||{}), b=(c,p,l)=>setBadgeHTML(c,p,null,null,l||'id',{date:'2026-10-29',exName:'militar press'});
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1'],activeGym:'g1',split:{name:'s',days:[]},sessions:[]}); bumpIdx();
+    const x1=b(S(50,6,1),S(50,7,1)); A('50×6@1 vs 50×7@1 → «=» gris, nunca verde ni %', />=<\/span>$/.test(x1)&&!/good|▲|▼|%/.test(x1));
+    A('50×8@1 vs 50×6@1 → ▲+5%', />▲\+5%</.test(b(S(50,8,1),S(50,6,1))));
+    A('50×5@0 vs 50×7@1 → ▼-8%', />▼-8%</.test(b(S(50,5,0),S(50,7,1))));
+    A('55×6@1 vs 50×6@1 → ▲+10%', />▲\+10%</.test(b(S(55,6,1),S(50,6,1))));
+    A('otro peso dentro del 5 % → «=»', />=</.test(b(S(52.5,6,1),S(50,7,1)))&&!/%/.test(b(S(52.5,6,1),S(50,7,1))));
+    A('mismo peso, capacidad ±1 con el RIR (50×7@0 vs 50×6@2) → «=»', />=</.test(b(S(50,7,0),S(50,6,2))));
+    A('F cuenta como RIR 0: 50×6@F vs 50×8@1 → ▼', /▼/.test(b(S(50,6,'F'),S(50,8,1))));
+    // la base vino más cansada (antes la corrección inflaba la base y volteaba el signo): ahora la base es la base
+    const fresh={priorHardSets:2,orderIdx:1,restSec:120}, tired={priorHardSets:7,orderIdx:3,restSec:120};
+    const x2=setBadgeHTML(S(50,6,1),S(50,7,1),tired,fresh,'day',{});
+    A('el caso del dueño: 50×6@1 tras más series que la vez pasada → «=», jamás ▲', />=</.test(x2)&&!/▲|good/.test(x2));
+    const far1={priorHardSets:0,orderIdx:0,restSec:null}, far2={priorHardSets:15,orderIdx:6,restSec:null}, x3=setBadgeHTML(S(100,8,2),S(50,7,1),far1,far2,'id',{});
+    A('contexto distinto (tier dir) → «≈ 50×7 @1» sin % ni flecha', x3.indexOf('≈ 50×7 @1')>=0&&!/%|▲|▼/.test(x3)&&/--o40/.test(x3));
+    const x4=setBadgeHTML(S(55,6,1),S(50,6,1),null,null,'name',{curDay:'dA',baseDay:'dB'});
+    A('base de otro día del split → «≈ …» sin %', x4.indexOf('≈ 50×6 @1')>=0&&!/%/.test(x4));
+    A('base por nombre sin día (posición similar) → compara con «~»', />▲~\+10%</.test(setBadgeHTML(S(55,6,1),S(50,6,1),null,null,'name',{})));
+    A('base sin RIR → «≈ …»: no se adivina la capacidad', setBadgeHTML(S(50,8,1),S(50,7,''),null,null,'id',{}).indexOf('≈ 50×7<')>=0);
+    A('distinta unidad no compara', b(S(50,8,1,{unit:'kg'}),S(50,6,1))==='');
+    A('serie incompleta o sin base: nada', b(S(50,8,''),S(50,6,1))===''&&b(S(50,8,1),null)==='');
+    const U=(w,r,rir,sd)=>S(w,r,rir,{side:sd}), pb=(a,c,p,q)=>pairBadgeHTML(a,c,p,q,null,null,null,null,'id',{});
+    A('unilateral: L+R con 2 reps más por lado → ▲+5%', />▲\+5%</.test(pb(U(50,8,1,'R'),U(50,8,1,'L'),U(50,6,1,'R'),U(50,6,1,'L'))));
+    A('unilateral: un lado −1 → «=»', />=</.test(pb(U(50,7,1,'R'),U(50,6,1,'L'),U(50,7,1,'R'),U(50,7,1,'L'))));
+    A('unilateral: otro peso en los dos lados +10 % → ▲+10%', />▲\+10%</.test(pb(U(55,6,1,'R'),U(55,6,1,'L'),U(50,6,1,'R'),U(50,6,1,'L'))));
+    A('(d) nunca contra lo crudo: más peso y más reps no baja', !/▼/.test(b(S(55,8,0),S(50,7,0))));
+    // el gancho de «fase»
+    let got=null; window.faseSetTag=o=>{ got=o; return 'fase·x'; }; const x5=b(S(50,8,1),S(50,6,1));
+    A('faseSetTag recibe {dir,noise,ctx,date,exName} y su texto va tras la flecha', /▲\+5%<\/span><span class="u-label u-o50 flxtag">fase·x<\/span>$/.test(x5)&&got&&got.dir==='up'&&got.noise===false&&got.ctx===false&&got.date==='2026-10-29'&&got.exName==='militar press');
+    b(S(50,6,1),S(50,7,1)); A('…y en «=» llega noise', got&&got.noise===true&&got.dir==='flat'); window.faseSetTag=fz;
+    // la hoja de cierre / compartir: la misma regla por serie
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['g1'],activeGym:'g1',split:{name:'s',days:[{id:'d1',name:'push B',exercises:[]}]},sessions:[
+      {id:'a',date:'2026-10-22',dayId:'d1',dayName:'push B',gym:'g1',type:'training',exercises:[{exId:'m1',name:'militar press',muscle:'delts',type:'free',sets:[S(50,7,1),S(50,7,1),S(50,6,1)]}]},
+      {id:'c',date:'2026-10-29',dayId:'d1',dayName:'push B',gym:'g1',type:'training',exercises:[{exId:'m1',name:'militar press',muscle:'delts',type:'free',sets:[S(50,6,1),S(52.5,6,1),S(50,4,0)]}]}]}); bumpIdx();
+    const pp=shSetProg(db.sessions[1],0);
+    A('hoja: 50×6@1 vs 50×7@1 → «=»', pp[0]&&pp[0].dir==='flat'&&shPPTxt(pp[0])==='=');
+    A('hoja: 52.5×6@1 vs 50×7@1 → = (dentro del 5 %)', pp[1]&&pp[1].dir==='flat');
+    A('hoja: 50×4@0 vs 50×6@1 → ▼', pp[2]&&pp[2].dir==='down'&&/^▼\d+%$/.test(shPPTxt(pp[2])));
+    A('hoja: contexto distinto → columna vacía y «≈ …» al final', shPPTxt({ctx:true,prevTxt:'50×7 @1'})===''&&flxPPTail({ctx:true,prevTxt:'50×7 @1'}).indexOf('≈ 50×7 @1')>=0);
+    // el renglón de contexto
+    const T='2026-09-20', D=k=>shiftDate(T,-k), sl={}, ml={}; for(let i=1;i<=30;i++){ sl[D(i)]=7.5; ml[D(i)]=[{id:'m'+i,tag:'lunch',name:'x',qty:1,kcal:2300}]; }
+    const mk=(sleepT,kcalY)=>{ const s=Object.assign({},sl,{[T]:sleepT}), m=Object.assign({},ml,{[D(1)]:[{id:'y',tag:'lunch',name:'x',qty:1,kcal:kcalY}],[T]:[{id:'t',tag:'lunch',name:'x',qty:1,kcal:2300}]});
+      db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',weightKg:80,heightCm:180,age:30,sex:'M',activity:1.375},gyms:['g1'],activeGym:'g1',split:{name:'s',days:[]},sessions:[],sleep:s,meals:m}); bumpIdx();
+      Object.keys(_flxDC).forEach(k=>delete _flxDC[k]); Object.keys(_flxRB).forEach(k=>delete _flxRB[k]); try{ Object.keys(_readyCache).forEach(k=>delete _readyCache[k]); }catch(_){} return flxDayCtx(T); };
+    const bad=mk(4.4,1150);
+    A('sueño 4:24 y déficit de ayer: «rendimiento comprometido por: sueño 4:24 · déficit ayer −1,300 …»', /^rendimiento comprometido por: sueño 4:24 · déficit ayer −1,300/.test(bad.txt)&&bad.items[0].k==='sleep');
+    A('el renglón sale en la hoja de cierre', flxLineHTML(bad.txt).indexOf('flxctx')>0);
+    const ok=mk(7.5,2300); A('un día normal no dice nada', ok.txt===''&&!ok.items.length&&flxLineHTML(ok.txt)==='');
+    A('6 h justas con un habitual de 7.5 → sí (habitual − 1 h)', /sueño 6:00/.test(mk(6,2300).txt));
+    // por ejercicio: descanso corto y series duras de más
+    const ex={name:'militar press',sets:[S(50,6,1,{doneAt:1}),S(50,6,1,{doneAt:2})]}, it=flxExCtx(ex,[{priorHardSets:6,restSec:null},{priorHardSets:7,restSec:50}],{sets:[S(50,7,1),S(50,7,1)]},[{priorHardSets:1,restSec:null},{priorHardSets:2,restSec:150}]);
+    A('por ejercicio: descanso 0:50 contra 2:30 y 6 series duras antes contra 1', it.length===2&&it[0].txt==='descanso 0:50 (la vez pasada 2:30)'&&/^6 series duras antes \(la vez pasada 1\)$/.test(it[1].txt));
+    A('por ejercicio: 20 contra 16 (no es 1.5×) no se dice', !flxHard([{priorHardSets:20}],[{priorHardSets:16}])&&flxHard([{priorHardSets:6}],[{priorHardSets:1}]));
+    A('por ejercicio: igual que la vez pasada no dice nada', !flxExCtx(ex,[{priorHardSets:1,restSec:null},{priorHardSets:2,restSec:140}],{sets:[S(50,7,1),S(50,7,1)]},[{priorHardSets:1,restSec:null},{priorHardSets:2,restSec:150}]).length);
+    console.log('flx self-check OK'); } finally{ window.faseSetTag=fz; if(fz===undefined)delete window.faseSetTag; db=real; bumpIdx(); Object.keys(_flxDC).forEach(k=>delete _flxDC[k]); Object.keys(_flxRB).forEach(k=>delete _flxRB[k]); } }
+function _faseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fase: '+nm); }; const real=db, sx=exCatRec, fx=window.flxDayCtx;
+  try{ const T=todayISO(), D=n=>shiftDate(T,n);
+    // tipo desde el nombre (lo que él ya escribió) · nunca se reescribe
+    const N={'mini cut':'agr','mini cut (-)':'agr','Mini Cut':'agr','maintenance(+)':'mant','mantenimiento':'mant','definición':'def','cut':'def','volumen':'vol','lean bulk':'vol','peak week':'peak','puesta a punto':'peak','reverse diet':'mant','xyz':''};
+    Object.keys(N).forEach(k=>A('el nombre «'+k+'» se lee como '+(N[k]||'nada'), faseProtoFromName(k)===N[k]));
+    const H={}; for(let i=40;i>20;i--)H[D(-i)]={kcal:2400}; for(let i=20;i>=0;i--)H[D(-i)]={kcal:1500};
+    const mk=(n,w,g,d)=>({name:n,muscle:'chest',type:'free',sets:[{w:String(w),r:'8',rir:'2',unit:'kg',done:true},{w:String(Math.round(w*.9)),r:'8',rir:'2',unit:'kg',done:true}]});
+    const S=[]; const add=(d,g,E)=>S.push({id:'s'+S.length,date:d,gym:g,type:'training',dayName:'d',exercises:E});
+    add(D(-14),'AG',[mk('sube x',60),mk('estable x',60),mk('baja x',60)]); add(D(-10),'AG',[mk('sube x',62),mk('estable x',61),mk('baja x',58)]);
+    add(D(-7),'AG',[mk('sube x',64),mk('estable x',60),mk('baja x',56)]); add(D(-3),'AG',[mk('sube x',66),mk('estable x',60)]);
+    add(D(-2),'XX',[mk('sube x',200),mk('baja x',10)]);   /* otro gym, no marcado: no cuenta */
+    add(D(-1),'SP',[mk('estable x',60.5)]);                 /* marcado en AG y SP (GY8): sí cuenta */
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',goal:'cut'},gyms:['AG','SP','XX'],activeGym:'AG',split:{name:'s',days:[]},goalHist:H,sessions:S,
+      phases:[{id:'ph1',from:D(-20),to:D(-18),name:'mini cut (-)'}]}); bumpIdx();
+    window.exCatRec=n=>String(n).toLowerCase()==='estable x'?{gyms:['AG','SP']}:null;
+    // expectativa por tipo (el nombre manda si no hay tipo elegido; el elegido manda sobre el nombre)
+    let E=faseExpect(T); A('mini cut (-) → déficit agresivo, se acepta bajar hasta 5 %, semana 3, su nombre tal cual', E.tipo==='agr'&&E.espera==='bajar-poco'&&E.tol===5&&E.semana===3&&E.de===null&&E.corto==='mini cut (-)'&&E.src==='nombre');
+    A('su nombre no se tocó', db.phases[0].name==='mini cut (-)'&&!db.phases[0].proto);
+    const P=db.phases[0], ex={vol:['subir',3],mant:['mantener',3],def:['mantener',3],agr:['bajar-poco',5],peak:['no-califica',null],otro:['no-califica',null]};
+    FASE_K.forEach(k=>{ P.proto=k; P.weeks=4; const e=faseExpect(T); A('tipo '+k+' → espera '+ex[k][0], e.tipo===k&&e.espera===ex[k][0]&&e.tol===ex[k][1]&&e.src==='tipo'&&e.de===4&&faseSemTxt(e)==='semana 3 de 4'); });
+    delete P.proto; delete P.weeks;
+    A('un tramo sin nombre y sin perfil completo: la meta del perfil (cut → déficit)', (e=>e.tipo==='def'&&e.src==='meta'&&e.corto==='déficit')(faseExpect(D(-30))));
+    // veredicto contra lo esperado, en cada tipo
+    const V=(k,p)=>faseVerdict({tipo:k,espera:FASE_T[k].e,tol:FASE_T[k].tol},p);
+    A('volumen: +5 ✓ · 0 estable (ni ✓ ni alarma) · −5 abajo', V('vol',5)==='ok'&&V('vol',0)==='neutro'&&V('vol',-5)==='bajo');
+    A('mantenimiento: 0 ✓ · +5 mejor · −4 abajo', V('mant',0)==='ok'&&V('mant',5)==='alto'&&V('mant',-4)==='bajo');
+    A('déficit: −2 ✓ · −4 abajo · +4 mejor', V('def',-2)==='ok'&&V('def',-4)==='bajo'&&V('def',4)==='alto');
+    A('mini cut: −4 ✓ · −6 abajo', V('agr',-4)==='ok'&&V('agr',-6)==='bajo'&&V('agr',0)==='ok');
+    A('peak week y otro no califican', V('peak',-12)==='nc'&&V('otro',-12)==='nc');
+    // tendencia con datos sintéticos (mejor serie, e1RM crudo, respeta gyms)
+    const tr=n=>faseTrendKey(exKeyByName(n),'AG');
+    const up=tr('sube x'), st=tr('estable x'), dn=tr('baja x');
+    A('subiendo: +10 % en 4 sesiones (el gym XX no cuenta) → mejor de lo esperado en tu mini cut', up.n===4&&up.dir==='sube'&&up.pct>8&&up.pct<12&&up.verdict==='alto'&&up.excl===1&&/subiendo 10 % en 4 sesiones · mejor de lo esperado en tu mini cut \(-\) ✓/.test(up.txt));
+    A('estable: 5 sesiones (SP marcado en los dos gyms sí cuenta) → «se acepta bajar hasta 5 % ✓»', st.n===5&&st.dir==='estable'&&st.verdict==='ok'&&st.txt==='fuerza: estable · mini cut (-): se acepta bajar hasta 5 % ✓');
+    A('bajando ~7 % en 3 sesiones → más de lo esperado en tu mini cut', dn.n===3&&dn.dir==='baja'&&dn.pct<-6&&dn.verdict==='bajo'&&/^fuerza: bajando 7 % en 3 sesiones · más de lo esperado en tu mini cut \(-\)$/.test(dn.txt));
+    A('pocos datos: 2 sesiones no califican', (t=>t.verdict==='pocos'&&t.n===2)(faseTrendKey(exKeyByName('baja x'),'AG',D(-10))));
+    P.proto='def'; A('en déficit el mismo −7 % también es abajo; estable ✓', tr('baja x').verdict==='bajo'&&tr('estable x').txt==='fuerza: estable · mini cut (-): se espera mantener ✓');
+    P.proto='vol'; A('en volumen: estable = «se espera subir con las semanas» y subir ✓', tr('estable x').verdict==='neutro'&&/se espera subir con las semanas$/.test(tr('estable x').txt)&&tr('sube x').verdict==='ok'&&/: se espera subir ✓$/.test(tr('sube x').txt));
+    P.proto='peak'; A('peak week: la tendencia se ve, no se califica', (t=>t.verdict==='nc'&&/peak week|mini cut \(-\): no se califica$/.test(t.txt))(tr('baja x')));
+    // la etiqueta corta por serie: solo cuando la fase cambia la lectura
+    P.proto='peak'; A('peak week: ▼ «no se califica», ▲ nada', faseSetTag({dir:'down',date:T})==='mini cut (-) · no se califica'&&faseSetTag({dir:'up',date:T})==='');
+    delete P.proto;
+    A('mini cut: ▼ esperable · ▼ −8 % por debajo · ▲ bien · = o ruido nada', faseSetTag({dir:'down',date:T})==='esperable en tu mini cut (-)'&&faseSetTag({dir:'down',pct:-8,date:T})==='por debajo de lo esperado'&&faseSetTag({dir:'up',date:T})==='bien para tu mini cut (-)'&&faseSetTag({dir:'eq',date:T})===''&&faseSetTag({dir:'down',noise:true,date:T})===''&&faseSetTag({dir:'down',noise:3,pct:-2,date:T})==='');
+    P.proto='vol'; A('volumen: ▲ ya es lo esperado (nada), ▼ ya es roja (nada)', faseSetTag({dir:'up',date:T})===''&&faseSetTag({dir:'down',date:T})===''); delete P.proto;
+    // la hoja de cierre: el renglón y el pliegue por ejercicio
+    db.sessions.push({id:'sT',date:T,gym:'AG',type:'training',dayName:'d',exercises:[mk('sube x',68),mk('estable x',60),mk('baja x',54)]}); bumpIdx(); const s=db.sessions[db.sessions.length-1];
+    window.flxDayCtx=undefined; A('cierre sin flx: «dentro de lo esperado para tu mini cut (-) · 1 ejercicio abajo»', faseSessSummary(s)==='rendimiento: dentro de lo esperado para tu mini cut (-) · 1 ejercicio abajo');
+    window.flxDayCtx=()=>({items:['sueño'],txt:'sueño 4:24'}); A('cierre con flx: el porqué entre paréntesis', faseSessSummary(s)==='rendimiento: dentro de lo esperado para tu mini cut (-) · 1 ejercicio abajo (sueño 4:24)');
+    P.proto='peak'; A('cierre en peak week: no se califica', faseSessSummary(s)==='rendimiento: mini cut (-) · no se califica'); delete P.proto;
+    openSessDone(s.id); { const m=document.getElementById('modal'), sm=m&&m.querySelector('.fsum'), bx=m&&m.querySelector('#fs_box');
+      A('la hoja de cierre trae el renglón fuera de la tarjeta y el pliegue con 3 ejercicios', !!sm&&/1 ejercicio abajo \(sueño 4:24\)/.test(sm.textContent)&&!sm.closest('.sharecard')&&!!bx&&bx.hidden&&bx.querySelectorAll('.submeta').length===3);
+      m.querySelector('[data-act="fsfold"]').click(); A('el pliegue abre', !bx.hidden); } closeModal();
+    // el editor: protocolo y semanas; sin tocarlo sigue al nombre y no se guarda; tocado se guarda; el nombre queda tal cual
+    openPhaseName(D(-20),T,1500); let L=document.getElementById('asklayer'); const on=()=>(L.querySelector('#ph_proto [data-ph].on')||{dataset:{}}).dataset.ph;
+    A('el editor abre con su protocolo inferido del nombre (mini cut)', !!L.querySelector('#ph_proto')&&on()==='agr'&&!!L.querySelector('#ph_wk'));
+    L.querySelector('#ph_proto [data-ph="vol"]').click(); L.querySelector('#ph_wk').value='6'; L.querySelector('[data-ask="ok"]').click();
+    let p=(db.phases||[]).find(x=>x.name==='mini cut (-)'); A('tocado: se guarda el tipo y las semanas, el nombre intacto', !!p&&p.proto==='vol'&&p.weeks===6&&faseExpect(T).tipo==='vol'&&faseExpect(T).de===6);
+    openPhaseName(D(-40),D(-21),2400); L=document.getElementById('asklayer'); const nm=L.querySelector('#ph_name'); nm.value='peak week'; nm.dispatchEvent(new Event('input',{bubbles:true}));
+    A('sin tocar el protocolo, sigue a lo que escribes', on()==='peak'); L.querySelector('[data-ask="ok"]').click();
+    p=(db.phases||[]).find(x=>x.name==='peak week'); A('sin tocarlo no se guarda el tipo (sigue inferido del nombre)', !!p&&!p.proto&&faseExpect(D(-30)).tipo==='peak');
+    console.log('fase self-check OK'); } finally{ window.exCatRec=sx; window.flxDayCtx=fx; try{ closeAsk(true); }catch(_){} try{ closeModal(); }catch(_){} db=real; bumpIdx(); } }
+function _fin3SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK fin3: '+nm); };
+  A('la flecha le pasa su % a la fase', /pct:\(r\.pct!=null/.test(String(flxTagTxt)));
+  A('la tendencia aclara las sesiones de antes de la fase', faseTrendTxt({verdict:'alto',pct:4,n:5,dir:'sube',pre:3,exp:{espera:'bajar-poco',tol:5,corto:'mini cut',tipo:'agr'}}).indexOf('incluye 3 sesiones de antes de tu mini cut')>0
+    &&faseTrendTxt({verdict:'alto',pct:4,n:5,dir:'sube',pre:0,exp:{espera:'bajar-poco',tol:5,corto:'mini cut',tipo:'agr'}}).indexOf('incluye')<0);
+  console.log('fin3 self-check OK'); }
 function _v376SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v376: '+nm); }; const real=db, K=['screen','macroOpen','nutOpen','micOpen','macroPct','macroDate','macroSlide','_retTips','_shv','shareType','shareId'], st0={}; K.forEach(k=>{ st0[k]=state[k]; }); const _sv=save, _rr=reRender;
   try{ save=()=>true; reRender=()=>{}; const T=todayISO(), Y=shiftDate(T,-2);
     db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},split:{name:'s',days:[{id:'d',name:'back A',exercises:[]}]},settings:{goals:Object.assign({},seed().settings.goals,{water:3,sodium:2300,potassium:3500})},
@@ -11487,14 +11646,51 @@ function progBadgeParts(pr,tier){ if(!pr)return null;
 // too — fall back to the RAW (uncorrected) e1RM comparison for the arrow. 'exact'/'coarse' tiers keep the
 // fatigue-corrected comparison unchanged (that's the whole point of fresh-equivalent scoring there).
 function dirSafePr(pr,tier,rawPr){ return (tier==='dir'&&rawPr) ? rawPr : pr; }
-function setBadgeHTML(curS,prevS,curCtx,prevCtx,level){ if(!setComplete(curS))return ''; const pr=setProgress(curS,prevS,curCtx,prevCtx); if(!pr)return ''; const tier=progConfidence(level,curCtx,prevCtx);
+// FLX · la serie contra la misma serie de la sesión equivalente anterior, SIN descuento por cansancio (ver la cabecera de flx).
+// cur/prev = listas alineadas (1 serie, o los 2 lados de un par unilateral); o = {curDay,baseDay} para saber si la base es de otro día del split.
+// Devuelve null (no se compara) o {kind:'same'|'e1'|'ctx', dir:'up'|'down'|'flat'|null, pct, noise, ctx, prevTxt, weak}.
+function flxSetTxt(s){ const w=s&&s.bw?('pc'+(+s.extraW>0?'+'+numTxt(s.extraW):'')):numTxt(s&&s.w); return w+'×'+((s&&s.r)||'—')+(rirKnown(s)?' @'+rirShow(s.rir,splitMetric()):''); }
+function flxCtxDiff(level,curCtx,prevCtx,o){ o=o||{};
+  if(progConfidence(level,curCtx,prevCtx)==='dir')return true;   // posición/series previas muy distintas: el tier que antes quitaba el %
+  if(level==='id'||level==='day')return false;                   // la misma instancia o el mismo día del split
+  if(o.curDay&&o.baseDay&&o.curDay!==o.baseDay)return true;      // la base es de OTRO día del split
+  if(curCtx&&prevCtx&&Math.abs((curCtx.orderIdx||0)-(prevCtx.orderIdx||0))>2)return true;   // sin día: posición muy distinta
+  return false; }
+function flxCmp(cur,prev,curCtx,prevCtx,level,o){ o=o||{}; const P=[];
+  for(let i=0;i<cur.length;i++){ const c=cur[i], p=prev[i]; if(!c)continue; if(!setComplete(c))return null; if(!p||p._pf)continue;
+    const cu=unitN(c), pu=unitN(p); if(cu&&pu&&cu!==pu)return null;   // distinta unidad = no comparable
+    if(!(e1rmOf(p)>0)||!(e1rmOf(c)>0))return null; P.push([c,p]); }
+  if(!P.length)return null;
+  const prevTxt=(()=>{ const t=P.map(x=>flxSetTxt(x[1])); return t.every(x=>x===t[0])?t[0]:t.join(' · '); })(), weak=!(level==='id'||level==='day');
+  if(flxCtxDiff(level,curCtx,prevCtx,o)||P.some(x=>!rirKnown(x[1])))return {kind:'ctx',dir:null,pct:null,noise:false,ctx:true,prevTxt,weak};
+  const e1c=P.reduce((a,x)=>a+e1rmOf(x[0]),0), e1p=P.reduce((a,x)=>a+e1rmOf(x[1]),0), ratio=e1c/e1p, pct=Math.round((ratio-1)*100);
+  const sameW=P.every(([c,p])=>Math.abs(effW(c)-effW(p))<1e-6); let dir, kind;
+  if(sameW){ kind='same'; const dc=P.reduce((a,[c,p])=>a+effRepsForE1RM(c)-effRepsForE1RM(p),0)/P.length; dir=Math.abs(dc)<2?'flat':(dc>0?'up':'down'); }
+  else { kind='e1'; dir=Math.abs(ratio-1)<0.05?'flat':(ratio>1?'up':'down'); }
+  // (d) nunca contra los números crudos: todo ≤ (peso, reps, reps+RIR) no sube; todo ≥ no baja
+  const ge=P.every(([c,p])=>effW(c)>=effW(p)-1e-6&&setReps(c)>=setReps(p)&&effRepsForE1RM(c)>=effRepsForE1RM(p)), le=P.every(([c,p])=>effW(c)<=effW(p)+1e-6&&setReps(c)<=setReps(p)&&effRepsForE1RM(c)<=effRepsForE1RM(p));
+  if((dir==='up'&&le&&!ge)||(dir==='down'&&ge&&!le))dir='flat';
+  if(dir==='flat'||!pct)dir='flat';
+  return {kind,dir,pct:dir==='flat'?0:pct,noise:dir==='flat',ctx:false,prevTxt,weak}; }
+// el gancho de «fase»: tras la flecha de cada serie, lo que devuelva faseSetTag (texto corto o '')
+function flxTagTxt(r,meta){ try{ if(typeof faseSetTag!=='function'||!r)return ''; const t=faseSetTag({dir:r.dir,pct:(r.pct!=null&&isFinite(+r.pct))?+r.pct:undefined,noise:!!r.noise,ctx:!!r.ctx,date:(meta&&meta.date)||'',exName:(meta&&meta.exName)||''}); return t?String(t):''; }catch(_){ return ''; } }
+function flxBadgeHTML(r,meta){ if(!r)return ''; const tg=flxTagTxt(r,meta), tag=tg?`<span class="u-label u-o50 flxtag">${escTxt(tg)}</span>`:'';
+  if(r.ctx)return `<span class="setprog" style="color:var(--o40)" title="contexto distinto · los números de la vez pasada">≈ ${escTxt(r.prevTxt)}</span>`+tag;
+  if(r.dir==='flat')return `<span class="setprog" style="color:var(--o40)" title="vs ant ${escTxt(r.prevTxt)} · dentro del ruido">=</span>`+tag;
+  const col=r.dir==='up'?'var(--good)':'var(--bad)', ar=r.dir==='up'?'▲':'▼';
+  return `<span class="setprog" style="color:${col}" title="vs ant ${escTxt(r.prevTxt)}">${ar}${r.weak?'~':''}${r.pct>0?'+':''}${r.pct}%</span>`+tag; }
+function setBadgeHTML(curS,prevS,curCtx,prevCtx,level,meta){ return flxBadgeHTML(flxCmp([curS],[prevS],curCtx,prevCtx,level,meta),meta); }
+function setBadgeHTMLold(curS,prevS,curCtx,prevCtx,level){ if(!setComplete(curS))return ''; const pr=setProgress(curS,prevS,curCtx,prevCtx); if(!pr)return ''; const tier=progConfidence(level,curCtx,prevCtx);
   const rawPr=progFromScores(e1rmOf(curS),e1rmOf(prevS));
   const parts=progBadgeParts(dirSafePr(pr,tier,rawPr),tier); if(!parts)return '';
   const ptxt=(prevS&&prevS.w?`${numTxt(prevS.w)}×${prevS.r||'—'}${prevS.rir!=null&&prevS.rir!==''?'@'+rirShow(prevS.rir,splitMetric()):''}`:'');
   const ttl=tier==='dir'?'contexto muy distinto — solo dirección (vs números crudos), sin %':('vs ant '+ptxt);
   return `<span class="setprog" style="color:${parts.col}" title="${ttl}">${parts.ar}${parts.pc}</span>`; }
 // pair progress: for unilateral, sum L+R FRESH-EQUIVALENT scores and compare against the equivalent prior pair.
-function pairBadgeHTML(curA,curB,prevA,prevB,curCtxA,curCtxB,prevCtxA,prevCtxB,level){ if(!setComplete(curA)||!setComplete(curB))return '';
+// FLX · el par unilateral: L+R contra L+R de la vez pasada, con la misma regla (sin corrección por cansancio)
+function pairBadgeHTML(curA,curB,prevA,prevB,curCtxA,curCtxB,prevCtxA,prevCtxB,level,meta){ if(!setComplete(curA)||!setComplete(curB))return '';
+  return flxBadgeHTML(flxCmp([curA,curB],[prevA,prevB],curCtxA,prevCtxA,level,meta),meta); }
+function pairBadgeHTMLold(curA,curB,prevA,prevB,curCtxA,curCtxB,prevCtxA,prevCtxB,level){ if(!setComplete(curA)||!setComplete(curB))return '';
   const uA=unitN(curA),uPA=unitN(prevA); if(prevA&&uA&&uPA&&uA!==uPA)return ''; // distinta unidad = no comparable
   const uB=unitN(curB),uPB=unitN(prevB); if(prevB&&uB&&uPB&&uB!==uPB)return '';
   const cur=effE1RM(curA,curCtxA)+(curB?effE1RM(curB,curCtxB):0); const prev=(prevA?effE1RM(prevA,prevCtxA):0)+(prevB?effE1RM(prevB,prevCtxB):0); const pr=progFromScores(cur,prev); if(!pr)return ''; const tier=progConfidence(level,curCtxA,prevCtxA);
@@ -11517,8 +11713,8 @@ function updateSetProgress(exi,si){ const w=db.activeWork; if(!w||!w.exercises[e
   const cache=(state._align&&state._align[exi])||(()=>{ const bl=baselineSetsFor(Object.assign(exIdentity(w,exi),{orderIdx:exi})); return {prevSets:bl.sets,align:alignSetIdx(ex.sets,bl.sets),curFatCtx:[],baseFatCtx:[],level:bl.level}; })();
   const prevSets=cache.prevSets, align=cache.align||[], curFatCtx=cache.curFatCtx||[], baseFatCtx=cache.baseFatCtx||[], level=cache.level;
   let html; let anchorSi;
-  if(ex.unilateral){ anchorSi = (si%2===0)?si:si-1; const a=ex.sets[anchorSi], b=ex.sets[anchorSi+1]; const prevA=(prevSets&&align[anchorSi]!=null)?prevSets[align[anchorSi]]:null; const prevB=(prevSets&&align[anchorSi+1]!=null)?prevSets[align[anchorSi+1]]:null; html=pairBadgeHTML(a,b,prevA,prevB,curFatCtx[anchorSi],curFatCtx[anchorSi+1],align[anchorSi]!=null?baseFatCtx[align[anchorSi]]:null,align[anchorSi+1]!=null?baseFatCtx[align[anchorSi+1]]:null,level); }
-  else { anchorSi = si; const prevS=(prevSets&&align[si]!=null)?prevSets[align[si]]:null; html=setBadgeHTML(s,prevS,curFatCtx[si],align[si]!=null?baseFatCtx[align[si]]:null,level); }
+  if(ex.unilateral){ anchorSi = (si%2===0)?si:si-1; const a=ex.sets[anchorSi], b=ex.sets[anchorSi+1]; const prevA=(prevSets&&align[anchorSi]!=null)?prevSets[align[anchorSi]]:null; const prevB=(prevSets&&align[anchorSi+1]!=null)?prevSets[align[anchorSi+1]]:null; html=pairBadgeHTML(a,b,prevA,prevB,curFatCtx[anchorSi],curFatCtx[anchorSi+1],align[anchorSi]!=null?baseFatCtx[align[anchorSi]]:null,align[anchorSi+1]!=null?baseFatCtx[align[anchorSi+1]]:null,level,cache.flx); }
+  else { anchorSi = si; const prevS=(prevSets&&align[si]!=null)?prevSets[align[si]]:null; html=setBadgeHTML(s,prevS,curFatCtx[si],align[si]!=null?baseFatCtx[align[si]]:null,level,cache.flx); }
   const el=document.querySelector('.setprogline[data-exi="'+exi+'"][data-si="'+anchorSi+'"]'); if(!el)return;
   const _tn=isCardio(ex)?null:exTensionSets(w,exi);
   html=progLineInner(html,dropPctTxt(ex.sets,anchorSi),sigBarTag(ex.unilateral?pairTension(_tn,anchorSi):(_tn&&_tn.per[anchorSi]),rk(ex.sets[anchorSi])));
@@ -11889,7 +12085,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
   state._fatCache=state._fatCache||{};
   let baseFatCtx=[];
   if(_bl.sess){ if(!state._fatCache[_bl.sess.id])state._fatCache[_bl.sess.id]=sessionFatigueContext(_bl.sess); baseFatCtx=(state._fatCache[_bl.sess.id][_bl.ei])||[]; }
-  state._align=state._align||{}; state._align[exi]={prevSets,align,curFatCtx,baseFatCtx,level:_bl.level}; let _dnAny=false;   // v302 · ¿alguna serie YA hecha sale ▼? (para decir por qué, una vez por ejercicio)
+  state._align=state._align||{}; state._align[exi]={prevSets,align,curFatCtx,baseFatCtx,level:_bl.level,flx:{date:(db.activeWork||{}).date||todayISO(),exName:ex.name,curDay:(db.activeWork||{}).dayId||null,baseDay:(_bl.sess&&_bl.sess.dayId)||null}}; let _dnAny=false;   /* FLX · lo que la flecha necesita saber de la base */   // v302 · ¿alguna serie YA hecha sale ▼? (para decir por qué, una vez por ejercicio)
   // honest about missing history: no equivalent prior occurrence found for this exact instance/variant
   const noBaseline=!prevSets?`<span class="exprog u-o40 u-label u-ml6" title="sin sesión previa equivalente para comparar">sin baseline</span>`:'';
   // línea 1: [bi] nombre + badges · línea 2: tipo · marca · setup · nota (o [+ nota] si aún no hay)
@@ -11937,7 +12133,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
       const zSty='';   /* v272: sin color por zona (salía de reps+RIR, no de la carga) */
       const prevA=(prevSets&&align[p]!=null)?prevSets[align[p]]:null;
       const prevB=(prevSets&&align[p+1]!=null)?prevSets[align[p+1]]:null;
-      const pBadge=pairBadgeHTML(a,b,prevA,prevB,curFatCtx[p],curFatCtx[p+1],align[p]!=null?baseFatCtx[align[p]]:null,align[p+1]!=null?baseFatCtx[align[p+1]]:null,_bl.level);
+      const pBadge=pairBadgeHTML(a,b,prevA,prevB,curFatCtx[p],curFatCtx[p+1],align[p]!=null?baseFatCtx[align[p]]:null,align[p+1]!=null?baseFatCtx[align[p+1]]:null,_bl.level,state._align[exi].flx);
       if(done&&pBadge&&pBadge.indexOf('▼')>=0)_dnAny=true;
       const pInner=progLineInner(pBadge,dropPctTxt(sets,p),sigBarTag(pairTension(_tn,p),rk(a)));
       const progLine=pInner?`<div class="setprogline${done?' dn':''}" data-exi="${exi}" data-si="${p}" data-rk="${rk(a)}p">${pInner}</div>`:`<div class="setprogline nil" data-exi="${exi}" data-si="${p}"></div>`;
@@ -11960,7 +12156,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
       const fs=isM?fsCellHTML(s,exi,si,'fs'):'';
       const z=!s.done?setZone(s):null; const zSty='';   /* v272: sin color por zona (salía de reps+RIR, no de la carga) */
       const prevS=(prevSets&&align[si]!=null)?prevSets[align[si]]:null;
-      const sBadge=setBadgeHTML(s,prevS,curFatCtx[si],align[si]!=null?baseFatCtx[align[si]]:null,_bl.level);
+      const sBadge=setBadgeHTML(s,prevS,curFatCtx[si],align[si]!=null?baseFatCtx[align[si]]:null,_bl.level,state._align[exi].flx);
       if(s.done&&sBadge&&sBadge.indexOf('▼')>=0)_dnAny=true;
       const sInner=progLineInner(sBadge,dropPctTxt(sets,si),sigBarTag(_tn&&_tn.per[si],rk(s)));
       const progLine=sInner?`<div class="setprogline${s.done?' dn':''}" data-exi="${exi}" data-si="${si}" data-rk="${rk(s)}p">${sInner}</div>`:`<div class="setprogline nil" data-exi="${exi}" data-si="${si}"></div>`;
@@ -11975,7 +12171,7 @@ function renderExercise(exi,ex,allowF,canReorder){ _icM=(allowF&&allowF.m==='rpe
     const add=hint+`<div class="addrow ${isM?'amach':'afree'}"><span class="aleft"><button class="addbtn" data-act="addset" data-exi="${exi}">+ set</button><button class="addbtn" data-act="dropset" data-exi="${exi}" data-si="${lastSi}">↓ drop set</button></span><button class="addbtn aex" data-act="addex" data-exi="${exi}">+ exercise</button></div>`;
     rows=thead+body+add;
   }
-  return `<div class="ex${_curCls}"${_curCls?'':' data-act="excur"'} data-exi="${exi}" data-rk="${rk(ex)}">${head}${rows}${(_dnAny&&_bl.sess)?whyLiveHTML(exi,_bl,prevSets):''}${exHoldCue(ex)}</div>`;
+  return `<div class="ex${_curCls}"${_curCls?'':' data-act="excur"'} data-exi="${exi}" data-rk="${rk(ex)}">${head}${rows}${(_dnAny&&_bl.sess)?whyLiveHTML(exi,_bl,prevSets):(isCardioEx?'':flxExLineHTML(ex,curFatCtx,_bl,baseFatCtx,exi))}${exHoldCue(ex)}</div>`;
 }
 // simplified, mostly-read per-exercise renderer for the history editor: same per-set richness as the
 // live view (bodyweight chip/unit/reps/rir/side/drop/zone-color) so editing a past session is the
@@ -12170,7 +12366,7 @@ function renderWorkout(){
     +(w.loggedAfter?`<div class="rot u-mt12"><span class="lbl">LOGGED AFTER</span><span class="n"><input type="date" value="${w.date}" max="${todayISO()}" data-act="setdate" class="inp-mini"/></span></div><div class="rot u-mt6"><span class="lbl">duración (min) · opcional</span><span class="n"><input type="number" value="${w.manualDur||''}" data-act="setdur" inputmode="numeric" placeholder="—" class="inp-mini u-tr" style="width:70px"/></span></div><div class="rot u-mt6"><span class="lbl">inicio · opcional</span><span class="n"><input type="time" value="${w.startTime||''}" data-act="setstarttime" class="inp-mini"/></span></div><div class="rot u-mt6"><span class="lbl">fin · opcional</span><span class="n"><input type="time" value="${w.endTime||''}" data-act="setendtime" class="inp-mini"/></span></div><div class="rot u-mt6"><span class="lbl">avanzar rotación</span><span class="n"><a data-act="togglenoadv" class="u-tap u-py2 u-px10 u-label" style="border:.5px solid var(--o20)">${w.noAdvance?'no':'sí'}</a></span></div>`:'')
     +(w.loggedAfter?top:'')
     +(full?(w.loggedAfter?'':`<div class="rot u-mt12"><span class="lbl">ROTATION - DAY ${curDayIdx()+1}/${dayCount()}${w.startMs?' · '+elapsedStr(w.startMs):''}</span><span class="n vb" role="button" data-act="changegym">change gym</span></div>`)+dayHeadHTML('NOW',escTxt(w.dayName),[escTxt(db.split.name),escTxt(intensityTag()),escTxt(w.gym||'')].filter(Boolean).join(' · '),'top')+sessionContextNote(w):'')
-    +`<div class="wfocus">${body}</div>`
+    +flxDayLineHTML(w)+`<div class="wfocus">${body}</div>`
     +((pn,sh)=>pn||sh?'<div class="secondary u-mt12">'+(pn?'<button class="b" data-act="slot_live">'+pn+' por elegir ›</button>':'')+(sh?'<button class="b" data-act="sharelive">compartir sesión</button>':'')+'</div>':'')(day&&day.id===w.dayId?slotPendN(day):0,w.exercises.some(e=>!isCardio(e)&&(e.sets||[]).some(s=>setReps(s)>0&&!s._pf)));   // v364 · fix · 16   // v346 · X4 · la sesión en curso se comparte completa
 }
 
@@ -12771,13 +12967,24 @@ function shSessLegend(M){ return M&&M.exn?`<div class="shxl">σ 1.00 = una serie
 function shGroupBySet(x){ const out=[]; (x.toks||[]).forEach(t=>{ const k=(t.drop?'d':'s')+String(t.ord).replace(/[RL]$/,''), last=out[out.length-1];
     if(last&&last.k===k&&x.uni)last.toks.push(t); else out.push({k,n:t.drop?'':String(t.ord).replace(/[RL]$/,''),drop:t.drop,toks:[t]}); }); return out; }
 // v376 · X12 · el ▲▼ % de cada serie contra la misma serie (alineada) de su sesión equivalente anterior; solo series completas y en la misma unidad
+// FLX · la misma regla que la sesión en vivo; un par unilateral comparte su resultado (L+R). ctx → la columna queda vacía y «≈ …» va al final.
 function shSetProg(s,ei){ const e=(s.exercises||[])[ei], out={}; if(!e)return out; const sIdx=(db.sessions||[]).indexOf(s);
   const base=baselineSetsFor(Object.assign(exIdentity(s,ei),{orderIdx:ei,excludeSessionId:s.id,beforeDate:s.date,beforeSIdx:sIdx<0?1e9:sIdx})); if(!base.sets)return out;
+  const S=e.sets||[], al=alignSetIdx(S,base.sets), cc=(fatCtxOf(s)||[])[ei]||[], bc=base.sess?((fatCtxOf(base.sess)||[])[base.ei]||[]):[];
+  const meta={date:s.date,exName:e.name,curDay:s.dayId||null,baseDay:(base.sess&&base.sess.dayId)||null};
+  S.forEach((st,si)=>{ if(out[si]||!st)return; let ix=[si]; const nx=S[si+1];
+    if(e.unilateral&&!st.isDrop&&nx&&!nx.isDrop&&st.side&&nx.side&&nx.side!==st.side)ix=[si,si+1];
+    const r=flxCmp(ix.map(i=>S[i]),ix.map(i=>al[i]!=null?base.sets[al[i]]:null),cc[si],al[si]!=null?bc[al[si]]:null,base.level,meta);
+    if(r){ r.tag=flxTagTxt(r,meta); ix.forEach(i=>{ out[i]=r; }); } });
+  return out; }
+function flxPPTail(pr){ if(!pr)return ''; const sep='<span class="srsep"> · </span>'; return (pr.ctx?sep+'<span class="u-o40 u-nowrap">≈ '+escTxt(pr.prevTxt)+'</span>':'')+(pr.tag?sep+'<span class="u-o50 u-nowrap flxtag">'+escTxt(pr.tag)+'</span>':''); }   // va DENTRO de los números de la serie: fluye tras el último lado
+function shSetProgOld(s,ei){ const e=(s.exercises||[])[ei], out={}; if(!e)return out; const sIdx=(db.sessions||[]).indexOf(s);
+  const base=baselineSetsFor(Object.assign(exIdentity(s,ei),{orderIdx:ei,excludeSessionId:s.id,beforeDate:s.date,beforeSIdx:sIdx<0?1e9:sIdx})); if(!base.sets)return out;
   const al=alignSetIdx(e.sets,base.sets); (e.sets||[]).forEach((st,si)=>{ const j=al[si]; if(j==null||!setComplete(st))return; const pr=setProgress(st,base.sets[j],null,null); if(pr)out[si]=pr; }); return out; }
-function shPPTxt(pr){ return pr?(pr.dir==='up'?'▲':pr.dir==='down'?'▼':'=')+(pr.dir==='flat'?'':Math.abs(pr.pct)+'%'):''; }
+function shPPTxt(pr){ return pr&&pr.ctx?'':pr?(pr.dir==='up'?'▲':pr.dir==='down'?'▼':'=')+(pr.dir==='flat'?'':Math.abs(pr.pct)+'%'):''; }
 function shListHTML(M){ let pm=null;
   return M.exs.map(x=>{ const m=x.muscle&&x.muscle!==pm?'#'+x.muscle+(x.mn?' ('+x.mn+')':''):''; pm=x.muscle;
-    const rows=shGroupBySet(x).map(g=>{ const pr=(x.pp||{})[g.toks[0]&&g.toks[0].si]; return `<span class="srl${g.drop?' dr':''}"><span class="srpp${pr&&pr.dir==='down'?' dn':''}">${shPPTxt(pr)}</span><span class="srno">${escTxt(g.n)}</span><span>${g.toks.map(shTokHTML).join('<span class="srsep"> · </span>')}</span></span>`; }).join('');
+    const rows=shGroupBySet(x).map(g=>{ const pr=(x.pp||{})[g.toks[0]&&g.toks[0].si]; return `<span class="srl${g.drop?' dr':''}"><span class="srpp${pr&&pr.dir==='down'?' dn':''}">${shPPTxt(pr)}</span><span class="srno">${escTxt(g.n)}</span><span>${g.toks.map(shTokHTML).join('<span class="srsep"> · </span>')}${flxPPTail(pr)}</span></span>`; }).join('');
     const hv=M.hr?Object.keys(M.hr).filter(k=>k.split(':')[0]===String(x.ei)).map(k=>M.hr[k]).filter(v=>v&&v.peak!=null):[];   // v377 · WS6 · la FC del ejercicio (solo en la hoja de cierre)
     const pres=hv.map(v=>v.pre).filter(v=>v!=null), hx=hv.length?'<span class="srhx">FC '+(pres.length?Math.min.apply(null,pres)+'→':'')+Math.max.apply(null,hv.map(v=>v.peak))+'</span>':'';
     return `<div class="srw"><span class="srm">${escTxt(m)}</span><span class="srb"><span class="srn">${escTxt((x.lat?x.lat+' ':'')+x.name)}</span>${rows}${hx}</span></div>`; }).join(''); }
@@ -13025,7 +13232,7 @@ function renderExHist(){ const key=state._exKey, rows=exHistRows(key); const bac
     log+='<div class="elog u-tap" role="button" tabindex="0" data-act="vieweditsession" data-id="'+escTxt(r.sid)+'"><div class="eloh"><span class="elon">#'+(n-i)+'</span><span class="elod">'+escTxt(fmtShort(r.date))+' · '+escTxt(r.sess.dayName||'sesión')+(r.gym?' · '+escTxt(r.gym):'')+'</span>'+(pr?progBadgeFromProg(pr,'capacidad vs la vez anterior'):'')+'</div><div class="elos">'+L.lines.join(' / ')+(L.unit?' <span class="u-o40">· '+escTxt(L.unit)+'</span>':'')+'</div>'+exhHRLine(r)+'</div>'; });   /* v361 · HR1 · su FC por serie, si la hay */
   return statusBar(false)+back
     +dayHeadHTML('EXERCISE',latTxt(ex)+escTxt(ex.name),[canonType(ex.type),n+' sesiones',U].filter(Boolean).join(' · '))
-    +'<div class="submeta u-mb10">'+escTxt(exStatusTxt(st))+'</div>'+rirCalLineHTML()
+    +(fx=>'<div class="submeta'+(fx?'':' u-mb10')+'">'+escTxt(exStatusTxt(st))+'</div>'+fx)(faseTrendLineHTML(faseTrend(rows,{}),'u-mb10'))+rirCalLineHTML()   /* v380 · fase · tendencia contra lo esperado en tu fase */
     +'<div class="mdtabs tall" data-tk="exh-t">'+tabs+'</div><div class="mdtabs tall u-mb8" data-tk="exh-r">'+per+'</div>'+cks+chart+strips+sigNote
     +'<hr class="rule"/><div class="section u-mb10"><div class="h"><span class="s">//</span>LOG</div><div class="meta">'+n+' sesiones · la más nueva arriba</div></div>'+log; }
 // un ejercicio en el formato compacto de compartir: [bi] nombre · músculo · unidad · T (+ extra) y sus series en una línea
@@ -13559,6 +13766,99 @@ function mdRound(v,sp){ if(sp&&sp.exact)return Math.round(v*60)/60; return Math.
 // vale para el tramo que cubra en más de la mitad) y se escribe tal cual; sin nombre se lee su meta con ~ (`~1,470`). La app no
 // decide qué es "definición" ni "volumen": eso no sale de ninguna fórmula.
 const PH={tol:0.08,min:3};
+// v380 · fase · TIPO de protocolo por fase y qué rendimiento se espera en cada uno (evidencia en work/fase.log.md de la obra).
+// tol = cuánto puede bajar la fuerza (e1RM, % en la ventana) sin salirse de lo esperado; 3 % = el ruido del e1RM de sesión a sesión.
+const FASE_T={
+  vol:{n:'volumen',l:'volumen · superávit',c:'volumen',e:'subir',tol:3,d:'superávit · se espera subir con las semanas'},
+  mant:{n:'mantener',l:'mantenimiento',c:'mantenimiento',e:'mantener',tol:3,d:'mantenimiento · mantener o subir lento'},
+  def:{n:'déficit',l:'déficit',c:'déficit',e:'mantener',tol:3,d:'meses · se espera mantener la fuerza (±3 %)'},
+  agr:{n:'mini cut',l:'déficit agresivo · mini cut',c:'mini cut',e:'bajar-poco',tol:5,d:'déficit agresivo · semanas · se acepta bajar poco (hasta −5 %)'},
+  peak:{n:'peak week',l:'peak week · puesta a punto',c:'peak week',e:'no-califica',tol:null,d:'puesta a punto · el rendimiento no se califica'},
+  otro:{n:'otro',l:'otro',c:'tu fase',e:'no-califica',tol:null,d:'sin expectativa · solo se ve la tendencia'} };
+const FASE_K=['vol','mant','def','agr','peak','otro'];
+// el tipo que dice su nombre (solo para leer: el nombre se queda como lo escribió). En orden: lo más específico primero.
+function faseProtoFromName(n){ const s=String(n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  if(!s.trim())return '';
+  if(/peak|puesta a punto|taper|pre ?contest|carb ?load|carga de carb|deload|descarga/.test(s))return 'peak';
+  if(/mini ?cut|agresiv|aggressive|psmf|crash|blitz/.test(s))return 'agr';
+  if(/mant|maint|recomp|reverse|inversa|diet ?break|refeed|normocal/.test(s))return 'mant';
+  if(/bulk|volumen|superavit|surplus|subir|ganar|lean ?gain|masa|hipercal/.test(s))return 'vol';
+  if(/cut|defin|deficit|bajar|perder|shred|diet|corte|hipocal/.test(s))return 'def';
+  return ''; }
+function faseProtoOf(p){ return (p&&FASE_T[p.proto])?p.proto:(p?faseProtoFromName(p.name):''); }
+// el tramo (y su entrada de db.phases) que cubre una fecha
+function faseAt(date){ let R=[]; try{ R=phaseRuns(); }catch(_){}
+  for(let i=R.length-1;i>=0;i--){ if(R[i].from>date)continue; const to=i<R.length-1?shiftDate(R[i+1].from,-1):(R[i].to>date?R[i].to:date); return {from:R[i].from,to,kcal:R[i].kcal,p:phaseNameOf(R[i].from,to)}; }
+  const p=(db.phases||[]).filter(x=>x&&x.from&&x.to&&x.from<=date&&x.to>=date&&(x.name||x.proto)).pop(); return p?{from:p.from,to:p.to,kcal:0,p}:null; }
+// qué rendimiento se espera en una fecha: {tipo,label,corto,nombre,from,semana,de,espera:'subir'|'mantener'|'bajar-poco'|'no-califica',tol,src}
+function faseExpect(date){ date=String(date||todayISO()).slice(0,10); const a=faseAt(date), p=a&&a.p; let tipo='', src='';
+  if(p&&FASE_T[p.proto]){ tipo=p.proto; src='tipo'; } else if(p&&p.name){ tipo=faseProtoFromName(p.name); if(tipo)src='nombre'; }
+  if(!tipo&&a&&a.kcal>0){ let m=0; try{ m=maintenanceKcal(); }catch(_){} if(m>0){ const q=a.kcal/m; tipo=q<.75?'agr':q<.93?'def':q<=1.05?'mant':'vol'; src='kcal'; } }
+  if(!tipo){ const g=(db.profile&&db.profile.goal)||'maintain'; tipo=g==='cut'?'def':g==='bulk'?'vol':'mant'; src='meta'; }
+  const T=FASE_T[tipo], nombre=p&&p.name?String(p.name):'', from=a?a.from:null;
+  const semana=from?Math.max(1,Math.floor((Date.parse(date+'T12:00:00')-Date.parse(from+'T12:00:00'))/(7*864e5))+1):null, de=p&&+p.weeks>0?Math.round(+p.weeks):null;
+  return {tipo,label:T.l,corto:(nombre&&nombre.length<=18)?nombre:T.c,nombre,from,semana,de,espera:T.e,tol:T.tol,src}; }
+function faseSemTxt(E){ return E&&E.semana?'semana '+E.semana+(E.de?' de '+E.de:''):''; }
+// veredicto de un cambio de fuerza (% en la ventana) contra lo esperado: ok · alto · bajo · neutro (volumen estable) · nc (no califica)
+function faseVerdict(E,pct){ if(!E||E.espera==='no-califica')return 'nc'; const t=E.tol||3;
+  if(E.espera==='subir')return pct>=3?'ok':pct<-t?'bajo':'neutro';
+  return pct<-t?'bajo':pct>=3?'alto':'ok'; }
+// la mejor serie de una sesión por e1RM crudo (Epley con reps + RIR, SIN corrección por cansancio): series de trabajo con RIR o F
+function faseBestE1(r,unit){ let b=0; (r&&r.sets||[]).forEach(st=>{ if(!st||st._pf||st.isDrop||bwMissing(st,r.ex))return; if(unit&&unitN(st)&&unitN(st)!==unit)return;
+    if(!isFailure(st)&&!rirKnown(st))return; const rr=setReps(st); if(!(rr>0)||rr+setRIR(st)>20)return; const v=e1rmOf(st); if(v>b)b=v; }); return b; }
+// tendencia de UN ejercicio: sus filas (exHistRows, la más nueva primero) del gym de referencia con la regla de baselineSetsFor
+// (mismo gym o la misma máquina gemela · o marcado en los dos gyms, GY8) y su unidad; últimas 3–6 sesiones dentro de 8 semanas.
+// o = {gym, ex, to (fecha tope, incluida), unit}. Pendiente Theil-Sen de log(e1RM) contra días → % de la primera a la última.
+const FASE_TR={min:3,max:6,days:56,noise:3};
+function faseTrend(rows,o){ o=o||{}; let R=(rows||[]).filter(r=>r&&r.ex&&!isCardio(r.ex)&&(!o.to||r.date<=o.to)); const out={n:0,pct:0,dir:'',verdict:'pocos',gym:'',excl:0,exp:null,txt:''};
+  if(!R.length){ out.txt='fuerza: sin datos'; return out; }
+  const ref=R[0], ex=o.ex||ref.ex, gym=o.gym!==undefined&&o.gym!==null&&o.gym!==''?o.gym:ref.gym, tk=gym?twinKey(gym,ex):'', nm=ref.name, unit=o.unit||rowUnit(ref)||'';
+  const keep=R.filter(r=>(gymSame(r.gym,r.ex,gym,tk)||gyShared(nm,r.gym,gym))&&(!unit||!rowUnit(r)||rowUnit(r)===unit));
+  out.gym=gym?String(gym):''; out.excl=R.length-keep.length;
+  let P=keep.map(r=>({date:r.date,v:faseBestE1(r,unit)})).filter(p=>p.v>0);
+  if(P.length){ const lim=shiftDate(P[0].date,-FASE_TR.days); P=P.filter(p=>p.date>=lim).slice(0,FASE_TR.max).reverse(); }
+  { const L=P.length?P[P.length-1].date:'', a=L?faseAt(L):null; out.pre=a?P.filter(p=>p.date<a.from).length:0; }   // v380 · fin3 · sesiones de antes de la fase actual
+  out.n=P.length; const E=faseExpect((P.length?P[P.length-1].date:o.to)||todayISO()); out.exp=E;
+  if(P.length<FASE_TR.min){ out.txt='fuerza: pocos datos · '+P.length+'/'+FASE_TR.min+' sesiones'; return out; }
+  const day=d=>Date.parse(d+'T12:00:00')/864e5, T=P.map(p=>day(p.date)), Y=P.map(p=>Math.log(p.v)), sl=[];
+  for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++)if(T[j]>T[i])sl.push((Y[j]-Y[i])/(T[j]-T[i]));
+  if(!sl.length){ out.n=0; out.txt='fuerza: pocos datos · 1/'+FASE_TR.min+' sesiones'; return out; }
+  const b=median(sl)||0, pct=Math.round((Math.exp(b*(T[T.length-1]-T[0]))-1)*1000)/10; out.pct=pct;
+  out.dir=pct>=FASE_TR.noise?'sube':pct<=-FASE_TR.noise?'baja':'estable'; out.verdict=faseVerdict(E,pct);
+  out.txt=faseTrendTxt(out); return out; }
+function faseTrendTxt(t){ if(!t||t.verdict==='pocos')return (t&&t.txt)||''; const E=t.exp, a=Math.round(Math.abs(t.pct)), ses=' en '+t.n+' sesiones';
+  const fz='fuerza: '+(t.dir==='sube'?'subiendo '+a+' %'+ses:t.dir==='baja'?'bajando '+a+' %'+ses:'estable');
+  const esp={subir:'se espera subir',mantener:'se espera mantener','bajar-poco':'se acepta bajar hasta '+(E.tol||5)+' %'}[E.espera]||'';
+  const v=t.verdict, ph=v==='ok'?E.corto+': '+esp+' ✓':v==='neutro'?E.corto+': se espera subir con las semanas':v==='alto'?'mejor de lo esperado en tu '+E.corto+' ✓'
+    :v==='bajo'?(E.espera==='subir'?'por debajo de lo esperado en tu ':'más de lo esperado en tu ')+E.corto:E.corto+': '+(E.tipo==='peak'?'no se califica':'sin expectativa');
+  return fz+' · '+ph+(t.pre?' · incluye '+t.pre+' '+(t.pre===1?'sesión':'sesiones')+' de antes de tu '+E.corto:''); }   // v380 · fin3
+// la tendencia de un ejercicio por su clave de bitácora, desde un gym (vacío = el de su última sesión)
+function faseTrendKey(key,gym,to){ return faseTrend(exHistRows(key),{gym:gym||undefined,to:to||undefined}); }
+function faseTrendLineHTML(t,cls){ if(!t||t.verdict==='pocos'||!t.txt)return ''; return '<div class="submeta'+(cls?' '+cls:'')+'">'+escTxt(t.txt+(t.excl&&t.gym?' · en '+t.gym:''))+'</div>'; }
+// v380 · fase · la etiqueta corta junto a la flecha de una serie (la llama flx si existe). SOLO cuando la fase cambia la lectura de la flecha:
+// ▼ fuera del ruido en déficit/mini cut (esperable o por debajo), ▲ fuera del ruido en déficit/mini cut (sostener en déficit ya es ganar),
+// ▼ en peak week (no se califica). ▲ en volumen/mantenimiento ya es lo esperado, = o dentro del ruido no necesita contexto: ''.
+function faseSetTag(o){ o=o||{}; const d=String(o.dir||'').toLowerCase(), up=d==='up'||d==='▲'||d==='sube', dn=d==='down'||d==='▼'||d==='baja'; if(!up&&!dn||o.noise===true)return '';
+  const pct=(typeof o.pct==='number'&&isFinite(o.pct))?o.pct:null; if(typeof o.noise==='number'&&pct!=null&&Math.abs(pct)<=o.noise)return '';
+  let E; try{ E=faseExpect(o.date||todayISO()); }catch(_){ return ''; }
+  if(E.espera==='no-califica')return dn&&E.tipo==='peak'?E.corto+' · no se califica':'';
+  if(E.tipo!=='def'&&E.tipo!=='agr')return '';
+  if(dn)return (pct!=null&&pct<-E.tol)?'por debajo de lo esperado':'esperable en tu '+E.corto;
+  return 'bien para tu '+E.corto; }
+// v380 · fase · la hoja de cierre: la tendencia de cada ejercicio de la sesión y el renglón «rendimiento»
+function faseSessTrends(s){ const L=[]; (s&&s.exercises||[]).forEach((e,ei)=>{ if(!e||isCardio(e))return; const k=exHistKey(e); if(!k)return;
+    L.push({name:String(e.name||''),ei,t:faseTrend(exHistRows(k),{gym:s.gym||undefined,ex:e,to:s.date})}); }); return L; }
+function faseSessSummary(s,L){ L=L||faseSessTrends(s); const Q=L.filter(x=>x.t.verdict!=='pocos'); if(!Q.length)return '';
+  const E=faseExpect(s.date); if(E.espera==='no-califica')return 'rendimiento: '+E.corto+' · '+(E.tipo==='peak'?'no se califica':'sin expectativa');
+  const lo=Q.filter(x=>x.t.verdict==='bajo').length, hi=Q.filter(x=>x.t.verdict==='alto').length;
+  let t='rendimiento: '+(lo*2>Q.length?'por debajo de lo esperado':'dentro de lo esperado')+' para tu '+E.corto+(lo?' · '+lo+(lo===1?' ejercicio abajo':' ejercicios abajo'):hi?' · '+hi+' arriba':'');
+  if(lo&&typeof flxDayCtx==='function'){ try{ const c=flxDayCtx(s.date); if(c&&c.txt)t+=' ('+c.txt+')'; }catch(_){} }
+  return t; }
+function faseSdHTML(s){ let L, sum; try{ L=faseSessTrends(s); sum=faseSessSummary(s,L); }catch(_){ return ''; } if(!sum)return '';
+  const Q=L.filter(x=>x.t.verdict!=='pocos');
+  return '<div class="submeta fsum">'+escTxt(sum)+'</div>'
+    +'<div class="line u-tap" role="button" tabindex="0" data-act="fsfold" aria-expanded="false" aria-controls="fs_box"><span class="k">por ejercicio</span><span class="dots"></span><span class="v">'+Q.length+' ›</span></div>'
+    +'<div id="fs_box" hidden>'+L.map(x=>'<div class="submeta"><span class="u-o60">'+escTxt(x.name)+'</span> · '+escTxt(x.t.verdict==='pocos'?'pocos datos':x.t.txt)+'</div>').join('')+'</div>'; }
 function phaseRuns(){ const H=db.goalHist||{}, R=[]; let cur=null;
   const cuts=(db.phases||[]).filter(p=>p&&p.start&&p.from).map(p=>p.from).sort();   // v363 · GL2 · una fase programada empieza en su fecha: ahí se parte el tramo (aunque la kcal no cambie)
   Object.keys(H).sort().forEach(d=>{ const k=+((H[d]||{}).kcal)||0; if(!(k>0)||!/^\d{4}-\d{2}-\d{2}$/.test(d))return; const cx=cur?cuts.filter(x=>x>cur.to&&x<=d).pop():null;
@@ -13570,7 +13870,7 @@ function phaseRuns(){ const H=db.goalHist||{}, R=[]; let cur=null;
 // El nombre se guarda con las fechas que el tramo tenía ESE día. La fase en curso sigue creciendo: el nombre vale mientras cubra
 // la mitad del más corto de los dos (el tramo o lo nombrado); si no, a las dos semanas de nombrarla se perdía solo.
 function phaseNameOf(from,to){ const a=Date.parse(from+'T00:00:00'), b=Date.parse(to+'T00:00:00')+864e5; let best=null, bo=0, bs=0;
-  (db.phases||[]).forEach(p=>{ if(!p||!p.name||!p.from||!p.to)return; const pa=Date.parse(p.from+'T00:00:00'), pb=Date.parse(p.to+'T00:00:00')+864e5, o=Math.min(b,pb)-Math.max(a,pa); if(o>bo){ bo=o; best=p; bs=pb-pa; } });
+  (db.phases||[]).forEach(p=>{ if(!p||!(p.name||p.proto)||!p.from||!p.to)return;   /* v380 · fase · con tipo y sin nombre también */ const pa=Date.parse(p.from+'T00:00:00'), pb=Date.parse(p.to+'T00:00:00')+864e5, o=Math.min(b,pb)-Math.max(a,pa); if(o>bo){ bo=o; best=p; bs=pb-pa; } });
   return best&&bo>=Math.min(b-a,bs)*0.5?best:null; }
 // los tramos de un periodo: cada uno llega hasta la víspera del siguiente (los días sin meta guardada no parten una fase)
 function phasesIn(fromISO,toISO){ const R=phaseRuns(); return R.map((r,i)=>{ const to=i<R.length-1?shiftDate(R[i+1].from,-1):r.to, p=phaseNameOf(r.from,to); return {from:r.from,to,kcal:r.kcal,n:r.n,name:p?p.name:''}; }).filter(x=>x.to>=fromISO&&x.from<=toISO); }
@@ -13582,15 +13882,29 @@ function subRail(fromISO,toISO){ const T=todayISO(), out=mmRail(fromISO,toISO); 
     const lg=(it.statusLog||[]).slice(-1)[0], to=suppStatus(it)==='active'?T:String((lg&&lg.d)||tk[tk.length-1]||T).slice(0,10);
     if(to<fromISO||from>toISO)return; out.push({from:from<fromISO?fromISO:from,to:to>toISO?toISO:to,label:String(it.name||''),cls:'nm'}); });
   return out; }
+// v380 · fase · el bloque del editor: el protocolo (la lista del alta: nombre + qué se espera) y las semanas planeadas
+function faseEditHTML(cur,kcal,from){ const sel=faseEditPre(cur,cur?cur.name:'',from);
+  return '<div class="field"><label>PROTOCOLO</label><div class="toggles oblist" id="ph_proto" role="radiogroup" aria-label="tipo de protocolo">'
+    +FASE_K.map(k=>'<button type="button" class="t'+(k===sel?' on':'')+'" data-ph="'+k+'" role="radio" aria-checked="'+(k===sel)+'"><span class="obn">'+FASE_T[k].n+'</span><span class="obd">'+FASE_T[k].d+'</span></button>').join('')+'</div></div>'
+    +'<div class="field"><label>SEMANAS PLANEADAS</label><input id="ph_wk" type="number" inputmode="numeric" min="1" max="52" value="'+(cur&&+cur.weeks>0?Math.round(+cur.weeks):'')+'" placeholder="opcional · ej. 4"/></div>'; }
+// lo que se marca al abrir: lo que elegiste · lo que dice el nombre · lo que dice la meta de ese tramo
+function faseEditPre(cur,name,from){ if(cur&&FASE_T[cur.proto])return cur.proto; const n=faseProtoFromName(name); if(n)return n; let E=null; try{ E=faseExpect(from||(cur&&cur.from)||todayISO()); }catch(_){} return E&&E.src!=='tipo'&&E.src!=='nombre'?E.tipo:'otro'; }
+function faseEditWire(m,cur){ let touched=!!(cur&&FASE_T[cur.proto]); const box=m.querySelector('#ph_proto'), nm=m.querySelector('#ph_name');
+  const pick=k=>{ if(!box)return; box.querySelectorAll('[data-ph]').forEach(b=>{ const on=b.dataset.ph===k; b.classList.toggle('on',on); b.setAttribute('aria-checked',on?'true':'false'); }); };
+  if(box)box.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-ph]'); if(!b)return; ev.stopPropagation(); touched=true; pick(b.dataset.ph); });
+  if(nm)nm.addEventListener('input',()=>{ if(!touched){ const k=faseProtoFromName(nm.value); if(k)pick(k); } });   // sin tocar el protocolo, sigue a lo que escribes
+  return {read:()=>{ const on=box&&box.querySelector('[data-ph].on'), k=on?on.dataset.ph:'', w=Math.round(+((m.querySelector('#ph_wk')||{}).value)||0);
+    return {proto:touched&&FASE_T[k]?k:'',weeks:w>=1&&w<=52?w:0}; }}; }   // el tipo solo si lo elegiste (o ya lo tenía)
 function openPhaseName(from,to,kcal){ const cur=phaseNameOf(from,to), days=Math.round((Date.parse(to+'T12:00:00')-Date.parse(from+'T12:00:00'))/864e5)+1;
   const m=askLayer('<h3>fase · '+escTxt(fmtShort(from))+' – '+escTxt(fmtShort(to))+'</h3><div class="submeta u-mb10">meta ~'+Math.round(kcal).toLocaleString()+' kcal · '+days+(days===1?' día':' días')+'</div>'
     +'<div class="field"><label>NAME</label><input id="ph_name" value="'+escTxt(cur?cur.name:'')+'" placeholder="definición, mini cut, peak week…" autocomplete="off" maxlength="24"/></div>'
+    +faseEditHTML(cur,kcal,from)   /* v380 · fase · protocolo y semanas planeadas */
     +'<div class="sheetbtns"><button class="ok" data-ask="ok">guardar</button>'+(cur?'<button class="cancel danger" data-ask="del">quitar nombre</button>':'')+'<button class="cancel" data-ask="no">cancelar</button></div>');
-  focusEl(document.getElementById('ph_name'));
-  m.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-ask]'); if(!b)return; ev.stopPropagation(); const v=String((document.getElementById('ph_name')||{}).value||'').trim(); closeAsk();
-    if(b.dataset.ask==='no')return; const put=b.dataset.ask==='ok'&&!!v; if(!put&&!cur)return;
-    db.phases=(db.phases||[]).filter(p=>p!==cur); if(put)db.phases.push(Object.assign({id:uid(),from,to,name:v},cur&&cur.start?{start:true}:{}));   // v363 · GL2
-    savedToast(put?'✓ fase · '+v:'✓ nombre quitado'); if(window._mdKey&&document.getElementById('modal'))openMetricDetail(window._mdKey); }); }
+  focusEl(document.getElementById('ph_name')); const _fz=faseEditWire(m,cur);   // v380 · fase
+  m.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-ask]'); if(!b)return; ev.stopPropagation(); const v=String((document.getElementById('ph_name')||{}).value||'').trim(), _fv=_fz.read(); closeAsk();
+    if(b.dataset.ask==='no')return; const put=b.dataset.ask==='ok'&&(!!v||!!_fv.proto); if(!put&&!cur)return;
+    db.phases=(db.phases||[]).filter(p=>p!==cur); if(put)db.phases.push(Object.assign({id:uid(),from,to,name:v},cur&&cur.start?{start:true}:{},_fv.proto?{proto:_fv.proto}:{},_fv.weeks?{weeks:_fv.weeks}:{}));   // v380 · fase · el tipo solo se guarda si lo elegiste (si no, sigue al nombre)   // v363 · GL2
+    savedToast(put?'✓ fase · '+(v||FASE_T[_fv.proto].c):'✓ nombre quitado'); if(window._mdKey&&document.getElementById('modal'))openMetricDetail(window._mdKey); }); }
 // GR3 · la meta de CADA día como quedó guardada ese día (las metas pasadas no se recalculan), para que la raya diga lo mismo que
 // el carril. kcal: un día sin meta guardada sigue con la última conocida, antes de la primera no hay raya y hoy es la vigente.
 // Agua y sueño: la guardada ese día si existe; si no, la de hoy.
@@ -16807,6 +17121,8 @@ function openSessDone(id,tab){ const s=(db.sessions||[]).find(x=>x.id===id); if(
   const top='<div class="shst"><div class="shsn">'+escTxt(M.title)+'</div>'+(M.meta?'<div class="shsm">'+escTxt(M.meta)+'</div>':'')+'<div class="shsum">'+[dur,pl(M.series,'serie'),pl(M.exn,'ejercicio')].filter(Boolean).join(' · ')+'</div></div>';
   openModal('<div class="sdcard" data-sdone="'+escTxt(String(s.id))+'"><div class="sharecard">'+top+(has?'<div class="shhr">'+sessHRBlock(s)+'</div>':'')
     +'<div class="shbody sdlist">'+(M.exs.length?shListHTML(M):'<div class="ehint">sin series registradas</div>')+'</div><div class="shfoot">gym<span class="u-o40">//</span>TRK</div></div></div>'
+    +flxSessLineHTML(s)   /* FLX · rendimiento comprometido por */
+    +faseSdHTML(s)   /* v380 · fase · rendimiento contra lo esperado en tu fase (fuera de la tarjeta: no se comparte) */
     +(tcxOffer(s)?'<div class="line u-tap sdfc" role="button" tabindex="0" data-act="tcxfor" data-id="'+escTxt(String(s.id))+'"><span class="k">+ FC (TCX)</span><span class="dots"></span><span class="v">›</span></div>':'')
     +sessStructHTML(s)   /* v376 · GY6 · split ···· N cambios › */
     +'<div class="secondary"><button class="b" data-act="vieweditsession" data-id="'+escTxt(String(s.id))+'">ver / editar</button><button class="b" data-act="sharesession" data-id="'+escTxt(String(s.id))+'">compartir</button></div>'
@@ -17774,6 +18090,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='volumedetail'){ window._volWeeks=window._volWeeks||12; openVolumeDetail(); }
   else if(a==='volweeks'){ window._volWeeks=+el.dataset.w||12; openVolumeDetail(); }
   else if(a==='exhist'){ openExHist(el.dataset.k); }
+  else if(a==='fsfold'){ foldToggle(el,document.getElementById('fs_box')); }   // v380 · fase
   else if(a==='exback'){ navPop('progress'); }   // vuelve a donde estabas, a la misma altura (v286 · por la pila de origen: también al catálogo)
   else if(a==='extab'){ state._exTab=el.dataset.t; reRender(); }
   else if(a==='exrange'){ state._exDays=+el.dataset.r||180; reRender(); }
@@ -18428,7 +18745,7 @@ function openExEdit(di,ei,liveExi,cat){
   const types=[['free','peso libre'],['machine','máquina'],['smith','smith'],['cable','polea'],['bodyweight','peso corporal'],['cardio','cardio']];   // v356 · en español, como las filas del editor
   const isCardioEdit=canonType(e.type)==='cardio';
   const curCardioSub=(e.cardioSub&&CARDIO_SUBS[e.cardioSub])?e.cardioSub:'treadmill';
-  openModal(`<h3>${isNew?'+ ejercicio':'ajustes del ejercicio'}</h3>${cat&&rep.L.n?'<div class="u-mb6"><button type="button" class="b" data-act="xs_hist">historial</button></div>':''}
+  openModal(`<h3>${isNew?'+ ejercicio':'ajustes del ejercicio'}</h3>${cat&&rep.L.n?'<div class="u-mb6"><button type="button" class="b" data-act="xs_hist">historial</button></div>':''}${cat&&rep.L.n?faseTrendLineHTML(faseTrendKey(cat.key,xo.gym),'u-mb6'):''}
    <div class="field"><label>NOMBRE${isNew?' · escribe o elige uno previo':''}</label><input id="ee_name" value="${escTxt(e.name||'')}" list="ee_namelist" placeholder="bb incline"/><datalist id="ee_namelist">${knowns.map(x=>`<option value="${escTxt(x.name)}"></option>`).join('')}</datalist></div>
    ${(()=>{
      const ML=exMuscles(e), cur1=(ML[0]||{}).name||'';   // v356 · SP8 · hasta 3 secundarios (filas 2–4)
@@ -22645,7 +22962,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()).then(()=>{ setTimeout(verRebuildSoon,8000); setTimeout(()=>{ try{ if(!document.getElementById('modal'))posFixRun().catch(()=>{}); }catch(_){} },6000); }); }catch(_){ idbReleaseHold(); }   // v376 · SU1 · luego, una vez, la reconstrucción de las dosis con fecha
 try{ cloudBoot(); }catch(_){}   // v352 · cuentas y nube: apagada (CLOUD_CFG vacío) no hace nada
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ sdReopen(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search) && devHost()){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); _v367SelfCheck(); _h9SelfCheck(); _v370SelfCheck(); _v371SelfCheck(); _v373SelfCheck(); _sec5SelfCheck(); _doseHistSelfCheck(); _gymSplitSelfCheck(); _v376SelfCheck(); _fx1SelfCheck(); _mc10SelfCheck(); _rtSelfCheck(); _wsSelfCheck(); _h10SelfCheck(); _dmSelfCheck(); _dm2SelfCheck(); _fx377SelfCheck(); _gy7SelfCheck(); _gy8SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()).then(()=>_v374SelfCheck()).catch(e=>console.error(e)); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ sdReopen(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search) && devHost()){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); _v367SelfCheck(); _h9SelfCheck(); _v370SelfCheck(); _v371SelfCheck(); _v373SelfCheck(); _sec5SelfCheck(); _doseHistSelfCheck(); _gymSplitSelfCheck(); _v376SelfCheck(); _fx1SelfCheck(); _mc10SelfCheck(); _rtSelfCheck(); _wsSelfCheck(); _h10SelfCheck(); _dmSelfCheck(); _dm2SelfCheck(); _fx377SelfCheck(); _gy7SelfCheck(); _gy8SelfCheck(); _flxSelfCheck(); _faseSelfCheck(); _fin3SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()).then(()=>_v374SelfCheck()).catch(e=>console.error(e)); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
