@@ -1464,6 +1464,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
      lo toques; una tarea ("… sincronizando") se queda hasta resolverse en el mismo toast */
   .sheet{overflow-x:hidden;} .sheet .obv,.sheet .obi{min-width:0;}
   .toast:not(:has(button,a,[data-act])){pointer-events:none;}   /* v382 · r3 */
+  .dayln{margin:var(--s1,4px) 0 0;} .dayln a{display:inline-block; padding:10px 4px; margin:-10px 0;}
   .toasts{position:fixed; left:0; right:0; bottom:calc(var(--nav-clear) + env(safe-area-inset-bottom)); z-index:var(--z-toast); display:flex; flex-direction:column; align-items:center; gap:6px; padding:0 var(--sp-px); pointer-events:none;}
   .toast{max-width:100%; overflow:hidden; text-overflow:ellipsis; color:var(--fg); padding:10px var(--s5); border-radius:var(--r-toast); font-size:var(--t-data); font-weight:700; white-space:nowrap; pointer-events:auto; animation:toastin var(--dur-3) var(--ease-out);}   /* material: .glass-strong */
   .toast.out{animation:toastout var(--dur-3) var(--ease-in) forwards;}
@@ -1997,7 +1998,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v383';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v384';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2011,7 +2012,119 @@ const pad=n=>String(n).padStart(2,'0');
 const MON=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 const DOW=['dom','lun','mar','mié','jue','vie','sáb'];
 const MONFULL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-function todayISO(d){d=d||new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function calToday(d){d=d||new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function todayISO(d){ return d?calToday(d):dayLogical(); }
+/* v384 · day · medianoche es la regla base; con sueño sincronizado en los últimos 14 días, el día termina cuando duermes. */
+const DAY_SYNC=14, DAY_LIMIT=720, DAY_WAKE=240, DAY_SLEEP=180, DAY_ASK=300, DAY_ASK_END=690, DAY_CUT=360, DAY_GAP=3*3600000, DAY_LU='gymtrk_lastuse', DAY_AK='gymtrk_dayask';
+let _dayC=null, _dayLast=null, _dayLastOn=false, _dayPend=false, _dayAskQ=0, _dayAskedQ=false;
+function dayInval(){ _dayC=null; }
+function dayNowMin(d){ d=d||new Date(); return d.getHours()*60+d.getMinutes(); }
+function dayPrev(cal){ const d=new Date(cal+'T12:00:00'); d.setDate(d.getDate()-1); return calToday(d); }
+function daySyncRecent(D,cal){ const s=D&&D.health&&D.health.sleep; if(!s||typeof s!=='object')return false; const d=new Date(cal+'T12:00:00'); d.setDate(d.getDate()-DAY_SYNC); const lim=calToday(d); return Object.keys(s).some(k=>/^\d{4}-\d\d-\d\d$/.test(k)&&k>=lim&&k<=cal&&Array.isArray(s[k])&&s[k].length>0); }
+function dayOpenFrom(D){ const M=D&&D.dayModes; if(!M||typeof M!=='object')return null; const k=Object.keys(M).find(x=>!M[x]); return k||null; }
+function dayWoke(sl,min){ let sum=0,last=-1; sleepBlocks(sl).forEach(b=>{ if(!b||typeof b!=='object')return; const s=hm2min(b.start), e=hm2min(b.end); if(isFinite(s)&&isFinite(e)){ if(e>min)return; sum+=(e-s+1440)%1440; if(e>last)last=e; } else if(min>=DAY_ASK&&+b.hours>0){ sum+=b.hours*60; if(last<DAY_WAKE)last=DAY_WAKE; } }); return sum>=DAY_SLEEP&&last>=DAY_WAKE; }   // ya terminado, 3 h sumando la noche, despertar a las 04:00 o después
+function dayRule(cal,min,sl,mark,on){ if(!on||min>=DAY_LIMIT||mark==='new')return cal; if(mark==='stay')return dayPrev(cal); return dayWoke(sl,min)?cal:dayPrev(cal); }
+function dayLogical(){ const now=new Date(), cal=calToday(now); let D; try{ D=db; }catch(_){ return cal; } if(!D)return cal;
+  const min=dayNowMin(now), mk=D.dayMarks&&D.dayMarks[cal], sl=D.sleep&&D.sleep[cal], hs=D.health&&D.health.sleep, dm=D.settings&&D.settings.dayMode, F=window._dayForce, c=_dayC;
+  if(c&&c.D===D&&c.cal===cal&&c.min===min&&c.mk===mk&&c.sl===sl&&c.hs===hs&&c.dm===dm&&c.F===F&&c.M===D.dayModes)return c.v;
+  const on=F===true||(dm!=='midnight'&&!!dayOpenFrom(D)&&daySyncRecent(D,cal));
+  const v=dayRule(cal,min,sl,mk,on); _dayC={D,cal,min,mk,sl,hs,dm,F,M:D.dayModes,on,v}; return v; }
+function dayOn(){ dayLogical(); return !!(_dayC&&_dayC.on); }
+function dayBehind(){ return dayLogical()!==calToday(); }
+function dayNow(){ const d=new Date(); if(dayBehind())d.setDate(d.getDate()-1); return d; }   // «ahora» para ventanas de días
+function dayOfMs(ms){ return Math.abs(ms-Date.now())<60000?todayISO():calToday(new Date(ms)); }
+function dayInPeriod(iso){ if(window._dayForce===true)return true; let D; try{ D=db; }catch(_){ return false; } const M=D&&D.dayModes; if(!M||typeof M!=='object')return false; return Object.keys(M).some(k=>k<=iso&&(!M[k]||iso<=M[k])); }
+function dayWakeMin(iso){ let best=-1,w=Infinity; sleepBlocks(db&&db.sleep&&db.sleep[iso]).forEach(b=>{ if(!b||typeof b!=='object')return; const s=hm2min(b.start), e=hm2min(b.end); if(!isFinite(s)||!isFinite(e))return; const m=(e-s+1440)%1440; if(m>best){ best=m; w=e; } }); return w; }
+function hmOrd(iso,t){ const m=hm2min(t); if(!isFinite(m)||!dayInPeriod(iso))return m; const P=db&&db.settings&&db.settings.dayPre, O=db&&db.dayOpen&&+db.dayOpen[iso]; if(P&&P.d===iso&&Array.isArray(P.t)&&P.t.indexOf(t)>=0)return m; return m<Math.min(DAY_CUT,dayWakeMin(iso),O>=0?O:Infinity)?m+1440:m; }   // 01:00 de un día es el final de ese día
+function hmLater(iso,t){ const now=window._mealNow?hm2min(window._mealNow):dayNowMin(), m=hm2min(t); if(!dayBehind()&&now<DAY_CUT)return m>now; return hmOrd(iso,t)>hmNowOrd(); }   // ya abierto de madrugada, las horas de hoy se leen tal cual
+function hmNowOrd(){ if(window._mealNow)return hm2min(window._mealNow); const m=dayNowMin(); return dayBehind()?m+1440:m; }
+function hmKey(iso,t){ if(!dayInPeriod(iso))return String(t||''); const m=hmOrd(iso,t); return isFinite(m)?String(m).padStart(5,'0'):String(t||''); }
+function dayAP(){ return (dayBehind()||new Date().getHours()>=14)?'PM':'AM'; }
+function mealNotYet(nx){ return dayOn()?hmLater(todayISO(),nx):mealNowHM()<nx; }
+function mealSchedDay(iso,t,T){ if(iso<T)return false; const C=calToday(); if(iso>T&&T===C)return true; if(iso>C)return true; if(iso===T)return hmLater(iso,t); return hm2min(t)>dayNowMin(); }
+function dayDataOf(cal){ const soft=((db.meals&&db.meals[cal])||[]).length+((db.adhoc&&db.adhoc[cal])||[]).length; let hard=(db.sessions||[]).some(s=>s&&s.date===cal)||(!!db.activeWork&&db.activeWork.date===cal); (db.stack||[]).forEach(x=>{ if(!x)return; if(x.ticks&&x.ticks[cal])hard=true; (x.more||[]).forEach(m=>{ if(m&&m.ticks&&m.ticks[cal])hard=true; }); }); return {soft,hard}; }
+function dayMarkSet(v){ const cal=calToday(), min=dayNowMin(); db.dayMarks=db.dayMarks||{}; if(v)db.dayMarks[cal]=v; else delete db.dayMarks[cal]; db.dayOpen=db.dayOpen||{}; if(v==='new'&&min<DAY_CUT)db.dayOpen[cal]=min; else delete db.dayOpen[cal]; dayInval(); }
+function dayMark(v,why){ dayMarkSet(v); dayTick(why||'mark'); saveSoon(); }
+function dayGate(){ if(dayBehind()&&dayNowMin()>=DAY_ASK){ dayMarkSet('new'); dayTick('gate'); toast('✓ día nuevo · '+fmtShort(calToday()),'ok',{undo:dayUndo}); } }   // empezar a entrenar o marcar descanso de mañana abre el día
+function dayUndo(){ if(!dayOn()||dayNowMin()>=DAY_LIMIT){ toast('⚠ ya pasó la hora límite · el día se queda','err'); return; } const cal=calToday(), prev=dayPrev(cal), st=dayDataOf(cal); const back=()=>{ const c=db.goalHist&&db.goalHist[prev]&&db.goalHist[prev].cc; if(c)delete c.t; dayMarkSet('stay'); dayTick('undo'); saveSoon(); try{ reRender(); }catch(_){} };
+  if(st.hard){ toast('⚠ ya hay tomas o una sesión en este día · se queda','err'); return; } if(!st.soft){ back(); return; }
+  trkAsk({title:'volver a la noche del '+fmtShort(prev),detail:st.soft+(st.soft===1?' registro de hoy pasa a esa noche.':' registros de hoy pasan a esa noche.'),ok:'mover',cancel:'cancelar'},()=>{ ['meals','adhoc'].forEach(k=>{ const S=db[k]; if(S&&S[cal]){ S[prev]=(S[prev]||[]).concat(S[cal]); delete S[cal]; } }); const MM=db.mealMeta; if(MM&&MM[cal]){ MM[prev]=Object.assign({},MM[cal],MM[prev]); delete MM[cal]; } back(); }); }
+function dayNightHTML(){ if(!dayBehind())return ''; return '<div class="submeta dayln">sigues en la noche del '+fmtShort(todayISO())+' · <a class="vb" role="button" tabindex="0" data-act="daywake">ya desperté</a></div>'; }
+function dayRowHTML(){ const on=dayOn(), mid=db.settings.dayMode==='midnight', cal=calToday(), mk=db.dayMarks&&db.dayMarks[cal];
+  return stRow('daymode','cambio de día',mid?'medianoche':on?'con tu sueño':'medianoche · sin sync')+(on&&mk==='new'&&dayNowMin()<DAY_LIMIT?stRow('dayundo','volver a la noche del '+fmtShort(dayPrev(cal)),''):''); }
+function dayHold(){ const ae=document.activeElement; return state.screen==='workout'||!!document.getElementById('modal')||!!document.getElementById('asklayer')||!!(ae&&ae.classList&&ae.classList.contains('mclki')); }
+function dayFlip(old,T,why){ if(state.macroDate===old)state.macroDate=T; if(state.agendaDate===old)state.agendaDate=T; if(state.suppSegD===old)state.suppSegD=T; window._mealNext=null; try{ bumpIdx(); }catch(_){}
+  if(dayHold())_dayPend=true; else { try{ reRender(); }catch(_){} }
+  if(T>old&&why!=='gate'&&why!=='boot')toast('✓ día nuevo · '+fmtShort(T)+(why==='mark'?'':''),'ok',why==='mark'?{undo:dayUndo}:undefined); }
+function dayTick(why,inSbx){ let D; try{ D=db; }catch(_){ return; } if(!D||!D.settings)return; if(typeof _sbx!=='undefined'&&_sbx&&!inSbx)return; dayInval(); ['dayMarks','dayModes','dayOpen'].forEach(k=>{ if(D[k]!=null&&(typeof D[k]!=='object'||Array.isArray(D[k])))delete D[k]; });
+  const now=new Date(), cal=calToday(now), min=dayNowMin(now), want=D.settings.dayMode!=='midnight'&&daySyncRecent(D,cal), from=dayOpenFrom(D); let ch=false;
+  if(want&&!from){ const fresh=min>=DAY_ASK||(typeof dayDataOf==='function'&&(()=>{ const s=dayDataOf(cal); return s.soft>0||s.hard; })()); D.dayModes=D.dayModes||{}; D.dayModes[fresh?cal:dayPrev(cal)]=''; if(fresh){ const pre=[]; Object.values((D.mealMeta&&D.mealMeta[cal])||{}).forEach(x=>{ if(x&&x.time)pre.push(x.time); }); ((D.meals&&D.meals[cal])||[]).forEach(x=>{ if(x&&x.time)pre.push(x.time); }); D.settings.dayPre={d:cal,t:pre.filter(x=>hm2min(x)<DAY_CUT).slice(0,40)}; D.dayMarks=D.dayMarks||{}; if(!D.dayMarks[cal])D.dayMarks[cal]='new'; if(min<DAY_CUT){ D.dayOpen=D.dayOpen||{}; D.dayOpen[cal]=min; } } ch=true; }   // al activarse no retrocede: con la mañana empezada o datos en el día, ese día se queda
+  else if(!want&&from){ D.dayModes[from]=dayPrev(cal); if(!D.dayModes[from])D.dayModes[from]=cal; ch=true; }
+  if(want){ D.dayMarks=D.dayMarks||{}; const mk=D.dayMarks[cal]; if(!mk&&dayWoke(D.sleep&&D.sleep[cal],min)){ D.dayMarks[cal]='new'; ch=true; }   // una vez que cambió, borrar el sueño no te regresa
+    const lim=(()=>{ const d=new Date(cal+'T12:00:00'); d.setDate(d.getDate()-60); return calToday(d); })(); Object.keys(D.dayMarks).forEach(k=>{ if(k<lim){ delete D.dayMarks[k]; ch=true; } }); Object.keys(D.dayOpen||{}).forEach(k=>{ if(k<lim){ delete D.dayOpen[k]; ch=true; } }); }
+  dayInval(); let T=todayISO();
+  const onNow=dayOn(); if(onNow&&_dayLast&&T<_dayLast&&why!=='undo'){ D.dayMarks=D.dayMarks||{}; D.dayMarks[cal]='new'; ch=true; dayInval(); T=todayISO(); }   // nunca regresa solo (respaldo importado, bloque borrado)
+  if(_dayLast&&T!==_dayLast&&(onNow||_dayLastOn||why==='mode'))dayFlip(_dayLast,T,why); else if(_dayPend&&!dayHold()){ _dayPend=false; try{ reRender(); }catch(_){} }   // sin la regla, medianoche sigue sin hacer nada por su cuenta
+  _dayLast=T; _dayLastOn=onNow;
+  if(ch){ if(why==='boot')setTimeout(()=>{ try{ saveSoon(); }catch(_){} },1500); else if(!inSbx)saveSoon(); }
+  if(!inSbx&&onNow&&!D.settings.dayAsked&&!_dayAskedQ&&window._dayForce!==true){ _dayAskedQ=true; bootAsk({onShow:()=>{ db.settings.dayAsked=1; saveSoon(); },title:'tu día ahora cambia con tu sueño',detail:'como ya sincronizas tu sueño, el día termina cuando duermes y no a medianoche: lo de la madrugada cuenta en su noche. si dejas de sincronizar 14 días, vuelve a medianoche.',ok:'ok',cancel:'prefiero medianoche'},null,()=>{ db.settings.dayMode='midnight'; dayTick('mode'); saveSoon(); try{ reRender(); }catch(_){} }); }
+  if(!inSbx&&why==='sync'&&dayAfterSyncTake()&&dayBehind()){ bootAsk({title:'el sync no trajo tu noche',detail:'sigues en la noche del '+fmtShort(T)+'. ¿ya es otro día?',ok:'día nuevo',cancel:'sigo despierto'},()=>dayMark('new'),()=>dayMark('stay')); } }
+function dayAfterSyncTake(){ try{ const t=+localStorage.getItem('gymtrk_daysync')||0; localStorage.removeItem('gymtrk_daysync'); return Date.now()-t<900000; }catch(_){ return false; } }
+function dayStepsDay(){ return dayNowMin()<DAY_WAKE?todayISO():calToday(); }
+function _daySelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK day: '+n); }; const RD=window.Date, d0=db, f0=window._dayForce, l0=_dayLast, mn0=window._mealNow;
+  const clock=(iso,hm)=>{ const fix=new RD(iso+'T'+hm+':00').getTime()-RD.now(); window.Date=class extends RD{ constructor(...a){ if(a.length)super(...a); else super(RD.now()+fix); } static now(){ return RD.now()+fix; } }; dayInval(); };
+  const P=(s,e,x)=>Object.assign({start:s,end:e,type:'nocturno'},x||{});
+  try{ const C='2026-11-01', Y='2026-10-31', m=(h,mm)=>h*60+(mm||0);
+    A('apagado = calendario', dayRule(C,m(1,30),null,undefined,false)===C);
+    A('01:30 sin sueño: sigue ayer', dayRule(C,m(1,30),null,undefined,true)===Y);
+    A('marca nuevo', dayRule(C,m(1,30),null,'new',true)===C);
+    A('sigo despierto a las 08:00', dayRule(C,m(8),[P('23:00','07:00')],'stay',true)===Y);
+    A('el límite de las 12:00 vence a sigo despierto', dayRule(C,m(12),null,'stay',true)===C);
+    A('11:59 aún no', dayRule(C,m(11,59),null,undefined,true)===Y);
+    A('sueño sin terminar no cuenta', dayRule(C,m(7),[P('01:00','08:00')],undefined,true)===Y);
+    A('sueño terminado sí', dayRule(C,m(8),[P('01:00','08:00')],undefined,true)===C);
+    A('noche partida suma', dayRule(C,m(8),[P('00:00','02:00'),P('03:30','05:00')],undefined,true)===C);
+    A('siesta larga antes de medianoche no cierra el día', dayRule(C,m(1),[P('20:30','00:15')],undefined,true)===Y);
+    A('poco sueño no cierra', dayRule(C,m(8),[P('05:00','07:00')],undefined,true)===Y);
+    A('solo horas: de madrugada no', dayRule(C,m(1,30),[{hours:7}],undefined,true)===Y);
+    A('solo horas: de mañana sí', dayRule(C,m(5,10),[{hours:7}],undefined,true)===C);
+    A('pasos: de madrugada el día vivido, desde las 04:00 el calendario', (()=>{ const a=(clock(C,'03:00'),dayStepsDay()); clock(C,'12:30'); return typeof a==='string'&&dayStepsDay()===C; })()); window.Date=RD; dayInval();
+    A('un valor hostil no truena', dayRule(C,m(8),[null,'x',{start:7,end:{}}],'<img>',true)===Y&&dayRule(C,m(8),'x',undefined,true)===Y);
+    db=JSON.parse(JSON.stringify(d0)); window._dayForce=undefined; window._mealNow=undefined; db.settings=db.settings||{}; delete db.settings.dayMode; db.sleep={}; db.health=db.health||{}; db.health.sleep={}; delete db.dayModes; delete db.dayMarks; db.meals={}; db.mealMeta={}; db.sessions=[]; db.adhoc={}; db.stack=[]; db.activeWork=null;
+    clock(C,'01:30'); A('sin sync, medianoche', todayISO()===C&&!dayOn()&&dayNightHTML()==='');
+    db.sleep[Y]=[P('23:00','07:00')]; dayInval(); A('teclear el sueño no activa nada', todayISO()===C);
+    db.health.sleep[Y]=[[1,2,'core']]; dayInval(); A('sin periodo abierto aún no cambia', todayISO()===C);
+    _dayLast=null; dayTick('t',true); A('el sync lo activa y a las 01:30 sigue ayer', db.dayModes[Y]===''&&todayISO()===Y&&dayOn()&&dayBehind()&&calToday()===C);
+    A('avisa dónde estás', /noche del/.test(dayNightHTML()));
+    A('dayNow ancla al día lógico', todayISO(dayNow())===Y&&lastDays(1)[0]===Y);
+    db.mealMeta[Y]={dinner:{time:'21:00'},cena2:{time:'01:00'},luego:{time:'03:00'}};
+    A('la cena de las 21:00 ya pasó', !mealSched(Y,'dinner')); A('la de la 01:00 ya pasó', !mealSched(Y,'cena2')); A('la de las 03:00 sigue programada', mealSched(Y,'luego'));
+    A('la 01:00 va al final del día', hmOrd(Y,'01:00')===1500&&hmOrd(Y,'21:00')===1260&&hmKey(Y,'01:00')>hmKey(Y,'21:00'));
+    A('otra comida de madrugada es tarde, no mañana', nextMealTag()==='snack'&&dayAP()==='PM');
+    A('un día viejo no se reordena', hmOrd('2026-09-01','01:00')===60);
+    db.mealMeta[C]={breakfast:{time:'09:00'}}; A('el día de mañana sigue siendo futuro', mealSched(C,'breakfast'));
+    db.sleep[C]=[P('02:00','08:00')]; dayInval(); clock(C,'08:30'); A('llega el sueño: día nuevo', todayISO()===C&&!dayBehind());
+    _dayLast=Y; dayTick('t',true); A('se guarda la marca', db.dayMarks[C]==='new');
+    delete db.sleep[C]; dayInval(); A('borrar el bloque no regresa el día', todayISO()===C);
+    delete db.dayMarks[C]; dayInval(); clock(C,'11:00'); _dayLast=C; dayTick('t',true); A('un respaldo sin marca tampoco', todayISO()===C&&db.dayMarks[C]==='new');
+    clock('2026-11-20','01:30'); _dayLast=null; dayTick('t',true); A('14 días sin sync: medianoche', todayISO()==='2026-11-20'&&!dayOn()&&db.dayModes[Y]==='2026-11-19'&&hmOrd('2026-11-20','01:00')===60);
+    clock('2026-11-02','01:30'); dayInval(); delete db.dayMarks; delete db.dayModes; db.dayModes={[C]:''}; db.settings.dayMode='midnight'; dayInval(); A('elegir medianoche manda', todayISO()==='2026-11-02');
+    delete db.settings.dayMode; db.dayModes={}; db.mealMeta[C]={cena:{time:'00:30'}}; dayInval(); clock(C,'10:00'); _dayLast=null; delete db.sleep[C]; dayTick('t',true); A('activarse a media mañana no retrocede', todayISO()===C&&db.dayModes[C]===''&&db.dayMarks[C]==='new'); A('ni reordena lo que ya hiciste hoy', hmOrd(C,'00:30')===30&&!mealSched(C,'cena')); A('y la primera noche ya cuenta', hmOrd(C,'01:00')===1500); delete db.settings.dayPre;
+    db.dayModes={}; db.dayMarks={}; db.meals[C]=[{id:'a',kcal:1}]; clock(C,'01:00'); _dayLast=null; dayTick('t',true); A('con datos en el día tampoco', todayISO()===C&&db.dayMarks[C]==='new');
+    { const dm=db.dayModes, dk=db.dayMarks, sl=db.health.sleep; db.health.sleep={}; db.dayModes={}; db.dayMarks={}; clock(C,'23:59'); dayInval(); _dayLast=null; dayTick('t',true); const sc=state.screen, md=state.macroDate, t0=toast; let tn=0; toast=()=>{ tn++; }; state.macroDate=C; clock('2026-11-02','00:00'); dayTick('t',true); toast=t0; A('sin la regla, medianoche no mueve la pantalla ni avisa', state.macroDate===C&&tn===0&&todayISO()==='2026-11-02'); state.screen=sc; state.macroDate=md; db.health.sleep=sl; db.dayModes=dm; db.dayMarks=dk; }
+    { db.dayModes={[Y]:''}; db.dayMarks={[C]:'new'}; db.mealMeta={[C]:{a:{time:'05:35'},b:{time:'05:20'}}}; clock(C,'05:30'); dayInval(); A('día ya abierto: 05:35 sigue programada y 05:20 ya pasó', mealSched(C,'a')&&!mealSched(C,'b')); clock(C,'01:00'); dayInval(); db.mealMeta={[C]:{a:{time:'00:50'}}}; A('marcado a la 01:00: la de las 00:50 ya pasó', !mealSched(C,'a')); db.dayMarks={}; db.dayOpen={}; db.mealMeta={[C]:{a:{time:'05:20'}}}; clock(C,'05:10'); dayInval(); dayMarkSet('new'); A('abrir de madrugada guarda la hora', db.dayOpen[C]===310); clock(C,'06:30'); dayInval(); A('la comida de las 05:20 sigue sin ser programada a las 06:30', !mealSched(C,'a')&&hmOrd(C,'05:20')===320); clock(C,'14:00'); dayInval(); A('ni a las 14:00', !mealSched(C,'a')); db.dayOpen={}; }
+    { db.dayModes={[Y]:''}; db.dayMarks={[C]:'new'}; db.meals={[C]:[{id:'z',kcal:1}]}; clock(C,'12:01'); dayInval(); const t0=toast; let msg=''; toast=x=>{ msg=x; }; try{ dayUndo(); }finally{ toast=t0; } A('pasada la hora límite no se deshace', db.dayMarks[C]==='new'&&!!db.meals[C]&&/límite/.test(msg)); }
+    db.dayModes={[Y]:''}; db.dayMarks={[C]:'new'}; db.meals={[C]:[{id:'a',kcal:1}]}; db.mealMeta={[C]:{dinner:{time:'01:10'}}}; clock(C,'08:00'); dayInval(); const ta=trkAsk; let okf=null; trkAsk=(o,ok)=>{ okf=ok; }; try{ dayUndo(); }finally{ trkAsk=ta; } A('deshacer con registros pregunta', !!okf&&db.dayMarks[C]==='new'); okf(); A('y los mueve con su hora', db.dayMarks[C]==='stay'&&todayISO()===Y&&db.meals[Y][0].id==='a'&&!db.meals[C]&&db.mealMeta[Y].dinner.time==='01:10');
+    db.dayMarks={[C]:'new'}; db.sessions=[{id:'s',date:C}]; dayInval(); const t0=toast; let msg=''; toast=x=>{ msg=x; }; try{ dayUndo(); }finally{ toast=t0; } A('con sesión o tomas no regresa', db.dayMarks[C]==='new'&&/se queda/.test(msg));
+    { const r=JSON.parse(JSON.stringify(d0)); r.dayMarks={[C]:'new'}; r.dayModes={[Y]:''}; A('un respaldo con marcas se acepta', !impCheck(r)); r.dayMarks={'<img>':'new'}; A('con llaves hostiles no', !!impCheck(r)); }
+    { db.dayModes={[Y]:''}; db.dayMarks={}; db.sleep={}; db.health.sleep={[Y]:[[1,2,'core']]}; db.health.src=db.health.src||{}; if(db.health.src.sleep)db.health.src.sleep={}; clock(C,'09:00'); dayInval(); A('antes del sync sigue la noche', todayISO()===Y); const tz=(()=>{ const o=-new RD().getTimezoneOffset(), a=Math.abs(o); return (o>=0?'+':'-')+pad(Math.floor(a/60))+':'+pad(a%60); })(); healthPasteApply(['trk2','sleep '+C+'T02:00:00'+tz+' '+C+'T08:00:00'+tz+' Esencial'].join(String.fromCharCode(10))); dayInval(); A('el sync real de esa noche abre el día', sleepBlocks(db.sleep[C]).length>0&&todayISO()===C); }
+    A('unir cuentas conserva las marcas', CU_MAP.dayMarks===1&&CU_MAP.dayModes===1);
+  } finally{ window.Date=RD; db=d0; window._dayForce=f0; _dayLast=l0; window._mealNow=mn0; dayInval(); try{ bumpIdx(); }catch(_){} } console.log('day self-check OK'); }
+function dayUseGap(){ let l=0; try{ l=+localStorage.getItem(DAY_LU)||0; }catch(_){} return Date.now()-l; }
+function dayUseStamp(){ try{ localStorage.setItem(DAY_LU,String(Date.now())); }catch(_){} }
+function dayMaybeAsk(gap){ if(!dayBehind())return; const cal=calToday(), min=dayNowMin(); if(min<DAY_ASK||min>=DAY_ASK_END||gap<DAY_GAP||db.activeWork)return; if(db.dayMarks&&db.dayMarks[cal])return; try{ if(localStorage.getItem(DAY_AK)===cal)return; }catch(_){} if(Date.now()-_dayAskQ<15000)return; _dayAskQ=Date.now();
+  bootAsk({title:'¿ya es otro día?',detail:'sigues en la noche del '+fmtShort(todayISO())+'.',ok:'día nuevo',cancel:'sigo despierto',alt:{label:'sincronizar sueño',fn:()=>{ try{ localStorage.setItem('gymtrk_daysync',String(Date.now())); }catch(_){} bioSync(); }},when:()=>dayBehind()&&!db.activeWork&&dayNowMin()<DAY_ASK_END&&!document.getElementById('modal')&&!document.getElementById('asklayer'),later:()=>{ _dayAskQ=0; setTimeout(()=>{ try{ dayMaybeAsk(DAY_GAP); }catch(_){} },20000); },onShow:()=>{ _dayAskQ=0; try{ localStorage.setItem(DAY_AK,cal); }catch(_){} }},()=>dayMark('new'),()=>dayMark('stay')); }
+function dayOnVisible(){ const g=dayUseGap(); dayTick('visible'); dayMaybeAsk(g); dayUseStamp(); }
 function fmtDate(iso){const[y,m,dd]=iso.split('-');return dd+' '+MON[(+m)-1]+' '+y;}
 function fmtShort(iso){const[y,m,dd]=iso.split('-');return dd+' '+MON[(+m)-1];}
 function nowHM(){const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes());}
@@ -2506,7 +2619,7 @@ function pruneList(ix,today){ const DAY=86400000, t0=new Date(today+'T12:00:00')
   days.forEach(k=>{ if(!keep.has(k))out.push(k); });
   Object.keys(ix).forEach(k=>{ if(/^(lsbak-|pre-|offer-)/.test(k)){ const t=ix[k]&&ix[k].t; if(t&&t0-t>60*DAY)out.push(k); } });
   return out; }
-function idbPruneSoon(){ const d=todayISO(); if(_idbPruneDay===d)return; _idbPruneDay=d;
+function idbPruneSoon(){ const d=calToday(); if(_idbPruneDay===d)return; _idbPruneDay=d;
   idbIdx().then(ix=>idbDelCopies(pruneList(ix,d))).catch(()=>{ _idbPruneDay=''; }); }
 // respaldo a IndexedDB: `force` cuando importa (cerrar sesión, recuperar, localStorage fallando); si no, freno de 30 s
 // con una escritura final (antes lo del último medio minuto no llegaba nunca si no volvías a guardar)
@@ -2516,7 +2629,7 @@ function idbBackup(s,force){ if(_sbx){ _sbxIdb.push({force:!!force,len:s.length}
   if(!force&&now-_idbT<30000){ _idbTrailS=s; if(!_idbTrail)_idbTrail=setTimeout(()=>{ _idbTrail=null; const x=_idbTrailS; _idbTrailS=null; if(x)idbBackup(x,true); },30000-(now-_idbT)); return; }
   if(_idbTrail){ clearTimeout(_idbTrail); _idbTrail=null; _idbTrailS=null; }
   _idbT=now;
-  let rec=null; try{ rec={t:now,day:todayISO(),mass:dbMass(db),seq:seqOf(db),sid:_sid,s:s}; }catch(e){ _idbErr=e; _idbErrT=now; return; }
+  let rec=null; try{ rec={t:now,day:calToday(),mass:dbMass(db),seq:seqOf(db),sid:_sid,s:s}; }catch(e){ _idbErr=e; _idbErrT=now; return; }
   idbPutCopy('latest',rec).then(()=>idbPutCopy('day-'+rec.day,rec))
     .then(()=>{ _idbErr=null; _idbOkT=Date.now(); _idbLast={t:rec.t,day:rec.day,mass:rec.mass,seq:rec.seq}; idbPruneSoon(); })
     .catch(e=>{ _idbErr=e; _idbErrT=Date.now(); }); }
@@ -2524,12 +2637,12 @@ function idbReleaseHold(){ if(!_idbHold)return; _idbHold=false; const s=_idbHeld
 // foto completa antes de algo que reemplaza la base (adoptar, restaurar, rescatar, borrar todo, reparar)
 function idbSnap(kind,d){ if(_sbx)return Promise.resolve();
   try{ const s=typeof d==='string'?d:JSON.stringify(d), o=typeof d==='string'?null:d, t=Date.now();
-    return idbPutCopy('pre-'+kind+'-'+t,{t:t,day:todayISO(),mass:o?dbMass(o):0,seq:o?seqOf(o):0,sid:_sid,s:s}).catch(()=>{}); }catch(_){ return Promise.resolve(); } }
+    return idbPutCopy('pre-'+kind+'-'+t,{t:t,day:calToday(),mass:o?dbMass(o):0,seq:o?seqOf(o):0,sid:_sid,s:s}).catch(()=>{}); }catch(_){ return Promise.resolve(); } }
 // el viejo `_bak` sale de localStorage (1.29 MB del cupo): se copia a IndexedDB, se relee, y solo si cuadra se borra
 function migrateLsBak(J){ let raw=null; try{ raw=localStorage.getItem(LS_BACKUP); }catch(_){}
   if(raw==null)return Promise.resolve();
-  const c=readCopy(raw), key='lsbak-'+todayISO();
-  return idbPutCopy(key,{t:Date.now(),day:todayISO(),mass:c.mass||0,seq:c.seq||0,sid:_sid,s:raw}).then(()=>idbGet(key))
+  const c=readCopy(raw), key='lsbak-'+calToday();
+  return idbPutCopy(key,{t:Date.now(),day:calToday(),mass:c.mass||0,seq:c.seq||0,sid:_sid,s:raw}).then(()=>idbGet(key))
     .then(back=>{ if(back&&back.s&&lsSig(back.s)===lsSig(raw)){ try{ localStorage.removeItem(LS_BACKUP); }catch(_){} J.flags.push('bakMoved'); } else J.flags.push('bakMoveMismatch'); })
     .catch(()=>{ J.flags.push('bakMoveFail'); }); }
 // v265 · qué hacer con la copia interna al arrancar. Recencia primero; la masa solo detecta un derrumbe.
@@ -2990,7 +3103,7 @@ function cloudUiBusy(){ if(_sbx)return false; const a=document.activeElement; re
 // cuenta, atajo, invitación) se queda. Las dos copias quedan guardadas ('antes de traer la nube' y 'de la nube'). Solo se pregunta si los
 // datos de este teléfono son de OTRA cuenta.
 const CU_ARR={sessions:1,foods:1,mamarre:1,splits:1,splitLog:1,gyms:1,mealTags:1}, CU_DAYS={meals:1,adhoc:1},
-  CU_MAP={steps:1,bodyweight:1,sleep:1,mealMeta:1,goalHist:1,lastUsed:1,machines:1,exCat:1,ccDay:1,exNotes:1,exRest:1,muscleMap:1,muscleNames:1};
+  CU_MAP={dayMarks:1,dayModes:1,dayOpen:1,steps:1,bodyweight:1,sleep:1,mealMeta:1,goalHist:1,lastUsed:1,machines:1,exCat:1,ccDay:1,exNotes:1,exRest:1,muscleMap:1,muscleNames:1};
 function cuJ(x){ try{ return JSON.stringify(x); }catch(_){ return ''; } }
 function cuArr(w,l,st){ w=Array.isArray(w)?w:[]; l=Array.isArray(l)?l:[]; const ids=new Set(w.filter(x=>x&&typeof x==='object'&&x.id!=null).map(x=>String(x.id))), js=new Set(w.map(cuJ)), out=w.slice();
   l.forEach(x=>{ if(x&&typeof x==='object'&&x.id!=null){ if(!ids.has(String(x.id))){ out.push(x); ids.add(String(x.id)); st.n++; } } else if(!js.has(cuJ(x))){ out.push(x); js.add(cuJ(x)); st.n++; } }); return out; }
@@ -4758,7 +4871,7 @@ function exNoteFor(ex,fallback){ const k=noteKey(ex); if(!k)return fallback||'';
 
 // stats
 function stat7(){
-  const now=new Date(); const cutoff=new Date(now); cutoff.setDate(now.getDate()-7); const c=todayISO(cutoff);
+  const now=dayNow(); const cutoff=new Date(now); cutoff.setDate(now.getDate()-7); const c=todayISO(cutoff);
   let vol=0,count=0; const dates=new Set();
   db.sessions.forEach(s=>{ if(s.type==='rest')return; if(s.date>c){count++; dates.add(s.date);} (s.exercises||[]).forEach(e=>(e.sets||[]).forEach(st=>{const w=effW(st),r=parseFloat(st.r)||0; if(s.date>c)vol+=w*r;}));});
   return {vol,count};
@@ -4775,7 +4888,7 @@ function activityDays(){ const a={};
   const P=splitPlan(); if(dayCount()&&(P.mode!=='daily'||P.blocked.length)){ const tr=trainedDates(), ks=Object.keys(a).sort(), t=todayISO(); let d=ks[0], g=0;
     while(d&&d<t&&g++<800){ if(!a[d]&&planDay(d,tr).rest)a[d]=4; d=shiftDate(d,1); } }
   return a; }
-function streak(){ const a=activityDays(); const today=todayISO(); let st=0; const d=new Date();
+function streak(){ const a=activityDays(); const today=todayISO(); let st=0; const d=dayNow();
   for(;;){ const iso=todayISO(d); if(a[iso]){ st++; d.setDate(d.getDate()-1); } else if(iso===today){ d.setDate(d.getDate()-1); } else break; }
   return st; }
 function bestStreak(){ const ks=Object.keys(activityDays()).sort(); let best=0,run=0,prev=null;
@@ -4796,7 +4909,7 @@ function calCtx(){ const c={a:activityDays(),gym:new Set(),rest:new Set()}; (db.
 // el estado de un día: both · food · gym · rest (del plan o marcado) · none. El descanso del plan contaba para la racha y se veía como «sin registro».
 function calDayState(iso,c){ c=c||calCtx(); const v=c.a[iso]||0, food=!!(v&1), gym=c.gym.has(iso), rest=!!(v&4)||c.rest.has(iso); return {st:food&&gym?'both':food?'food':gym?'gym':rest?'rest':'none',food,gym,rest,plan:!!(v&4),marked:c.rest.has(iso)}; }
 const CAL_ST={both:'comida + entreno',food:'solo comida',gym:'solo entreno',rest:'descanso',none:'sin registro'}, CUMP_TX={on:'en objetivo',over:'te excediste',under:'comiste de menos',prot:'faltó proteína',low:'registro incompleto',nogoal:'sin meta'};
-function streakCalendarHTML(off){ off=off||0; const c=calCtx(), T=todayISO(), now=new Date(), M=new Date(now.getFullYear(),now.getMonth()+off,1), y=M.getFullYear(), m=M.getMonth(), ks=Object.keys(c.a).sort(), minYM=(ks[0]||T).slice(0,7), ym=y+'-'+pad(m+1);
+function streakCalendarHTML(off){ off=off||0; const c=calCtx(), T=todayISO(), now=dayNow(), M=new Date(now.getFullYear(),now.getMonth()+off,1), y=M.getFullYear(), m=M.getMonth(), ks=Object.keys(c.a).sort(), minYM=(ks[0]||T).slice(0,7), ym=y+'-'+pad(m+1);
   const mark=iso=>{ const S=calDayState(iso,c), D=S.food&&iso<T?cumpDay(iso):null, tr=D&&({on:'m-on',over:'m-over',under:'m-under',prot:'m-under'})[D.st]; return {lv:S.st==='both'?2:S.st==='none'?0:1,act:'calday',cls:'st-'+S.st+(tr?' '+tr:''),title:CAL_ST[S.st]+(D&&CUMP_TX[D.st]?' · '+CUMP_TX[D.st]:'')}; };
   return '<div class="cm4"><div class="hcalh"><button type="button" class="hcnav'+(ym>minYM?'':' off')+'" data-act="strkm" data-d="-1" aria-label="mes anterior">‹</button><span class="hct">'+MONFULL[m]+' '+y+'</span><button type="button" class="hcnav'+(off<0?'':' off')+'" data-act="strkm" data-d="1" aria-label="mes siguiente">›</button></div>'+monthCalHTML(y,m,mark,{head:false,num:true})+'</div>'; }
 const CAL_LEG='<div class="c4l"><span><i class="st-both"></i>comida + entreno</span><span><i class="st-food"></i>solo comida</span><span><i class="st-gym"></i>solo entreno</span><span><i class="st-rest"></i>descanso del plan</span><span><i class="st-none"></i>sin registro</span><span><i class="tr m-on"></i>en objetivo</span><span><i class="tr m-over"></i>te excediste</span><span><i class="tr m-under"></i>de menos o poca proteína</span></div><div class="c4s">sin tira: menos de 50 % de tus kcal, o hoy, que sigue abierto.</div>';
@@ -5478,7 +5591,7 @@ function precededByNearFailure(s,ei,id){ for(let xi=0;xi<ei;xi++){ const x=(s.ex
     if(!exTargets(s,xi).some(t=>t.id===id&&t.w>=1))continue;
     if((x.sets||[]).some(st=>st&&!st._pf&&!st.isDrop&&(setReps(st)>0)&&rirKnown(st)&&(isFailure(st)||setRIR(st)<=1)))return x.name; }
   return null; }
-function muscleDiagInput(id,nowMs){ const M=MUSCLES[id]; if(!M)return null; const t=todayISO(new Date(nowMs||Date.now()));
+function muscleDiagInput(id,nowMs){ const M=MUSCLES[id]; if(!M)return null; const t=dayOfMs(nowMs||Date.now());
   const d7=shiftDate(t,-6), d8=shiftDate(t,-7), d14=shiftDate(t,-13), d28=shiftDate(t,-27);
   const w1=muscleWindowAgg(id,d7,t), w2=muscleWindowAgg(id,d14,d8), w28=muscleWindowAgg(id,d28,t);
   const ex=muscleExposureIndex()[id]||[]; const obs=observedRecovery(musclePairs(id)); const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
@@ -6076,7 +6189,7 @@ function alignSetIdx(curSets,baseSets){
   const seen={};
   return (curSets||[]).map(s=>{ const k=kind(s); const n=(seen[k]=(seen[k]||0)+1); const b=buckets[k]||[]; return n<=b.length?b[n-1]:null; });
 }
-function weeklySets(days){ days=days||7; const now=new Date(); const cut=new Date(now); cut.setDate(now.getDate()-days); const c=todayISO(cut);
+function weeklySets(days){ days=days||7; const now=dayNow(); const cut=new Date(now); cut.setDate(now.getDate()-days); const c=todayISO(cut);
   const byM={}; const freq={}; const effM={}; const directM={}, indirectM={};
   // current split = source of truth for muscle→weight mapping (so split edits reflect retroactively,
   // resolved per-instance via musclesOf/splitExFor — exId first, falls back to day+name+variant).
@@ -6098,7 +6211,7 @@ function weeklySets(days){ days=days||7; const now=new Date(); const cut=new Dat
 }
 
 // weekly cardio aggregates (min/distance/kcal) — registered for recovery/fatigue hooks; motor de recuperación can consume later
-function weeklyCardio(days){ days=days||7; const now=new Date(); const cut=new Date(now); cut.setDate(now.getDate()-days); const c=todayISO(cut);
+function weeklyCardio(days){ days=days||7; const now=dayNow(); const cut=new Date(now); cut.setDate(now.getDate()-days); const c=todayISO(cut);
   let minutes=0,distance=0,calories=0,bouts=0; const bySub={};
   (db.sessions||[]).forEach(s=>{ if(s.type==='rest'||s.date<=c)return;
     (s.exercises||[]).forEach(e=>{ if(!isCardio(e))return; const sub=e.cardioSub||'treadmill';
@@ -6138,7 +6251,7 @@ function statusBar(back){
     +`<div class="sright"><div class="streak u-tap lv${streakLevel(streak())}" role="button" tabindex="0" data-act="streakcal" aria-label="racha ${streak()} días · abre el calendario">streak: <b>${streak()}</b></div>`   // v341 · R2 · "en gym quitar ese formato y dejarlo así como en macros y progress": la misma racha en las tres, con el estilo de su nivel; tocarla abre el calendario
     // v256 · la meta vive "abajo de streak" (pedido del dueño): dos toques para cambiarla desde cualquier pantalla con nav
     +(STATUS_GOAL.indexOf(state.screen)>=0?`<button type="button" class="sgoal" data-act="goalpick" aria-label="meta: ${GOAL_L[db.profile.goal||'maintain']} · cambiar">meta: <b>${GOAL_L[db.profile.goal||'maintain']}</b><span class="cv">▾</span></button>`:'')
-    +`</div></div>`;
+    +`</div></div>`+dayNightHTML();
 }
 const STATUS_GOAL=['home','macros','progress','settings','stack','history'];   // no en sesión, historial en edición ni compartir
 // v256 · la cabecera del día (//NEXT, //NOW, //HISTORY, //GYM) sale de UN solo lugar: rótulo · nombre · una línea de meta.
@@ -6212,7 +6325,7 @@ function renderHome(){
     +`<hr class="rule"/><div class="section u-mb10"><div class="h"><span class="s">//</span>STATS</div><div class="meta vb" role="button" data-act="settings">settings</div></div><div class="u-label u-o50 u-mt-n4 u-mb6 u-mx0">mi día · hoy</div>`
     +`<div class="line stat"><span class="k">sessions · 7d</span><span class="dots"></span><span class="v">${s7.count}</span></div>`
     +`<div class="line stat"><span class="k">uptime</span><span class="dots"></span><span class="v">${uptimeDays()}d</span></div>`
-    +`<div class="line stat tap" role="button" tabindex="0" data-act="editsteps"><span class="k">steps · today</span><span class="dots"></span><span class="v">${(db.steps&&db.steps[todayISO()])?db.steps[todayISO()].toLocaleString():'— tap'}</span></div>`
+    +`<div class="line stat tap" role="button" tabindex="0" data-act="editsteps"><span class="k">steps · today</span><span class="dots"></span><span class="v">${(db.steps&&db.steps[dayStepsDay()])?db.steps[dayStepsDay()].toLocaleString():'— tap'}</span></div>`
     +`<div class="line stat tap" role="button" tabindex="0" data-act="logsleep"><span class="k">sleep · last night</span><span class="dots"></span><span class="v">${(db.sleep&&db.sleep[todayISO()])?(fmtSleep(db.sleep[todayISO()])||'—'):'— tap'}</span></div>`
     +syncRowHTML();
 }
@@ -6293,7 +6406,7 @@ function stimulusSection(){ const rows=stimulusRows();
 // estímulo self-check (v285) — //STIMULUS = σ + recovery por músculo en columnas, sin pestañas ni avisos en la lista; tu
 // habitual (la mediana de tus semanas) como única referencia; el detalle en filas con [más]. db de juguete; se restaura todo.
 function _estimuloSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK estímulo: '+nm); };
-  const D=k=>{ const d=new Date(); d.setDate(d.getDate()-Math.round(k)); return todayISO(d); };
+  const D=k=>{ const d=dayNow(); d.setDate(d.getDate()-Math.round(k)); return todayISO(d); };
   const S=(rir,o)=>Object.assign({w:'100',r:'8',rir:String(rir),unit:'kg',done:true},o||{});
   const ses=(name,muscle,w,ago,rir,n,ex)=>({id:'q'+name.replace(/\W/g,'')+Math.round(ago*10),date:D(ago),dayId:'d1',dayName:'t',gym:'G',type:'training',startTime:'18:00',endTime:'19:00',
     exercises:[Object.assign({exId:'e'+name.replace(/\W/g,''),name,muscle,type:'free',sets:Array.from({length:n||3},()=>S(rir,{w:String(w)}))},ex||{})]});
@@ -6862,7 +6975,7 @@ function _tensionSelfCheck(){   // v272 · σ v2: la tabla de calibración de co
 }
 // v272 · el estado de un ejercicio (progresa · estable · estancado · retrocede) y la fatiga acumulada, con series sintéticas
 function _exStatusSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK estado del ejercicio: '+nm); };
-  const D=k=>{ const d=new Date(); d.setDate(d.getDate()-Math.round(k)); return todayISO(d); };
+  const D=k=>{ const d=dayNow(); d.setDate(d.getDate()-Math.round(k)); return todayISO(d); };
   const sess=(name,w,ago,rir,unit)=>({id:'x'+name.replace(/\W/g,'')+Math.round(ago*10),date:D(ago),dayId:'d1',dayName:'t',gym:'G',type:'training',
     exercises:[{exId:'e'+name.replace(/\W/g,''),name,muscle:'chest',type:'free',sets:[0,1].map(()=>({w:String(w),r:'8',rir:rir||'2',unit:unit||'kg',done:true}))}]});
   const L=[];
@@ -6896,7 +7009,7 @@ function _healthSelfCheck(){
   const keep={sessions:db.sessions,sleep:db.sleep,steps:db.steps,health:db.health};
   try{
     const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK health: '+n); };
-    const b0=new Date(); b0.setDate(b0.getDate()-3); b0.setHours(18,0,0,0); const T0=b0.getTime(), day=todayISO(b0);
+    const b0=dayNow(); b0.setDate(b0.getDate()-3); b0.setHours(18,0,0,0); const T0=b0.getTime(), day=todayISO(b0);
     const dPrev=new Date(b0); dPrev.setDate(dPrev.getDate()-1); const day2=todayISO(dPrev);
     const mk=(i,w)=>({w:String(w),r:'8',rir:'1',unit:'kg',done:true,doneAt:T0+(5+i*3)*60000});
     db.sessions=[{id:'hs1',date:day,dayId:'d',type:'training',startMs:T0,endMs:T0+30*60000,exercises:[{name:'press',type:'machine',sets:[mk(0,50),mk(1,50),mk(2,50)]}]}];
@@ -7001,7 +7114,7 @@ function _cardioSelfCheck(){
     A('bike fields include rpm', cardioFields({type:'cardio',cardioSub:'bike'}).indexOf('rpm')>=0);
     A('emptySet cardio has minutes not w', emptySet({type:'cardio',cardioSub:'treadmill'}).minutes==='' && emptySet({type:'cardio'}).w===undefined);
     // log a session, next session baselines same subtype
-    const cd=new Date(); cd.setDate(cd.getDate()-3);
+    const cd=dayNow(); cd.setDate(cd.getDate()-3);
     db.sessions=[{id:'c1',date:todayISO(cd),dayId:'dC',type:'training',exercises:[
       {exId:'cT',name:'cardio am',type:'cardio',cardioSub:'treadmill',sets:[{minutes:'20',distance:'3.2',speed:'9.5',incline:'1',intensity:'moderada'}]},
       {exId:'cB',name:'cardio am',type:'cardio',cardioSub:'bike',sets:[{minutes:'15',resistance:'5',rpm:'80',intensity:'alta'}]}
@@ -7175,7 +7288,7 @@ function _mergeSelfCheck(){
 // no llama a save(), así que no toca localStorage.
 function _streakSelfCheck(){
   const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK streak: '+nm); };
-  const D=k=>{ const d=new Date(); d.setDate(d.getDate()-k); return todayISO(d); };
+  const D=k=>{ const d=dayNow(); d.setDate(d.getDate()-k); return todayISO(d); };
   const meal=()=>[{id:'m',kcal:100}];
   const real=db;
   try{
@@ -7384,7 +7497,7 @@ function _recoverySelfCheck(){
   A('con 6 pares sale la ventana observada', JSON.stringify(observedRecovery(pairs).hours)==='[48,72]');
   A('con menos de 6 pares no se inventa', observedRecovery(pairs.slice(0,5)).hours===null);
   // 3 · exposiciones reales: primario 1×, secundario con su peso, y estado según las horas
-  const D=k=>{ const d=new Date(); d.setDate(d.getDate()-k); return todayISO(d); };
+  const D=k=>{ const d=dayNow(); d.setDate(d.getDate()-k); return todayISO(d); };
   const st=(r)=>({w:'100',r:String(r),rir:'2',unit:'lbs',done:true});
   const real=db;
   try{
@@ -7458,7 +7571,7 @@ function _diagSelfCheck(){
   A('longitud apoyada en sugerencias sin confirmar lleva ~', /~$/.test((diagnoseMuscle(X(b=>{ b.len28={short:8}; b.lenSug=4; })).findings.find(f=>f.k==='length')||{}).txt||''));
   A('orden: lo grave primero', (()=>{ const k=ks(X(b=>{ Object.assign(b,fat); b.len28={short:8}; })); return k[0]==='fatigue'&&k[k.length-1]==='length'; })());
   // integración: exposiciones reales → entrada → reglas, y las causas de un ▼ por músculo REAL (no por etiqueta)
-  const D=k=>{ const d=new Date(); d.setDate(d.getDate()-k); return todayISO(d); };
+  const D=k=>{ const d=dayNow(); d.setDate(d.getDate()-k); return todayISO(d); };
   const st=(r,rir)=>({w:'100',r:String(r),rir:String(rir),unit:'lbs',done:true});
   const real=db;
   try{
@@ -11215,7 +11328,7 @@ function hpArrived(r,pl){ const sc=H().shortcut, last=hpLatest(r.payload); sc.sk
 function hpCutDay(pl){ return shiftDate(isoOfMs(Math.max(+pl.t||0,Date.now())),1-pl.sleep); }
 // v349 · una vez (migrate): lo que ya llegó del atajo en los últimos 14 días se da por existente (su "Si" estaba roto: llegaba aunque la app
 // pidiera 0, y la app nunca lo anotaba), y se piden otra vez las últimas 14 noches, para escribirlas con la regla nueva
-function sleepFix349(d){ const h=d.health; if(!h||!h.shortcut||h.shortcut.fix349)return; const sc=h.shortcut, T=todayISO(), lim=shiftDate(T,-14), src=h.src||{}, dly=h.daily||{}, last={}; sc.fix349=1;
+function sleepFix349(d){ const h=d.health; if(!h||!h.shortcut||h.shortcut.fix349)return; const sc=h.shortcut, T=calToday(), lim=shiftDate(T,-14), src=h.src||{}, dly=h.daily||{}, last={}; sc.fix349=1;
   const up=(k,dd)=>{ if(dd>=lim&&dd<=T&&(!last[k]||dd>last[k]))last[k]=dd; }, mk=(o,k)=>Object.keys(o||{}).forEach(dd=>{ if(o[dd]==='shortcut')up(k,dd); });
   mk(src.steps,'steps'); mk(src.weight,'weight'); mk(src.sleep,'sleep');
   Object.keys(dly).forEach(dd=>{ const r=dly[dd]||{}, s=r.src||{}; if(r.activeKcal&&s.activeKcal==='shortcut')up('act',dd); if(r.rhr&&s.rhr==='shortcut')up('rhr',dd); if(r.hrv&&s.hrv==='shortcut')up('hrv',dd); });
@@ -11423,12 +11536,12 @@ function mmSaved(msg,undo){ const ok=save(); reRender(); if(ok)toast(msg,'ok',un
 function mmGuard(){ window._swipeGuard=Date.now(); }
 function mmKcal(p,c,f,a){ return Math.round(((+p||0)*4+(+c||0)*4+(+f||0)*9+(+a||0)*7)*10)/10; }   // v354 · K1 · al decimal, como kcalFromMacros
 // un registro mamarre: lo que no se sabe va en null (como la comida aproximada de v258), con su hora si es hoy
-function mmPush(o){ const t=curDate(); db.meals[t]=db.meals[t]||[]; snapshotGoal(t); const it=Object.assign({id:uid(),qty:1,mm:1},o); MACROKEYS.forEach(k=>{ if(!(k in it))it[k]=null; }); if(it.water==null)it.water=0; if(t===todayISO()&&!it.time)it.time=nowHM(); db.meals[t].push(it);
+function mmPush(o){ const t=curDate(); db.meals[t]=db.meals[t]||[]; snapshotGoal(t); const it=Object.assign({id:uid(),at:Date.now(),qty:1,mm:1},o); MACROKEYS.forEach(k=>{ if(!(k in it))it[k]=null; }); if(it.water==null)it.water=0; if(t===todayISO()&&!it.time)it.time=nowHM(); db.meals[t].push(it);
   if(it.time&&!mealTime(t,it.tag)){ db.mealMeta=db.mealMeta||{}; const mm=(db.mealMeta[t]=db.mealMeta[t]||{}); mm[it.tag]=Object.assign({},mm[it.tag],{time:it.time}); } return it; }
 function mmDropId(id){ const t=curDate(), L=db.meals[t]||[], i=L.findIndex(x=>x&&x.id===id); if(i<0)return null; const it=L.splice(i,1)[0]; return {it,i,t}; }
 function mmPeriodDay(d){ const p=mmList().find(x=>x.from<=d&&(!x.to||x.to>=d)); return p?Math.round((Date.parse(d+'T12:00:00')-Date.parse(p.from+'T12:00:00'))/864e5)+1:0; }
 // la vista: cabecera, totales, tres acciones y la lista del día (lo más nuevo arriba)
-function mmViewHTML(iso,items,t,g){ const L=(items||[]).filter(m=>!isWaterItem(m)).map((m,i)=>[m,i]).sort((a,b)=>String(b[0].time||'')<String(a[0].time||'')?-1:String(b[0].time||'')>String(a[0].time||'')?1:b[1]-a[1]).map(x=>x[0]);   // lo más nuevo arriba (en el mismo minuto, lo último registrado)
+function mmViewHTML(iso,items,t,g){ const L=(items||[]).filter(m=>!isWaterItem(m)).map((m,i)=>[m,i]).sort((a,b)=>hmKey(iso,b[0].time)<hmKey(iso,a[0].time)?-1:hmKey(iso,b[0].time)>hmKey(iso,a[0].time)?1:b[1]-a[1]).map(x=>x[0]);   // lo más nuevo arriba (en el mismo minuto, lo último registrado)
   const n0=x=>Math.round(+x||0), row=m=>'<button type="button" class="line stat tap kp-rad kp-cc mmit" data-act="mmitem" data-id="'+escTxt(m.id)+'" data-rk="mm:'+escTxt(m.id)+'"><span class="k">'+(m.time?escTxt(m.time)+' · ':'')+(m.approx?'~ ':'')+escTxt(m.name||'')+'</span><span class="dots"></span><span class="v">'+n0(m.kcal).toLocaleString()+' kcal</span></button>';
   return '<hr class="rule"/><div class="section"><div class="h"><span class="s">//</span>MAMARRE</div><div class="meta">día '+mmPeriodDay(iso)+'</div></div>'
     +(iso===todayISO()&&mmCur()?mmTagHTML(iso):'')+'<div class="line stat"><span class="k">kcal</span><span class="dots"></span><span class="v"><b>'+n0(t.kcal).toLocaleString()+'</b> / '+n0(g.kcal).toLocaleString()+'</span></div>'
@@ -13264,7 +13377,7 @@ function pairBadgeHTMLold(curA,curB,prevA,prevB,curCtxA,curCtxB,prevCtxA,prevCtx
   const parts=progBadgeParts(dirSafePr(pr,tier,progFromScores(rawCur,rawPrev)),tier); if(!parts)return ''; return `<span class="setprog" style="color:${parts.col}">${parts.ar}${parts.pc}</span>`; }
 // MUSCLE-LEVEL weekly score: aggregate setScore over all exercises tagged with this muscle, within a date window.
 function muscleWindowScore(muscle,startISO,endISO){ return muscleWindowTension(muscle,startISO,endISO); }   // v219: effective tension, via musclesOf
-function muscleProgress(muscle){ const now=new Date(); const c7=new Date(now); c7.setDate(now.getDate()-6); const c14=new Date(now); c14.setDate(now.getDate()-13); const tomorrow=new Date(now); tomorrow.setDate(now.getDate()+1); const cur=muscleWindowScore(muscle,todayISO(c7),todayISO(tomorrow)); const prev=muscleWindowScore(muscle,todayISO(c14),todayISO(c7)); const pr=progFromScores(cur,prev); return pr?Object.assign(pr,{cur,prev}):{dir:null,pct:0,cur,prev}; }
+function muscleProgress(muscle){ const now=dayNow(); const c7=new Date(now); c7.setDate(now.getDate()-6); const c14=new Date(now); c14.setDate(now.getDate()-13); const tomorrow=new Date(now); tomorrow.setDate(now.getDate()+1); const cur=muscleWindowScore(muscle,todayISO(c7),todayISO(tomorrow)); const prev=muscleWindowScore(muscle,todayISO(c14),todayISO(c7)); const pr=progFromScores(cur,prev); return pr?Object.assign(pr,{cur,prev}):{dir:null,pct:0,cur,prev}; }
 // live-update the badge while logging (setField avoids a full re-render to keep input focus)
 function exTensChip(tn){ return (tn&&tn.total>0)?`<span class="exT" data-gloss="t" title="σ del ejercicio en esta sesión (suma de sus series)${tn.est?' · incluye RIR estimado':''}">${tn.est?'~':''}σ ${fmtSig(tn.total)}</span>`:''; }
 // v335 · desde v279 el primer `.n[data-exi]` de la cabecera es el corchete [bi]: las insignias se metían ANTES del nombre y lo empujaban
@@ -13840,10 +13953,10 @@ function renderHistoryEditor(){
 function sessionContextNote(w){
   const date=w.date||todayISO(); const parts=[];
   const sl=db.sleep&&db.sleep[date]; if(sl!=null){ const h=sleepHours(sl); if(h>0)parts.push('dormiste '+fmtSleep(sl)); }
-  const startMin=hm2min(w.loggedAfter?w.startTime:w.startTs);
+  const startMin=hmOrd(date,w.loggedAfter?w.startTime:w.startTs);
   if(isFinite(startMin)){
     const items=(db.meals&&db.meals[date])||[]; let kcal=0;
-    items.forEach(m=>{ const t=hm2min(m.time); if(isFinite(t)&&t<startMin) kcal+=parseFloat(m.kcal)||0; });
+    items.forEach(m=>{ const t=hmOrd(date,m.time); if(isFinite(t)&&t<startMin) kcal+=parseFloat(m.kcal)||0; });
     if(kcal>0) parts.push(Math.round(kcal)+' kcal antes');
   }
   const bwk=Object.keys(db.bodyweight||{}).sort(); if(bwk.length){ const bw=db.bodyweight[bwk[bwk.length-1]]; if(bw) parts.push(numTxt(bw)+'kg'); }
@@ -13936,7 +14049,7 @@ function renderWorkout(){
   const top=w.loggedAfter?trkMeter({key:'wp:live',v:pct,max:100,mini:true,cls:'wpm'})   // v378 · mtr
     :`<button type="button" class="wline" data-act="wfull" aria-expanded="${!!state._wfull}"><span class="wtn">${escTxt(w.dayName)}</span><span class="wtm">${done}/${total} sets${w.startMs?' · '+elapsedStr(w.startMs):''}</span><span class="wtx${state._wfull?' up':''}" aria-hidden="true">▾</span>${trkMeter({tag:'span',key:'wp:live',v:pct,max:100,mini:true,cls:'wtb'})}</button>`;
   return (w.loggedAfter?statusBar(true):`<div class="wsticky">${statusBar(true)}${top}</div>`)   // v370 · WS1 · ‹ back, el día, las series y los minutos quedan fijos arriba
-    +(w.loggedAfter?`<div class="rot u-mt12"><span class="lbl">LOGGED AFTER</span><span class="n"><input type="date" value="${escV(w.date)}" max="${todayISO()}" data-act="setdate" class="inp-mini"/></span></div><div class="rot u-mt6"><span class="lbl">duración (min) · opcional</span><span class="n"><input type="number" value="${escV(w.manualDur||'')}" data-act="setdur" inputmode="numeric" placeholder="—" class="inp-mini u-tr" style="width:70px"/></span></div><div class="rot u-mt6"><span class="lbl">inicio · opcional</span><span class="n"><input type="time" value="${escV(w.startTime||'')}" data-act="setstarttime" class="inp-mini"/></span></div><div class="rot u-mt6"><span class="lbl">fin · opcional</span><span class="n"><input type="time" value="${escV(w.endTime||'')}" data-act="setendtime" class="inp-mini"/></span></div><div class="rot u-mt6"><span class="lbl">avanzar rotación</span><span class="n"><a data-act="togglenoadv" class="u-tap u-py2 u-px10 u-label" style="border:.5px solid var(--o20)">${w.noAdvance?'no':'sí'}</a></span></div>`:'')
+    +(w.loggedAfter?`<div class="rot u-mt12"><span class="lbl">LOGGED AFTER</span><span class="n"><input type="date" value="${escV(w.date)}" max="${calToday()}" data-act="setdate" class="inp-mini"/></span></div><div class="rot u-mt6"><span class="lbl">duración (min) · opcional</span><span class="n"><input type="number" value="${escV(w.manualDur||'')}" data-act="setdur" inputmode="numeric" placeholder="—" class="inp-mini u-tr" style="width:70px"/></span></div><div class="rot u-mt6"><span class="lbl">inicio · opcional</span><span class="n"><input type="time" value="${escV(w.startTime||'')}" data-act="setstarttime" class="inp-mini"/></span></div><div class="rot u-mt6"><span class="lbl">fin · opcional</span><span class="n"><input type="time" value="${escV(w.endTime||'')}" data-act="setendtime" class="inp-mini"/></span></div><div class="rot u-mt6"><span class="lbl">avanzar rotación</span><span class="n"><a data-act="togglenoadv" class="u-tap u-py2 u-px10 u-label" style="border:.5px solid var(--o20)">${w.noAdvance?'no':'sí'}</a></span></div>`:'')
     +(w.loggedAfter?top:'')
     +(full?(w.loggedAfter?'':`<div class="rot u-mt12"><span class="lbl">ROTATION - DAY ${curDayIdx()+1}/${dayCount()}${w.startMs?' · '+elapsedStr(w.startMs):''}</span><span class="n vb" role="button" data-act="changegym">change gym</span></div>`)+dayHeadHTML('NOW',escTxt(w.dayName),[escTxt(db.split.name),escTxt(intensityTag()),escTxt(w.gym||'')].filter(Boolean).join(' · '),'top')+sessionContextNote(w):'')
     +flxDayLineHTML(w)+`<div class="wfocus">${body}</div>`
@@ -14101,7 +14214,7 @@ function suppDue(iso){ const all=dayTakes(iso), done=t=>takeDone(t,iso);   // v2
 function suppSegFor(iso,s){
   if(state.suppSegD===iso&&state.suppSeg&&(state.suppSeg==='otros'||s.all.some(t=>t.when===state.suppSeg)))return state.suppSeg;   // v326 · EXTRA siempre está
   const keys=SUPP_SEG.map(x=>x[0]), has=k=>s.all.some(t=>t.when===k), pendIn=k=>s.all.some(t=>t.when===k&&!s.done(t));
-  let k=iso===todayISO()?((db.activeWork&&has('entreno'))?'entreno':(new Date().getHours()<14?'AM':'PM')):null;
+  let k=iso===todayISO()?((db.activeWork&&has('entreno'))?'entreno':(dayAP())):null;
   if(!k||!pendIn(k))k=keys.find(pendIn)||keys.find(has)||'otros';
   state.suppSeg=k; state.suppSegD=iso; return k; }
 // ---- v326 · S-EXTRA · lo que tomas fuera de plan. El dueño (8-oct): "en lugar de otros lo pondría extra… que me salga el catálogo de los
@@ -14203,14 +14316,14 @@ function foodSecHTML(iso,items,dayKcal){
   // v308 · M7 · el dueño: "a las meals agregarle el X/X de las meals loggeadas pero solo que se confirmen al poner la hora… MEAL 2/4…
   // si le pone hora a otra meal sea 3/4 o si le quita pues 1/4": comidas con hora / comidas del día
   const n=tags.length, nt=mealsTimed(iso,tags);
-  if(iso===todayISO()){ const sc=tags.filter(t=>mealSched(iso,t)).map(t=>mealTime(iso,t)).sort(); window._mealNext=sc[0]||null; }   // v317 · la próxima hora programada de hoy (la mira mealsTick)
+  if(iso===todayISO()){ const sc=tags.filter(t=>mealSched(iso,t)).map(t=>mealTime(iso,t)).sort((a,b)=>{ const x=hmKey(iso,a), y=hmKey(iso,b); return x<y?-1:x>y?1:0; }); window._mealNext=sc[0]||null; }   // v317 · la próxima hora programada de hoy (la mira mealsTick)
   return logSecHTML({k:'food',title:'MEALS',v:n?`<b data-nk="mealsdone" data-nv="${nt}">${nt}</b> / ${n}`:`<b>0</b> meals`,act:`<button type="button" class="lact" data-act="newmeal">+ meal</button>`,body:meals||`<div class="empty">no meals logged</div>`,open:state._lfold.food}); }
 // v308 · M7 · una comida cuenta como hecha cuando tiene hora. [time] es de un toque: viendo hoy pone la hora de este momento
 // (con deshacer); viendo otro día pregunta la hora. Quitarla (··· → quitar la hora) la descuenta. Nada mueve la pantalla.
 // v317 · M8 · una comida con hora que aún no llega está PROGRAMADA ("si alguien quiere programar una comida a cierta hora"): se lee
 // punteada y NO cuenta hasta que llega ("pongámosle hasta que llegue la hora puesta"). Si no la cumples, tú le quitas la hora.
 function mealNowHM(){ return window._mealNow||nowHM(); }   // _mealNow = el reloj de las pruebas
-function mealSched(iso,tag){ const t=mealTime(iso,tag), T=todayISO(); return !!t&&(iso>T||(iso===T&&t>mealNowHM())); }
+function mealSched(iso,tag){ const t=mealTime(iso,tag), T=todayISO(); return !!t&&(dayOn()?mealSchedDay(iso,t,T):(iso>T||(iso===T&&t>mealNowHM()))); }
 function mealsTimed(iso,tags){ return (tags||[]).filter(t=>!!mealTime(iso,t)&&!mealSched(iso,t)).length; }
 function mealTimeSet(d,tag,hm,quiet){ const was=mealTime(d,tag)||null; hm=(hm||'').trim()||null; if(hm===was)return false;
   // v317 · la comida queda donde estaba (el scroll la sigue) · v324 · y si el scroll no alcanza (lista corta: tendría que subir más de lo que
@@ -14248,7 +14361,7 @@ function openMealClock(tag){ const d=curDate(), tm=mealTime(d,tag); if(!tm)retur
     +'<div class="nvm" data-pop="del">quitar la hora<span class="nvm-x">›</span></div></div><div class="sheetbtns"><button class="cancel" data-ask="no">cerrar</button></div>');
   m.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-pop],[data-ask]'); if(!b)return; ev.stopPropagation(); closeAsk(true); if(b.dataset.pop==='del')mealTimeSet(d,tag,null); }); }
 // una comida programada sube el conteo cuando llega su hora: se repinta macros (el scroll no se mueve) si no hay nada abierto ni un reloj en uso
-function mealsTick(){ try{ const nx=window._mealNext; if(!nx||state.screen!=='macros'||curDate()!==todayISO()||mealNowHM()<nx)return;
+function mealsTick(){ try{ const nx=window._mealNext; if(!nx||state.screen!=='macros'||curDate()!==todayISO()||mealNotYet(nx))return;
     const ae=document.activeElement; if(document.getElementById('modal')||document.getElementById('asklayer')||(ae&&ae.classList&&ae.classList.contains('mclki')))return;
     window._mealNext=null; reRender(); }catch(_){} }
 // v325 · S-UNI · la hoja del número: cuántas tomas. `solo hoy` vale para esa fecha (la toma queda tomada, como al fijarle hora) y mañana
@@ -14717,7 +14830,7 @@ function renderShare(){
 function dayMealParts(iso,food,dayKcal){
   const byTag={}; food.forEach(m=>{(byTag[m.tag]=byTag[m.tag]||[]).push(m);});
   const order=['breakfast','lunch','snack','dinner','drink'];
-  const _tmin=tg=>{ const mm=hm2min(mealTime(iso,tg)); return isFinite(mm)?mm:Infinity; };
+  const _tmin=tg=>{ const mm=hmOrd(iso,mealTime(iso,tg)); return isFinite(mm)?mm:Infinity; };
   const tags=Object.keys(byTag).sort((a,b)=>{ const A=_tmin(a),B=_tmin(b); return A!==B?A-B:(order.indexOf(a)-order.indexOf(b)); });
   { const H=state._mealHold; if(H&&H.d===iso&&H.tags.length===tags.length&&H.tags.every(t=>byTag[t]))tags.sort((a,b)=>H.tags.indexOf(a)-H.tags.indexOf(b)); }   // v324 · el orden que se quedó quieto (ver mealTimeSet)
   const sums=tags.map(tag=>byTag[tag].reduce((a,m)=>a+(+m.kcal||0),0)), mealsK=sums.reduce((a,x)=>a+x,0);
@@ -14805,7 +14918,7 @@ async function shareImage(){
       let px=rects[0].left, txt=n.nodeValue.replace(/\s+/g,' '); if(cs.textTransform==='uppercase')txt=txt.toUpperCase(); else if(cs.textTransform==='lowercase')txt=txt.toLowerCase();   /* v378 · fix */ let cy=(rects[0].top+rects[0].height/2-box.top)*K; if(_dt){ x.textBaseline='alphabetic'; cy=(rects[0].top-box.top)*K+x.measureText('0').fontBoundingBoxAscent; }   /* v378 · num · en su base, como en pantalla */
       for(const ch of txt){ x.fillText(ch,(px-box.left)*K,cy); px+=_dt?x.measureText(ch).width/K+ls:adv; } x.restore(); }   /* v382 · i3 · «la coma después del 1»: cada glifo con su avance, como en pantalla */
     const blob=await new Promise(r=>c.toBlob(r,'image/png')); if(!blob)throw new Error('sin imagen');
-    await shipPng(blob,'gymtrk-'+todayISO()+'.png',job,'tarjeta para compartir');
+    await shipPng(blob,'gymtrk-'+calToday()+'.png',job,'tarjeta para compartir');
   }catch(e){ job.fail('⚠ no se pudo generar la imagen'); } }
 // la entrega de una imagen: la hoja de compartir (PNG sí está permitido); si no se puede, una hoja con la imagen para mantenerla presionada
 async function shipPng(blob,name,job,alt){ const file=new File([blob],name,{type:'image/png'});
@@ -16100,11 +16213,11 @@ function dayRadar(t,g,wo,H,Wd){ g=g||{}; const W=wo==null?(+t.water||0):(+wo||0)
   const ax=[['P','protein','meta',1],['F','fat','meta',1],['Na','sodium','tope',1],['agua','water','meta',0],['C','carbs','meta',1],['Fbr','fiber','meta',0],['K','potassium','meta',0]].map(([l,k,pol,pun])=>{ const v=k==='water'?W:t[k]; return {l,t:fr(v,g[k]),pol,over:!!pun&&+g[k]>0&&macroStatus(+v||0,+g[k])==='over'}; });
   return trkRadar(ax,{n:8,R:70,lg:17,cls:'trkrad-day',H,W:Wd}); }
 
-function progWeekly(n,end){ const now=end?new Date(end+'T12:00:00'):new Date();   /* v378 · ser · end: la última semana termina ese día (arrastre del detalle) */ const buckets=[]; for(let i=n-1;i>=0;i--){ const a=new Date(now); a.setDate(now.getDate()-7*i-6); const b=new Date(now); b.setDate(now.getDate()-7*i); buckets.push({a:todayISO(a),b:todayISO(b)}); }
+function progWeekly(n,end){ const now=end?new Date(end+'T12:00:00'):dayNow();   /* v378 · ser · end: la última semana termina ese día (arrastre del detalle) */ const buckets=[]; for(let i=n-1;i>=0;i--){ const a=new Date(now); a.setDate(now.getDate()-7*i-6); const b=new Date(now); b.setDate(now.getDate()-7*i); buckets.push({a:todayISO(a),b:todayISO(b)}); }
   const counts=buckets.map(()=>0), vols=buckets.map(()=>0), tens=buckets.map(()=>0);
   (db.sessions||[]).forEach(s=>{ if(s.type==='rest')return; for(let i=0;i<buckets.length;i++){ if(s.date>=buckets[i].a&&s.date<=buckets[i].b){ counts[i]++; (s.exercises||[]).forEach(e=>(e.sets||[]).forEach(st=>{vols[i]+=kgLoad(st)*(parseFloat(st.r)||0);})); tens[i]+=sessionTensionTotal(s); break; } } });
   return {counts,vols,tens}; }
-function avgKcal7(){ const now=new Date(); let sum=0,days=0; for(let i=0;i<7;i++){ const d=new Date(now); d.setDate(now.getDate()-i); const arr=db.meals[todayISO(d)]; if(arr&&arr.length){ days++; sum+=arr.reduce((a,m)=>a+(+m.kcal||0),0); } } return days?Math.round(sum/days):0; }
+function avgKcal7(){ const now=dayNow(); let sum=0,days=0; for(let i=0;i<7;i++){ const d=new Date(now); d.setDate(now.getDate()-i); const arr=db.meals[todayISO(d)]; if(arr&&arr.length){ days++; sum+=arr.reduce((a,m)=>a+(+m.kcal||0),0); } } return days?Math.round(sum/days):0; }
 // ── import health history from URL (iOS Shortcut). steps=N (hoy) · stepsh=fecha:n,fecha:n (histórico) · weight=kg (hoy) · weighth=fecha:kg,... (histórico)
 function importPairs(str,fn){ let n=0; (str||'').split(',').slice(0,500).forEach(p=>{ const i=p.indexOf(':'); if(i<1)return; const k=p.slice(0,i).trim(), v=p.slice(i+1).trim(); if(!/^\d{4}-\d{2}-\d{2}$/.test(k))return; try{ if(fn(k,v))n++; }catch(_){} }); return n; }
 // parse a ?sleep= value into the stored sleep shape (mismo que openSleepLog):
@@ -16243,9 +16356,9 @@ function etOutcome(d){ if(_et.o[d]!==undefined)return _et.o[d]; const n=shiftDat
   return (_et.o[d]=o); }
 // lo que hiciste el día d: la última comida contra tu hora de dormir, cuánto de tus kcal fue ahí, cafeína y alcohol, entreno tarde
 function etFacts(d){ if(_et.f[d])return _et.f[d]; const o=etOutcome(d), bed=o?o.bed:null, F={bed}, tags={};
-  ((db.meals&&db.meals[d])||[]).forEach(m=>{ if(!m||isWaterItem(m))return; const tg=m.tag||'meal', g=tags[tg]=tags[tg]||{k:0,t:NaN}, t=hm2min(m.time); g.k+=+m.kcal||0; if(isFinite(t)&&!(t<=g.t))g.t=t;
+  ((db.meals&&db.meals[d])||[]).forEach(m=>{ if(!m||isWaterItem(m))return; const tg=m.tag||'meal', g=tags[tg]=tags[tg]||{k:0,t:NaN}, t=hmOrd(d,m.time); g.k+=+m.kcal||0; if(isFinite(t)&&!(t<=g.t))g.t=t;
     if(+m.alcohol>0)F.alcohol=(F.alcohol||0)+(+m.alcohol); if(+m.caffeine>0&&isFinite(t)&&t>=840){ F.cafLate=(F.cafLate||0)+(+m.caffeine); if(!(F.cafT>=t))F.cafT=t; } });
-  let tot=0,last=null; Object.keys(tags).forEach(tg=>{ const g=tags[tg], mt=hm2min(mealTime(d,tg)); if(isFinite(mt))g.t=mt; tot+=g.k; if(g.k>0&&isFinite(g.t)&&(!last||g.t>last.t))last=g; });
+  let tot=0,last=null; Object.keys(tags).forEach(tg=>{ const g=tags[tg], mt=hmOrd(d,mealTime(d,tg)); if(isFinite(mt))g.t=mt; tot+=g.k; if(g.k>0&&isFinite(g.t)&&(!last||g.t>last.t))last=g; });
   if(tot>0&&last){ F.lastMeal=last.t; F.dinnerPct=Math.round(last.k/tot*100);
     if(bed!=null&&bed>=last.t){ F.dinnerGap=(bed-last.t)/60; let late=0; Object.keys(tags).forEach(tg=>{ const g=tags[tg]; if(isFinite(g.t)&&bed-g.t>=0&&bed-g.t<=180)late+=g.k; }); F.kcalLate=Math.round(late); } }
   (db.stack||[]).forEach(x=>{ if(!x)return; takesOf(x,d).forEach(t=>{ if(!takeDone(t,d))return; const n=suppNutrOn(x,d,t)||{}; if(+n.alcohol>0)F.alcohol=(F.alcohol||0)+(+n.alcohol); }); });
@@ -16270,7 +16383,7 @@ function etDays(){ const t=todayISO(), a=[]; for(let i=1;i<=ET_DAYS;i++)a.push(s
 function enTiLines(it,P){ etReset(); const days=etDays(), L=[]; let n1=0,n0=0;
   ET_OUT.forEach(([k,minAbs,fm])=>{ const r=etCompare(days,d=>itemTaken(it,d),k,minAbs); if(k==='min'){ n1=r.n1; n0=r.n0; } if(r.clear)L.push([etSay(k,r.diff),fm(r.m1)+' con · '+fm(r.m0)+' sin · '+r.n1+' y '+r.n0+' noches']); });
   const h=+(P&&P.halfH), stim=P&&((P.sleep&&P.sleep.effect==='empeora')||(P.tags||[]).indexOf('estimulante')>=0);
-  if(stim&&h>0){ const late=d=>{ const o=etOutcome(d); if(!o||o.bed==null)return null; let m=null; takesOf(it,d).forEach(t=>{ if(!takeDone(t,d))return; const x=hm2min(takeTime(t,d)); if(isFinite(x)&&(m==null||x>m))m=x; }); if(m==null||o.bed<m)return null; return (o.bed-m)/60<8; };
+  if(stim&&h>0){ const late=d=>{ const o=etOutcome(d); if(!o||o.bed==null)return null; let m=null; takesOf(it,d).forEach(t=>{ if(!takeDone(t,d))return; const x=hmOrd(d,takeTime(t,d)); if(isFinite(x)&&(m==null||x>m))m=x; }); if(m==null||o.bed<m)return null; return (o.bed-m)/60<8; };
     [['min',10,v=>fmtDur(v)],['bed',20,v=>minToHM(v)]].forEach(([k,minAbs,fm])=>{ const r=etCompare(days,late,k,minAbs); if(r.clear)L.push(['a menos de 8 h de dormir: '+etSay(k,r.diff),fm(r.m1)+' cerca · '+fm(r.m0)+' temprano · '+r.n1+' y '+r.n0+' noches']); }); }
   return {L,n1,n0}; }
 function enTiHTML(it,P){ if(!it||!it.id||!(db.stack||[]).some(x=>x===it))return ''; const R=enTiLines(it,P), hd='<div class="grp-label sub">EN TI</div>';
@@ -16294,7 +16407,7 @@ function etWhy(n){ etReset(); const d=shiftDate(n,-1), o=etOutcome(d); if(!o)ret
     (db.stack||[]).forEach(x=>{ if(!x)return; const r=subOfItem(x); if(r.items.length!==1)return; const P=_subProf[r.items[0].s.id], ef=P&&P.sleep&&P.sleep.effect, tg=(P&&P.tags)||[]; if(!P)return;
       const sed=tg.indexOf('sedacion')>=0, stim=ef==='empeora'||tg.indexOf('estimulante')>=0, rel=sed||stim||ef==='mejora'||ef==='mixto'; if(!rel)return;
       const took=takesOf(x,d).filter(t=>takeDone(t,d));
-      if(took.length){ let t=took[0], m=hm2min(takeTime(t,d)); took.forEach(y=>{ const q=hm2min(takeTime(y,d)); if(isFinite(q)&&!(q<=m)){ t=y; m=q; } });
+      if(took.length){ let t=took[0], m=hmOrd(d,takeTime(t,d)); took.forEach(y=>{ const q=hmOrd(d,takeTime(y,d)); if(isFinite(q)&&!(q<=m)){ t=y; m=q; } });
         const hh=+P.halfH, left=stim&&hh>0&&isFinite(m)&&o.bed!=null&&o.bed>m?Math.pow(0.5,((o.bed-m)/60)/hh):null, nm=x.name+(takeDoseTxtOn(t,d)?' '+takeDoseTxtOn(t,d):'')+(isFinite(m)?' · '+takeTime(t,d):'');
         if(left!=null&&left>=0.25)L.push([nm,'al dormir quedaba ~'+Math.round(left*100)+' %']);
         else if(!stim&&freq(x)<0.5)L.push([nm,'no lo sueles tomar · en su ficha: sueño '+(SUB_SLEEP[ef]||ef||'sin datos')]); }   // un estimulante temprano no es noticia
@@ -16442,7 +16555,7 @@ function segPh(seg){ const o={awake:0,rem:0,core:0,deep:0}; let any=false; (seg.
 // absolute window (ms) of a saved session / the live workout. Sessions saved before v220 derive it from date + HH:MM;
 // doneAt stamps widen it (backdated "log later" sessions excluded — their stamps are logging time, not training time).
 function sessionWindow(s){ if(!s)return null; let a=s.startMs||null, b=s.endMs||null;
-  const at=hm=>{ const m=hm2min(hm); if(!isFinite(m)||!s.date)return null; const d=new Date(s.date+'T00:00:00'); d.setMinutes(m); return d.getTime(); };
+  const at=hm=>{ const m0=hm2min(hm), m=m0<DAY_WAKE?hmOrd(s.date,hm):m0; if(!isFinite(m)||!s.date)return null; const d=new Date(s.date+'T00:00:00'); d.setMinutes(m); return d.getTime(); };
   if(!a)a=at(s.startTime||s.startTs); if(!b){ b=at(s.endTime); if(b&&a&&b<a)b+=86400000; }
   if(!s.loggedAfter){ let lo=Infinity, hi=0; (s.exercises||[]).forEach(e=>(e.sets||[]).forEach(st=>{ if(st&&st.doneAt){ lo=Math.min(lo,st.doneAt); hi=Math.max(hi,st.doneAt); } }));
     if(isFinite(lo)){ a=a?Math.min(a,lo-120000):lo-120000; b=b?Math.max(b,hi):hi; } }
@@ -16606,7 +16719,7 @@ async function healthSyncNative(reason){ const Hp=capP('Health'); const h=H();
           (r.samples||[]).forEach(x=>{ const ts=Date.parse(x.startDate); if(!isFinite(ts)||!(x.value>0))return; if(Date.parse(x.endDate)-ts>30000)series++; P.hr.push([ts,Math.round(x.value),src(x.sourceName,x.sourceId)]); }); }
         catch(e2){ healthLog('FC de sesión: '+(e2&&e2.message),'err'); } } }
     if(series)healthLog('FC: '+series+' muestras agrupadas (series) — la FC por serie podría requerir el plugin propio');
-    const o=ingestHealth(P);
+    const o=ingestHealth(P); setTimeout(()=>{ try{ dayTick('sync'); }catch(_){} },0);
     if(plat==='ios'){ const miss=[]; if(!P.daily.some(d=>d.steps))miss.push('pasos'); if(!P.sleep.length)miss.push('sueño'); if(!P.daily.some(d=>d.hrAvg))miss.push('frecuencia cardíaca');
       if(miss.length&&(P.daily.length||P.sleep.length))healthLog('sin datos de '+miss.join(', ')+' — si deberían existir, revisa Salud › Perfil › Apps › gym//TRK'); }
     else { try{ const st=await withTO(Hp.checkAuthorization({read:HEALTH_READ}),8000); if(st&&st.readDenied&&st.readDenied.length)healthLog('permisos negados: '+st.readDenied.join(', '),'err'); }catch(_){} }
@@ -16827,12 +16940,12 @@ function sessHRBlock(s,o){   /* v378 · rst · o.st = estático (compartir) */ c
 function hrTag(x){ if(!x||x.peak==null)return ''; const t=(x.pre!=null?x.pre+'→':'')+x.peak+(x.rec60>0?' · baja '+x.rec60:'');   /* v382 · s3 · «me pones un -12… no sé a qué se refiera»: es lo que cayó tu FC a los 60 s */   /* v361 · la bajada solo si bajó */
   return `<span class="sethr" data-gloss="hrset" title="FC: antes → pico${x.rec60!=null?' · recuperación a 60 s':''}${x.q<0.6?' · pocas muestras':''}">FC ${escTxt(t)}</span>`; }
 function importHealth(sp){ const msg=[]; let kept=0;   // v369 · H9 · como el atajo: un día lo llena solo si está vacío o ya era suyo (lo tecleado gana)
-  if(sp.has('steps')){ const n=parseInt(sp.get('steps'),10); if(!isNaN(n)&&n>=0&&n<200000){ db.steps=db.steps||{}; if(!hpFree('steps',todayISO())){ msg.push('pasos de hoy: se quedan los tuyos'); } else { db.steps[todayISO()]=n; H().src.steps[todayISO()]='shortcut'; msg.push(n.toLocaleString()+' pasos · hoy'); } } }
+  if(sp.has('steps')){ const n=parseInt(sp.get('steps'),10); if(!isNaN(n)&&n>=0&&n<200000){ db.steps=db.steps||{}; if(!hpFree('steps',calToday())){ msg.push('pasos de hoy: se quedan los tuyos'); } else { db.steps[calToday()]=n; H().src.steps[calToday()]='shortcut'; msg.push(n.toLocaleString()+' pasos · hoy'); } } }
   if(sp.has('stepsh')){ db.steps=db.steps||{}; const c=importPairs(sp.get('stepsh'),(k,v)=>{ const n=parseInt(v,10); if(isNaN(n)||n<0||n>=200000)return false; if(!hpFree('steps',k)){ kept++; return false; } db.steps[k]=n; H().src.steps[k]='shortcut'; return true; }); if(c)msg.push(c+' días de pasos'); }
-  if(sp.has('weight')){ const w=parseFloat(sp.get('weight')); if(w>=20&&w<=400){ db.bodyweight=db.bodyweight||{}; if(!hpFree('weight',todayISO())){ msg.push('peso de hoy: se queda el tuyo'); } else { db.bodyweight[todayISO()]=Math.round(w*10)/10; H().src.weight[todayISO()]='shortcut'; if(db.profile)db.profile.weightKg=Math.round(w*10)/10; } if(false)msg.push((Math.round(w*10)/10)+' kg · hoy'); } }
+  if(sp.has('weight')){ const w=parseFloat(sp.get('weight')); if(w>=20&&w<=400){ db.bodyweight=db.bodyweight||{}; if(!hpFree('weight',calToday())){ msg.push('peso de hoy: se queda el tuyo'); } else { db.bodyweight[calToday()]=Math.round(w*10)/10; H().src.weight[calToday()]='shortcut'; if(db.profile)db.profile.weightKg=Math.round(w*10)/10; } if(false)msg.push((Math.round(w*10)/10)+' kg · hoy'); } }
   if(sp.has('weighth')){ db.bodyweight=db.bodyweight||{}; const c=importPairs(sp.get('weighth'),(k,v)=>{ const w=parseFloat(v); if(!(w>=20&&w<=400))return false; if(!hpFree('weight',k)){ kept++; return false; } db.bodyweight[k]=Math.round(w*10)/10; H().src.weight[k]='shortcut'; return true; }); if(c){ const ks=Object.keys(db.bodyweight).sort(); if(ks.length&&db.profile)db.profile.weightKg=db.bodyweight[ks[ks.length-1]]; msg.push(c+' registros de peso'); } }
-  if(sp.has('stepsq')){ const arr=(sp.get('stepsq')||'').split(','); const N=arr.length; let end=sp.get('qend'); const _tst=end&&/^\d{4}-\d{2}-\d{2}$/.test(end)?new Date(end+'T12:00:00'):null; if(!_tst||isNaN(_tst.getTime()))end=todayISO(); db.steps=db.steps||{}; let c=0; for(let i=0;i<N;i++){ const n=parseInt(arr[i],10); if(isNaN(n)||n<0||n>=200000)continue; const d=shiftDate(end,-(N-1-i)); if(!/^\d{4}-\d{2}-\d{2}$/.test(d))continue; if(!hpFree('steps',d)){ kept++; continue; } db.steps[d]=n; H().src.steps[d]='shortcut'; c++; } if(c)msg.push(c+' días de pasos'); }
-  if(sp.has('sleep')){ const v=parseSleepVal(sp.get('sleep'), todayISO()); if(v!=null){ db.sleep=db.sleep||{}; if(!hpFree('sleep',todayISO()))msg.push('sueño de hoy: se queda el tuyo'); else { db.sleep[todayISO()]=v; msg.push(fmtSleep(v)+' de sueño · hoy'); } } }
+  if(sp.has('stepsq')){ const arr=(sp.get('stepsq')||'').split(','); const N=arr.length; let end=sp.get('qend'); const _tst=end&&/^\d{4}-\d{2}-\d{2}$/.test(end)?new Date(end+'T12:00:00'):null; if(!_tst||isNaN(_tst.getTime()))end=calToday(); db.steps=db.steps||{}; let c=0; for(let i=0;i<N;i++){ const n=parseInt(arr[i],10); if(isNaN(n)||n<0||n>=200000)continue; const d=shiftDate(end,-(N-1-i)); if(!/^\d{4}-\d{2}-\d{2}$/.test(d))continue; if(!hpFree('steps',d)){ kept++; continue; } db.steps[d]=n; H().src.steps[d]='shortcut'; c++; } if(c)msg.push(c+' días de pasos'); }
+  if(sp.has('sleep')){ const v=parseSleepVal(sp.get('sleep'), calToday()); if(v!=null){ db.sleep=db.sleep||{}; if(!hpFree('sleep',calToday()))msg.push('sueño de hoy: se queda el tuyo'); else { db.sleep[calToday()]=v; msg.push(fmtSleep(v)+' de sueño · hoy'); } } }
   if(sp.has('sleeph')){ db.sleep=db.sleep||{}; const c=importPairs(sp.get('sleeph'),(k,val)=>{ const v=parseSleepVal(val,k); if(v==null)return false; if(!hpFree('sleep',k)){ kept++; return false; } db.sleep[k]=v; return true; }); if(c)msg.push(c+' días de sueño'); }
   if(kept)msg.push(kept+(kept===1?' día tuyo se queda':' días tuyos se quedan'));
   return msg; }
@@ -16930,7 +17043,7 @@ function hpNeed(k,got,T){ const b=Math.max(2,hpDays(got,T)+1,(HP_OV[k]||HP_OV._)
   return Math.min(3650,Math.max(b,x)); }
 function hpLim(k,N){ if(!HP_DEEP[k]||!(N>0))return; const c=hpCov(k), now=Date.now(), on=+c.lim>0&&now-(+c.limT||0)<HP_CAP_RETRY; c.lim=on?Math.min(+c.lim,N):N; c.limT=now; }
 let bfBudget=()=>Math.floor(LS_QUOTA*HP_BF_MAX-storageTotal());   // let: la prueba la cambia
-function bfHave(k){ const c=hpCovR(k), x=c.from?hpDays(c.from,todayISO())+1:0; return x>0?x:0; }
+function bfHave(k){ const c=hpCovR(k), x=c.from?hpDays(c.from,calToday())+1:0; return x>0?x:0; }
 // r1b · con el almacén ya arriba del 60 % (espacio negativo) o sin medida, nada nuevo cabe: lo ya cubierto se puede volver a pedir (no suma), pero
 // nunca más de lo que se quería (antes devolvía todo lo cubierto: con un peso de hace 11 años, un plan de 4000 días)
 function bfFit(k,n,room){ const have=bfHave(k), r0=room==null?bfBudget():room, r=r0>0?r0:0, cost=HP_COST[k]||200, add=Math.max(0,n-have)*cost;
@@ -16970,7 +17083,7 @@ function hpRedo(){ const sc=H().shortcut; if(!sc.cov||typeof sc.cov!=='object')r
 function parseHealthPaste(text){ const lines=String(text||'').replace(/[\u200b\u200e\u200f\u202a-\u202e\ufeff]/g,'').replace(/[\u00a0\u2007\u202f]/g,' ').split(/\r\n?|\n|\u2028|;/).map(l=>l.trim()).filter(Boolean); if(!lines.length)return null;
   const hdr=/^trk\s*2\b/i.test(lines[0]); const acc={steps:{},weight:{},rhr:{},hrv:{},act:{},bas:{},fat:{}}, sleep=[], rows=[], vals=[]; let n=0;
   lines.forEach(l=>{ const m=l.match(/^([a-zñáéíóúü]+)(?:\s*[:=]\s*|\s+)(.+)$/i); if(!m)return; const k=HP_KEY[m[1].toLowerCase()]; if(k)rows.push({k,rest:m[2]}); });
-  const us=hpUS(rows.map(r=>r.rest)), max=shiftDate(todayISO(),1);   // una fecha de pasado mañana en adelante es un formato mal leído: no entra
+  const us=hpUS(rows.map(r=>r.rest)), max=shiftDate(calToday(),1);   // una fecha de pasado mañana en adelante es un formato mal leído: no entra
   rows.forEach(r=>{ const a=hpStamp(r.rest,us); if(!a||a.d>max)return; const rest=r.rest.slice(a.n).trim();
     if(r.k==='sleep'){ const b=hpStamp(rest,us); if(!b||!a.t||!b.t||b.d>max)return; if(b.ms>a.ms&&b.ms-a.ms<16*3600000){ sleep.push([a.ms,b.ms,hpStage(rest.slice(b.n))]); n++; } return; }
     const q=rest.match(/^(\d[\d.,\s]*?)\s*(\D*)$/); if(!q)return; r.d=a.d; r.ms=a.ms; r.num=q[1].replace(/\s/g,''); r.u=q[2].trim().toLowerCase(); vals.push(r); });
@@ -17058,7 +17171,7 @@ function hpLearn(t,r){ const ok=new Set(); let id='', ver=0; String(t||'').split
     else if(dk){ const cap0=(+hpCovR(dk).deep||0)>=3;   // ¿esta corrida era la vuelta a probar de un tope?
       if(k&&inW&&(k===dk||r)){ hpLim(k,N); const again=!!pa&&pa.k===k&&pa.dk===dk&&(pa.id!==id||el>=BIO_WAIT_DEEP);
         if(!again&&el<BIO_WAIT_DEEP){ sc.partial={id,k,dk,t:now}; L.part=dk; L.stop=null; if(!r)L.empty=true; }   // L.part = el historial de la corrida (para la hoja)
-        else if(k===dk){ delete sc.partial; const c=hpCov(k), lo=Math.max(+c.ok||0,hpNeed(k,got[k],todayISO()));
+        else if(k===dk){ delete sc.partial; const c=hpCov(k), lo=Math.max(+c.ok||0,hpNeed(k,got[k],calToday()));
           c.cut=c.cut?Math.min(c.cut,N):N; c.t=now; if(+c.ok>0&&c.cut-lo<=Math.max(7,Math.round(lo*.1)))c.deep=3; else { c.deep=1; c.n=Math.max(lo,Math.floor((lo+c.cut)/2)); }   // r2 · sin nada que haya llegado no hay tope
           L.cut=k; L.stop=null; if(!r)L.empty=true; }
         else delete sc.partial; }
@@ -17078,7 +17191,7 @@ function bioSkipped(k){ const sc=H().shortcut, s=sc.skip&&sc.skip[k]; if(!s)retu
 // cuántos días pedir de cada dato: 0 si no se busca; si nunca llegó, el historial de la primera vez (HP_HIST); si ya llegó, la ventana normal
 // (hpNeed: lo nuevo, el traslape y el hueco reciente) y, v369 · H9, un solo dato por corrida trae además su historial (o.deep = cuál; no viaja en la
 // URL porque bioWire solo manda números > 0)
-function bioPlan(){ const sc=H().shortcut, got=sc.got||{}, now=Date.now(), T=todayISO(), o={}; let probe=false;
+function bioPlan(){ const sc=H().shortcut, got=sc.got||{}, now=Date.now(), T=calToday(), o={}; let probe=false;
   HP_ORDER.forEach(k=>{ if(bioSkipped(k)){ o[k]=0; return; }
     if(HP_OPT.indexOf(k)>=0&&!got[k]){ if(probe){ o[k]=0; return; } probe=true; }   // un opcional que nunca ha llegado: UNA prueba por corrida (si falta, iOS detiene el atajo ahí)
     o[k]=got[k]?hpNeed(k,got[k],T):HP_HIST[k]; });
@@ -17090,7 +17203,7 @@ function bioPlan(){ const sc=H().shortcut, got=sc.got||{}, now=Date.now(), T=tod
 // qué huecos se pidieron (ask). Un historial queda completo si lo más viejo que regresó cae a «gap» días o más del inicio de la ventana (Salud ya no
 // tiene nada más viejo); si no, la siguiente pide el doble (o el punto medio si ya hubo un corte). Una ventana grande que ya llega a donde Salud no
 // tiene nada (la primera vez, HP_HIST) también lo cierra. Solo aprende de la corrida que mandó la app (hpLearn deja _ok y _plan).
-function hpCover(r,L){ const ok=L&&L._ok, pl=L&&L._plan; if(!ok||!pl)return; const P=pl.p||{}, run=isoOfMs(Math.max(+pl.t||0,Date.now())), O=hpOldest(r.payload,true), F=hpOldest(r.payload), T=todayISO(), now=Date.now();
+function hpCover(r,L){ const ok=L&&L._ok, pl=L&&L._plan; if(!ok||!pl)return; const P=pl.p||{}, run=isoOfMs(Math.max(+pl.t||0,Date.now())), O=hpOldest(r.payload,true), F=hpOldest(r.payload), T=calToday(), now=Date.now();
   HP_ORDER.forEach(k=>{ const N=+P[k]||0, D=HP_DEEP[k]; if(!(N>0)||!D||!ok.has(k))return; const c=hpCov(k), start=shiftDate(run,2-N), far=O[k]?hpDays(start,O[k]):-1;
     if(!c.from||start<c.from)c.from=start; c.to=run; c.ok=Math.max(+c.ok||0,N); if(F[k]&&(!c.floor||F[k]<c.floor))c.floor=F[k]; if(c.cut&&N>=c.cut)c.cut=0;   // una corrida así de grande llegó entera: ese corte no era de iOS. r2 · el piso, de lo que sí se escribió (no de la noche de la orilla)
     if(+c.lim>0&&N>=+c.lim){ c.lim=0; c.limT=0; }   // r2 · una ventana así de grande llegó entera: el alto ya no encoge el pedido de huecos
@@ -17111,7 +17224,7 @@ function hpResultTxt(L){ const k=(L.deep&&L.deep.k)||L.cut||L.part||L.pend; if(!
   if(L.cut)return h+' · la corrida se cortó: la próxima pide menos '+u;
   return h+(st===2?(d?' · desde '+hpDayTxt(d):' · completo'):(d?' · desde ~'+hpDayTxt(d):'')+' · sigue en el próximo sync'); }
 function hpFetchTxt(){ const sc=H().shortcut, k=sc.plan&&sc.plan.p&&sc.plan.p.deep; return k&&HP_HNAME[k]?'<div class="line u-mb10"><span class="k">historial</span><span class="dots"></span><span class="v u-o60">'+HP_HNAME[k]+'</span></div>':''; }
-function healthPasteApply(t){ const pl=hpPlanFor(t), r=parseHealthPaste(t), L=hpLearn(t,r); if(!r)return null; const o=ingestHealth(hpEdge(r.payload,pl)); hpArrived(r,pl); hpCover(r,L); const h=H(); h.shortcut=Object.assign({},h.shortcut,{setup:true,lastPaste:Date.now(),lastSummary:r.summary,lastKinds:r.kinds}); if(/^[ \t]*ok[ \t]+cfg[ \t]*$/im.test(String(t)))h.shortcut.miss=0; /* v337 · lo que copió el atajo de ahora (con sus marcas) dice que sí existe, aunque se pegue a mano */ r.stop=L.stop; r.cut=L.cut||null; r.deep=L.deep||null; r.sleepNew=(o&&o.sleepNew)||0; h.shortcut.lastMine=(o&&o.sleepMine)||0; hpHistLog(L); return r; }
+function healthPasteApply(t){ const pl=hpPlanFor(t), r=parseHealthPaste(t), L=hpLearn(t,r); if(!r)return null; const o=ingestHealth(hpEdge(r.payload,pl)); setTimeout(()=>{ try{ dayTick('sync'); }catch(_){} },0); hpArrived(r,pl); hpCover(r,L); const h=H(); h.shortcut=Object.assign({},h.shortcut,{setup:true,lastPaste:Date.now(),lastSummary:r.summary,lastKinds:r.kinds}); if(/^[ \t]*ok[ \t]+cfg[ \t]*$/im.test(String(t)))h.shortcut.miss=0; /* v337 · lo que copió el atajo de ahora (con sus marcas) dice que sí existe, aunque se pegue a mano */ r.stop=L.stop; r.cut=L.cut||null; r.deep=L.deep||null; r.sleepNew=(o&&o.sleepNew)||0; h.shortcut.lastMine=(o&&o.sleepMine)||0; hpHistLog(L); return r; }
 function healthPasteNow(fromBio){ const done=t=>{ t=String(t||'');
     if(fromBio&&bioMissed(t)){ const sc=H().shortcut; sc.miss=(+sc.miss||0)+1; sc.wait=0; sc.plan=null; healthLog('el atajo no corrió (sin lo que copia esta corrida)'); saveSoon(); openBioMiss(); return; }   // v337 · H5
     const k0=(H().shortcut.lastKinds||[]).join(), r=healthPasteApply(t); if(r){ bioDone(r,k0); return; }
@@ -17250,15 +17363,15 @@ function openHealthImport(){
 function logBackMark(){ const d=document.querySelector('#modal .sheet.mdetail-wrap'); window._logBack=d&&window._mdKey?{key:window._mdKey,top:d.scrollTop}:null; }
 function logBackGo(){ const b=window._logBack; if(!b)return false; window._logBack=null; sheetBack(()=>openMetricDetail(b.key)); const sh=document.querySelector('#modal .sheet.mdetail-wrap'); if(!sh){ closeModal(); reRender(); return true; }
   if(b.top>0){ scrollHold(sh,b.top); Promise.resolve().then(()=>{ try{ if(sh.isConnected)scrollHold(sh,b.top); }catch(_){} }); } return true; }   // v363 · H8 · a la altura que tenía (antes regresaba arriba)
-function openWeightLog(day){ day=day||todayISO(); const ks=Object.keys(db.bodyweight||{}).sort(); const last=ks.length?db.bodyweight[ks[ks.length-1]]:((db.profile&&db.profile.weightKg)||'');
+function openWeightLog(day){ day=day||calToday(); const ks=Object.keys(db.bodyweight||{}).sort(); const last=ks.length?db.bodyweight[ks[ks.length-1]]:((db.profile&&db.profile.weightKg)||'');
   const recent=ks.slice(-8).reverse();
   const rows=recent.map(d=>`<div class="line u-py6 u-px0"><span class="k u-tap u-ul" data-act="editbw" data-d="${escV(d)}">${escV(d)}</span><span class="dots"></span><span class="v">${bwShow(db.bodyweight[d])} ${bwU()} <span data-act="delbw" data-d="${escV(d)}" class="u-o40 u-tap u-ml8">✕</span></span></div>`).join('');
   openModal(`<h3>peso corporal</h3>
-   <div class="field row2"><div><label>PESO (${bwU()})</label><input id="bw_kg" type="number" inputmode="decimal" value="${escV(day===todayISO()?(last?bwShow(last):''):((db.bodyweight&&db.bodyweight[day])?bwShow(db.bodyweight[day]):''))}" placeholder="${escV(bwU()==='lbs'?'ej. 160':'ej. 72.5')}"/></div><div><label>FECHA</label><input id="bw_date" type="date" value="${escV(day)}" max="${todayISO()}"/></div></div>
+   <div class="field row2"><div><label>PESO (${bwU()})</label><input id="bw_kg" type="number" inputmode="decimal" value="${escV(day===calToday()?(last?bwShow(last):''):((db.bodyweight&&db.bodyweight[day])?bwShow(db.bodyweight[day]):''))}" placeholder="${escV(bwU()==='lbs'?'ej. 160':'ej. 72.5')}"/></div><div><label>FECHA</label><input id="bw_date" type="date" value="${escV(day)}" max="${calToday()}"/></div></div>
    <div class="bwsl"><input type="range" class="gslider" id="bw_rng" aria-label="peso"/>${bwSwHTML()}</div>
    <div class="sheetbtns u-mb6"><button class="ok" id="bw_save">guardar</button><button class="cancel" data-act="logclose">cerrar</button></div>
    ${recent.length?`<div class="grp-label sub">RECENT LOGS</div>`+rows+``:''}`);
-  bwSliderBind();   /* v382 · a3 */ document.getElementById('bw_save').onclick=()=>{ const v=bwParse(val('bw_kg')); const d=val('bw_date')||todayISO(); if(!v){ toast('⚠ pon un peso válido','err'); return; } db.bodyweight=db.bodyweight||{}; db.bodyweight[d]=v; H().src.weight[d]='manual'; const allk=Object.keys(db.bodyweight).sort(); if(allk.length&&db.profile)db.profile.weightKg=db.bodyweight[allk[allk.length-1]]; savedToast('✓ peso guardado'); if(window._logBack){ openWeightLog(shiftDate(d,-1)); focusEl(document.getElementById('bw_kg')); return; } closeModal(); reRender(); };   // v363 · H8
+  bwSliderBind();   /* v382 · a3 */ document.getElementById('bw_save').onclick=()=>{ const v=bwParse(val('bw_kg')); const d=val('bw_date')||calToday(); if(!v){ toast('⚠ pon un peso válido','err'); return; } db.bodyweight=db.bodyweight||{}; db.bodyweight[d]=v; H().src.weight[d]='manual'; const allk=Object.keys(db.bodyweight).sort(); if(allk.length&&db.profile)db.profile.weightKg=db.bodyweight[allk[allk.length-1]]; savedToast('✓ peso guardado'); if(window._logBack){ openWeightLog(shiftDate(d,-1)); focusEl(document.getElementById('bw_kg')); return; } closeModal(); reRender(); };   // v363 · H8
 }
 // v263 · FC en reposo, HRV y energía activa se teclean: una métrica activada siempre tiene por dónde registrarse.
 // Viven donde ya vivían (db.health.daily[fecha]) con marca de origen por campo, como los pasos: lo tecleado gana y
@@ -17266,18 +17379,18 @@ function openWeightLog(day){ day=day||todayISO(); const ks=Object.keys(db.bodywe
 const HLOG={ rhr:{t:'FC en reposo',u:'bpm',ph:'ej. 58',min:25,max:140,step:'1',fld:'rhr',get:x=>(x&&+x.rhr)||0,set:(x,v)=>{ x.rhr=Math.round(v); }},
   hrv:{t:'HRV',u:'ms',ph:'ej. 42',min:1,max:400,step:'0.1',fld:'hrv',get:x=>(x&&x.hrv&&+x.hrv.v)||0,set:(x,v)=>{ x.hrv={v:Math.round(v*10)/10,kind:'rmssd'}; }},
   kcalact:{t:'energía activa',u:'kcal',ph:'ej. 420',min:1,max:8000,step:'1',fld:'activeKcal',get:x=>(x&&+x.activeKcal)||0,set:(x,v)=>{ x.activeKcal=Math.round(v); }} };
-function openHealthNumLog(key,day){ const C=HLOG[key]; if(!C)return; const h=H(); day=day||todayISO();
+function openHealthNumLog(key,day){ const C=HLOG[key]; if(!C)return; const h=H(); day=day||calToday();
   const ks=Object.keys(h.daily||{}).filter(d=>C.get(h.daily[d])>0).sort(); const recent=ks.slice(-8).reverse();
   const rows=recent.map(d=>{ const x=h.daily[d]; const man=x.src&&x.src[C.fld]==='manual';
     return `<div class="line u-py6 u-px0"><span class="k u-tap u-ul" data-act="edithlog" data-m="${key}" data-d="${escV(d)}">${escV(d)}</span><span class="dots"></span><span class="v">${C.get(x)} ${C.u}${man?'':' <span class="u-o40">· sync</span>'} <span data-act="delhlog" data-m="${key}" data-d="${escV(d)}" class="u-o40 u-tap u-ml8">✕</span></span></div>`; }).join('');
   openModal(`<h3>${C.t}</h3>
    <div class="submeta u-mb10">si tu reloj lo sincroniza después, se queda tu número</div>
-   <div class="field row2"><div><label>${C.u.toUpperCase()}</label><input id="hl_v" type="number" inputmode="decimal" step="${C.step}" placeholder="${escV(C.ph)}"/></div><div><label>FECHA</label><input id="hl_date" type="date" value="${escV(day)}" max="${todayISO()}"/></div></div>
+   <div class="field row2"><div><label>${C.u.toUpperCase()}</label><input id="hl_v" type="number" inputmode="decimal" step="${C.step}" placeholder="${escV(C.ph)}"/></div><div><label>FECHA</label><input id="hl_date" type="date" value="${escV(day)}" max="${calToday()}"/></div></div>
    <div class="sheetbtns u-mb6"><button class="ok" id="hl_save">guardar</button><button class="cancel" data-act="logclose">cerrar</button></div>
    ${recent.length?`<div class="grp-label sub">RECENT LOGS</div>`+rows:''}`);
   const load=d=>{ const el=document.getElementById('hl_v'); if(el){ const v=C.get(H().daily[d]); el.value=v>0?v:''; } };
   const dt=document.getElementById('hl_date'); if(dt)dt.onchange=()=>load(dt.value);
-  document.getElementById('hl_save').onclick=()=>{ const v=parseFloat(val('hl_v')); const d=val('hl_date')||todayISO();
+  document.getElementById('hl_save').onclick=()=>{ const v=parseFloat(val('hl_v')); const d=val('hl_date')||calToday();
     if(!isFinite(v)||v<C.min||v>C.max){ toast('⚠ pon un número entre '+C.min+' y '+C.max,'err'); return; }
     const hh=H(); const day=hh.daily[d]||(hh.daily[d]={}); day.src=day.src||{}; C.set(day,v); day.src[C.fld]='manual';
     const fa=(document.getElementById('hl_save')||{dataset:{}}).dataset.fa==='1'; savedToast('✓ '+C.t+' · guardado'); if(window._logBack&&!fa){ openHealthNumLog(key,shiftDate(d,-1)); focusEl(document.getElementById('hl_v')); return; } closeModal(); reRender(); if(fa&&state.screen==='progress')faBack(); };   // v363 · H8 · desde la gráfica: el día anterior, listo   // venías de la hoja de fitness age: regresas a ella, donde estabas
@@ -17380,14 +17493,14 @@ function hm2min(s){ if(!s||typeof s!=='string'||s.indexOf(':')<0)return NaN; con
 function sleepDur(start,end){ const a=hm2min(start),b=hm2min(end); if(!isFinite(a)||!isFinite(b))return 0; let diff=b-a; if(diff<0)diff+=1440; return Math.round(diff/6)/10; } // minutos→horas (0.1); cruza medianoche; iguales→0 (rechazado)
 function isNocturnal(start){ const a=hm2min(start); if(!isFinite(a))return true; return a>=1200||a<360; } // inicio ≥20:00 ó <06:00
 // sleep log — date = the morning you woke up. Multi-bloque: noche + siestas; cada uno hora dormir+despertar (cruza medianoche) o horas manuales.
-function openSleepLog(day,chain){ day=day||todayISO();   /* v364 · H8 · chain = la abrió guardar desde la gráfica: una noche sin registro abre vacía */
+function openSleepLog(day,chain){ day=day||(dayNowMin()<DAY_WAKE?todayISO():calToday());   /* v364 · H8 · chain = la abrió guardar desde la gráfica: una noche sin registro abre vacía */
   const ks=Object.keys(db.sleep||{}).sort();
   const recent=ks.slice(-8).reverse();
   const rows=recent.map(d=>{ const n=sleepBlocks(db.sleep[d]).length; const h=sleepHours(db.sleep[d]);
     return `<div class="line u-py6 u-px0"><span class="k u-tap u-ul" data-act="editsleep" data-d="${escV(d)}">${escV(d)}</span><span class="dots"></span><span class="v">${fmtSleep(db.sleep[d])||'—'}${n>1?' · '+n+' bloques':''} <span data-act="delsleep" data-d="${escV(d)}" class="u-o40 u-tap u-ml8">✕</span></span></div>`; }).join('');
   openModal(`<h3>sueño</h3>
    <div class="submeta u-mb8">noche + siestas · el total del día es la suma de los bloques</div>
-   <div class="field sldf"><label>FECHA (despertar)</label><input id="sl_date" type="date" value="${escV(day)}" max="${todayISO()}"${chain?' data-chain="1"':''}/></div>
+   <div class="field sldf"><label>FECHA (despertar)</label><input id="sl_date" type="date" value="${escV(day)}" max="${calToday()}"${chain?' data-chain="1"':''}/></div>
    <div class="grp-label first">BLOCKS</div>
    <div id="sl_blocks"></div>
    <div class="u-flex u-gap12 u-aic u-mt8 u-mb4 u-mx0"><button class="b u-f0" id="sl_add">+ siesta</button><a id="sl_manual" class="u-data u-o50 u-tap u-ul">¿sin hora? horas →</a><span id="sl_total" class="submeta u-mlauto">total —</span></div>
@@ -17430,7 +17543,7 @@ function openSleepLog(day,chain){ day=day||todayISO();   /* v364 · H8 · chain 
   document.getElementById('sl_add').onclick=()=>{ blocks.push({start:'',end:''}); paint(); };
   document.getElementById('sl_manual').onclick=()=>{ blocks.push({hours:''}); paint(); };
   document.getElementById('sl_date').onchange=function(){ load(this.value); };
-  document.getElementById('sl_save').onclick=()=>{ const d=val('sl_date')||todayISO(); const out=[];
+  document.getElementById('sl_save').onclick=()=>{ const d=val('sl_date')||calToday(); const out=[];
     blocks.forEach(b=>{ if(blkTimed(b)&&b.src&&b._o&&b.start===b._o.start&&b.end===b._o.end&&+b.hours>0&&!b._phEd){ const k=Object.assign({},b); delete k._o; delete k._det; out.push(k); return; }
       if(blkTimed(b)){ if(b.start&&b.end){ const win=sleepDur(b.start,b.end); if(win>0&&win<24){
         const stages=(b.stages||[]).filter(g=>g&&g[0]&&g[1]&&sleepDur(g[0],g[1])>0);
@@ -17442,12 +17555,12 @@ function openSleepLog(day,chain){ day=day||todayISO();   /* v364 · H8 · chain 
       else { const mh=Math.round((+b.hours)*10)/10; if(mh>0&&mh<24)out.push({date:d,type:'nocturno',hours:mh}); } });
     if(!out.length){ const nb=blocks.find(b=>blkTimed(b)&&(!b.start||!b.end));   /* v364 · H8 · lo que falta, corto */
       toast(!blocks.length?'⚠ agrega un bloque':nb?'⚠ falta la hora de '+(nb.start?'despertar':nb.end?'dormir':'dormir y de despertar'):'⚠ revisa las horas','err'); return; }
-    db.sleep=db.sleep||{}; { const was=sleepBlocks(db.sleep[d]).filter(b=>b&&typeof b==='object'&&b.src).length, kept=out.filter(b=>b&&b.src); if(kept.length&&kept.length<was)kept.forEach(b=>{ b.ed=1; }); }   /* v369 · H9 · le quitaste un tramo del atajo: la noche es tuya */ db.sleep[d]=out; savedToast('✓ sueño guardado'); if(window._logBack){ openSleepLog(shiftDate(d,-1),true); return; } closeModal(); reRender();   // v363 · H8 · desde la gráfica: la noche anterior, lista
+    db.sleep=db.sleep||{}; { const was=sleepBlocks(db.sleep[d]).filter(b=>b&&typeof b==='object'&&b.src).length, kept=out.filter(b=>b&&b.src); if(kept.length&&kept.length<was)kept.forEach(b=>{ b.ed=1; }); }   /* v369 · H9 · le quitaste un tramo del atajo: la noche es tuya */ db.sleep[d]=out; savedToast('✓ sueño guardado'); setTimeout(()=>{ try{ dayTick('sleep'); }catch(_){} },0); if(window._logBack){ openSleepLog(shiftDate(d,-1),true); return; } closeModal(); reRender();   // v363 · H8 · desde la gráfica: la noche anterior, lista
   };
   load(day);
 }
 // habit series helpers (last-N days, daily water summed from meals, avg of logged days)
-function lastDays(n){ const now=new Date(); const out=[]; for(let i=n-1;i>=0;i--){ const d=new Date(now); d.setDate(now.getDate()-i); out.push(todayISO(d)); } return out; }
+function lastDays(n){ const now=dayNow(); const out=[]; for(let i=n-1;i>=0;i--){ const d=new Date(now); d.setDate(now.getDate()-i); out.push(todayISO(d)); } return out; }
 function dayWater(iso){ const arr=db.meals[iso]; let w=0; if(arr)arr.forEach(m=>{ w+=+m.water||0; }); return w; }
 function avgPos(arr){ const v=arr.filter(x=>x>0); return v.length?v.reduce((a,b)=>a+b,0)/v.length:0; }
 // ---------- metric drill-down (peso / pasos / agua) — Apple-Health-style detail ----------
@@ -17783,7 +17896,7 @@ function openAge(){ _faCache=null; const o=fitnessAge(), L=faLevers(o), how=!!wi
 // hard sets per muscle for the 7-day window `offsetWeeks` weeks ago (offset 0 = last 7d).
 // Same RP counting as weeklySets (uni pair = max side, drop = 0.5); kept separate so weeklySets (home //VOLUME) is untouched.
 function setsWeek(offsetWeeks){
-  const now=new Date(); const b=new Date(now); b.setDate(now.getDate()-7*offsetWeeks); const a=new Date(b); a.setDate(b.getDate()-7);
+  const now=dayNow(); const b=new Date(now); b.setDate(now.getDate()-7*offsetWeeks); const a=new Date(b); a.setDate(b.getDate()-7);
   const ai=todayISO(a), bi=todayISO(b); const byM={};
   (db.sessions||[]).forEach(s=>{ if(s.type==='rest'||!s.date||s.date<=ai||s.date>bi)return;
     (s.exercises||[]).forEach((e,ei)=>{ const muscles=musclesOf(s,ei); if(!muscles.length)return;   // v228: vivo, como tensWeek
@@ -17796,7 +17909,7 @@ function setsWeek(offsetWeeks){
 }
 // per-muscle effective tension in the same 7-day windows as setsWeek (musclesOf weights, like //VOLUME)
 function tensWeek(offsetWeeks){
-  const now=new Date(); const b=new Date(now); b.setDate(now.getDate()-7*offsetWeeks); const a=new Date(b); a.setDate(b.getDate()-7);
+  const now=dayNow(); const b=new Date(now); b.setDate(now.getDate()-7*offsetWeeks); const a=new Date(b); a.setDate(b.getDate()-7);
   const ai=todayISO(a), bi=todayISO(b); const byM={};
   (db.sessions||[]).forEach(s=>{ if(s.type==='rest'||!s.date||s.date<=ai||s.date>bi)return; const st=sessionTension(s);
     (s.exercises||[]).forEach((e,ei)=>{ if(!st[ei]||!(st[ei].total>0))return; musclesOf(s,ei).forEach(m=>{ byM[m.name]=(byM[m.name]||0)+st[ei].total*m.weight; }); }); });
@@ -18466,8 +18579,8 @@ function usualBedMin(){ const t=todayISO(), a=[]; for(let i=0;i<21&&a.length<14;
 function subBedNote(P,it){ const h=+(P&&P.halfH); if(!(h>0)||!it)return null;
   if(!((P.sleep&&P.sleep.effect==='empeora')||(P.tags||[]).indexOf('estimulante')>=0))return null;   // solo lo que puede quitar el sueño
   const bed=usualBedMin(); if(bed==null)return null; const t0=todayISO(); let best=null;
-  for(let i=0;i<7&&!best;i++){ const d=shiftDate(t0,-i); takesOf(it,d).forEach(t=>{ if(!takeDone(t,d))return; const hm=takeTime(t,d), m=hm2min(hm); if(isFinite(m)&&(!best||m>best.m))best={m,hm,d}; });
-    if(it.id)extrasOn(d).forEach(a=>{ if(!a||a.sid!==it.id)return; const m=hm2min(a.time); if(isFinite(m)&&(!best||m>best.m))best={m,hm:a.time,d}; }); }   // v326 · un extra también cuenta
+  for(let i=0;i<7&&!best;i++){ const d=shiftDate(t0,-i); takesOf(it,d).forEach(t=>{ if(!takeDone(t,d))return; const hm=takeTime(t,d), m=hmOrd(d,hm); if(isFinite(m)&&(!best||m>best.m))best={m,hm,d}; });
+    if(it.id)extrasOn(d).forEach(a=>{ if(!a||a.sid!==it.id)return; const m=hmOrd(d,a.time); if(isFinite(m)&&(!best||m>best.m))best={m,hm:a.time,d}; }); }   // v326 · un extra también cuenta
   if(!best)return null; const gap=(bed-best.m)/60; if(!(gap>0)||gap>24)return null; const left=Math.pow(0.5,gap/h);
   return {hm:best.hm,d:best.d,bed:minToHM(bed),gap,left,txt:'tu toma de las '+best.hm+' · al dormir (~'+minToHM(bed)+') queda ~'+Math.round(left*100)+' %'}; }
 // ---- v297 · interacciones entre lo que tomas (de las fichas ya bajadas): solo las moderadas y graves suben a la lista ----
@@ -18593,7 +18706,7 @@ function renderAgenda(){
 // nombre a la izquierda; a la derecha solo lo que pide atención: tarde / saltado, se acaba el frasco, hoy no toca); tocar el renglón abre su hoja.
 const TICK_GLY={taken:'✓',late:'✓',skipped:'✕'}, TICK_WORD={late:'tarde',skipped:'saltado'};
 function stackSeg(rowsOf){ const keys=SUPP_SEG.map(x=>x[0]), has=k=>k==='otros'||rowsOf(k).length>0; let k=window._stackTab;
-  if(!k||!has(k)){ k=new Date().getHours()<14?'AM':'PM'; if(!rowsOf(k).length)k=keys.find(x=>rowsOf(x).length>0)||'otros'; window._stackTab=k; } return k; }
+  if(!k||!has(k)){ k=dayAP(); if(!rowsOf(k).length)k=keys.find(x=>rowsOf(x).length>0)||'otros'; window._stackTab=k; } return k; }
 function stackRowHTML(t,iso){ const it=t.it, own=!t.id, st=takeState(t,iso), due=takeDue(t,iso), oc=(it.periodization||{}).type==='occasional', can=due||oc;
   const nm=escTxt(it.name||'sustancia'), q=qtyTxt(takeUnitsOn(t,iso)), sk=own?suppStock(it):null, A=`data-id="${escTxt(it.id)}" data-tk="${escTxt(t.id)}"`;
   const ctx=own&&!(sk&&sk.out)?suppCountTxt(it,iso):'';   /* v348 · S-STOCK · en su renglón, bajo el nombre (a la derecha apretaba el nombre a 320) */
@@ -19211,7 +19324,7 @@ function renderSplitEdit(){
 // meses como rail (línea + punto por sesión) y cada sesión se abre en sitio con sus series (formato de compartir).
 // Lo abierto vive en state._histOpen (no se guarda); abrir/cerrar pasa por reRender → lo de abajo se reacomoda (TRKRow).
 function histCalHTML(sess){
-  const now=new Date(), curYM=now.getFullYear()*12+now.getMonth();
+  const now=dayNow(), curYM=now.getFullYear()*12+now.getMonth();
   const fp=String(sess.length?sess[sess.length-1].date:todayISO()).split('-'), minYM=Math.min(curYM,(+fp[0])*12+(+fp[1]-1));
   let ym=state._histYM; if(ym==null||!isFinite(ym)||ym>curYM)ym=curYM; if(ym<minYM)ym=minYM; state._histYM=ym;
   const y=Math.floor(ym/12), m=ym%12, pre=y+'-'+pad(m+1)+'-';
@@ -19342,6 +19455,7 @@ function ssExMenu(i){ const s=(db.sessions||[]).find(x=>x.id===window._sessId), 
 function stRow(a,k,v,o){ o=o||{}; return '<div class="line u-tap" role="button" tabindex="0" data-act="'+a+'"><span class="k">'+k+'</span>'+(o.q||'')+'<span class="dots"></span><span class="v">'+v+'</span>'+(o.tog?'':'<span class="rchev">›</span>')+'</div>'+(o.hint?'<div class="sthint">'+o.hint+'</div>':''); }
 function settingsSecHTML(){ const tg=(a,k,on,o)=>stRow(a,k,'['+(on?'on':'off')+']',Object.assign({tog:1},o||{}));
   return '<hr class="rule"/><div class="section"><div class="h"><span class="s">//</span>SETTINGS</div></div>'
+    +dayRowHTML()
     +stRow('editrest','descanso entre sets convencionales',escV(db.settings.restSec||90)+'s')
     +stRow('editrestside','descanso entre sets unilaterales',restSideSec()+'s')
     +stRow('editrestex','descanso al cambiar de ejercicio',restExSec()+'s')
@@ -20021,7 +20135,7 @@ function snapRecap(){ try{
   if(!db.profile.username)return;
   const qa=/[?&]recap=1\b/.test(location.search);
   const today=todayISO();
-  if(!qa){ if(new Date().getHours()<21)return; if(localStorage.getItem('gymtrk_recap')===today)return; }
+  if(!qa){ { const _h=new Date().getHours(), _b=dayBehind(); if(_b?_h>=5:_h<21)return; } if(localStorage.getItem('gymtrk_recap')===today)return; }
   const kcal=Math.round((db.meals[today]||[]).reduce((a,m)=>a+(+m.kcal||0),0));
   const steps=(db.steps&&db.steps[today])||0;
   const water=Math.round(dayWater(today)*10)/10;
@@ -20290,12 +20404,12 @@ document.getElementById('app').addEventListener('click',e=>{
   if(a==='nav'){ go(el.dataset.screen); }
   // G2 · R-SESS: lo que CREA una sesión o mueve la rotación nunca corre con una sesión viva (antes reemplazaba la tuya)
   else if((a==='start'||a==='loglater'||a==='rest'||a==='skip'||a==='unrest')&&db.activeWork){ toast('⚠ sesión en curso · termínala o abórtala','err'); }
-  else if(a==='start'){ const _go=()=>{ const _t0=ccCfg()?goalsFor(todayISO()).ccT:null; ccActDay(); db.activeWork=stampSessionPre(newWorkSession()); save(); state._autoScroll=true; go('workout'); if(_t0&&_t0!=='hi')toast('✓ hoy es on'+ccTxt().replace(/^ · on/,' ·')); };
+  else if(a==='start'){ const _go=()=>{ dayGate(); const _t0=ccCfg()?goalsFor(todayISO()).ccT:null; ccActDay(); db.activeWork=stampSessionPre(newWorkSession()); save(); state._autoScroll=true; go('workout'); if(_t0&&_t0!=='hi')toast('✓ hoy es on'+ccTxt().replace(/^ · on/,' ·')); };
     const _sd=db.split&&(db.split.days||[])[selIdx()]; if(slotGate('start'))return;   // v364 · SP14 · fix · 16
     if(false){ trkAsk({title:'tu split y tu última sesión no coinciden',detail:'este día del split no es como lo entrenaste la última vez · ¿empiezas con tu split o como lo entrenaste?',ok:'mi split',cancel:'como lo entrené',dismiss:()=>{}},()=>{ _sd.mt=Date.now(); _go(); },()=>{ _sd.mt=1; _go(); }); return; }   // v355 · SP5 · una vez por día
     openGymPicker({start:_go}); }   // v382 · g3 · Start abre elegir gym; cancelar no arranca nada · v339 · CC3 · entrenar manda sobre el cambio a mano de hoy
   else if(a==='togglepreview'){ state.previewDay=!state.previewDay; previewFold(el); }   // v382 · g3 · sin repintar: repintar se comería la animación
-  else if(a==='loglater'){ if(slotGate('loglater'))return;   /* v364 · fix · 16 */ const w=newWorkSession(); w.loggedAfter=true; w.startMs=null; const y=new Date(); y.setDate(y.getDate()-1); w.date=todayISO(y); db.activeWork=w; save(); go('workout'); }
+  else if(a==='loglater'){ if(slotGate('loglater'))return;   /* v364 · fix · 16 */ const w=newWorkSession(); w.loggedAfter=true; w.startMs=null; const y=dayNow(); if(!dayBehind())y.setDate(y.getDate()-1); w.date=todayISO(y); db.activeWork=w; save(); go('workout'); }
   else if(a==='togglenoadv'){ if(db.activeWork){ db.activeWork.noAdvance=!db.activeWork.noAdvance; reRender(); } }
   else if(a==='resume'){ goBack('workout'); }   // v285 · a la serie donde ibas
   else if(a==='leave'&&state.screen==='share'&&state.shareType==='weight'&&state._shBackMd){ const k=state._shBackMd, s=state._shBackScr; state._shBackMd=null; go(s||'progress'); openMetricDetail(k); }   /* v382 · r3 */
@@ -20310,7 +20424,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if((a==='rest'||a==='skip')&&!dayCount()){ go('home'); }
   // rest = descanso programado: se registra (cuenta para la racha) y NO mueve la rotación · skip = salta este día del split
   else if(a==='rest'){ if(trainedToday()){ toast('⚠ hoy ya entrenaste','err'); return; } if(restToday())return;
-    const _cc=ccActDay(), r={id:uid(),date:todayISO(),type:'rest'}; db.sessions.push(r); state.selDay=null; save(); go('home'); const _f=planForecast(14)[0]; const nx=_f?db.split.days[_f.idx]:curDay();   // v339 · CC3 · rest manda sobre el cambio a mano de hoy
+    dayGate(); const _cc=ccActDay(), r={id:uid(),date:todayISO(),type:'rest'}; db.sessions.push(r); state.selDay=null; save(); go('home'); const _f=planForecast(14)[0]; const nx=_f?db.split.days[_f.idx]:curDay();   // v339 · CC3 · rest manda sobre el cambio a mano de hoy
     toast('✓ descanso · sigue '+(nx?nx.name:'tu split')+(_f?' · '+dayLabel(_f.iso).toLowerCase():'')+ccTxt(),'ok',{undo:()=>{ db.sessions=db.sessions.filter(x=>x.id!==r.id); if(_cc)(db.ccDay=db.ccDay||{})[_cc.d]=_cc.prev; save(); render(); }}); }
   else if(a==='calday_unrest'){ const id=el.dataset.id; { const _r=(db.sessions||[]).find(x=>x.id===id); if(_r&&_r.date===todayISO())ccActDay(); } db.sessions=(db.sessions||[]).filter(x=>x.id!==id); save(); closeModal(); reRender(); toast('✓ descanso quitado'); }
   else if(a==='unrest'){ const r=restToday(); if(r){ ccActDay(); db.sessions=db.sessions.filter(x=>x.id!==r.id); save(); render(); toast('✓ descanso quitado'+ccTxt()); } }
@@ -20751,7 +20865,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='delmeal'){ const t=curDate(); db.meals[t]=(db.meals[t]||[]).filter(m=>m.id!==el.dataset.id); save(); render(); }
   else if(a==='editgoals'){ openGoals(); }
   // v359 · las fichas SECCIONES salieron de la hoja: ahora es ··· → qué se ve en intake
-  else if(a==='editsteps'){ const cur=(db.steps&&db.steps[todayISO()])||''; trkPrompt({title:'pasos de hoy',label:'PASOS',value:cur,type:'number',inputmode:'numeric',hint:'de Apple Health o tu reloj'},v=>{ const n=parseInt(String(v).replace(/[^0-9]/g,''),10); if(isNaN(n)){ toast('⚠ pon un número','err'); return false; } db.steps=db.steps||{}; db.steps[todayISO()]=n; H().src.steps[todayISO()]='manual'; save(); render(); toast('✓ pasos guardados'); }); }
+  else if(a==='editsteps'){ const cur=(db.steps&&db.steps[dayStepsDay()])||''; trkPrompt({title:'pasos de hoy',label:'PASOS',value:cur,type:'number',inputmode:'numeric',hint:'de Apple Health o tu reloj'},v=>{ const n=parseInt(String(v).replace(/[^0-9]/g,''),10); if(isNaN(n)){ toast('⚠ pon un número','err'); return false; } db.steps=db.steps||{}; { const _sd=dayStepsDay(); db.steps[_sd]=n; H().src.steps[_sd]='manual'; } save(); render(); toast('✓ pasos guardados'); }); }
   else if(a==='export'){ doExport(); }
   else if(a==='bakshare'){ doBackupShare(); }
   else if(a==='storage'){ openStorage(); }
@@ -20759,6 +20873,9 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='mmmenu'){ mmMenu(); }   // v350 · MM1 (v357: prender ya solo es desde u/)
   else if(a==='mmnormal'){ state._mmNormal=curDate(); reRender(); } else if(a==='mmback'){ state._mmNormal=null; reRender(); } else if(a==='mmdrink'){ openMmDrink(); } else if(a==='mmfood'){ openMmFood(); } else if(a==='mmfind'){ openMmFind(); } else if(a==='mmitem'){ mmItemMenu(el.dataset.id); }   // v351 · MM2 · MM3 · MM4
   else if(a==='streakcal'){ openStreakSheet(); }
+  else if(a==='daywake'){ dayMark('new'); }
+  else if(a==='dayundo'){ dayUndo(); }
+  else if(a==='daymode'){ trkMenu('cambio de día',[['automático · con sync, según tu sueño',()=>{ delete db.settings.dayMode; db.settings.dayAsked=1; dayTick('mode'); saveSoon(); reRender(); }],['siempre a medianoche',()=>{ db.settings.dayMode='midnight'; dayTick('mode'); saveSoon(); reRender(); }]]); }
   else if(a==='strkwin'){ window._strkWin=+el.dataset.w===7?7:28; const b=document.getElementById('strk4c'); if(b)keepUnder(b,()=>{ b.innerHTML=strkCompHTML(); }); el.parentNode.querySelectorAll('[data-act="strkwin"]').forEach(x=>x.classList.toggle('on',x===el)); }   // v383 · d4
   else if(a==='strkm'){ window._strkM=(window._strkM||0)+(+el.dataset.d||0); const b=document.getElementById('strk4m'); if(b)keepUnder(b,()=>{ b.innerHTML=streakCalendarHTML(window._strkM); }); }   // v383 · d4
   else if(a==='pf_sex'){ trkSelect(el,[{v:'M',t:'hombre'},{v:'F',t:'mujer'}],db.profile.sex||'',v=>setProfile('sex',v),{title:'sexo'}); }
@@ -21538,7 +21655,7 @@ function machSig(r){ return (typeof r==='string')?(r.trim()+'||0'):[String((r&&r
 // escritura es la de verdad y se relee.
 let _snapT=null, _snapLast=null;   // solo pruebas: respuesta síncrona (true/false) en vez de IndexedDB · la última foto armada
 function snapExpect(kind,name){ const dbl=!name&&_snapT!=null, test=dbl||(!name&&_sbx);
-  try{ const t=Date.now(), key='pre-'+kind+'-'+t, rec={t:t,day:todayISO(),mass:dbMass(db),seq:seqOf(db),sid:_sid,s:JSON.stringify(db)};
+  try{ const t=Date.now(), key='pre-'+kind+'-'+t, rec={t:t,day:calToday(),mass:dbMass(db),seq:seqOf(db),sid:_sid,s:JSON.stringify(db)};
     if(test){ const ok=dbl?!!_snapT:true; _snapLast=ok?{key:key,s:rec.s}:null; return dbl?{then:f=>f(ok)}:Promise.resolve(ok); }
     return idbPutCopy(key,rec,name).then(()=>true,()=>false); }catch(_){ return dbl?{then:f=>f(false)}:Promise.resolve(false); } }
 // Reescritura masiva, explícita y confirmada. sources = claves de nombre; target = configuración final.
@@ -23148,7 +23265,7 @@ function normalizeExtract(d){ d=d||{}; const svStr=d.serving||d.serving_label||'
   return {name:d.name||'',brand:d.brand||'',barcode:d.barcode||'',base,per100,sizes,servingLabel:(gramsUnknown?svStr:(d.serving_label||'')),gramsUnknown}; }
 function mealSuggestions(){ const def=db.mealTags||['breakfast','lunch','snack','dinner']; const used=new Set(); Object.values(db.meals||{}).forEach(arr=>arr.forEach(m=>{ if(m.tag&&m.tag!=='drink')used.add(m.tag); })); return [...new Set([...def,...used])].filter(t=>mealHidden().indexOf(t)<0); }   // v280 · sin los nombres quitados con [limpiar]
 function curTag(){ const e=document.getElementById('fa_tagtxt'); const v=e?e.value.trim():''; return v||'meal'; }
-function nextMealTag(){ const h=(new Date()).getHours(); if(h<11)return 'breakfast'; if(h<16)return 'lunch'; if(h<21)return 'dinner'; return 'snack'; }
+function nextMealTag(){ if(dayBehind())return 'snack'; const h=(new Date()).getHours(); if(h<11)return 'breakfast'; if(h<16)return 'lunch'; if(h<21)return 'dinner'; return 'snack'; }
 function nextAfterCurrent(){ const seq=['breakfast','lunch','dinner']; const i=seq.indexOf(nextMealTag()); return (i>=0&&i<2)?seq[i+1]:'snack'; }
 // add menu — emerges from the FAB (anchored bottom-right, opens up/left)
 // TRKWheel (§7.18, U1): rueda de valores en CSS puro (scroll-snap). 5 filas de 40 px, la central es la elegida;
@@ -23493,7 +23610,7 @@ function openApproxMeal(preset){
     const food={ base:'g', name:'Comida aproximada', brand:'', per100:{kcal:P*4+C*4+F*9,protein:P,carbs:C,fat:F}, sizes:{serving:100}, servingLabel:'porción' };
     const nut=computeNutrients(food,'serving',1);            // grams=100 -> nut = los totales exactos
     const t=curDate(); db.meals[t]=db.meals[t]||[]; snapshotGoal(t);
-    const item={id:uid(), tag:tag, name:'Comida aproximada', qty:1, serving:'porción', approx:true};
+    const item={id:uid(), at:Date.now(), tag:tag, name:'Comida aproximada', qty:1, serving:'porción', approx:true};
     MACROKEYS.forEach(k=>item[k]=(k==='kcal'||k==='protein'||k==='carbs'||k==='fat')?nut[k]:null); item.water=0;
     item._food={base:'g',per100:food.per100,sizes:food.sizes,servingLabel:'porción',name:food.name,brand:''}; item._unit='serving';
     db.meals[t].push(item); savedToast('✓ comida guardada'); closeModal(); reRender();
@@ -23501,7 +23618,7 @@ function openApproxMeal(preset){
 }
 // v256: cada vaso guarda su hora (campo aditivo) para mostrarla en //AGUA
 function logWater(ml){ if(!(ml>0))return; const t=curDate(); db.meals[t]=db.meals[t]||[]; snapshotGoal(t);
-  db.meals[t].push(Object.assign({id:uid(),tag:'drink',name:'agua',qty:1,serving:numTxt(ml)+' ml',kcal:0,protein:0,carbs:0,fat:0,sugar:0,fiber:0,sodium:0,potassium:0,caffeine:0,water:Math.round(ml/1000*1000)/1000},t===todayISO()?{time:nowHM()}:{})); savedToast('✓ agua registrada'); }
+  db.meals[t].push(Object.assign({id:uid(),at:Date.now(),tag:'drink',name:'agua',qty:1,serving:numTxt(ml)+' ml',kcal:0,protein:0,carbs:0,fat:0,sugar:0,fiber:0,sodium:0,potassium:0,caffeine:0,water:Math.round(ml/1000*1000)/1000},t===todayISO()?{time:nowHM()}:{})); savedToast('✓ agua registrada'); }
 function openDrink(){
   openModal(`<h3>add drink</h3>
    <div class="submeta u-mb10">agua y bebidas · suma a líquidos</div>
@@ -24431,7 +24548,7 @@ function commitLog(saveToDb){
   const t=curDate(); db.meals[t]=db.meals[t]||[]; snapshotGoal(t);
   const apply=m=>{ m.tag=L.tag; m.name=f.name+(qty!==1?' ×'+numTxt(qty):''); m.qty=qty; m.serving=unitLabel; MACROKEYS.forEach(k=>m[k]=nut[k]); m.water=nut.water; m._food={id:foodId,base:f.base,per100:f.per100,sizes:f.sizes,servingLabel:f.servingLabel,containerLabel:f.containerLabel||'',pieceLabel:f.pieceLabel||'',name:f.name,brand:f.brand||'',barcode:bc,mic:f.mic||undefined}; m._unit=unit; };
   if(L.editId){ const m=(db.meals[t]||[]).find(x=>x.id===L.editId); if(m){ apply(m); save(); closeModal(); reRender(); return; } }
-  const item={id:uid()}; apply(item); db.meals[t].push(item); try{ subFoodAlert(item); }catch(_){}   /* v383 · u4 · si cruza con lo que tomas */
+  const item={id:uid(),at:Date.now()}; apply(item); db.meals[t].push(item); try{ subFoodAlert(item); }catch(_){}   /* v383 · u4 · si cruza con lo que tomas */
   // v308 · AN1b · "cuando logueas un alimento… medio choppy": su comida queda abierta, el alimento ENTRA (lo de abajo baja deslizando),
   // el aro y el número avanzan juntos (animArcs + animNums) y, si quedó fuera de la vista, la pantalla baja lo mínimo para enseñarlo
   if(!isWaterItem(item)){ state._mealOpen=state._mealOpen||{}; (state._mealOpen[t]=state._mealOpen[t]||{})[String(item.tag)]=true; if(state._lfold)state._lfold.food=true;
@@ -24610,7 +24727,7 @@ function goalSchedMaybe(){ if(_sbx||!db||!db.settings)return; const T=todayISO()
 function goalSchedCan(){ return !!db&&!db.activeWork&&state.screen==='macros'&&!document.getElementById('modal')&&!document.getElementById('asklayer'); }
 function goalSchedAsk(s,T,now){ T=T||todayISO();
   bootAsk({title:s.from===T?'programado para hoy':'programado para el '+fmtShort(s.from),detail:goalSchedTxt(s)+(s.from===T?'':'\nse aplica desde hoy'),ok:'aceptar',cancel:'cancelar',alt:{label:'ajustar',fn:()=>{ window._gsPrefill=s; openGoals(T); }},
-    when:()=>goalSchedCan()&&goalSchedDue(T)===s, later:()=>{ _gsAsked=''; }, gs:1},
+    when:()=>goalSchedCan()&&(!dayOn()||T===todayISO())&&goalSchedDue(T)===s, later:()=>{ _gsAsked=''; }, gs:1},
     ()=>{ const snap=JSON.stringify({g:db.settings.goals,h:db.goalHist&&db.goalHist[T]||null,cc:db.settings.carbCycle||null,ph:db.phases||null,gs:db.goalSched,pg:db.profile.goal||null,gl:db.settings.goalSets||null}); goalSchedApply(s,T); save(); reRender();
       toast('✓ metas desde hoy · '+Math.round(+db.settings.goals.kcal||0).toLocaleString('en-US')+' kcal','ok',{undo:()=>{ const o=JSON.parse(snap); if(o.pg)db.profile.goal=o.pg; else delete db.profile.goal; if(o.gl)db.settings.goalSets=o.gl; else delete db.settings.goalSets; db.settings.goals=o.g; if(o.h)db.goalHist[T]=o.h; else delete db.goalHist[T]; if(o.cc)db.settings.carbCycle=o.cc; else delete db.settings.carbCycle; if(o.ph)db.phases=o.ph; else delete db.phases; db.goalSched=o.gs; }}); },
     ()=>goalSchedCancel(s), now); }
@@ -25157,10 +25274,10 @@ const IMP_TIGHT={__proto__:null,id:1,sid:1,date:1,from:1,to:1,startDate:1,endDat
 function impStr(s,k){ if(s==='__proto__')return ''; if(k&&IMP_TIGHT[k])return IMP_BAD[s]?'':s.replace(/["'<>`]/g,''); return s.replace(/<(?=[a-zA-Z\/!?])/g,'‹').replace(/["'](?=\s*[\w-]+\s*=)/g,'”').replace(/\bon(?!zas?\b)[a-z]{3,}\s*=/gi,m=>m.replace('=','')); }
 function impScrub(o,depth,key){ depth=depth||0; if(depth>64)throw new Error('imp: demasiado anidado'); if(typeof o==='string')return impStr(o,key); if(Array.isArray(o))return o.map(x=>impScrub(x,depth+1,key)); if(o&&typeof o==='object'){ const n={}; Object.keys(o).forEach(k=>{ if(IMP_BAD[k])return; n[impStr(k)]=impScrub(o[k],depth+1,k); }); return n; } return o; }
 // la forma de un respaldo de gym//TRK: devuelve por qué no lo es, o '' si lo es. Lo viejo que no trae un apartado pasa; lo que lo trae de otro tipo, no.
-const IMP_MAX=40*1024*1024, IMP_ARR=['gyms','sessions','foods','mealTags','stack','phases','goalSched'], IMP_OBJ=['settings','machines','meals','steps','bodyweight','goalHist','lastUsed','sleep','mealMeta','adhoc','health','exCat','muscleMap','gymPick'];
+const IMP_MAX=40*1024*1024, IMP_ARR=['gyms','sessions','foods','mealTags','stack','phases','goalSched'], IMP_OBJ=['settings','machines','meals','steps','bodyweight','goalHist','lastUsed','sleep','mealMeta','adhoc','health','exCat','muscleMap','gymPick','dayMarks','dayModes','dayOpen'];
 function impCheck(d){ const obj=x=>!!x&&typeof x==='object'&&!Array.isArray(x), nm=x=>x.name==null||typeof x.name==='string'; if(!obj(d))return 'no es un respaldo'; if(d._demo)return 'es la demo'; if(!obj(d.profile))return 'no trae perfil'; if(!obj(d.split))return 'no trae split'; if(d.split.days!=null&&!Array.isArray(d.split.days))return 'split dañado';
   for(const k of IMP_ARR)if(d[k]!=null&&!Array.isArray(d[k]))return k+' dañado'; for(const k of IMP_OBJ)if(d[k]!=null&&!obj(d[k])&&!(Array.isArray(d[k])&&!d[k].length))return k+' dañado';
-  const fechas=x=>!obj(x)||Object.keys(x).every(k=>/^\d{4}-\d\d-\d\d$/.test(k)); for(const k of ['meals','bodyweight','steps','sleep','goalHist','mealMeta','adhoc'])if(!fechas(d[k]))return k+' dañado'; if(obj(d.health)&&(!fechas(d.health.daily)||!fechas(d.health.sleep)||!fechas(d.health.sleepRaw)))return 'health dañado';   // las llaves de estos mapas son fechas y se pintan en atributos
+  const fechas=x=>!obj(x)||Object.keys(x).every(k=>/^\d{4}-\d\d-\d\d$/.test(k)); for(const k of ['meals','bodyweight','steps','sleep','goalHist','mealMeta','adhoc','dayMarks','dayModes','dayOpen'])if(!fechas(d[k]))return k+' dañado'; if(obj(d.health)&&(!fechas(d.health.daily)||!fechas(d.health.sleep)||!fechas(d.health.sleepRaw)))return 'health dañado';   // las llaves de estos mapas son fechas y se pintan en atributos
   const exOk=e=>obj(e)&&nm(e)&&(e.sets==null||typeof e.sets==='number'||(Array.isArray(e.sets)&&e.sets.every(t=>t==null||obj(t)))), wk=s=>obj(s)&&(s.exercises==null||(Array.isArray(s.exercises)&&s.exercises.every(exOk)));
   if(d.activeWork!=null&&!(wk(d.activeWork)&&Array.isArray(d.activeWork.exercises)))return 'activeWork dañado';
   if((d.sessions||[]).some(s=>!wk(s)))return 'sessions dañado'; if((d.split.days||[]).some(x=>!wk(x)))return 'split dañado'; if((d.stack||[]).some(x=>!obj(x)||!nm(x)))return 'stack dañado'; if((d.foods||[]).some(x=>!obj(x)||!nm(x)))return 'foods dañado';
@@ -25210,9 +25327,9 @@ function moveItemTo(newTag){ const t=curDate(); const arr=db.meals[t]||[]; const
 // implementa showSaveFilePicker), pero navigator.share SÍ abre la hoja nativa → "Guardar en Archivos", y ahí
 // el dueño elige iCloud, "En mi iPhone" o donde quiera. Un toque por respaldo, pero sale del navegador.
 const LS_LASTBAK='gymtrk_lastbak';
-function markBackup(){ try{ localStorage.setItem(LS_LASTBAK,todayISO()); }catch(_){} }
+function markBackup(){ try{ localStorage.setItem(LS_LASTBAK,calToday()); }catch(_){} }
 function daysSinceBackup(){ try{ const d=localStorage.getItem(LS_LASTBAK); if(!d)return 999;
-    return Math.round((new Date(todayISO()+'T12:00:00')-new Date(d+'T12:00:00'))/86400000); }catch(_){ return 999; } }
+    return Math.round((new Date(calToday()+'T12:00:00')-new Date(d+'T12:00:00'))/86400000); }catch(_){ return 999; } }
 // v256 · guardar un archivo SIN atrapar la app. En una web app de pantalla de inicio de iOS, `<a download>` NO
 // descarga: abre la pantalla de sistema "Abrir en…" sin forma de volver y hay que matar la app (el dueño lo sufrió
 // al tocar exportar). Y Web Share solo acepta ciertos tipos — application/json NO está —, así que el botón de v255
@@ -25257,7 +25374,7 @@ function nudgeBackup(why){
 }
 // v256: el respaldo sale SIEMPRE por saveFileSafe (nunca `<a download>` dentro de la app instalada). JSON compacto:
 // la mitad de peso que con sangría, y la importación lo lee igual.
-function doExport(){ saveFileSafe('gymtrk-backup-'+todayISO()+'.json',JSON.stringify(db),'application/json',()=>{ markBackup(); toast('✓ respaldo guardado'); }); }
+function doExport(){ saveFileSafe('gymtrk-backup-'+calToday()+'.json',JSON.stringify(db),'application/json',()=>{ markBackup(); toast('✓ respaldo guardado'); }); }
 // Markdown journal export (legible, para Obsidian/archivo). El JSON sigue siendo el backup máquina; esto es su contraparte humana.
 // ponytail: etiquetas del usuario van CRUDAS (sin escTxt) — regla dura "nunca renombrar" + Markdown es texto plano; la única tabla es numérica (//HÁBITOS) → cero riesgo de `|` en texto de usuario.
 // v329 · export completo (D0 · D2 · D3 · D5 · D6 · D7 · D8 · D9). Otra IA leyó su export y dijo qué faltaba o quedaba ambiguo; lo más grave era
@@ -25388,7 +25505,7 @@ function buildExportMd(db){
       flush(); } }
   return L.join('\n');
 }
-function exportMarkdown(db){ saveFileSafe('gymtrk-export-'+todayISO()+'.md',buildExportMd(db),'text/markdown'); }
+function exportMarkdown(db){ saveFileSafe('gymtrk-export-'+calToday()+'.md',buildExportMd(db),'text/markdown'); }
 function doImport(){
   const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,.txt,application/json,text/plain';   // v256: el respaldo puede salir como .txt · v381 · imp · la extensión no prueba nada: lo que decide es el contenido
   inp.onchange=()=>{ const file=inp.files[0]; if(!file)return; if(file.size>IMP_MAX){ toast('⚠ ese archivo es demasiado grande para ser un respaldo','err'); return; } const rd=new FileReader(); rd.onload=()=>{ const R=impRead(rd.result); if(R.why){ toast('⚠ ese archivo no es un respaldo de gym//TRK · '+R.why,'err'); return; } return impApply(R.d,m=>toast('⚠ '+m,'err'),ok=>{ go('home'); if(ok===false)toast('⚠ cargó, pero no se pudo guardar · '+(saveErrTxt()||'error'),'err'); else toast('✓ respaldo importado'); }); }; rd.readAsText(file); };
@@ -25801,7 +25918,7 @@ async function aiPhoto(file,barcode){ if(!file)return; window._faTag=window._faT
 // Pick AI when the proxy is configured, else on-device OCR.
 function labelPhoto(file,barcode){ if(AI_PROXY_URL) return aiPhoto(file,barcode); return ocrPhoto(file,barcode); }
 requestPersist();
-db=load(); try{ splitWatchReset(); }catch(_){}   /* v355 · el split de partida (no es un cambio) */
+db=load(); try{ dayTick('boot'); }catch(_){} try{ splitWatchReset(); }catch(_){}   /* v355 · el split de partida (no es un cambio) */
 try{ const _k354=kcalFix354(db); if(_k354)setTimeout(()=>{ try{ toast('✓ '+_k354+' registros: kcal = sus macros'); }catch(_){} },900); }catch(_){}   // v354 · K1 · una vez
 // v254 · al arrancar: suelta las fotos de reparaciones ya aplicadas (47 % del cupo) y ofrece recuperar una sesión
 // que se haya quedado sin guardar (el espejo chico de LS_LIVE sobrevive aunque la clave grande no se pueda escribir).
@@ -25816,7 +25933,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()).then(()=>{ setTimeout(verRebuildSoon,8000); setTimeout(()=>{ try{ if(!document.getElementById('modal'))posFixRun().catch(()=>{}); }catch(_){} },6000); }); }catch(_){ idbReleaseHold(); }   // v376 · SU1 · luego, una vez, la reconstrucción de las dosis con fecha
 try{ cloudBoot(); }catch(_){}   // v352 · cuentas y nube: apagada (CLOUD_CFG vacío) no hace nada
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ sdReopen(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search) && devHost()){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); _v367SelfCheck(); _h9SelfCheck(); _v370SelfCheck(); _v371SelfCheck(); _v373SelfCheck(); _sec5SelfCheck(); _doseHistSelfCheck(); _gymSplitSelfCheck(); _v376SelfCheck(); _fx1SelfCheck(); _mc10SelfCheck(); _rtSelfCheck(); _wsSelfCheck(); _h10SelfCheck(); _dmSelfCheck(); _dm2SelfCheck(); _fx377SelfCheck(); _sb0SelfCheck(); _mtrSelfCheck(); _macSelfCheck(); _serSelfCheck(); _rstSelfCheck(); _espSelfCheck(); _proSelfCheck(); _sysSelfCheck(); _ser2SelfCheck(); _numSelfCheck(); _luzSelfCheck(); _gy7SelfCheck(); _gy8SelfCheck(); _flxSelfCheck(); _faseSelfCheck(); _fin3SelfCheck(); _conpSelfCheck(); _impSelfCheck(); _t1SelfCheck(); _base2SelfCheck(); _s3SelfCheck(); _g3SelfCheck(); _b3SelfCheck(); _a3SelfCheck(); _i3SelfCheck(); _r3SelfCheck(); _f4SelfCheck(); _u4SelfCheck(); _d4SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()).then(()=>_v374SelfCheck()).catch(e=>console.error(e)); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ sdReopen(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search) && devHost()){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); _v367SelfCheck(); _h9SelfCheck(); _v370SelfCheck(); _v371SelfCheck(); _v373SelfCheck(); _sec5SelfCheck(); _doseHistSelfCheck(); _gymSplitSelfCheck(); _v376SelfCheck(); _fx1SelfCheck(); _mc10SelfCheck(); _rtSelfCheck(); _wsSelfCheck(); _h10SelfCheck(); _dmSelfCheck(); _dm2SelfCheck(); _fx377SelfCheck(); _sb0SelfCheck(); _mtrSelfCheck(); _macSelfCheck(); _serSelfCheck(); _rstSelfCheck(); _espSelfCheck(); _proSelfCheck(); _sysSelfCheck(); _ser2SelfCheck(); _numSelfCheck(); _luzSelfCheck(); _gy7SelfCheck(); _gy8SelfCheck(); _flxSelfCheck(); _faseSelfCheck(); _fin3SelfCheck(); _conpSelfCheck(); _impSelfCheck(); _t1SelfCheck(); _base2SelfCheck(); _s3SelfCheck(); _g3SelfCheck(); _b3SelfCheck(); _a3SelfCheck(); _i3SelfCheck(); _r3SelfCheck(); _f4SelfCheck(); _u4SelfCheck(); _d4SelfCheck(); _daySelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()).then(()=>_v374SelfCheck()).catch(e=>console.error(e)); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
@@ -25835,10 +25952,10 @@ try{ bootScreen(()=>{ try{
 // 500ms tick while the app sits in the foreground; the idle prompt only makes sense when returning
 // FROM somewhere (background, or a fresh load), handled below.
 setInterval(()=>{try{updateRestBar();}catch(_){}} ,500);
-setInterval(mealsTick,15000);   // v317 · una comida programada cuenta cuando llega su hora
+setInterval(()=>{ try{ if(!document.hidden){ dayTick('tick'); dayUseStamp(); } }catch(_){} },15000); setTimeout(()=>{ try{ dayOnVisible(); }catch(_){} },900); setInterval(mealsTick,15000);   // v317 · una comida programada cuenta cuando llega su hora
 // on returning from background (iOS freezes timers, so a phone backgrounded overnight is caught the
 // moment it wakes) — recompute the rest timer, and ask about an idle session instead of closing it.
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ try{updateRestBar();}catch(_){} try{promptIdleSession();}catch(_){} } });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ try{ dayOnVisible(); }catch(_){} try{updateRestBar();}catch(_){} try{promptIdleSession();}catch(_){} } });
 // v265 · lo pendiente de saveSoon() se escribe antes de que iOS congele o cierre la app
 document.addEventListener('visibilitychange',()=>{ if(document.hidden){ try{ flushSave(); }catch(_){} } });
 window.addEventListener('pagehide',()=>{ try{ flushSave(); }catch(_){} }); window.addEventListener('beforeunload',()=>{ try{ flushSave(); }catch(_){} }); document.addEventListener('freeze',()=>{ try{ flushSave(); }catch(_){} });
