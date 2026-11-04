@@ -1998,7 +1998,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v384';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v385';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -2654,7 +2654,7 @@ function bootDecision(o){
 function hhmm(t){ try{ return t?new Date(t).toTimeString().slice(0,5):''; }catch(_){ return ''; } }
 function offerCopy(key,meta){ bootAsk({title:'hay una versión más reciente de tus datos',detail:'copia interna del '+fmtShort(meta.day||todayISO())+' '+hhmm(meta.t)+' · '+(meta.mass||0)+' registros · ahora tienes '+dbMass(db)+'\nsi tocas fuera, te la vuelvo a ofrecer',ok:'recuperarla',cancel:'mantener esta'},
   ()=>restoreCopy(key,'✓ versión recuperada'), ()=>{ idbDelCopies([key]).catch(()=>{}); }); }
-function restoreCopy(key,msg){ return idbGet(key).then(rec=>{ let inc=null; try{ inc=JSON.parse(rec&&rec.s); }catch(_){}
+function restoreCopy(key,msg){ return idbGet(key).then(rec=>{ let inc=null; try{ inc=copySoft(JSON.parse(rec&&rec.s)); }catch(_){}
     if(!inc||!inc.profile){ toast('⚠ esa copia no se puede leer','err'); return; }
     return idbSnap('restore',db).then(()=>{ db=migrate(inc); kcalFix354(db); _idbForceNext=true; savedToast(msg||'✓ copia restaurada'); if(/^offer-/.test(key))idbDelCopies([key]).catch(()=>{}); closeModal(); go('home'); }); })
   .catch(e=>toast('⚠ no pude leer la copia · '+((e&&e.message)||''),'err')); }
@@ -2676,7 +2676,7 @@ async function idbBootCheck(){ const J=_bootJ||(_bootJ={t:Date.now(),flags:[]});
     if(!idbSid&&J.idb.st!=='err')idbPut('sid',lsSid).catch(()=>{});
     J.sid={ls:lsSid,idb:idbSid};
     await migrateLsBak(J);
-    let inc=null; if(rec&&rec.s){ try{ inc=JSON.parse(rec.s); }catch(_){ J.idb.st='parse'; } }
+    let inc=null; if(rec&&rec.s){ try{ inc=JSON.parse(rec.s); }catch(_){ J.idb.st='parse'; } if(inc){ const _c=copySoft(inc); if(_c)inc=_c; else J.idb.st='forma'; } }
     const localSeed=!(db&&db.profile&&db.profile.username), lseq=(J.loadedSeq!=null?J.loadedSeq:seqOf(db)), lmass=dbMass(db);
     if(rec&&rec.seq)_seqFloor=Math.max(_seqFloor,+rec.seq||0);
     J.local={seq:lseq,mass:lmass,seed:localSeed};
@@ -2779,7 +2779,7 @@ function applyMissing(mi){ db.sessions=db.sessions||[];
   mi.sessions.forEach(s=>{ let i=db.sessions.findIndex(x=>String(x.date||'')>String(s.date||'')); if(i<0)i=db.sessions.length; db.sessions.splice(i,0,s); });
   mi.meals.forEach(o=>{ db.meals=db.meals||{}; kcalAlcFix(o.m); kcalSyncItem(o.m); (db.meals[o.d]=db.meals[o.d]||[]).push(o.m); });   // v354 · K1
   mi.days.forEach(o=>{ db[o.f]=db[o.f]||{}; db[o.f][o.d]=o.v; }); }
-function openMissingFrom(key){ idbGet(key).then(rec=>{ let inc=null; try{ inc=JSON.parse(rec&&rec.s); }catch(_){}
+function openMissingFrom(key){ idbGet(key).then(rec=>{ let inc=null; try{ inc=copySoft(JSON.parse(rec&&rec.s)); }catch(_){}
     if(!inc){ toast('⚠ esa copia no se puede leer','err'); return; }
     const mi=missingFrom(migrate(inc),db), n=mi.sessions.length+mi.meals.length+mi.days.length;
     if(!n){ toast('esa copia no tiene nada que te falte'); return; }
@@ -2892,7 +2892,7 @@ function confirmReplace(incoming,onOk){
 // cuenta no borra nada · la sesión viva (activeWork) ni viaja ni se reemplaza · los tokens viven solo en IndexedDB
 // (base `gymtrk_kv`), nunca en localStorage ni dentro de `db` (db.account = correo, uid, rev y fecha del último sync).
 const CLOUD_CFG={url:'https://gqgvgsxrimcfuyvcfmua.supabase.co',key:'sb_publishable_lb2gtugJsxn3FIFaTskDHQ_1gs0Mcnk'};   // url del proyecto + llave PUBLICABLE (sb_publishable_…): las dos son públicas. Jamás una sb_secret_.
-const CLOUD_KV='gymtrk_kv', CLOUD_MAX=4000000, CLOUD_PRIV='2026-10', CLOUD_LOCAL={activeWork:1,account:1,_meta:1,_dataLog:1,_verFix:1}   /* v376 · fx1 · la reconstrucción de dosis es de cada equipo (sus copias de IndexedDB) */;   /* v362 · _dataLog: sellos de migración de este teléfono */
+const CLOUD_KV='gymtrk_kv', CLOUD_MAX=2000000, CLOUD_PRIV='2026-10', CLOUD_LOCAL={activeWork:1,account:1,_meta:1,_dataLog:1,_verFix:1}   /* v376 · fx1 · la reconstrucción de dosis es de cada equipo (sus copias de IndexedDB) */;   /* v362 · _dataLog: sellos de migración de este teléfono */
 // _cl = la cuenta en ESTE dispositivo: {srv,uid,email,at,rt,exp · rev,sigs,mass,t}. Lo segundo es la BASE: la versión de
 // la nube con la que este teléfono quedó igual por última vez y la firma de cada sección de `db` en ese momento.
 let _cl=null, _clMem=null, _clFake=null, _clForce='', _clBusy=null, _clRefP=null, _clNote=0, _clTry=0, _clErr='', _clHold=false, _clAskO=null, _clSess=null, _clSelf=false, _clT=null, _clWaitT=null, _clGen=0, _clBaseMem=null;
@@ -2917,7 +2917,7 @@ function cloudBaseGet(){ const ok=v=>(v&&_cl&&v.uid===_cl.uid&&v.srv===_cl.srv&&
 function cloudBaseDel(){ _clBaseMem=null; if(_sbx||cloudMode()==='fake')return; idbDel('base',CLOUD_KV).catch(()=>{}); }
 function cloudErr(code,msg,st){ const e=new Error(msg||code||'error'); e.code=code||''; e.st=st||0; return e; }
 function cloudErrTxt(e){ const c=String((e&&e.code)||''); if(c==='v')return e.message;
-  const T={offline:'sin conexión',off:'la nube está apagada',invalid_credentials:'correo o contraseña incorrectos',invalid_grant:'correo o contraseña incorrectos',email_not_confirmed:'falta confirmar tu correo',otp_expired:'código incorrecto o vencido',over_email_send_rate_limit:'espera unos minutos para pedir otro código',over_request_rate_limit:'demasiados intentos · espera unos minutos',weak_password:'contraseña muy corta · mínimo 8',user_already_exists:'ese correo ya tiene cuenta',email_exists:'ese correo ya tiene cuenta',same_password:'usa una contraseña distinta a la anterior',validation_failed:'ese correo no es válido',email_address_invalid:'ese correo no es válido',signup_disabled:'el registro está cerrado',session:'tu sesión venció · entra de nuevo',too_big:'tus datos no caben en la nube',empty:'no hay nada que subir',corrupt:'la copia de la nube no se puede leer',busy:'la nube está ocupada · intenta de nuevo',email_address_not_authorized:'la app todavía no puede mandar códigos a ese correo',down:'la nube no responde · intenta en un rato',weak_pwned:'esa contraseña es muy común · usa otra',weak_chars:'usa letras y números en tu contraseña',reauthentication_needed:'por seguridad, entra de nuevo y repite el cambio',current_password_required:'falta tu contraseña actual',nouser:'tu cuenta ya no existe · sesión cerrada'};   /* v362 · v369 nouser (SEC6) */
+  const T={offline:'sin conexión',off:'la nube está apagada',invalid_credentials:'correo o contraseña incorrectos',invalid_grant:'correo o contraseña incorrectos',email_not_confirmed:'falta confirmar tu correo',otp_expired:'código incorrecto o vencido',over_email_send_rate_limit:'espera unos minutos para pedir otro código',over_request_rate_limit:'demasiados intentos · espera unos minutos',weak_password:'contraseña muy corta · mínimo 8',user_already_exists:'ese correo ya tiene cuenta',email_exists:'ese correo ya tiene cuenta',same_password:'usa una contraseña distinta a la anterior',validation_failed:'ese correo no es válido',email_address_invalid:'ese correo no es válido',signup_disabled:'el registro está cerrado',session:'tu sesión venció · entra de nuevo',too_big:'tus datos no caben en la nube',rate_limited:'la nube pide una pausa · se reintenta sola',empty:'no hay nada que subir',corrupt:'la copia de la nube no se puede leer',busy:'la nube está ocupada · intenta de nuevo',email_address_not_authorized:'la app todavía no puede mandar códigos a ese correo',down:'la nube no responde · intenta en un rato',weak_pwned:'esa contraseña es muy común · usa otra',weak_chars:'usa letras y números en tu contraseña',reauthentication_needed:'por seguridad, entra de nuevo y repite el cambio',current_password_required:'falta tu contraseña actual',nouser:'tu cuenta ya no existe · sesión cerrada'};   /* v362 · v369 nouser (SEC6) */
   return T[c]||'no se pudo · intenta de nuevo'; }   // v362 · nunca el mensaje crudo del servidor (en inglés)   // v352 · solo el motivo de la red, nunca un error de JS
 // fetch a Supabase (Auth REST y PostgREST rpc), sin SDK. Devuelve el JSON o lanza un error con `code` (el error_code de
 // Supabase) y `st` (HTTP). Sin red = code 'offline'. En 'fake' no sale ninguna petición: contesta FakeSB.
@@ -2981,10 +2981,11 @@ function b64Dec(b){ const s=atob(b), u=new Uint8Array(s.length); for(let i=0;i<s
 async function cloudPack(str,plain){ if(!plain&&typeof CompressionStream==='function'&&typeof DecompressionStream==='function'){
     try{ const buf=await new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer(); return {enc:'gz64',data:b64Enc(new Uint8Array(buf))}; }catch(_){} }
   return {enc:'json',data:str}; }
-async function cloudUnpack(data,enc){ if(enc==='json')return String(data==null?'':data);
+async function cloudUnpack(data,enc){ if(enc==='json'){ const s=String(data==null?'':data); if(s.length>IMP_MAX)throw cloudErr('corrupt'); return s; }
   if(enc!=='gz64'||typeof DecompressionStream!=='function')throw cloudErr('corrupt');
-  const buf=await new Response(new Blob([b64Dec(String(data))]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
-  return new TextDecoder().decode(buf); }
+  const rd=new Blob([b64Dec(String(data))]).stream().pipeThrough(new DecompressionStream('gzip')).getReader(), parts=[]; let n=0;
+  for(;;){ const c=await rd.read(); if(c.done)break; n+=c.value.length; if(n>IMP_MAX){ try{ rd.cancel(); }catch(_){} throw cloudErr('corrupt'); } parts.push(c.value); }   /* v385 · sec · una bomba de compresión no llena la memoria */
+  return new TextDecoder().decode(await new Blob(parts).arrayBuffer()); }
 // v352 · `health.shortcut` es de ESTE teléfono (el plan del atajo, sus esperas y el último pegado): ni viaja ni se reemplaza
 function cloudOwn(k,v){ if(!v||typeof v!=='object'||Array.isArray(v))return v; const d=k==='health'?'shortcut':k==='settings'?'acInv':''; if(!d||!(d in v))return v; const o=Object.assign({},v); delete o[d]; return o; }   // v362 · settings.acInv (la invitación) también es de este teléfono
 function cloudPayload(){ const o=Object.assign({},db); delete o.activeWork; delete o.account; delete o._verFix; if(o.health)o.health=cloudOwn('health',o.health); if(o.settings)o.settings=cloudOwn('settings',o.settings); return JSON.stringify(o); }
@@ -3076,7 +3077,7 @@ function cloudMerge(loc,inc,base){ const st={took:0,both:0,kept:0}, out={}, B=ba
 async function cloudPull(have){ const r=(await cloudRpc('state_pull',{have_rev:have==null?-1:have}))||{};
   const out={has:!!(r.found&&r.rev>0&&r.size>0),raw:+r.rev||0,rev:+r.rev||0,t:r.updated_at||'',inc:null};
   if(out.has&&r.data){ let d=null; try{ d=JSON.parse(await cloudUnpack(r.data,r.enc)); }catch(_){ throw cloudErr('corrupt'); }
-    if(!d||typeof d!=='object'||Array.isArray(d)||!d.profile)throw cloudErr('corrupt'); out.inc=d; }
+    if(!d||typeof d!=='object'||Array.isArray(d)||!d.profile)throw cloudErr('corrupt'); d=copySane(d); if(!d){ const e=cloudErr('corrupt'); e.rev=out.rev; throw e; } out.inc=d; }   /* v385 · sec · SEC16 · e.rev: «subir esta» puede reemplazarla */
   return out; }
 // sube la base de ESTE momento; la firma y la masa se toman en el mismo instante que el JSON (si tecleas mientras sube,
 // eso queda como cambio pendiente, no como "ya sincronizado")
@@ -3246,7 +3247,7 @@ function cloudSync(why,opt){ opt=opt||{}; if(cloudMode()==='off'||!cloudIn())ret
 function cloudWait(){ if(_sbx||_clWaitT)return; _clWaitT=setInterval(()=>{ if(!cloudIn()){ clearInterval(_clWaitT); _clWaitT=null; return; } if(db.activeWork||cloudUiBusy()||document.hidden)return; clearInterval(_clWaitT); _clWaitT=null; cloudSync('retry'); },3000); }
 // tú eliges qué copia manda (las dos tienen datos y no hay historia común, o una se desplomó)
 function cloudChoose(which){ if(_clBusy)return _clBusy; if(!cloudIn())return Promise.resolve('off'); _clTry=Date.now();
-  const g=_clGen, p=_clBusy=(async()=>{ const h=await cloudPull(-1); if(g!==_clGen||!_cl)throw cloudErr('gone');
+  const g=_clGen, p=_clBusy=(async()=>{ let h; try{ h=await cloudPull(-1); }catch(e){ if(which==='cloud'||!e||e.code!=='corrupt'||!(e.rev>0))throw e; h={has:true,raw:e.rev,rev:e.rev,inc:null}; } if(g!==_clGen||!_cl)throw cloudErr('gone');
       if(which==='cloud'){ const inc=h.inc?migrate(h.inc):null; if(!h.has||!inc||!(inc.profile&&inc.profile.username))throw cloudErr('corrupt'); await cloudAdopt(inc,h.rev); }
       else { if(h.inc)idbSnap('nube',h.inc);   // v352 · la de la nube, que no elegiste, queda guardada aquí (`de la nube · no elegida`)
         let rev=h.raw, ok=false; for(let i=0;i<3&&!ok;i++){ const r=await cloudPush(rev); if(r.ok){ ok=true; cloudSave(); await cloudKvPut(_cl); } else rev=r.rev; } if(!ok)throw cloudErr('busy'); }
@@ -3281,7 +3282,7 @@ function cloudUi(){ if(_sbx)return; try{ const el=document.getElementById('ac_st
 function cloudRescueOffer(){ if(_sbx)return; let seen='', t0=0; try{ seen=localStorage.getItem('gymtrk_rescue_seen')||''; t0=+localStorage.getItem('gymtrk_v363_t')||0; }catch(_){ return; } if(!t0)return;
   if(db.activeWork||cloudUiBusy()||state.screen==='workout'){ setTimeout(cloudRescueOffer,5000); return; }
   idbIdx().then(ix=>{ const ks=Object.keys(ix||{}).filter(x=>/^pre-cloud-/.test(x)&&ix[x]&&ix[x].t<t0&&t0-ix[x].t<5*864e5&&seen.indexOf(x)<0); if(!ks.length)return;
-    return Promise.all(ks.map(k=>idbGet(k).then(rec=>{ try{ return migrate(JSON.parse(rec&&rec.s)); }catch(_){ return null; } },()=>null))).then(cs=>{
+    return Promise.all(ks.map(k=>idbGet(k).then(rec=>{ try{ return migrate(copySoft(JSON.parse(rec&&rec.s))); }catch(_){ return null; } },()=>null))).then(cs=>{
       const mark=()=>{ try{ localStorage.setItem('gymtrk_rescue_seen',(seen+' '+ks.join(' ')).trim().slice(-900)); }catch(_){} };
       const calc=()=>{ const mi={sessions:[],meals:[],days:[]}, a=new Set(), b=new Set(), c=new Set(); cs.forEach(x=>{ if(!x)return; const m=missingFrom(x,db);
           m.sessions.forEach(s=>{ if(!a.has(s.id)){ a.add(s.id); mi.sessions.push(s); } }); m.meals.forEach(o=>{ const k=String(o.m.id); if(!b.has(k)){ b.add(k); mi.meals.push(o); } }); m.days.forEach(o=>{ const k=o.f+'|'+o.d; if(!c.has(k)){ c.add(k); mi.days.push(o); } }); }); return mi; };
@@ -6144,8 +6145,8 @@ function openDeloadInfo(back){ const F=fatigueFlag(); let X=null, Pz={n:0}; try{
 // NEVER bare-name: UNI≠BI and free≠machine must stay isolated (false % is worse than no %).
 // confidence 'exact' when identity/day+occurrence pin it down uniquely, 'weak' otherwise.
 function gymN(g){ return String(g||'').toLowerCase().trim(); }
-// v340 · C10 · el dueño (14-oct): "tendrían que mantenerse los pesos" (al marcar que un ejercicio también está en Spartan). Su opción por
-// omisión: el progreso sigue separado por gym (C4), así que lo del otro gym sale como una línea de LECTURA bajo el ejercicio (`en AGON GYM ·
+// v340 · C10 · el dueño (14-oct): "tendrían que mantenerse los pesos" (al marcar que un ejercicio también está en Ribera). Su opción por
+// omisión: el progreso sigue separado por gym (C4), así que lo del otro gym sale como una línea de LECTURA bajo el ejercicio (`en NORTE GYM ·
 // 140lbs×8 · 03 sep`: la serie de trabajo más pesada de la última vez allá), sin sugerencia gris, sin ▲▼ y sin tocar su gráfica; tocarla
 // abre su bitácora. Solo cuando aquí no hay sesión previa equivalente.
 let _ogrC={};
@@ -6922,13 +6923,13 @@ function _baselineSelfCheck(){
       A('day2 reordered '+ex.name+' still baselines', !!(b.sets&&b.sets.length));
     });
     // cross-gym: same name+variant but a DIFFERENT gym never baselines against it — distinct gym = distinct
-    // machine (feedback del dueño 2026-08-21: "Club Campestre" wrongly cross-compared vs "AGON GYM")
-    db.sessions=[{id:'sGym1',date:'2026-08-19',dayId:'d1',gym:'AGON GYM',type:'training',exercises:[{name:'pushdown',type:'cable',sets:[S(35,7,'0',{unit:'kg'})]}]}];
+    // machine (feedback del dueño 2026-08-21: "Club Plaza" wrongly cross-compared vs "NORTE GYM")
+    db.sessions=[{id:'sGym1',date:'2026-08-19',dayId:'d1',gym:'NORTE GYM',type:'training',exercises:[{name:'pushdown',type:'cable',sets:[S(35,7,'0',{unit:'kg'})]}]}];
     bumpIdx();
-    const otherGym={dayId:'d1',gym:'Club Campestre',exercises:[{name:'pushdown',type:'cable',sets:[]}]};
+    const otherGym={dayId:'d1',gym:'Club Plaza',exercises:[{name:'pushdown',type:'cable',sets:[]}]};
     const baseG=baselineSetsFor(Object.assign(exIdentity(otherGym,0),{orderIdx:0}));
     A('a different gym never baselines against another gym\'s history for the same exercise', baseG.sets===null);
-    const sameGym={dayId:'d1',gym:'AGON GYM',exercises:[{name:'pushdown',type:'cable',sets:[]}]};
+    const sameGym={dayId:'d1',gym:'NORTE GYM',exercises:[{name:'pushdown',type:'cable',sets:[]}]};
     const baseG2=baselineSetsFor(Object.assign(exIdentity(sameGym,0),{orderIdx:0}));
     A('the SAME gym still resolves its own baseline normally', baseG2.sets&&baseG2.sets[0].w==='35');
     // cross-unit: a set logged in a different unit (e.g. placas vs kg) never scores a ▲/▼ against it —
@@ -7209,69 +7210,69 @@ function _mergeSelfCheck(){
   const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK merge: '+nm); };
   const real=db; let realPre=null; try{ realPre=localStorage.getItem(LS_PREMERGE); }catch(_){}
   try{
-    db=migrate({ _idfix:true, _fsfix:true, gyms:['AGON','CAMPESTRE'], activeGym:'AGON', rotIdx:0,
+    db=migrate({ _idfix:true, _fsfix:true, gyms:['NORTE','PLAZA'], activeGym:'NORTE', rotIdx:0,
       profile:{username:'t'}, settings:{unit:'kg'},
       split:{name:'t',days:[{id:'d1',name:'pull',exercises:[{id:'x1',name:'sldl',muscle:'hamstrings',type:'free',unilateral:false,sets:3}]}]},
-      machines:{AGON:{'sldl':{brand:'ROGUE',setup:'',na:false},'bb sldl':{brand:'ELEIKO',setup:'',na:false}},
-                CAMPESTRE:{'bb sldl':{brand:'TECNO',setup:'',na:false}}},
+      machines:{NORTE:{'sldl':{brand:'ROGUE',setup:'',na:false},'bb sldl':{brand:'ELEIKO',setup:'',na:false}},
+                PLAZA:{'bb sldl':{brand:'TECNO',setup:'',na:false}}},
       sessions:[
-        {id:'s1',date:'2026-09-01',dayId:'d1',gym:'AGON',type:'training',exercises:[{exId:'x1',name:'sldl',muscle:'hamstrings',type:'free',sets:[{w:'100',r:'8',rir:'2',unit:'kg'}]}]},
-        {id:'s2',date:'2026-09-08',dayId:'d1',gym:'CAMPESTRE',type:'training',exercises:[{exId:'zz',name:'bb sldl',muscle:'back',type:'machine',sets:[{w:'110',r:'8',rir:'1',unit:'kg'}]}]},
-        {id:'s3',date:'2026-09-10',dayId:'dX',gym:'AGON',type:'training',exercises:[{exId:null,name:'BB SLDL',type:'machine',sets:[{w:'105',r:'6',rir:'0',unit:'kg'}]}]}
+        {id:'s1',date:'2026-09-01',dayId:'d1',gym:'NORTE',type:'training',exercises:[{exId:'x1',name:'sldl',muscle:'hamstrings',type:'free',sets:[{w:'100',r:'8',rir:'2',unit:'kg'}]}]},
+        {id:'s2',date:'2026-09-08',dayId:'d1',gym:'PLAZA',type:'training',exercises:[{exId:'zz',name:'bb sldl',muscle:'back',type:'machine',sets:[{w:'110',r:'8',rir:'1',unit:'kg'}]}]},
+        {id:'s3',date:'2026-09-10',dayId:'dX',gym:'NORTE',type:'training',exercises:[{exId:null,name:'BB SLDL',type:'machine',sets:[{w:'105',r:'6',rir:'0',unit:'kg'}]}]}
       ] });
     const st=mergeExercises(['sldl','bb sldl'],{name:'SLDL',type:'free',unilateral:false,unit:'kg',
-      muscle:'hamstrings',gyms:['AGON','CAMPESTRE'],machineWinner:{AGON:'bb sldl'}});
+      muscle:'hamstrings',gyms:['NORTE','PLAZA'],machineWinner:{NORTE:'bb sldl'}});
     A('los dos nombres quedan en uno', db.sessions.every(s=>s.exercises.every(e=>e.name==='SLDL')));
     A('el split se normaliza SIN perder el id de la instancia', db.split.days[0].exercises[0].name==='SLDL'&&db.split.days[0].exercises[0].id==='x1');
     A('el tipo mal puesto (máquina) se corrige a peso libre', db.sessions[1].exercises[0].type==='free');
     A('la sesión del mismo día se re-vincula al id único', db.sessions[0].exercises[0].exId==='x1'&&db.sessions[1].exercises[0].exId==='x1');
     A('si el día ya no existe, queda sin vincular en vez de adivinar', db.sessions[2].exercises[0].exId===null);
     A('pesos, reps y fechas intactos', db.sessions[1].exercises[0].sets[0].w==='110'&&db.sessions[1].exercises[0].sets[0].r==='8'&&db.sessions[1].date==='2026-09-08');
-    A('en el gym con dos registros gana el que él eligió', db.machines.AGON.sldl.brand==='ELEIKO');
-    A('el otro gym conserva SU máquina', db.machines.CAMPESTRE.sldl.brand==='TECNO');
-    A('no sobreviven claves del nombre viejo', !db.machines.AGON['bb sldl']&&!db.machines.CAMPESTRE['bb sldl']);
+    A('en el gym con dos registros gana el que él eligió', db.machines.NORTE.sldl.brand==='ELEIKO');
+    A('el otro gym conserva SU máquina', db.machines.PLAZA.sldl.brand==='TECNO');
+    A('no sobreviven claves del nombre viejo', !db.machines.NORTE['bb sldl']&&!db.machines.PLAZA['bb sldl']);
     A('el catálogo guarda gyms y de dónde salió', db.exCat.sldl&&db.exCat.sldl.gyms.length===2&&(db.exCat.sldl.mergedFrom||[]).indexOf('bb sldl')>=0);
     A('el catálogo ya no los ve como dos ejercicios', knownExercises().filter(x=>nameKey(x.name)==='sldl').length===1);
     A('resumen coherente', !!st&&st.ex===3&&st.split===1);
     // v286 · la foto previa se espera en IndexedDB (snapExpect, en doMerge): unir ya no duplica la base dentro del cupo de localStorage
     A('unir no deja una copia de la base en localStorage', localStorage.getItem(LS_PREMERGE)===realPre);
     // v286 · cada registro conserva su lateralidad, y la máquina por identidad y la nota siguen al nombre nuevo
-    db.sessions.push({id:'s4',date:'2026-09-12',dayId:'dX',gym:'AGON',type:'training',exercises:[
+    db.sessions.push({id:'s4',date:'2026-09-12',dayId:'dX',gym:'NORTE',type:'training',exercises:[
       {exId:null,name:'curl',type:'free',unilateral:false,sets:[{w:'20',r:'8',rir:'1',unit:'kg'}]},
       {exId:null,name:'db curl',type:'cable',unilateral:false,lat:'alt',sets:[{w:'22',r:'8',rir:'1',unit:'kg'}]},
       {exId:null,name:'db curl',type:'cable',unilateral:true,sets:[{w:'12',r:'8',rir:'1',unit:'kg',side:'R'},{w:'12',r:'8',rir:'1',unit:'kg',side:'L'}]}]});
     const I=(n,t,b)=>'='+n+MACH_SEP+t+MACH_SEP+b, N=(n,t)=>n+MACH_SEP+t;
-    db.machines.AGON[I('curl','free','')]={brand:'',setup:'banco 2',na:false}; db.machines.AGON[I('db curl','cable','')]={brand:'',setup:'otro',na:false};
-    db.machines.AGON[I('db curl','cable','prime')]={brand:'PRIME',setup:'pin 3',na:false}; db.machines.CAMPESTRE[I('db curl','cable','')]={brand:'',setup:'polea baja',na:false};
+    db.machines.NORTE[I('curl','free','')]={brand:'',setup:'banco 2',na:false}; db.machines.NORTE[I('db curl','cable','')]={brand:'',setup:'otro',na:false};
+    db.machines.NORTE[I('db curl','cable','prime')]={brand:'PRIME',setup:'pin 3',na:false}; db.machines.PLAZA[I('db curl','cable','')]={brand:'',setup:'polea baja',na:false};
     db.exNotes={[N('db curl','cable')]:'agarre neutro',[N('curl','free')]:''}; bumpIdx();
-    mergeExercises(['curl','db curl'],{name:'curl',type:'free',unit:'kg',muscle:'biceps',gyms:['AGON']});
+    mergeExercises(['curl','db curl'],{name:'curl',type:'free',unit:'kg',muscle:'biceps',gyms:['NORTE']});
     const c=db.sessions[3].exercises;
     A('unir no cambia la lateralidad de ningún registro', c.every(e=>e.name==='curl'&&e.type==='free')&&latOf(c[0])==='bi'&&!('lat' in c[0])&&latOf(c[1])==='alt'&&c[1].unilateral===false&&latOf(c[2])==='uni'&&c[2].sets.length===2&&c[2].sets[0].side==='R');
     A('…y siguen siendo tres historias del mismo ejercicio', new Set(c.map(exHistKey)).size===3);
-    A('la máquina por identidad sigue al nombre nuevo, con el tipo final y su marca', (db.machines.AGON[I('curl','free','prime')]||{}).setup==='pin 3'&&!db.machines.AGON[I('db curl','cable','prime')]);
-    A('un destino que ya existe no se pisa, y lo que no cupo NO se borra: se queda donde estaba', db.machines.AGON[I('curl','free','')].setup==='banco 2'&&(db.machines.AGON[I('db curl','cable','')]||{}).setup==='otro');
-    A('gym por gym: donde no había nada llega lo de la fuente', (db.machines.CAMPESTRE[I('curl','free','')]||{}).setup==='polea baja'&&!db.machines.CAMPESTRE[I('db curl','cable','')]);
+    A('la máquina por identidad sigue al nombre nuevo, con el tipo final y su marca', (db.machines.NORTE[I('curl','free','prime')]||{}).setup==='pin 3'&&!db.machines.NORTE[I('db curl','cable','prime')]);
+    A('un destino que ya existe no se pisa, y lo que no cupo NO se borra: se queda donde estaba', db.machines.NORTE[I('curl','free','')].setup==='banco 2'&&(db.machines.NORTE[I('db curl','cable','')]||{}).setup==='otro');
+    A('gym por gym: donde no había nada llega lo de la fuente', (db.machines.PLAZA[I('curl','free','')]||{}).setup==='polea baja'&&!db.machines.PLAZA[I('db curl','cable','')]);
     A('la nota sigue al nombre nuevo (una vacía cede el lugar)', db.exNotes[N('curl','free')]==='agarre neutro'&&!(N('db curl','cable') in db.exNotes));
     A('el catálogo de identidad ya no guarda lateralidad', !('unilateral' in db.exCat.curl)&&!('lat' in db.exCat.curl));
     // v286 · un MISMO nombre registrado con dos tipos: al unir queda un solo tipo y sus dos claves (máquina y nota) caen en el
     // mismo destino. Elegir decide cuál va al destino; la otra no se borra (se queda en su clave). Antes se perdía callada.
-    db.sessions.push({id:'s5',date:'2026-09-14',dayId:'dX',gym:'AGON',type:'training',exercises:[
+    db.sessions.push({id:'s5',date:'2026-09-14',dayId:'dX',gym:'NORTE',type:'training',exercises:[
       {exId:null,name:'row',type:'machine',unilateral:false,sets:[{w:'120',r:'8',rir:'1',unit:'kg'}]},
       {exId:null,name:'row',type:'cable',unilateral:false,sets:[{w:'70',r:'8',rir:'1',unit:'kg'}]},
       {exId:null,name:'remo',type:'machine',unilateral:false,sets:[{w:'110',r:'8',rir:'1',unit:'kg'}]}]});
-    db.machines.AGON[I('row','machine','')]={brand:'',setup:'asiento 3',na:false}; db.machines.AGON[I('row','cable','')]={brand:'',setup:'polea 7',na:false};
-    db.machines.AGON[I('remo','machine','')]={brand:'',setup:'polea 7',na:false};   // dice lo mismo que la que queda: esa sí sobra
+    db.machines.NORTE[I('row','machine','')]={brand:'',setup:'asiento 3',na:false}; db.machines.NORTE[I('row','cable','')]={brand:'',setup:'polea 7',na:false};
+    db.machines.NORTE[I('remo','machine','')]={brand:'',setup:'polea 7',na:false};   // dice lo mismo que la que queda: esa sí sobra
     db.exNotes[N('row','machine')]='pecho pegado'; db.exNotes[N('row','cable')]='agarre neutro'; bumpIdx();
     const somewhere=()=>{ const t=JSON.stringify([db.machines,db.exNotes]); return ['asiento 3','polea 7','pecho pegado','agarre neutro'].filter(x=>t.indexOf(x)>=0).length; };
-    mergeExercises(['row','remo'],{name:'row',type:'cable',unit:'kg',muscle:'back',gyms:['AGON']});
+    mergeExercises(['row','remo'],{name:'row',type:'cable',unit:'kg',muscle:'back',gyms:['NORTE']});
     const r5=db.sessions[4].exercises;
     A('un nombre con dos tipos queda en uno solo', r5.every(e=>e.name==='row'&&e.type==='cable')&&new Set(r5.map(exHistKey)).size===1);
-    A('sin elección, unir no borra el setup ni la nota del otro tipo', somewhere()===4&&db.machines.AGON[I('row','cable','')].setup==='polea 7'&&(db.machines.AGON[I('row','machine','')]||{}).setup==='asiento 3'&&db.exNotes[N('row','cable')]==='agarre neutro'&&db.exNotes[N('row','machine')]==='pecho pegado');
-    A('un registro que dice lo mismo que el que queda no se duplica', !db.machines.AGON[I('remo','machine','')]);
-    mergeExercises(['row'],{name:'row',type:'cable',machineWinner:{AGON:[I('row','cable','')]},noteWinner:N('row','cable')});
-    A('elegir lo que ya está en el destino tampoco borra lo otro', somewhere()===4&&db.machines.AGON[I('row','cable','')].setup==='polea 7'&&db.machines.AGON[I('row','machine','')].setup==='asiento 3'&&db.exNotes[N('row','cable')]==='agarre neutro'&&db.exNotes[N('row','machine')]==='pecho pegado');
-    mergeExercises(['row'],{name:'row',type:'cable',machineWinner:{AGON:[I('row','machine','')]},noteWinner:N('row','machine')});
-    A('elegir el otro registro lo pone en el destino (solo se reemplaza lo que estaba ahí)', db.machines.AGON[I('row','cable','')].setup==='asiento 3'&&!db.machines.AGON[I('row','machine','')]&&db.exNotes[N('row','cable')]==='pecho pegado'&&!(N('row','machine') in db.exNotes));
+    A('sin elección, unir no borra el setup ni la nota del otro tipo', somewhere()===4&&db.machines.NORTE[I('row','cable','')].setup==='polea 7'&&(db.machines.NORTE[I('row','machine','')]||{}).setup==='asiento 3'&&db.exNotes[N('row','cable')]==='agarre neutro'&&db.exNotes[N('row','machine')]==='pecho pegado');
+    A('un registro que dice lo mismo que el que queda no se duplica', !db.machines.NORTE[I('remo','machine','')]);
+    mergeExercises(['row'],{name:'row',type:'cable',machineWinner:{NORTE:[I('row','cable','')]},noteWinner:N('row','cable')});
+    A('elegir lo que ya está en el destino tampoco borra lo otro', somewhere()===4&&db.machines.NORTE[I('row','cable','')].setup==='polea 7'&&db.machines.NORTE[I('row','machine','')].setup==='asiento 3'&&db.exNotes[N('row','cable')]==='agarre neutro'&&db.exNotes[N('row','machine')]==='pecho pegado');
+    mergeExercises(['row'],{name:'row',type:'cable',machineWinner:{NORTE:[I('row','machine','')]},noteWinner:N('row','machine')});
+    A('elegir el otro registro lo pone en el destino (solo se reemplaza lo que estaba ahí)', db.machines.NORTE[I('row','cable','')].setup==='asiento 3'&&!db.machines.NORTE[I('row','machine','')]&&db.exNotes[N('row','cable')]==='pecho pegado'&&!(N('row','machine') in db.exNotes));
     // v286 · renombrar (una fuente, sin tipo): cada fila conserva su exId; unir de verdad sí re-vincula (arriba)
     db.sessions[0].exercises[0].exId='x9'; const ex0=JSON.stringify(db.sessions.map(s=>s.exercises.map(e=>e.exId)));
     mergeExercises(['sldl'],{name:'stiff leg'});
@@ -7467,20 +7468,20 @@ function _exProfileSelfCheck(){
   try{
     db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},sessions:[],split:{name:'t',days:[]}});
     const sldl={name:'sldl',type:'free'}, slc={name:'seated leg curl',type:'machine'}, clr={name:'cable lateral rises',type:'cable'}, dlr={name:'standing lateral rises',type:'free'}, pd={name:'pushdown',type:'pulley'};
-    let p=profileFor(sldl,'AGON');
+    let p=profileFor(sldl,'NORTE');
     A('SLDL libre: descendente y estirado, sugeridos', p.rp==='desc'&&p.rpSrc==='suggested'&&p.len==='long'&&p.lenSrc==='suggested');
-    p=profileFor(slc,'AGON');
+    p=profileFor(slc,'NORTE');
     A('curl sentado (máquina): longitud sugerida, resistencia desconocida', p.len==='long'&&p.rp==='unk'&&p.rpSrc==='unknown');
-    setRpForGym('seated leg curl','AGON','asc');
-    A('la resistencia de una máquina es POR GYM', profileFor(slc,'AGON').rp==='asc'&&profileFor(slc,'AGON').rpSrc==='user'&&profileFor(slc,'CAMPESTRE').rp==='unk');
-    A('una polea no hereda la sugerencia de la mancuerna', profileFor(clr,'AGON').rp==='unk'&&profileFor(clr,'AGON').len==='unk');
-    A('elevación lateral con mancuerna: ascendente y acortado sugeridos', profileFor(dlr,'AGON').rp==='asc'&&profileFor(dlr,'AGON').len==='short');
-    A('pushdown (alias pulley): acortado sugerido', profileFor(pd,'AGON').len==='short');
+    setRpForGym('seated leg curl','NORTE','asc');
+    A('la resistencia de una máquina es POR GYM', profileFor(slc,'NORTE').rp==='asc'&&profileFor(slc,'NORTE').rpSrc==='user'&&profileFor(slc,'PLAZA').rp==='unk');
+    A('una polea no hereda la sugerencia de la mancuerna', profileFor(clr,'NORTE').rp==='unk'&&profileFor(clr,'NORTE').len==='unk');
+    A('elevación lateral con mancuerna: ascendente y acortado sugeridos', profileFor(dlr,'NORTE').rp==='asc'&&profileFor(dlr,'NORTE').len==='short');
+    A('pushdown (alias pulley): acortado sugerido', profileFor(pd,'NORTE').len==='short');
     setExCat('sldl',{rp:'unk'});
-    A('"no sé" es una respuesta: apaga la sugerencia', profileFor(sldl,'AGON').rp==='unk'&&profileFor(sldl,'AGON').rpSrc==='user');
+    A('"no sé" es una respuesta: apaga la sugerencia', profileFor(sldl,'NORTE').rp==='unk'&&profileFor(sldl,'NORTE').rpSrc==='user');
     setExCat('sldl',{len:'mid'});
-    A('lo tuyo gana sobre lo sugerido', profileFor(sldl,'AGON').len==='mid'&&profileFor(sldl,'AGON').lenSrc==='user');
-    A('la etiqueta corta marca lo sugerido con ~', profileTag(profileFor(dlr,'AGON'))==='~pesa al final · ~acortado'&&rpTxt(profileFor(dlr,'AGON'))==='~pesa al final');
+    A('lo tuyo gana sobre lo sugerido', profileFor(sldl,'NORTE').len==='mid'&&profileFor(sldl,'NORTE').lenSrc==='user');
+    A('la etiqueta corta marca lo sugerido con ~', profileTag(profileFor(dlr,'NORTE'))==='~pesa al final · ~acortado'&&rpTxt(profileFor(dlr,'NORTE'))==='~pesa al final');
   } finally { db=real; bumpIdx(); }
   console.log('profile self-check OK');
 }
@@ -8074,7 +8075,7 @@ function _h9SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK h9:
     const run=o=>{ o=o||{}; try{ closeModal(); }catch(_){} said.length=0; bioRun(); const p=sc().plan.p; paste=_fakeAtajo(o.S||S,Object.assign({},p),o); bioFetch(); return p; };
     // 1 · su hueco en una corrida, con las tres lecturas de «en los últimos N días»; 2 · lo tecleado idéntico; 8 · pegar dos veces
     [1,2,3].forEach(rd=>{ reset(); const p0=bioPlan();
-      A('1 · su caso: el plan trae el historial de sueño (120) y lo demás con su traslape de 7 días (lectura '+rd+')', p0.deep==='sleep'&&p0.sleep===HP_DEEP.sleep.n0&&p0.steps===8&&p0.act===8&&p0.weight===8&&p0.rhr===8&&p0.hrv===0);
+      A('1 · primera corrida: el plan trae el historial de sueño (120) y lo demás con su traslape de 7 días (lectura '+rd+')', p0.deep==='sleep'&&p0.sleep===HP_DEEP.sleep.n0&&p0.steps===8&&p0.act===8&&p0.weight===8&&p0.rhr===8&&p0.hrv===0);
       run({read:rd}); const r=sc().learn||{};
       A('1 · su hueco se llena en una corrida: 23 noches del atajo (lectura '+rd+')', R(67,45).every(d=>{ const b=sleepBlocks(db.sleep[d]); return b.length>0&&b.every(x=>x&&x.src==='shortcut'); }));
       A('1 · …el aviso dice +23 noches y la hoja, desde cuándo', said.some(m=>/^✓ Salud · \d+ días · \+23 noches$/.test(m))&&/historial de sueño · desde /.test(sh())&&sh().indexOf('desde '+hpDayTxt(D(67)))>=0);
@@ -8702,7 +8703,7 @@ function _v291SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     A('niveles en 7 · 14 · 30 · 60 · 100 · 200 · 365', streakLevel(0)===0&&streakLevel(6)===0&&streakLevel(7)===1&&streakLevel(29)===2&&streakLevel(30)===3&&streakLevel(100)===5&&streakLevel(400)===7&&streakNext(24)===30&&streakNext(365)===null);
     // 1 · una racha de 9 días (y antes una de 4)
     const meals={}; for(let k=0;k<9;k++)meals[D(k)]=[{id:'a'+k,tag:'lunch',name:'x',kcal:100,protein:10}]; for(let k=20;k<24;k++)meals[D(k)]=[{id:'b'+k,tag:'lunch',name:'x',kcal:100}];
-    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',sex:'m',age:25,heightCm:175,weightKg:70},gyms:['AGON'],activeGym:'AGON',settings:{unit:'lbs',goals:{kcal:2400,protein:150,carbs:250,fat:70,water:2.5}},split,sessions:[],meals}); db.activeWork=null; db.rotIdx=0; bumpIdx();
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',sex:'m',age:25,heightCm:175,weightKg:70},gyms:['NORTE'],activeGym:'NORTE',settings:{unit:'lbs',goals:{kcal:2400,protein:150,carbs:250,fat:70,water:2.5}},split,sessions:[],meals}); db.activeWork=null; db.rotIdx=0; bumpIdx();
     A('racha 9 = nivel 1; la mejor anterior es 4', streak()===9&&streakLevel(streak())===1&&bestStreak()===9&&bestStreakBefore()===4);
     state.screen='home'; state.selDay=null; state.work=null; state.previewDay=false; render();
     const h=v.querySelector('.stkh');
@@ -8719,12 +8720,12 @@ function _v291SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     tap(ov()); A('se salta tocando', ov().classList.contains('out')); ov().remove();
     A('…y no se repite', streakLvMaybe(true)===false&&!ov());
     db.streakLv=0; openModal('<h3>prueba</h3>'); A('con una hoja abierta espera', streakLvMaybe(true)===false&&db.streakLv===0&&!ov()); closeModal();
-    db.activeWork={id:'w',date:todayISO(),dayId:'d1',gym:'AGON',startMs:1,exercises:[]}; A('con una sesión viva espera', streakLvMaybe(true)===false&&db.streakLv===0); db.activeWork=null;
+    db.activeWork={id:'w',date:todayISO(),dayId:'d1',gym:'NORTE',startMs:1,exercises:[]}; A('con una sesión viva espera', streakLvMaybe(true)===false&&db.streakLv===0); db.activeWork=null;
     state.screen='macros'; A('fuera de gym espera', streakLvMaybe(true)===false&&db.streakLv===0); state.screen='home';
     // 3 · wrap: láminas nuevas con lo que la app ya calcula, y atrás / adelante
     const ex=s=>[{exId:'e1',name:'press',muscle:'chest',type:'machine',sets:s}], P=g=>[{id:'p'+g,tag:'lunch',name:'x',kcal:800,protein:g}];
-    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['AGON'],activeGym:'AGON',settings:{unit:'lbs',goals:{kcal:2400,protein:150}},split,
-      sessions:[{id:'s1',date:'2026-08-03',dayId:'d1',gym:'AGON',exercises:ex([S(100,8),S(110,6)])},{id:'s2',date:'2026-08-10',dayId:'d1',gym:'AGON',exercises:ex([S(100,8)])},{id:'s3',date:'2026-08-12',dayId:'d1',gym:'AGON',exercises:ex([S(100,7)])}],
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['NORTE'],activeGym:'NORTE',settings:{unit:'lbs',goals:{kcal:2400,protein:150}},split,
+      sessions:[{id:'s1',date:'2026-08-03',dayId:'d1',gym:'NORTE',exercises:ex([S(100,8),S(110,6)])},{id:'s2',date:'2026-08-10',dayId:'d1',gym:'NORTE',exercises:ex([S(100,8)])},{id:'s3',date:'2026-08-12',dayId:'d1',gym:'NORTE',exercises:ex([S(100,7)])}],
       meals:{'2026-08-03':P(120),'2026-08-04':P(140),'2026-08-05':P(160)}}); bumpIdx();
     const d=wrapMonthData(2026,7), X=wrapExtra(d), sl=buildWrapSlides(d).join('\n');
     A('constancia: 5 días registrados de 31, racha más larga 3, tu día: lunes', X.logged===5&&X.dim===31&&X.stMax===3&&X.dowTop.name==='lunes'&&X.dowTop.n===2);
@@ -8751,9 +8752,9 @@ function _v290SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
   const T=todayISO(), Y=shiftDate(T,-1), S=(w,r)=>({w:String(w),r:String(r),rir:'1',unit:'lbs',side:null,done:true});
   _sbx=true;
   try{
-    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',sex:'m',age:25,heightCm:175,weightKg:70},gyms:['AGON'],activeGym:'AGON',settings:{unit:'lbs'},
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',sex:'m',age:25,heightCm:175,weightKg:70},gyms:['NORTE'],activeGym:'NORTE',settings:{unit:'lbs'},
       split:{name:'s',days:[{id:'d1',name:'A',exercises:[{id:'e1',name:'press',muscle:'chest',type:'machine',sets:2},{id:'e2',name:'curl',muscle:'biceps',type:'free',sets:2}]}]},
-      sessions:[{id:'s1',date:Y,dayId:'d1',gym:'AGON',exercises:[{exId:'e1',name:'press',muscle:'chest',type:'machine',sets:[S(100,8),S(100,7)]},{exId:'e2',name:'curl',muscle:'biceps',type:'free',sets:[S(30,10)]}]}],
+      sessions:[{id:'s1',date:Y,dayId:'d1',gym:'NORTE',exercises:[{exId:'e1',name:'press',muscle:'chest',type:'machine',sets:[S(100,8),S(100,7)]},{exId:'e2',name:'curl',muscle:'biceps',type:'free',sets:[S(30,10)]}]}],
       foods:[{id:'f1',name:'pollo',brand:'',base:'g',per100:{kcal:98,protein:10,carbs:10,fat:2},sizes:{},lastUsed:1}],
       meals:{[T]:[{id:'a',tag:'lunch',name:'pollo',qty:1,kcal:620,protein:50,carbs:60,fat:20}]}});
     db.goalHist=db.goalHist||{}; db.goalHist[T]=Object.assign({},goalsFor(T),{kcal:2400,protein:180,carbs:250,fat:70}); db.rotIdx=0; db.activeWork=null; bumpIdx();
@@ -8826,8 +8827,8 @@ function _macroVizSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHE
     A('la tarjeta para compartir sigue trayendo radar y aros', /macro-rad/.test(renderShareMacros())&&/class="rings"/.test(renderShareMacros()));
   } finally { if(had)db.settings.radarOpen=r0; else delete db.settings.radarOpen; K.forEach(k=>{ state[k]=st0[k]; }); state._scroll=null; _lastTap=null; _sbx=sb0; try{ render(); }catch(_){} }
   console.log('macro viz self-check OK'); }
-// v295 · el catálogo de sustancias: sus nombres reales, lo que nombró el 2-oct, los falsos de antes, lo que suma a su dosis,
-// la higiene de sus datos (magnesio falso fuera, minoxidil → fármaco) con su deshacer exacto, y que editar y la lista digan lo mismo
+// v295 · el catálogo de sustancias: nombres de ejemplo, los falsos de antes, lo que suma a una dosis,
+// la higiene de los datos (magnesio falso fuera, un tópico → fármaco) con su deshacer exacto, y que editar y la lista digan lo mismo
 function _substanceSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK sustancias: '+nm); };
   const K=(t,cat)=>subIdentify(t,cat?{cat}:null).items.map(x=>x.s.key).join('+');
   [['tretinoina 0.05%','tretinoina'],['minoxidil 5%','minoxidil'],['facial sunscreen','spf'],['glicinato de magnesio','magnesio'],['l-teanina','l_teanina'],['ksm-66','ashwagandha'],
@@ -8840,20 +8841,20 @@ function _substanceSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
   A('vitamina c en skincare = la tópica',K('vitamina c','skin')==='vitc_topica'&&K('vitamina c','supp')==='vitc');
   A('300+ sustancias o al menos las 295 del manifiesto',SUBSTANCE_DB.length>=295);
   A('cada sustancia con categoría válida',SUBSTANCE_DB.every(s=>!!SUB_CAT[s.scat]&&!!s.cat));
-  // la higiene sobre una copia de su caso (respaldo del 24-sep)
+  // la higiene sobre una pila de ejemplo
   const real=db; let fx;
   try{
     fx=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},split:{name:'t',days:[]},sessions:[],stack:[
       {id:'a',name:'d3 5000ui + mk-7',category:'supp',dose:'125',unit:'mcg',when:['AM'],periodization:{type:'daily'},ticks:{},nutr:{magnesium:18},nutrSrc:'db'},
-      {id:'b',name:'Mirtazapina',category:'meds',dose:'7.5',unit:'mg',when:[],periodization:{type:'daily'},ticks:{},nutr:{magnesium:1},nutrSrc:'db'},
-      {id:'c',name:'minoxidil 5%',category:'skin',dose:'6-6 sprays',unit:'',when:['AM'],periodization:{type:'daily'},ticks:{}},
+      {id:'b',name:'Loratadina',category:'meds',dose:'10',unit:'mg',when:[],periodization:{type:'daily'},ticks:{},nutr:{magnesium:1},nutrSrc:'db'},
+      {id:'c',name:'minoxidil 5%',category:'skin',dose:'1',unit:'ml',when:['AM'],periodization:{type:'daily'},ticks:{}},
       {id:'d',name:'glicinato de magnesio',category:'supp',dose:'2',unit:'g',when:['PM'],periodization:{type:'daily'},ticks:{},subId:'sb_magnesio',nutr:{magnesium:200},nutrSrc:'db'},
       {id:'e',name:'mi mezcla',category:'supp',dose:'1',unit:'tab',when:[],periodization:{type:'daily'},ticks:{},nutr:{magnesium:50},nutrSrc:'user'}]});
     db=fx; const S=id=>db.stack.find(x=>x.id===id), L=db._dataLog&&db._dataLog.v3;
     A('la higiene corrió una vez',db._dataVer===3&&!!L&&!L.seen);
     A('el D3 + MK-7 ya no suma magnesio',!S('a').nutr&&!('magnesium' in (subItemNutr(S('a'))||{})));
     A('…y suma 125 µg de D y ~100 µg de K',(subItemNutr(S('a'))||{}).vitD===125&&(subItemNutr(S('a'))||{}).vitK===100);
-    A('la mirtazapina no suma nada',!S('b').nutr&&subItemNutr(S('b'))===null);
+    A('un fármaco sin nutrientes no suma nada',!S('b').nutr&&subItemNutr(S('b'))===null);
     A('2 g de glicinato = 280 mg de magnesio',(subItemNutr(S('d'))||{}).magnesium===280);
     A('minoxidil pasa a fármaco',S('c').category==='meds');
     A('lo que escribiste tú no se toca',S('e').nutr&&S('e').nutr.magnesium===50&&S('e').nutrSrc==='user');
@@ -10065,12 +10066,12 @@ function _luzSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK lu
     finally{ closeModal(); }
     console.log('luz self-check OK');
   } finally{ v.remove(); db=real; K.forEach(k=>{ state[k]=st0[k]; }); if(md0==null)de.removeAttribute('data-mtr'); else de.setAttribute('data-mtr',md0); window._labMtr=lab0; if(sd0==null)de.removeAttribute('data-stim'); else de.setAttribute('data-stim',sd0); window._labStim=labS0; bumpIdx(); try{ render(); }catch(_){} } }
-function _gy7SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK gy7: '+nm); }; { const sx=exCatRec; window.exCatRec=n=>({'solo agon':{gyms:['AGON GYM']},'en los dos':{gyms:['AGON GYM','SPARTAN']},'generico':{}})[String(n).toLowerCase()]||sx(n);
-    try{ A('marcado solo en otro gym → no se ofrece', gyAway('solo agon','SPARTAN')===true);
-      A('marcado también en el de hoy → sí', gyAway('en los dos','SPARTAN')===false);
-      A('sin gym marcado (genérico) → sí', gyAway('generico','SPARTAN')===false);
-      A('por historial: hecho solo en AGON → no se ofrece en SPARTAN', gyAway('generico','SPARTAN',['AGON GYM'])===true&&gyAway('generico','AGON GYM',['AGON GYM'])===false);
-      A('sin gym de hoy no se filtra nada', gyAway('solo agon','')===false); } finally{ window.exCatRec=sx; }
+function _gy7SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK gy7: '+nm); }; { const sx=exCatRec; window.exCatRec=n=>({'solo norte':{gyms:['NORTE GYM']},'en los dos':{gyms:['NORTE GYM','RIBERA']},'generico':{}})[String(n).toLowerCase()]||sx(n);
+    try{ A('marcado solo en otro gym → no se ofrece', gyAway('solo norte','RIBERA')===true);
+      A('marcado también en el de hoy → sí', gyAway('en los dos','RIBERA')===false);
+      A('sin gym marcado (genérico) → sí', gyAway('generico','RIBERA')===false);
+      A('por historial: hecho solo en NORTE → no se ofrece en RIBERA', gyAway('generico','RIBERA',['NORTE GYM'])===true&&gyAway('generico','NORTE GYM',['NORTE GYM'])===false);
+      A('sin gym de hoy no se filtra nada', gyAway('solo norte','')===false); } finally{ window.exCatRec=sx; }
     A('la sesión ya no pinta «en <otro gym> · …»', !/otherGymRefHTML\(/.test(String(renderExercise)));
     A('misma máquina ya no dice «como en»', !/como en '\+og/.test(String(posCands)));
     console.log('gy7 self-check OK'); } }
@@ -10700,7 +10701,7 @@ function _exportSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
     db=migrate({_idfix:true,_fsfix:true,_dataVer:3,profile:{username:'t',age:30,sex:'M'},settings:{goals:{kcal:2400,protein:180,carbs:250,fat:70}},split:{name:'t',days:[]},
       goalHist:{[D(4)]:{kcal:2000,protein:150,carbs:200,fat:60},[D(1)]:{kcal:2400,protein:180,carbs:250,fat:70}},
       meals:{[D(8)]:[I('lunch','viejo',500)],[D(4)]:[I('lunch','arroz',600),I('breakfast','avena',400)],[D(1)]:[I('dinner','pollo',700)]},mealMeta:{[D(4)]:{breakfast:{time:'08:30'}}},
-      sessions:[{id:'s1',date:D(1),dayName:'push A',gym:'AGON',startTime:'19:10',endTime:'20:36',durSec:5160,exercises:[{name:'press',muscle:'chest',sets:[{w:100,r:8,rir:1,unit:'kg',done:true}]}]},
+      sessions:[{id:'s1',date:D(1),dayName:'push A',gym:'NORTE',startTime:'19:10',endTime:'20:36',durSec:5160,exercises:[{name:'press',muscle:'chest',sets:[{w:100,r:8,rir:1,unit:'kg',done:true}]}]},
         {id:'s2',date:D(3),dayName:'legs',loggedAfter:true,exercises:[{name:'sentadilla',muscle:'quads',sets:[{w:120,r:5,rir:'F',unit:'kg',done:true}]}]},{id:'s3',date:D(2),type:'rest'}],
       sleep:{[D(1)]:[{start:'23:10',end:'07:05',hours:7.4,inBed:7.9,wk:2,ph:{awake:30,rem:95,core:240,deep:110}},{start:'15:00',end:'15:25',hours:0.4}]},
       adhoc:{[D(1)]:[{id:'x1',name:'potasio',sid:'k1',qty:2,per:1,time:'14:32',ts:1}]},
@@ -10710,7 +10711,7 @@ function _exportSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK
     A('D0 · abre diciendo cómo leerse, con la versión', md.indexOf('## //CÓMO LEER ESTE ARCHIVO')<md.indexOf('## //PERFIL')&&has('app '+APP_V)&&/no se registra a propósito: energía, humor ni estrés/.test(md));
     A('D9 · cada día con SU meta (y sin inventar la de antes de la primera)', has('### '+fmtDate(D(4))+' · meta 2000 kcal')&&has('### '+fmtDate(D(1))+' · meta 2400 kcal')&&has('### '+fmtDate(D(8))+' · sin meta guardada')&&!has('### '+fmtDate(D(4))+' · meta 2400'));
     A('D9 · //METAS con cada cambio', (m=>/desde .*: 2000 kcal/.test(m)&&/desde .*: 2400 kcal/.test(m)&&/antes del .*: sin meta guardada/.test(m))(sec('## //METAS')));
-    A('D5 · cada sesión con su hora y duración; la que no la tiene lo dice', has('push A · AGON · 19:10–20:36 · 1 h 26 min')&&has('legs · sin hora · registrada después')&&has('### '+fmtDate(D(2))+' · descanso'));
+    A('D5 · cada sesión con su hora y duración; la que no la tiene lo dice', has('push A · NORTE · 19:10–20:36 · 1 h 26 min')&&has('legs · sin hora · registrada después')&&has('### '+fmtDate(D(2))+' · descanso'));
     A('D6 · la comida agrupada por comida con su hora, la que tiene hora primero', has('#### breakfast · 08:30')&&has('#### lunch · sin hora')&&md.indexOf('#### breakfast · 08:30')<md.indexOf('#### lunch · sin hora',md.indexOf('### '+fmtDate(D(4))))&&has('**día: 1000 kcal')&&has('50 % de su meta'));
     A('D3 · el sueño en tabla: se durmió, despertó, dormido de noche, en cama, fases, siestas y el total', (m=>/\| 23:10 \| 07:05 \| 7 h 25 min \| 7 h 54 min \| 30 min \| 2 \| 1 h 35 min \| 4 h \| 1 h 50 min \| 1 · 25 min \| 7 h 50 min \| a mano \|/.test(m))(sec('## //SUEÑO')));
     A('D2 · las tomas día por día: hora, sustancia, cuántas y cómo quedó; el extra con su hora', (m=>has('- 08:10 · creatina · 3 · tomada')&&/· creatina · 1 · tarde/.test(m)&&/· creatina · 1 · saltada/.test(m)&&has('- 14:32 · potasio · 2 · extra')&&/sin registro/.test(m)&&/### .* · 1 de 1/.test(m))(sec('## //TOMAS')));
@@ -11046,14 +11047,14 @@ function _v339SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
 // self-check de v340 (G15 · SG2 · G16 · G17 · C10 · RP2). Base de juguete con una sesión viva en #view; todo se restaura en finally.
 function _v340SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v340: '+nm); }; const real=db, c0=state._curEx, sc0=state.screen; let host=null;
   try{ const S=o=>Object.assign({w:'60',r:'8',rir:'1',unit:'lbs',done:true},o||{}), T=todayISO();
-    db=migrate({profile:{username:'t'},gyms:['AGON','Spartan'],activeGym:'Spartan',split:{name:'s',days:[{id:'d1',name:'A',exercises:[{id:'e1',name:'press',muscle:'chest',type:'machine',sets:2},{id:'e2',name:'curl',muscle:'bicep',type:'free',unilateral:true,sets:1}]}]},
-      sessions:[{id:'h1',date:shiftDate(T,-3),dayId:'d1',dayName:'A',gym:'AGON',type:'training',exercises:[{exId:'e1',name:'press',muscle:'chest',type:'machine',unit:'lbs',sets:[S({w:'140',r:'8'}),S({w:'120',r:'10'})]}]}]});
-    db.activeWork={id:'w',date:T,dayId:'d1',gym:'Spartan',startMs:Date.now(),exercises:[{exId:'e1',name:'press',muscle:'chest',type:'machine',sets:[S(),S({done:false,rir:''})]},{exId:'e2',name:'curl',muscle:'bicep',type:'free',unilateral:true,startSide:'R',sets:[S({side:'R'}),S({side:'L'})]}]}; bumpIdx();
+    db=migrate({profile:{username:'t'},gyms:['NORTE','Ribera'],activeGym:'Ribera',split:{name:'s',days:[{id:'d1',name:'A',exercises:[{id:'e1',name:'press',muscle:'chest',type:'machine',sets:2},{id:'e2',name:'curl',muscle:'bicep',type:'free',unilateral:true,sets:1}]}]},
+      sessions:[{id:'h1',date:shiftDate(T,-3),dayId:'d1',dayName:'A',gym:'NORTE',type:'training',exercises:[{exId:'e1',name:'press',muscle:'chest',type:'machine',unit:'lbs',sets:[S({w:'140',r:'8'}),S({w:'120',r:'10'})]}]}]});
+    db.activeWork={id:'w',date:T,dayId:'d1',gym:'Ribera',startMs:Date.now(),exercises:[{exId:'e1',name:'press',muscle:'chest',type:'machine',sets:[S(),S({done:false,rir:''})]},{exId:'e2',name:'curl',muscle:'bicep',type:'free',unilateral:true,startSide:'R',sets:[S({side:'R'}),S({side:'L'})]}]}; bumpIdx();
     state.screen='workout'; state._curEx=0; host=document.createElement('div'); host.className='wfocus'; host.innerHTML=renderExercise(0,db.activeWork.exercises[0],sessIctx(db.activeWork),true)+renderExercise(1,db.activeWork.exercises[1],sessIctx(db.activeWork),false); document.getElementById('view').appendChild(host);
     const ex0=host.querySelector('.ex[data-exi="0"]'), ex1=host.querySelector('.ex[data-exi="1"]'), nx=e=>e.querySelector('.exhead .n[data-act="editexname"]').getBoundingClientRect().left;
     A('G16 · el nombre empieza en la misma x con [bi] y con [uni]', Math.abs(nx(ex0)-nx(ex1))<0.6);
     const sub=ex0.querySelector('.exsub'); A('G16 · máquina y variantes en sangría bajo el nombre', Math.abs(sub.getBoundingClientRect().left-nx(ex0))<0.6);
-    const ref=ex0.querySelector('.exref'); A('C10 → GY7 · sin sesión previa aquí ya no sale el renglón del otro gym, y sin ▲▼', !ref&&!/AGON/.test(ex0.textContent)&&!ex0.querySelector('.setprogline .setprog'));
+    const ref=ex0.querySelector('.exref'); A('C10 → GY7 · sin sesión previa aquí ya no sale el renglón del otro gym, y sin ▲▼', !ref&&!/NORTE/.test(ex0.textContent)&&!ex0.querySelector('.setprogline .setprog'));
     const hd=ex0.querySelector('.thead .cl[data-gloss] .u-dash'); A('G17 · el punteado va solo bajo la palabra rir', !!hd&&hd.getBoundingClientRect().width<=Math.ceil(hd.textContent.length*0.6*parseFloat(getComputedStyle(hd).fontSize))+1&&getComputedStyle(hd.parentElement).borderBottomStyle==='none');
     const r0=ex0.querySelector('.srow[data-si="0"]'), pl=ex0.querySelector('.setprogline[data-si="0"]'), r1=ex0.querySelector('.srow[data-si="1"]'), bar=pl&&pl.querySelector('.sgb');
     const up=bar?bar.getBoundingClientRect().top-r0.getBoundingClientRect().bottom:99, dn=bar?r1.getBoundingClientRect().top-bar.getBoundingClientRect().bottom:0;
@@ -11275,8 +11276,8 @@ function bioWire(p){ const o={}; Object.keys(p||{}).forEach(k=>{ if(k==='id'||+p
 // v349 · GR7 · la fila `registro de la noche` dice el día que miras en PHASES (antes siempre la última noche, aunque miraras otra)
 function sleepRawRowSync(d){ const row=document.querySelector('#modal .line[data-act="sleepraw"]'); if(!row)return; const ks=Object.keys((db.health&&db.health.sleepRaw)||{}).sort(); if(!ks.length)return;
   const has=!!d&&ks.indexOf(d)>=0, day=has?d:ks[ks.length-1], v=row.querySelector('.v'); row.dataset.d=d&&!has?d:day; if(v)v.textContent=d&&!has?'sin registro':fmtShort(day)+' ›'; }   // la fecha ya la dice PHASES, arriba (a 320 «09 oct · sin registro» partía el renglón)
-// v349 · H6 · el dueño (15-oct, con capturas de Salud y de Fitbit): el 12-oct los dos dicen 5 h 06 dormido (en cama 5 h 20; profundo 1 h,
-// core 3 h 14, REM 52, despierto 14) y gym//TRK decía 6 h 14 con unas fases que sumaban 3 h 52: "en Gym Tracker se pone una hora de más".
+// v349 · H6 · una noche con Fitbit (con fases) y otra app que escribe «dormido» encima: Salud enseña una sola fuente y gym//TRK
+// sumaba las dos, con una hora de más.
 // Lo reprodujo un forense con el código real (n10 · v349): (1) en Salud, además de Fitbit (con fases), escribe otra app tramos «dormido»
 // SIN fase sobre la misma noche; la app los sumaba todos (la unión) y, al recortar lo encimado, ganaba el que empezaba antes: el tramo sin
 // fase se comía minutos de las fases. Salud enseña solo una fuente por noche. Ahora: si una noche trae fases, cuentan sus fases y los
@@ -11335,8 +11336,7 @@ function sleepFix349(d){ const h=d.health; if(!h||!h.shortcut||h.shortcut.fix349
   if(Object.keys(last).length){ sc.skip=Object.assign({},sc.skip); sc.got=Object.assign({},sc.got); Object.keys(last).forEach(k=>{ delete sc.skip[k]; if(!sc.got[k]||last[k]>sc.got[k])sc.got[k]=last[k]; }); }
   if(last.sleep)sc.sleepFix=lim; }
 // v369 · H9 · una vez (migrate): de dónde a dónde ya trajo el atajo cada dato (lo más viejo que escribió un sync), para que el siguiente sync sepa
-// qué historial le falta. Con su respaldo del 16-oct: sueño desde el 25-sep (su siguiente sync sale con 120 noches), pasos 24-ene, peso 8-oct-2025,
-// energía 25-sep, FC 14-ago; HRV no (está saltado).
+// qué historial le falta: con meses de sueño, pasos y peso, la siguiente corrida pide lo que falte (lo saltado no se pide).
 function hpCovSeed(d){ const h=d&&d.health; if(!h||!h.shortcut||typeof h.shortcut!=='object'||h.shortcut.covV)return; const sc=h.shortcut; sc.covV=1;
   const got=sc.got||{}, src=h.src||{}, dly=h.daily||{}, old={}, iso=/^\d{4}-\d{2}-\d{2}$/, dn=(k,x)=>{ if(iso.test(x)&&(!old[k]||x<old[k]))old[k]=x; }, syn=m=>!!m&&m!=='manual';
   Object.keys(h.sleep||{}).forEach(x=>{ if((h.sleep[x]||[]).length)dn('sleep',x); });
@@ -11375,8 +11375,7 @@ function openSleepRaw(day){ const ks=Object.keys((db.health&&db.health.sleepRaw)
     +(S.manual?'<div class="submeta u-mb10">esta noche la tecleaste: el atajo ya no la cambia.</div>':(Math.abs(S.app-S.cnt)>1?'<div class="submeta u-mb10">la app aún no la cuenta así: se rehace en el próximo sync biometrics.</div>':''))
     +'<div class="grp-label sub">'+S.n+' muestras</div><div class="slrl">'+list+'</div>'
     +'<div class="sheetbtns u-mt12"><button class="cancel" data-act="closemodal">cerrar</button></div>','top'); }   // abre arriba: al pasar de noche la hoja crece hacia abajo y ‹ › no se mueven bajo el dedo
-// self-check de v349 (H6 · H7 · GR7). Base de juguete con tus números del 12-oct (el hipnograma es inventado; los totales son los de tus
-// capturas); todo se restaura en finally.
+// self-check de v349 (H6 · H7 · GR7). Base de juguete con una noche de ejemplo; todo se restaura en finally.
 function _v349SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v349: '+nm); }; const real=db, mk=window._mdKey, mr=window._mdRange, me=window._mdEnd, mc=window._mdCustom;
   try{ const T=todayISO(), D=k=>shiftDate(T,-k), tz=(()=>{ const o=-new Date().getTimezoneOffset(), a=Math.abs(o); return (o>=0?'+':'-')+pad(Math.floor(a/60))+':'+pad(a%60); })(), I=(d,hm)=>d+'T'+hm+':00'+tz;
     const fresh=()=>{ db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',age:30,sex:'m',weightKg:61},gyms:['g'],activeGym:'g',sessions:[]}); db.sleep={}; db.health=healthShape({}); bumpIdx(); };
@@ -11385,11 +11384,11 @@ function _v349SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     const w=bioWire({id:'x',steps:3,act:0,weight:2,sleep:15,rhr:0,hrv:0,fat:0,bas:0});
     A('H7 · lo que no se busca no viaja en el plan (una llave que falta no tiene valor)', w.id==='x'&&w.steps===3&&w.sleep===15&&w.weight===2&&!('act' in w)&&!('rhr' in w)&&!('hrv' in w)&&!('fat' in w)&&!('bas' in w));
     A('H7 · la URL del atajo usa el plan sin ceros', (()=>{ const u=bioRunURL({id:'y',steps:2,hrv:0}), j=JSON.parse(decodeURIComponent(u.split('&text=')[1])); return j.id==='y'&&j.steps===2&&!('hrv' in j); })());
-    // H6 · su noche del 12-oct: Fitbit con fases 22:42–04:02 (dormido 5 h 06) + un «Dormido» de otra app 21:40–00:02
+    // H6 · una noche de ejemplo: Fitbit con fases + un «Dormido» de otra app encima
     const N=D(3), W=D(2), FB=[[N,'22:42',N,'22:48','Despierto'],[N,'22:48',N,'23:02','Esencial'],[N,'23:02',N,'23:36','Profundo'],[N,'23:36',N,'23:48','Esencial'],[N,'23:48',W,'00:02','REM'],[W,'00:02',W,'00:50','Esencial'],[W,'00:50',W,'01:16','Profundo'],[W,'01:16',W,'02:00','Esencial'],[W,'02:00',W,'02:20','REM'],[W,'02:20',W,'02:24','Despierto'],[W,'02:24',W,'03:20','Esencial'],[W,'03:20',W,'03:38','REM'],[W,'03:38',W,'03:58','Esencial'],[W,'03:58',W,'04:02','Despierto']];
     const line=r=>'sleep '+I(r[0],r[1])+' '+I(r[2],r[3])+' '+r[4], night='trk2\n'+FB.map(line).join('\n');
     healthPasteApply(night+'\n'+line([N,'21:40',W,'00:02','Dormido']));
-    { const v=db.sleep[W], p=sleepPhDay(W); A('H6 · su 12-oct: con otra app encima, la noche es la de Fitbit (5 h 06, no 6 h 14) y sus fases 1 h · 3 h 14 · 52 · 14', sleepMinOf(v)===306&&!!p&&p.deep===60&&p.core===194&&p.rem===52&&p.awake===14&&sleepBlocks(v).length===1); }
+    { const v=db.sleep[W], p=sleepPhDay(W); A('H6 · con otra app encima, la noche es la de Fitbit (5 h 06, no 6 h 14) y sus fases 1 h · 3 h 14 · 52 · 14', sleepMinOf(v)===306&&!!p&&p.deep===60&&p.core===194&&p.rem===52&&p.awake===14&&sleepBlocks(v).length===1); }
     { const S=sleepRawStats(W); A('H6 · el registro: lo de la otra app no cuenta (2 h 22) y la regla da lo mismo que la app', !!S&&S.cnt===306&&S.app===306&&S.drp===142&&S.no.filter(Boolean).length===1&&S.inBed===320);
       const j0=JSON.stringify(db); openSleepRaw(W); const m=document.getElementById('modal'), tx=m.textContent;
       A('H6 · la hoja lo dice (no cuenta · otra app), marca el renglón y abrirla no escribe nada', /no cuenta/.test(tx)&&/otra app/.test(tx)&&!/dormido sin fase/.test(tx)&&m.querySelectorAll('.slrw.no').length===1&&JSON.stringify(db)===j0); closeModal(); }
@@ -11433,10 +11432,8 @@ function _v349SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
     console.log('v349 self-check OK');
   } finally { try{ closeModal(); }catch(_){} db=real; window._mdKey=mk; window._mdRange=mr; window._mdEnd=me; window._mdCustom=mc; bumpIdx(); }
 }
-// v350 · MM1 · MM5 · el dueño (15-oct): "modo mamarre es cuando salgo de fiesta o de viaje por varios días a tragar…, a echar vino, fiesta,
-// desvelo, comer fuera… modo que se pueda poner on y off" · "que el modo mamarre aparezca en el timeline similar a cuando se cambia a
-// definición, cut, bulk" · y (al preguntarle por la meta) "no hay un objetivo como tal, el chiste es poder registrar todo para ver cómo es que
-// afectan esos días, no apartarlos, sino considerarlos". Un periodo: db.mamarre=[{id,from,to}] (to:null = sigue prendido; aditivo).
+// v350 · MM1 · MM5 · modo mamarre: un periodo (viaje, fiesta) que se prende y apaga, sale en el timeline como un cambio de fase y no
+// aparta esos días: los considera. Un periodo: db.mamarre=[{id,from,to}] (to:null = sigue prendido; aditivo).
 // NO toca metas (goalsFor, goalHist) ni ningún cálculo: esos días cuentan como cualquier otro. Se ve en el carril de abajo de TODAS las
 // gráficas (como las fases) y en el export; desde v351 simplifica cómo se registra.
 function mmList(){ return Array.isArray(db.mamarre)?db.mamarre.filter(p=>p&&/^\d{4}-\d{2}-\d{2}$/.test(p.from||'')&&(!p.to||/^\d{4}-\d{2}-\d{2}$/.test(p.to))):[]; }
@@ -12801,7 +12798,7 @@ function _v359SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK v
 }
 // ---- v360 · D1 · D2 · el día que eliges manda ----
 // El dueño (15-oct): "en ningún apartado del dashboard, de los metrics y demás, no hay protagonismo del día seleccionado… para ver más cosas a
-// detalle" · del sueño del 12-oct con siesta: "lo siento medio torpe… no me gusta cómo se visualiza" (al tocar el día solo salía "6:14"). En
+// detalle" · al tocar un día con siesta solo salía un número suelto. En
 // el detalle de cada métrica, tocar o deslizar la gráfica deja ese día ELEGIDO: el número grande y la fecha pasan a él, su marca se queda en la
 // gráfica y debajo sale su bloque: el sueño con la noche y cada siesta (horas, fases, puntaje y su porqué); las demás con su valor y de dónde
 // vino, y el día alrededor (entreno, kcal, mamarre, fase). Sin elegir, el bloque es del último día con registro. `‹ último` regresa.
@@ -13038,19 +13035,19 @@ function _phaseSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
 function _exGroupsSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK grupos del ejercicio: '+nm); }; const real=db, rs=state.screen, k0=state._exKey, tb0=state._exTab, d0=state._exDays, o0=state._exOff;
   try{ const D=k=>shiftDate(todayISO(),-k), S=(w,r,rir,u)=>({w:String(w),r:String(r),rir:String(rir),unit:u,done:true});
     const se=(id,k,gym,ex)=>({id,date:D(k),dayId:'A',dayName:'A',gym,type:'training',exercises:[ex]}), pd=sets=>({name:'pushdown',muscle:'tricep',type:'cable',sets});
-    const base=ss=>migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['AGON','Campestre'],split:{name:'t',days:[{id:'A',name:'A',exercises:[]}]},sessions:ss});
-    db=base([se('n1',45,null,pd([S(75,8,1,'lbs')])),se('a1',40,'AGON',pd([S(80,8,1,'lbs'),S(80,7,0,'lbs')])),se('a2',33,'AGON',pd([S(85,8,1,'lbs'),S(85,7,0,'lbs')])),se('a3',26,'AGON',pd([S(85,9,1,'lbs'),S(85,8,0,'lbs')])),se('a4',19,'AGON',pd([S(90,8,1,'lbs'),S(90,7,0,'lbs')])),
-      se('c1',5,'Campestre',pd([S(12,8,1,'pla'),S(12,7,0,'pla')])),se('f1',10,'AGON',{name:'db curl',muscle:'bicep',type:'free',sets:[S(30,10,1,'lbs')]}),se('f2',3,'Campestre',{name:'db curl',muscle:'bicep',type:'free',sets:[S(30,11,1,'lbs')]})]); bumpIdx();
+    const base=ss=>migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['NORTE','Plaza'],split:{name:'t',days:[{id:'A',name:'A',exercises:[]}]},sessions:ss});
+    db=base([se('n1',45,null,pd([S(75,8,1,'lbs')])),se('a1',40,'NORTE',pd([S(80,8,1,'lbs'),S(80,7,0,'lbs')])),se('a2',33,'NORTE',pd([S(85,8,1,'lbs'),S(85,7,0,'lbs')])),se('a3',26,'NORTE',pd([S(85,9,1,'lbs'),S(85,8,0,'lbs')])),se('a4',19,'NORTE',pd([S(90,8,1,'lbs'),S(90,7,0,'lbs')])),
+      se('c1',5,'Plaza',pd([S(12,8,1,'pla'),S(12,7,0,'pla')])),se('f1',10,'NORTE',{name:'db curl',muscle:'bicep',type:'free',sets:[S(30,10,1,'lbs')]}),se('f2',3,'Plaza',{name:'db curl',muscle:'bicep',type:'free',sets:[S(30,11,1,'lbs')]})]); bumpIdx();
     const K=exHistKey(db.sessions[1].exercises[0]), KF=exHistKey(db.sessions[6].exercises[0]); let G=exSeriesGroups(K);
     A('un grupo por gym y unidad', G.length===2);
-    A('el principal es el de siempre, no el de la última visita', G[0].g==='agon'&&G[0].unit==='lbs'&&G[1].unit==='pla'&&G[1].n===1);
+    A('el principal es el de siempre, no el de la última visita', G[0].g==='norte'&&G[0].unit==='lbs'&&G[1].unit==='pla'&&G[1].n===1);
     A('una fila sin gym se queda con el grupo grande de su unidad, y las filas van de la más nueva a la más vieja', G[0].n===5&&G[0].rows[0].sid==='a4'&&G[0].rows[4].sid==='n1');
     const X=exSeries(K); A('la serie (y el estado) salen del principal: una visita a otro gym no se los quita', X.unit==='lbs'&&X.pts.length===5&&X.pts[4].sid==='a4');
     A('en peso libre el gym no separa', exSeriesGroups(KF).length===1&&exSeriesGroups(KF)[0].n===2);
     const pts=h=>(h.match(/data-pts='([^']*)'/g)||[]).map(m=>JSON.parse(m.slice(10,-1).replace(/&#39;/g,"'")));
     state._exKey=K; state._exTab='top'; state._exDays=9999; state._exOff={}; let h=renderExHist(), P=pts(h);
     A('dos grupos: una casilla por cada uno, las dos marcadas', (h.match(/data-act="exgrp"/g)||[]).length===2&&(h.match(/aria-pressed="true"/g)||[]).length===2);
-    A('b3 · otra unidad, en la misma gráfica con su eje a la derecha', !/exstrip/.test(h)&&P.length===1&&P[0].length===6&&/Campestre · placas/.test(h)&&/class="ch2 dual"/.test(h)&&(h.match(/class="chy l"/g)||[]).length===3&&(h.match(/class="chy"/g)||[]).length===3);
+    A('b3 · otra unidad, en la misma gráfica con su eje a la derecha', !/exstrip/.test(h)&&P.length===1&&P[0].length===6&&/Plaza · placas/.test(h)&&/class="ch2 dual"/.test(h)&&(h.match(/class="chy l"/g)||[]).length===3&&(h.match(/class="chy"/g)||[]).length===3);
     A('la sesión suelta se ve en su día, sobre el mismo eje de fechas', P[0][5].f>0.9&&P[0][0].f<0.1&&P[0][4].f<P[0][5].f);
     state._exOff[K]={}; state._exOff[K][G[1].id]=1; h=renderExHist(); A('desmarcada no se dibuja y su casilla queda apagada', !/class="exstrip"/.test(h)&&/aria-pressed="false"/.test(h)&&pts(h).length===1);
     state._exOff[K][G[0].id]=1; A('sin ninguna marcada se dice', /ninguna línea marcada/.test(renderExHist()));
@@ -13059,7 +13056,7 @@ function _exGroupsSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHE
     A('otro gym en la misma unidad: su propia línea, punteada, en la misma gráfica', G.length===3&&G[1].g==='pro'&&/class="sw-data-lg chmore" stroke-dasharray="5 4"/.test(h)&&P[0].length===8&&/class="ch2 dual"/.test(h));
     state._exKey=KF; h=renderExHist(); A('con un solo grupo no hay casillas ni tiras', !/data-act="exgrp"/.test(h)&&!/class="exstrip"/.test(h)&&pts(h).length===1);
     // S2 · a igual esfuerzo la unidad no cambia σ (carga externa): 15 placas × 7 al fallo = 200 lbs × 7 al fallo = 90 kg × 7 al fallo
-    const sg=(u,w)=>{ db=base([se('u1',9,'AGON',pd([S(w,7,'F',u),S(w,6,0,u)])),se('u2',2,'AGON',pd([S(w,7,'F',u),S(w*0.8,9,1,u)]))]); bumpIdx(); return JSON.stringify(db.sessions.map(s=>sessionTension(s)[0].per.map(x=>x?+x.t.toFixed(4):0))); };
+    const sg=(u,w)=>{ db=base([se('u1',9,'NORTE',pd([S(w,7,'F',u),S(w,6,0,u)])),se('u2',2,'NORTE',pd([S(w,7,'F',u),S(w*0.8,9,1,u)]))]); bumpIdx(); return JSON.stringify(db.sessions.map(s=>sessionTension(s)[0].per.map(x=>x?+x.t.toFixed(4):0))); };
     const sp=sg('pla',15), sl=sg('lbs',200), sk=sg('kg',90);
     A('σ no depende de la unidad', sp===sl&&sl===sk&&JSON.parse(sp)[1][0]>0.9);
     console.log('exgroups self-check OK');
@@ -13280,7 +13277,7 @@ function sessionProgAgg(s){ let up=0,down=0; (s.exercises||[]).forEach((e,ei)=>{
 // v378 · rst · ▲▼ de sesión: uno solo, binario. Zona muerta ±2 % (la de progFromScores, y aquí también si llega un % suelto); pol 'down' = bajar es bueno.
 function rstPPDir(pr){ if(!pr||!pr.dir)return ''; const p=+pr.pct; return pr.dir!=='flat'&&isFinite(p)&&pr.pct!=null&&Math.abs(p)<2?'flat':pr.dir; }
 function rstPPCls(pr,pol){ const d=rstPPDir(pr); if(!d)return ''; return 'rstpp '+(d==='flat'?'pe':((d==='up')!==(pol==='down')?'pg':'pb')); }
-function progBadgeFromProg(pr,title){ if(!pr)return ''; const _fl=rstPPDir(pr)!=='up'&&rstPPDir(pr)!=='down', ar=rstPPDir(pr)==='up'?'▲':rstPPDir(pr)==='down'?'▼':'─'; const pc=(!_fl&&pr.pct)?((pr.pct>0?'+':'−')+Math.abs(pr.pct)+'%'):''; return '<span class="exprog '+rstPPCls(pr)+'" data-gloss="cap" title="'+(title||'capacidad vs la sesión previa')+'">'+ar+pc+'</span>'; }   // v378 · rst
+function progBadgeFromProg(pr,title){ if(!pr)return ''; const _fl=rstPPDir(pr)!=='up'&&rstPPDir(pr)!=='down', ar=rstPPDir(pr)==='up'?'▲':rstPPDir(pr)==='down'?'▼':'─'; const pc=(!_fl&&pr.pct)?((pr.pct>0?'+':'−')+Math.abs(pr.pct)+'%'):''; return '<span class="exprog '+rstPPCls(pr)+'" data-gloss="cap" title="'+escTxt(title||'capacidad vs la sesión previa')+'">'+ar+pc+'</span>'; }   // v378 · rst
 // v272 · RIR objetivo según tu peso relativo (tension-v2.md §4): lejos del fallo con peso ligero casi no estimula; con
 // peso alto, RIR 2-3 ya da casi todo. Reemplaza al contador de zonas (salía de reps+RIR, no de la carga real).
 function rirTargetTxt(I){ return !(I>0)?'':I<0.55?'RIR 0–1':I<0.70?'RIR 1–2':I<0.85?'RIR 2':'RIR 2–3'; }
@@ -14994,10 +14991,10 @@ function openExPick(){ const L=exPickRows(), cur=state._exKey; const rows=L.map(
 function exTick(v){ const r=Math.round(v*10)/10; return Math.abs(r)>=10000?(r/1000).toFixed(1)+'k':r.toLocaleString('en-US'); }
 function _b3SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK b3: '+nm); }; const real=db, sb0=state.screen, K0=['_exKey','_exTab','_exDays','_exOff','_back'].map(k=>state[k]), md0=[window._mdRange,window._mdEnd,window._mdCustom,window._mdSel,window._mdKey,window._labSleep,_sbx]; const host=document.createElement('div'); host.style.cssText='position:absolute;left:0;top:0;width:357px;visibility:hidden;'; document.getElementById('app').appendChild(host);
   try{ _sbx=true; const D=k=>shiftDate(todayISO(),-k), S=(w,r,rir,u)=>({w:String(w),r:String(r),rir:String(rir),unit:u,done:true}), se=(id,k,gym,ex)=>({id,date:D(k),dayId:'A',dayName:'A',gym,type:'training',exercises:[ex]}), pd=sets=>({name:'pushdown',muscle:'tricep',type:'cable',sets}), bad='<img src=x onerror=alert(1)>';
-    const base=(ss,x)=>migrate(Object.assign({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['AGON','Campestre'],split:{name:'t',days:[{id:'A',name:'A',exercises:[]}]},sessions:ss,settings:{acInv:{n:99,t:Date.now()}}},x||{}));
+    const base=(ss,x)=>migrate(Object.assign({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['NORTE','Plaza'],split:{name:'t',days:[{id:'A',name:'A',exercises:[]}]},sessions:ss,settings:{acInv:{n:99,t:Date.now()}}},x||{}));
     const pts=e=>JSON.parse(e.querySelector('.chwrap').dataset.pts), P=x=>{ host.innerHTML=x; };
     // --- la gráfica ---
-    db=base([se('a1',40,'AGON',pd([S(80,8,1,'lbs'),S(80,7,0,'lbs')])),se('a2',33,'AGON',pd([S(85,8,1,'lbs')])),se('a3',26,'AGON',pd([S(400,8,1,'lbs')])),se('a4',19,'AGON',pd([S(90,8,1,'lbs')])),se('c1',5,'Campestre',pd([S(12,8,1,'pla'),S(12,7,0,'pla')])),se('f1',10,'AGON',{name:bad,muscle:'bicep',type:'free',sets:[S(30,10,1,'lbs')]}),se('k1',12,'AGON',{name:'db curl',muscle:'bicep',type:'free',sets:[S(20,10,1,'kg')]}),se('k2',8,'AGON',{name:'db curl',muscle:'bicep',type:'free',sets:[S(44,10,1,'lbs')]}),se('k3',4,'AGON',{name:'db curl',muscle:'bicep',type:'free',sets:[S(22,10,1,'kg')]})]); bumpIdx();
+    db=base([se('a1',40,'NORTE',pd([S(80,8,1,'lbs'),S(80,7,0,'lbs')])),se('a2',33,'NORTE',pd([S(85,8,1,'lbs')])),se('a3',26,'NORTE',pd([S(400,8,1,'lbs')])),se('a4',19,'NORTE',pd([S(90,8,1,'lbs')])),se('c1',5,'Plaza',pd([S(12,8,1,'pla'),S(12,7,0,'pla')])),se('f1',10,'NORTE',{name:bad,muscle:'bicep',type:'free',sets:[S(30,10,1,'lbs')]}),se('k1',12,'NORTE',{name:'db curl',muscle:'bicep',type:'free',sets:[S(20,10,1,'kg')]}),se('k2',8,'NORTE',{name:'db curl',muscle:'bicep',type:'free',sets:[S(44,10,1,'lbs')]}),se('k3',4,'NORTE',{name:'db curl',muscle:'bicep',type:'free',sets:[S(22,10,1,'kg')]})]); bumpIdx();
     const K=exHistKey(db.sessions[0].exercises[0]), KK=exHistKey(db.sessions[6].exercises[0]), KB=exHistKey(db.sessions[5].exercises[0]); state._exKey=K; state._exTab='top'; state._exDays=9999; state._exOff={}; state._back=[]; state.screen='exhist';
     P(renderExHist()); let w=host.querySelector('.chwrap'), p=pts(host);
     A('placas y lbs: una sola gráfica, un eje a cada lado, sin tiras', host.querySelectorAll('.chwrap').length===1&&!!host.querySelector('.ch2.dual')&&host.querySelectorAll('.chy.l').length===3&&host.querySelectorAll('.chy:not(.l)').length===3&&!host.querySelector('.exstrip'));
@@ -16219,7 +16216,7 @@ function progWeekly(n,end){ const now=end?new Date(end+'T12:00:00'):dayNow();   
   return {counts,vols,tens}; }
 function avgKcal7(){ const now=dayNow(); let sum=0,days=0; for(let i=0;i<7;i++){ const d=new Date(now); d.setDate(now.getDate()-i); const arr=db.meals[todayISO(d)]; if(arr&&arr.length){ days++; sum+=arr.reduce((a,m)=>a+(+m.kcal||0),0); } } return days?Math.round(sum/days):0; }
 // ── import health history from URL (iOS Shortcut). steps=N (hoy) · stepsh=fecha:n,fecha:n (histórico) · weight=kg (hoy) · weighth=fecha:kg,... (histórico)
-function importPairs(str,fn){ let n=0; (str||'').split(',').slice(0,500).forEach(p=>{ const i=p.indexOf(':'); if(i<1)return; const k=p.slice(0,i).trim(), v=p.slice(i+1).trim(); if(!/^\d{4}-\d{2}-\d{2}$/.test(k))return; try{ if(fn(k,v))n++; }catch(_){} }); return n; }
+function importPairs(str,fn){ let n=0; (str||'').split(',').slice(0,500).forEach(p=>{ const i=p.indexOf(':'); if(i<1)return; const k=p.slice(0,i).trim(), v=p.slice(i+1).trim(); if(!isoReal(k))return; try{ if(fn(k,v))n++; }catch(_){} }); return n; }   /* v385 · sec · una fecha que no existe o futura no entra */
 // parse a ?sleep= value into the stored sleep shape (mismo que openSleepLog):
 //   "7.5"               -> 7.5  (número = horas dormidas, sin ventana)
 //   "23:30-07:00"       -> {start,end,date,isNocturnal,hours=duración en-cama}
@@ -16343,8 +16340,7 @@ function readinessLineHTML(date){ const r=readinessScore(date);
   if(r.score==null&&!Object.keys(r.parts).length&&!Object.keys(db.sleep||{}).length)return '';
   return `<div class="ready rec" role="button" tabindex="0" data-act="readiness" data-d="${escV(date)}"><span class="rk">readiness</span><b${r.score!=null?' class="ixt"'+mtrInd(r.score/100,'score'):''}>${r.score!=null?r.score:'—'}</b>${r.why?`<span class="rw">${r.why}</span>`:''}<span class="rl">›</span></div>`; }
 // ---- v298 · "en ti": lo que hiciste cada día contra cómo dormiste y cómo amaneciste ----
-// El dueño (2-oct): "cenó tres horas antes, comió el 40% de sus calorías en la cena, no tomó sus suplementos para dormir o
-// está tomando el Xanax, y lo afectó en su ciclo… que vaya cuadrando todo". Descriptivo: días con contra días sin, la mediana
+// Qué pasó antes de una noche (a qué hora y cuánto se cenó, si se tomaron o no las sustancias para dormir) contra cómo se durmió. Descriptivo: días con contra días sin, la mediana
 // de cada lado y cuántos hay de cada uno; con pocos datos no dice nada. Correlación, no causa. Nunca cambia un número del
 // motor ni escribe nada. La noche de un día = el sueño que registraste al despertar al día siguiente.
 const ET_DAYS=120, ET_MIN=5;
@@ -16609,22 +16605,25 @@ function matchWorkouts(){ const h=H(); const wins=(db.sessions||[]).filter(s=>s.
 function workoutOfSession(sid){ const h=H(); for(const id in h.workouts){ if(h.workouts[id].sessId===sid)return h.workouts[id]; } return null; }
 function pruneHealth(){ const h=H(); const ids=new Set((db.sessions||[]).map(s=>s.id)); if(db.activeWork)ids.add(db.activeWork.id); const cut=Date.now()-180*86400000;
   Object.keys(h.sessHR).forEach(k=>{ const r=h.sessHR[k]; if(!ids.has(k)){ delete h.sessHR[k]; return; } if(r&&r.t0&&r.t0<cut&&r.pts)delete r.pts; }); }
+/* v385 · sec · SEC19 · una fecha de Salud existe, es de 2000 en adelante y no pasa de mañana */
+function isoReal(s){ if(typeof s!=='string'||!/^\d{4}-\d\d-\d\d$/.test(s))return false; const d=new Date(s+'T12:00:00'); return !isNaN(d.getTime())&&calToday(d)===s&&s>='2000-01-01'&&s<=shiftDate(calToday(),1); }
+const HP_MS_MIN=946684800000;
 function ingestHealth(p,opts){ p=impScrub(p);   /* v381 · imp · viene de un archivo o del portapapeles */ opts=opts||{}; const h=H(); const out={daily:0,sleep:0,workouts:0,hr:0,sess:0};
   if(!p||typeof p!=='object')return out; const plat=String(p.platform||'import');
   (p.sources||[]).forEach(s=>{ if(!s||!s.key||IMP_BAD[s.key])return; const o=h.sources[s.key]||{firstSeen:Date.now()};
     Object.assign(o,{name:s.name||o.name||s.key,bundle:s.bundle||o.bundle||'',device:s.device||o.device||'',lastSeen:Date.now()}); h.sources[s.key]=o; });
-  (p.daily||[]).forEach(r=>{ if(!r||!/^\d{4}-\d{2}-\d{2}$/.test(r.date||''))return; const d=h.daily[r.date]||(h.daily[r.date]={}); d.src=d.src||{};
+  (p.daily||[]).forEach(r=>{ if(!r||!isoReal(r.date))return; const d=h.daily[r.date]||(h.daily[r.date]={}); d.src=d.src||{};
     ['steps','activeKcal','basalKcal','rhr','hrMin','hrAvg','hrMax'].forEach(k=>{ const v=+r[k]; if(isFinite(v)&&v>0&&d.src[k]!=='manual'){ d[k]=Math.round(v*10)/10; d.src[k]=r.src||plat; } });
     if(+r.hrv>0&&d.src.hrv!=='manual'){ d.hrv={v:Math.round(+r.hrv*10)/10,kind:r.hrvKind==='rmssd'?'rmssd':'sdnn'}; d.src.hrv=r.src||plat; }
     if(+r.steps>0&&+r.steps<200000&&hpFree('steps',r.date)){ db.steps=db.steps||{}; db.steps[r.date]=Math.round(+r.steps); h.src.steps[r.date]=plat; }   // v369 · H9 · un valor sin marca también es tuyo
     out.daily++; });
   // v270 · peso y grasa corporal: lo tecleado a mano gana (h.src.weight[fecha]==='manual'); el perfil toma el último peso
-  (p.body||[]).forEach(r=>{ if(!r||!/^\d{4}-\d{2}-\d{2}$/.test(r.date||''))return;
+  (p.body||[]).forEach(r=>{ if(!r||!isoReal(r.date))return;
     if(+r.kg>=20&&+r.kg<=400&&hpFree('weight',r.date)){   /* v369 · H9 · un peso sin marca también es tuyo */ db.bodyweight=db.bodyweight||{}; db.bodyweight[r.date]=Math.round(+r.kg*100)/100; h.src.weight[r.date]=r.src||plat; out.body=(out.body||0)+1; }
     if(+r.fat>0&&+r.fat<80){ const d=h.daily[r.date]||(h.daily[r.date]={}); d.src=d.src||{}; if(d.src.fat!=='manual'){ d.fat=Math.round(+r.fat*10)/10; d.src.fat=r.src||plat; } } });
   if(out.body){ const ks=Object.keys(db.bodyweight).sort(); if(ks.length&&db.profile)db.profile.weightKg=db.bodyweight[ks[ks.length-1]]; }
   if(p.sleepRaw)sleepRawStore(p.sleepRaw,p.sleepAll||p.sleep,p.sleepDrop);   // v338 · H6 · lo que trajo el atajo, tal cual (14 noches)
-  const byDay={}; (p.sleep||[]).forEach(r=>{ if(!r||!(r.endMs>r.startMs))return; const k=r.day||isoOfMs(r.endMs); (byDay[k]=byDay[k]||[]).push(r); });
+  const byDay={}; (p.sleep||[]).forEach(r=>{ if(!r||!(r.endMs>r.startMs)||!(r.startMs>HP_MS_MIN)||r.endMs>Date.now()+36*3600000)return; const k=r.day||isoOfMs(r.endMs); (byDay[k]=byDay[k]||[]).push(r); });
   Object.keys(byDay).forEach(day=>{
     const segs=byDay[day].sort((a,b)=>a.startMs-b.startMs).map(r=>({startMs:r.startMs,endMs:r.endMs,stages:Array.isArray(r.stages)?r.stages.filter(x=>Array.isArray(x)&&x[1]>x[0]):[],src:r.src||plat,asl:r.asl!=null&&isFinite(+r.asl)?Math.round(+r.asl):undefined}));
     const cur=sleepBlocks(db.sleep&&db.sleep[day]); const auto=sleepAuto(day,cur), was=!cur.length;   // v369 · H9 · también es tuya la noche que corregiste o borraste (sleepAuto)
@@ -16729,11 +16728,11 @@ async function healthSyncNative(reason){ const Hp=capP('Health'); const h=H();
   finally{ _hsBusy=false; } }
 function ingestSummary(o){ const b=[]; if(o.daily)b.push(o.daily+' días'); if(o.sleep)b.push(o.sleep+' noches'); if(o.workouts)b.push(o.workouts+' entrenos'); if(o.sess)b.push('FC en '+o.sess+' sesiones'); return b.length?b.join(' · '):'sin datos nuevos'; }
 function openHealthJsonImport(){ const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json,.json';
-  inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f)return; const rd=new FileReader();
+  inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f)return; if(f.size>IMP_MAX){ toast('⚠ ese archivo es demasiado grande','err'); return; } const rd=new FileReader();
     rd.onload=()=>{ try{ const o=ingestHealth(JSON.parse(rd.result)); save(); const _k=hpKeep('healthjson'); render(); _k(); toast('✓ salud: '+ingestSummary(o)); }catch(e){ healthLog('import falló: '+e.message,'err'); save(); toast('⚠ no pude leer ese archivo de salud','err'); } };
     rd.readAsText(f); };
   inp.click(); }
-window.gymtrkIngestHealth=p=>{ const o=ingestHealth(p); save(); render(); return o; };
+/* v385 · sec · window.gymtrkIngestHealth se quitó: era de la app nativa y nadie lo llamaba */
 // //SALUD block in settings
 function healthSettingsHTML(){ const h=H(); const nat=isNative();
   const L=(k,v)=>`<div class="line"><span class="k">${k}</span><span class="dots"></span><span class="v">${v}</span></div>`;
@@ -17455,8 +17454,8 @@ function blockAsleep(b){ if(!b)return 0; const win=(b.start&&b.end)?sleepDur(b.s
   if(b.ph){ const ph=phaseMin(b); return ph?Math.round(phAsleepMin(ph,winMin(b)||win*60)/6)/10:win; }   // v257
   if(!(b.stages&&b.stages.length))return win;
   const awake=stageMin(b,'awake')/60; return Math.max(0,Math.round((win-awake)*10)/10); }   // U6: intervalos, igual que antes
-// v271 · UNA forma de decir duraciones. El dueño: "hoy dormí 5.2 horas, pero ese 0.2 horas no me dice nada… hay que
-// manejar horas y minutos". 45 min · 5 h 12 min · 2 d 4 h. fmtHM queda como alias (fases del sueño).
+// v271 · UNA forma de decir duraciones. «5.2 horas» no dice nada: horas y
+// minutos. 45 min · 5 h 12 min · 2 d 4 h. fmtHM queda como alias (fases del sueño).
 function fmtDur(min){ min=Math.max(0,Math.round(+min||0)); if(min<60)return min+' min'; const h=Math.floor(min/60), m=min%60;
   if(h<48)return h+' h'+(m?' '+m+' min':''); const d=Math.floor(h/24), hh=h%24; return d+' d'+(hh?' '+hh+' h':''); }
 function fmtH(h){ return fmtDur((+h||0)*60); }   // horas decimales (promedios, metas) → h y min
@@ -18266,7 +18265,7 @@ function tickState(v){ if(v===true)return 'taken'; if(v==='taken'||v==='late'||v
 function tickDone(v){ const s=tickState(v); return s==='taken'||s==='late'; } // adherencia: tomado o tarde cuenta; saltado no
 const TICK_SYM={taken:'✓',late:'~',skipped:'✗'};
 // ---- v297 · varias tomas al día ----
-// El dueño (1-oct): cafeína ×2, minoxidil ×2 y L-teanina ×2 como cosas separadas, porque cada sustancia tenía UNA marca por
+// Antes, una sustancia con dos tomas al día (p. ej. cafeína ×2) eran dos cosas separadas, porque cada sustancia tenía UNA marca por
 // día. Aditivo: el item ES su primera toma (sus campos de siempre: when, dose, unit, ticks, tickTimes) y las demás viven en
 // it.more[] = {id, when, dose, unit, from?, end?, ticks, tickTimes, tickEdited, was?} (was = el item que era antes de unirse).
 // Sin `more`, todo se lee exactamente como antes. Toda lectura de tomas pasa por takesOf().
@@ -18288,7 +18287,7 @@ function takeSnap(t,iso){ const o=t.o; return [(o.ticks||{})[iso],(o.tickTimes||
 function takeRestore(t,iso,sn){ const o=t.o; ['ticks','tickTimes','tickEdited'].forEach((k,i)=>{ o[k]=o[k]||{}; if(sn[i]===undefined)delete o[k][iso]; else o[k][iso]=sn[i]; });
   if(sn[3]===undefined){ if(o.tickQty){ delete o.tickQty[iso]; if(!Object.keys(o.tickQty).length)delete o.tickQty; } } else { o.tickQty=o.tickQty||{}; o.tickQty[iso]=sn[3]; } }   // v325 · cuántas tomaste ese día (el mapa solo existe si hay alguna)
 function itemTaken(it,iso){ return takesOf(it,iso).some(t=>takeDone(t,iso)); }   // ¿tomó algo de esto ese día?
-// v334 · S-DOSIS b · una toma adicional puede tener su propio periodo (el dueño: su minoxidil es AM diario + PM un día sí y uno no, y no se
+// v334 · S-DOSIS b · una toma adicional puede tener su propio periodo (p. ej. AM diario + PM un día sí y uno no, que antes no se
 // podían unir). Aditivo: `it.more[i].periodization` con la misma forma que la del suplemento; sin él, la toma sigue el periodo de la
 // principal (como hasta hoy). El "un día sí y uno no" se cuenta desde que esa toma empezó (`from`).
 const TAKE_PER=[['','igual que la principal'],['daily','diario'],['everyN:2','un día sí y uno no'],['everyN:3','cada 3 días'],['everyN:7','cada 7 días']];
@@ -18446,7 +18445,7 @@ async function verRebuild(){ if(_verRB||_sbx||!db||db._verFix||db.activeWork||!(
   try{ let ix={}; try{ ix=(await idbIdx())||{}; }catch(_){ ix={}; }
     const keys=Object.keys(ix).filter(k=>k==='latest'||/^(day-|pre-|lsbak-)/.test(k)), copies=[];
     for(const k of keys){ await new Promise(r=>setTimeout(r,40)); let rec=null; try{ rec=await idbGet(k); }catch(_){} if(!rec||!rec.s)continue;   // una por una, cediendo entre ellas
-      let x=null; try{ x=JSON.parse(rec.s); }catch(_){} if(x&&Array.isArray(x.stack))copies.push({key:k,t:+rec.t||0,day:rec.day||(rec.t?todayISO(new Date(+rec.t)):''),stack:x.stack}); x=null; }
+      let x=null; try{ x=copySoft(JSON.parse(rec.s)); }catch(_){} if(x&&Array.isArray(x.stack))copies.push({key:k,t:+rec.t||0,day:rec.day||(rec.t?todayISO(new Date(+rec.t)):''),stack:x.stack}); x=null; }
     if(_sbx||!db||db._verFix||db.activeWork)return null;
     const plan=verRebuildPlan(db.stack,copies,todayISO(),db.adhoc), fix={v:1,src:copies.length?'idb':'seed',at:Date.now(),n:0,copies:copies.length};
     if(!plan.takes.length&&!plan.tq.length){ db._verFix=fix; save(); return fix; }
@@ -21698,7 +21697,7 @@ function mergeExercises(sourceNames,target){
   (db.sessions||[]).forEach(touch);
   if(db.activeWork)touch(db.activeWork);
   // 3 · máquinas: se re-clavan las entradas por NOMBRE y por IDENTIDAD (las '#id' siguen válidas, el id no cambió).
-  // Gym por gym y por separado: la polea de AGON no es la de Club Campestre aunque el ejercicio se llame
+  // Gym por gym y por separado: la polea de NORTE no es la de Club Plaza aunque el ejercicio se llame
   // igual. Si dos fuentes tienen registro en el MISMO gym, manda el que él eligió en el modal.
   const order=[...src].sort((a,b)=>(b===tgtKey)-(a===tgtKey));   // lo del propio destino primero: es "lo que ya existe"
   // v286 · un registro que cae en un destino ya ocupado NO se borra: se queda en su clave de siempre (solo sobra el que dice lo
@@ -22292,13 +22291,13 @@ function _catalogo2SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
         A('datos reales: '+key+' · volver a [uni] repone cada par exacto', P.rows.every((r,i)=>{ if(!r.sets)return true; const x=expandPairs(r.e.sets); return !!x&&canon(x.sets)===s0[i]; }));
         leafMoveUndo(J); A('datos reales: '+key+' · [deshacer] deja todo como estaba', all()===c0); }); }
     const S=(w,r,o)=>Object.assign({w:String(w),r:String(r),rir:'1',unit:'lbs',side:null,done:true},o||{}), PR=(w,a,b,o)=>[S(w,a,Object.assign({side:'R'},o||{})),S(w,b,Object.assign({side:'L'},o||{}))];
-    const mk=()=>migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['AGON','CAMP'],activeGym:'AGON',settings:{unit:'lbs'},
+    const mk=()=>migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['NORTE','CAMP'],activeGym:'NORTE',settings:{unit:'lbs'},
       split:{name:'s',days:[{id:'d1',name:'A',exercises:[{id:'eU',name:'curl',muscle:'biceps',type:'free',unilateral:true,startSide:'R',sets:2},{id:'eR',name:'row',muscle:'lats',type:'machine',unilateral:false,sets:2}]},{id:'d2',name:'B',exercises:[{id:'eU2',name:'curl',muscle:'biceps',type:'free',unilateral:true,startSide:'L',sets:2}]}]},
-      machines:{AGON:{[I('row','machine','')]:{brand:'nautilus',setup:'asiento 3',na:false}}}, exNotes:{[N('row','machine')]:'agarre neutro'},
+      machines:{NORTE:{[I('row','machine','')]:{brand:'nautilus',setup:'asiento 3',na:false}}}, exNotes:{[N('row','machine')]:'agarre neutro'},
       sessions:[
-        {id:'s1',date:'2026-09-01',dayId:'d1',gym:'AGON',exercises:[{exId:'eU',name:'curl',muscle:'biceps',type:'free',unilateral:true,startSide:'R',sets:PR(30,10,9).concat(PR(30,8,8),PR(20,6,5,{isDrop:true}))},{exId:'eR',name:'row',muscle:'lats',type:'machine',unilateral:false,sets:[S(100,8),S(100,7)]}]},
-        {id:'s2',date:'2026-09-03',dayId:'d2',gym:'AGON',exercises:[{exId:'zz',name:'curl',muscle:'biceps',type:'free',sets:[S(30,9,{side:'L'}),S(30,10,{side:'R'}),S(30,8,{side:'R'}),S(30,7,{side:'L'}),S(30,6,{side:'R'})]},{exId:'pp',name:'press',muscle:'chest',type:'machine',unilateral:true,startSide:'R',sets:PR(50,8,8)}]},
-        {id:'s3',date:'2026-09-05',dayId:'d1',gym:'AGON',exercises:[{exId:'eU',name:'curl',muscle:'biceps',type:'free',unilateral:true,startSide:'R',sets:PR(32,10,10)},{exId:'eA',name:'curl',muscle:'biceps',type:'free',unilateral:false,lat:'alt',sets:[S(25,12)]}]}]});
+        {id:'s1',date:'2026-09-01',dayId:'d1',gym:'NORTE',exercises:[{exId:'eU',name:'curl',muscle:'biceps',type:'free',unilateral:true,startSide:'R',sets:PR(30,10,9).concat(PR(30,8,8),PR(20,6,5,{isDrop:true}))},{exId:'eR',name:'row',muscle:'lats',type:'machine',unilateral:false,sets:[S(100,8),S(100,7)]}]},
+        {id:'s2',date:'2026-09-03',dayId:'d2',gym:'NORTE',exercises:[{exId:'zz',name:'curl',muscle:'biceps',type:'free',sets:[S(30,9,{side:'L'}),S(30,10,{side:'R'}),S(30,8,{side:'R'}),S(30,7,{side:'L'}),S(30,6,{side:'R'})]},{exId:'pp',name:'press',muscle:'chest',type:'machine',unilateral:true,startSide:'R',sets:PR(50,8,8)}]},
+        {id:'s3',date:'2026-09-05',dayId:'d1',gym:'NORTE',exercises:[{exId:'eU',name:'curl',muscle:'biceps',type:'free',unilateral:true,startSide:'R',sets:PR(32,10,10)},{exId:'eA',name:'curl',muscle:'biceps',type:'free',unilateral:false,lat:'alt',sets:[S(25,12)]}]}]});
     db=mk(); bumpIdx(); state.selDay=null; db.rotIdx=0;
     // 1 · pares ↔ una fila
     { const src=db.sessions[1].exercises[0].sets, c=collapsePairs(src), back=expandPairs(c.sets);
@@ -22332,13 +22331,13 @@ function _catalogo2SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
       A('de [alt] a [uni]: vuelven las 3 que traían su par; la que nació [alt] se queda', P.shape==='expand'&&P.rows.length===3&&P.skipped.length===1&&P.skipped[0].e.exId==='eA');
       db.sessions[0].exercises[0].sets[0].r='99'; A('una fila editada después ya no vuelve', leafMovePlan(ALT,{lat:'uni'}).rows.length===2); db.sessions[0].exercises[0].sets[0].r='9';
       leafMoveUndo(J);
-      db.activeWork={id:'w',date:'2026-09-30',dayId:'d1',gym:'AGON',startMs:Date.now(),exercises:[{exId:'eU',name:'curl',muscle:'biceps',type:'free',unilateral:true,startSide:'R',sets:[{w:'',r:'',rir:'',unit:'lbs',side:'R',done:false},{w:'',r:'',rir:'',unit:'lbs',side:'L',done:false}]}]}; bumpIdx();
+      db.activeWork={id:'w',date:'2026-09-30',dayId:'d1',gym:'NORTE',startMs:Date.now(),exercises:[{exId:'eU',name:'curl',muscle:'biceps',type:'free',unilateral:true,startSide:'R',sets:[{w:'',r:'',rir:'',unit:'lbs',side:'R',done:false},{w:'',r:'',rir:'',unit:'lbs',side:'L',done:false}]}]}; bumpIdx();
       const Pr=leafMovePlan(UNI,{lat:'alt'}); A('con ese ejercicio en la sesión abierta (aunque aún no tenga series), mover esa hoja se rehúsa y no arma nada', !!Pr.refuse&&!Pr.rows.length);
       A('…otra hoja sí se puede mover', !leafMovePlan(ROWM,{type:'cable'}).refuse); db.activeWork=null; bumpIdx(); }
     // 5 · cambio de tipo: la máquina y la nota se copian a la clave nueva; lo de antes se queda
     { const c0=all(), P=leafMovePlan(ROWM,{type:'cable'}), J=leafMoveApply(P,false);
       A('máquina → cable: sus filas y su instancia cambian de tipo', P.toKey===ROWC&&exHistRows(ROWC).length===1&&exHistRows(ROWM).length===0&&db.split.days[0].exercises[1].type==='cable');
-      A('la marca, el setup y la nota siguen al tipo nuevo sin borrar los de antes', machineRec('AGON',{name:'row',type:'cable'}).setup==='asiento 3'&&db.machines.AGON[I('row','machine','')].setup==='asiento 3'&&db.exNotes[N('row','cable')]==='agarre neutro'&&db.exNotes[N('row','machine')]==='agarre neutro');
+      A('la marca, el setup y la nota siguen al tipo nuevo sin borrar los de antes', machineRec('NORTE',{name:'row',type:'cable'}).setup==='asiento 3'&&db.machines.NORTE[I('row','machine','')].setup==='asiento 3'&&db.exNotes[N('row','cable')]==='agarre neutro'&&db.exNotes[N('row','machine')]==='agarre neutro');
       leafMoveUndo(J); A('…y se deshace exacto', all()===c0); }
     // 5b · cruzar a bodyweight (otra forma de serie) no mueve registros: solo cambia el plan
     { const c0=all(), s0=canon(db.sessions), P=leafMovePlan(ROWM,{type:'bodyweight'}); A('máquina → bodyweight: ningún registro se mueve, se avisa cuántos se quedan', !P.rows.length&&P.skipped.length===1&&!P.refuse);
@@ -22359,21 +22358,21 @@ function _catalogo2SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
       A('la hoja del catálogo: título, [historial], variante marcada y sus bloques', md().querySelector('h3').textContent==='ajustes del ejercicio'&&!!md().querySelector('[data-act="xs_hist"]')&&md().querySelector('#ee_uni .t.on').dataset.v==='1'&&el('ee_name').value==='curl'&&!el('ee_sets')&&!el('ee_tosplit')&&md().querySelectorAll('.ok').length===1);
       A('abrirla no mueve la hoja que tocaste', near(leaf(UNI).getBoundingClientRect().top,y0)&&near(v.scrollTop,t0));
       closeModal();
-      db.activeWork=newWorkSession(); db.activeWork.gym='AGON'; state.work=db.activeWork; state.screen='workout'; state._curEx=0; render(); openExEdit(null,-1,0);
+      db.activeWork=newWorkSession(); db.activeWork.gym='NORTE'; state.work=db.activeWork; state.screen='workout'; state._curEx=0; render(); openExEdit(null,-1,0);
       A('en la sesión es la misma hoja, con los mismos campos en el mismo orden', ids()===idsCat&&md().querySelector('h3').textContent==='ajustes del ejercicio'&&!!el('ee_tosplit')&&!el('xs_gym'));
       closeModal(); db.activeWork=null; state.work=null; state.screen='catalog'; render(); }
     // 7 · guardar desde el catálogo: máquina por gym, unidad, nota y gyms; el borrador de cada gym no se pierde al cambiar de gym
     { const leaf=k=>v.querySelector('.catlr[data-k="'+k+'"]'); tap(leaf(ROWM)); const sh=md().querySelector('.sheet');
-      A('row · máquina: trae su marca y su setup de AGON y el selector de gym', el('mc_brand').value==='nautilus'&&el('mc_setup').value==='asiento 3'&&!!el('xs_gym')&&el('xs_gym').value==='AGON'&&el('xs_note').value==='agarre neutro');
+      A('row · máquina: trae su marca y su setup de NORTE y el selector de gym', el('mc_brand').value==='nautilus'&&el('mc_setup').value==='asiento 3'&&!!el('xs_gym')&&el('xs_gym').value==='NORTE'&&el('xs_note').value==='agarre neutro');
       el('mc_setup').value='asiento 5'; sh.scrollTop=Math.min(200,sh.scrollHeight-sh.clientHeight); const gs=el('xs_gym'), yg=gs.getBoundingClientRect().top;
       gs.value='CAMP'; gs.dispatchEvent(new Event('change',{bubbles:true}));
       A('cambiar de gym repinta solo el bloque de máquina, sin mover el selector', el('mc_brand').value===''&&near(gs.getBoundingClientRect().top,yg));
       el('mc_brand').value='precor'; tap(Array.from(document.querySelectorAll('#xs_unit .t')).find(b=>b.dataset.v==='kg'));
-      gs.value='AGON'; gs.dispatchEvent(new Event('change',{bubbles:true})); A('lo escrito para el otro gym sigue ahí al volver', el('mc_setup').value==='asiento 5');
+      gs.value='NORTE'; gs.dispatchEvent(new Event('change',{bubbles:true})); A('lo escrito para el otro gym sigue ahí al volver', el('mc_setup').value==='asiento 5');
       const fb=md().querySelector('[data-act="xs_fold"]'), yf=fb.getBoundingClientRect().top; tap(fb);
       A('`motor` despliega músculos del motor y longitud sin mover el botón', !el('xs_motor').hidden&&!!el('pf_prim')&&!!el('pf_len')&&near(fb.getBoundingClientRect().top,yf));
       el('xs_note').value='agarre ancho'; _snapT=true; const c0=all(), s0=canon(db.sessions); tap(md().querySelector('[data-act="okexedit"]'));
-      A('guardar sin cambiar la identidad no pregunta y escribe cada cosa en su lugar', !document.getElementById('asklayer')&&!md()&&db.machines.AGON[I('row','machine','')].setup==='asiento 5'&&db.machines.CAMP[I('row','machine','')].brand==='precor'&&db.exCat.row.unitGym['machine|CAMP']==='kg'&&db.exNotes[N('row','machine')]==='agarre ancho'&&canon(db.sessions)===s0);
+      A('guardar sin cambiar la identidad no pregunta y escribe cada cosa en su lugar', !document.getElementById('asklayer')&&!md()&&db.machines.NORTE[I('row','machine','')].setup==='asiento 5'&&db.machines.CAMP[I('row','machine','')].brand==='precor'&&db.exCat.row.unitGym['machine|CAMP']==='kg'&&db.exNotes[N('row','machine')]==='agarre ancho'&&canon(db.sessions)===s0);
       const tu=fresh().map(t=>t.querySelector('.tundo')).filter(Boolean).pop(); A('el aviso trae [deshacer]', !!tu); tap(tu);
       A('…y deshacer lo deja todo como estaba', all()===c0); wipe();
       tap(leaf(ROWM)); el('xs_note').value='otra nota'; tap(md().querySelector('[data-act="okexedit"]')); const tu2=fresh().map(t=>t.querySelector('.tundo')).filter(Boolean).pop(); save(); tap(tu2);
@@ -22414,12 +22413,12 @@ function _catalogo2SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
     { const c0=all(), P=leafMovePlan(PRU,{lat:'alt'}); A('press [uni] (fuera del split): 1 registro', P.rows.length===1&&!P.split.length&&P.toKey===PRA);
       const J=leafMoveApply(P,true), mvp=catIndex().byK.press;
       A('la variante destino ya existe en el catálogo (sin registros) y la vieja queda archivada', mvp.leaves.some(L=>L.key===PRA&&L.n===0&&!L.arch)&&mvp.leaves.some(L=>L.key===PRU&&L.arch)&&mvp.lats.join()==='alt');
-      db.activeWork={id:'w2',date:'2026-09-30',dayId:null,gym:'AGON',startMs:Date.now(),exercises:[]}; state.work=db.activeWork; bumpIdx();
+      db.activeWork={id:'w2',date:'2026-09-30',dayId:null,gym:'NORTE',startMs:Date.now(),exercises:[]}; state.work=db.activeWork; bumpIdx();
       openAddExStep2(null,'chest'); const x=(window._axList||[]).find(q=>q.name==='press');
       A('el selector de la sesión la entra en la variante nueva', !!x&&latOf(x)==='alt'&&x._from===PRU);
       addExFromKnown(null,x); const ne=db.activeWork.exercises[0];
       A('…con los números de la hoja vieja como sugerencia: un par = una serie y el peso sin escalar', !!ne&&latOf(ne)==='alt'&&ne.sets.length===1&&ne.sets[0].w==='50'&&ne.sets[0].r==='8'&&!!ne.sets[0]._pf&&!ne.sets[0].side&&!ne.sets[0].lr);
-      const ss=seedSets({exId:'nuevo',name:'press',muscle:'chest',type:'machine',unilateral:false,lat:'alt'},2,{dayId:'d1',gym:'AGON'});
+      const ss=seedSets({exId:'nuevo',name:'press',muscle:'chest',type:'machine',unilateral:false,lat:'alt'},2,{dayId:'d1',gym:'NORTE'});
       A('…y una instancia del split que ya viene en la variante nueva también (sin doblar el peso)', ss.length===1&&ss[0].w==='50'&&!ss[0].side&&!!ss[0]._pf);
       const pu={name:'press',type:'machine',unilateral:true}, un=leafChosen(pu);
       A('elegir [uni] a mano le quita la redirección y el archivo', !!un&&!leafArchived('press',PRU)&&!leafRedirect(pu)); un();
@@ -22434,8 +22433,8 @@ function _catalogo2SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
       db.exCat=JSON.parse(ec0); bumpIdx(); }
     // 12 · v300 · corregir el tipo cuando el destino solo existe en OTRO gym: no es juntar, es un dato; y cada gym enseña su máquina
     { const n0=db.sessions.length, m0=JSON.stringify(db.machines||{}), c0x=JSON.stringify(db.exCat||{}), S1=w=>({w:String(w),r:'8',rir:'1',unit:'lbs',done:true});
-      db.sessions.push({id:'hk1',date:'2026-09-01',gym:'AGON',exercises:[{name:'hack',muscle:'quads',type:'free',machine:'nautilus',sets:[S1(100)]}]},
-        {id:'hk2',date:'2026-09-03',gym:'AGON',exercises:[{name:'hack',muscle:'quads',type:'free',machine:'nautilus',sets:[S1(110)]}]},
+      db.sessions.push({id:'hk1',date:'2026-09-01',gym:'NORTE',exercises:[{name:'hack',muscle:'quads',type:'free',machine:'nautilus',sets:[S1(100)]}]},
+        {id:'hk2',date:'2026-09-03',gym:'NORTE',exercises:[{name:'hack',muscle:'quads',type:'free',machine:'nautilus',sets:[S1(110)]}]},
         {id:'hk3',date:'2026-09-05',gym:'CAMP',exercises:[{name:'hack',muscle:'quads',type:'machine',machine:'lifefitness',sets:[S1(8)]}]}); bumpIdx();
       const kf=exHistKey(db.sessions[n0].exercises[0]), km=exHistKey(db.sessions[n0+2].exercises[0]), P=leafMovePlan(kf,{type:'machine'},'hack');
       A('destino en otro gym: nada que juntar aquí y el otro gym sale como dato con su marca', kf!==km&&P.exist===1&&P.existHere===0&&P.else.length===1&&P.else[0].gym==='CAMP'&&P.else[0].brand==='lifefitness');
@@ -22443,11 +22442,11 @@ function _catalogo2SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCH
       const camp0=JSON.stringify(db.sessions[n0+2]), J=leafMoveApply(P,false); bumpIdx();
       A('las filas de este gym pasan a machine y la del otro queda idéntica', exHistKey(db.sessions[n0].exercises[0])===km&&exHistKey(db.sessions[n0+1].exercises[0])===km&&JSON.stringify(db.sessions[n0+2])===camp0);
       leafMoveUndo(J); bumpIdx(); A('…y deshacer lo regresa', exHistKey(db.sessions[n0].exercises[0])===kf&&exHistKey(db.sessions[n0+1].exercises[0])===kf);
-      db.sessions.push({id:'hk4',date:'2026-09-06',gym:'AGON',exercises:[{name:'hack',muscle:'quads',type:'machine',machine:'nautilus',sets:[S1(120)]}]}); bumpIdx();
+      db.sessions.push({id:'hk4',date:'2026-09-06',gym:'NORTE',exercises:[{name:'hack',muscle:'quads',type:'machine',machine:'nautilus',sets:[S1(120)]}]}); bumpIdx();
       const P2=leafMovePlan(kf,{type:'machine'},'hack'); A('con registros del destino en el MISMO gym sí es juntar (sigue pidiendo el dedo)', P2.existHere===1&&P2.else.length===1&&leafMoveQuick(P2)===false);
       const ee1=window._exEdit; window._exEdit={cat:{mk:'hack',key:km},mdraft:{}};
       A('la hoja en el otro gym enseña SU marca, no la de este', xsMachState({name:'hack',type:'machine',machine:'nautilus'},'CAMP').brand==='lifefitness');
-      window._exEdit.gyms0=['AGON','CAMP']; window._exEdit.gymCur='AGON'; window._exEdit.mdraft={AGON:{brand:'nautilus'}};
+      window._exEdit.gyms0=['NORTE','CAMP']; window._exEdit.gymCur='NORTE'; window._exEdit.mdraft={NORTE:{brand:'nautilus'}};
       const gh=xsGymsHTML({name:'hack'},'machine'), gf=xsGymsHTML({name:'hack'},'free');
       A('GYMS en máquina: el otro gym es un dato con su marca y dice `otra marca`', /CAMP<\/span>.*lifefitness · 1× · otra marca/.test(gh)&&!/<label class="xsck">[^<]*<input[^>]*value="CAMP"/.test(gh));
       A('GYMS en peso libre: casillas, como antes', /<label class="xsck"><input[^>]*value="CAMP"/.test(gf)&&gf.indexOf('otra marca')<0);
@@ -22481,16 +22480,16 @@ function _catalogoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHE
   _sbx=true; _snapT=true; window._swipeGuard=0;
   try{
     const S=(w,o)=>Object.assign({w:String(w),r:'8',rir:'1',unit:'lbs',side:null,done:true},o||{});
-    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['AGON','CAMPESTRE'],activeGym:'AGON',settings:{unit:'lbs'},
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t'},gyms:['NORTE','PLAZA'],activeGym:'NORTE',settings:{unit:'lbs'},
       split:{name:'s',days:[{id:'d1',name:'A',exercises:[{id:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,sets:2},{id:'eL',name:'leg ext',muscle:'quads',type:'machine',unilateral:false,sets:2},{id:'eN',name:'nordic',muscle:'hams',type:'bodyweight',unilateral:false,sets:2}]}]},
-      machines:{AGON:{[I('leg ext','machine','')]:{brand:'nautilus',setup:'asiento 4',na:false},[I('db curl','free','')]:{brand:'',setup:'banco 1',na:false},[I('curl mancuerna','free','')]:{brand:'',setup:'banco 3',na:false}}},
+      machines:{NORTE:{[I('leg ext','machine','')]:{brand:'nautilus',setup:'asiento 4',na:false},[I('db curl','free','')]:{brand:'',setup:'banco 1',na:false},[I('curl mancuerna','free','')]:{brand:'',setup:'banco 3',na:false}}},
       exNotes:{[N('db curl','free')]:'supino',[N('curl mancuerna','free')]:'codo pegado'},
       sessions:[
-        {id:'s1',date:'2026-09-01',dayId:'d1',gym:'AGON',exercises:[{exId:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,sets:[S(30)]},{exId:'eL',name:'leg ext',muscle:'quads',type:'machine',unilateral:false,sets:[S(100)]},{exId:'eT',name:'trote',muscle:'cardio',type:'cardio',cardioSub:'treadmill',sets:[{minutes:'20'}]}]},
-        {id:'s2',date:'2026-09-08',dayId:'d1',gym:'AGON',exercises:[{exId:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,lat:'alt',sets:[S(25)]},{exId:'eL',name:'leg ext',muscle:'quads',type:'machine',unilateral:true,startSide:'R',sets:[S(50,{side:'R'}),S(50,{side:'L'})]},{exId:'eF',name:'face pull',muscle:'rear delt',type:'cable',unilateral:false,sets:[]}]},
-        {id:'s3',date:'2026-09-15',dayId:'d1',gym:'CAMPESTRE',exercises:[{exId:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,sets:[S(32)]},{exId:'eL',name:'leg ext',muscle:'quads',type:'machine',unilateral:false,sets:[S(90)]},
+        {id:'s1',date:'2026-09-01',dayId:'d1',gym:'NORTE',exercises:[{exId:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,sets:[S(30)]},{exId:'eL',name:'leg ext',muscle:'quads',type:'machine',unilateral:false,sets:[S(100)]},{exId:'eT',name:'trote',muscle:'cardio',type:'cardio',cardioSub:'treadmill',sets:[{minutes:'20'}]}]},
+        {id:'s2',date:'2026-09-08',dayId:'d1',gym:'NORTE',exercises:[{exId:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,lat:'alt',sets:[S(25)]},{exId:'eL',name:'leg ext',muscle:'quads',type:'machine',unilateral:true,startSide:'R',sets:[S(50,{side:'R'}),S(50,{side:'L'})]},{exId:'eF',name:'face pull',muscle:'rear delt',type:'cable',unilateral:false,sets:[]}]},
+        {id:'s3',date:'2026-09-15',dayId:'d1',gym:'PLAZA',exercises:[{exId:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,sets:[S(32)]},{exId:'eL',name:'leg ext',muscle:'quads',type:'machine',unilateral:false,sets:[S(90)]},
           {exId:'eP',name:'preacher curl',muscle:'biceps',type:'machine',machine:'precor',unilateral:true,sets:[S(20,{side:'R'}),S(20,{side:'L'})]},{exId:'eM',name:'curl mancuerna',muscle:'biceps',type:'free',unilateral:true,sets:[S(12,{side:'R'}),S(12,{side:'L'})]}]},
-        {id:'s4',date:'2026-09-22',dayId:'d1',gym:'AGON',exercises:[{exId:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,sets:[S(34)]},
+        {id:'s4',date:'2026-09-22',dayId:'d1',gym:'NORTE',exercises:[{exId:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,sets:[S(34)]},
           {exId:'eM',name:'curl mancuerna',muscle:'biceps',type:'free',unilateral:false,lat:'alt',sets:[S(26)]}]}]});
     // una fila marcada bilateral que conserva lados (migrate() se los quitaría: se agrega después, como dato que no debe tocarse)
     db.sessions[3].exercises.splice(1,0,{exId:'eC2',name:'db curl',muscle:'biceps',type:'free',unilateral:false,sets:[S(10,{side:'R'}),S(10,{side:'L'})]});
@@ -22506,8 +22505,8 @@ function _catalogoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHE
       A('un ejercicio por nombre', X.moves.length===7&&X.moves.map(o=>o.k).sort().join()==='curl mancuerna,db curl,face pull,leg ext,nordic,preacher curl,trote');
       A('bi + alt del mismo nombre = un ejercicio con dos hojas', m.leaves.length===2&&m.leaves.map(L=>L.lat+':'+L.n).join()==='bi:4,alt:1'&&m.leaves[0].key===BI&&m.leaves[1].key===ALT&&m.lats.join()==='bi,alt');
       A('cada hoja es UNA bitácora y sus conteos cuadran', X.moves.every(o=>o.leaves.every(L=>L.cardio||exHistRows(L.key).length===L.n)));
-      A('la hoja lleva lateralidad, tipo, gyms, marca, veces, última y unidad', (L=>L.lat==='bi'&&L.type==='machine'&&L.gyms.join()==='CAMPESTRE,AGON'&&L.byGym.AGON.brand==='nautilus'&&L.byGym.AGON.n===1&&L.n===2&&L.last==='2026-09-15'&&L.unit==='lbs')(lg.leaves[0]));
-      A('su etiqueta: la marca (o el tipo) y el gym', catLeafLbl(lg.leaves[0])==='machine · CAMPESTRE, nautilus · AGON'&&catLeafLbl(lg.leaves[0],'AGON')==='nautilus'&&catLeafLbl(m.leaves[0])==='free'&&catLeafLbl(X.byK['preacher curl'].leaves[0])==='precor · CAMPESTRE');
+      A('la hoja lleva lateralidad, tipo, gyms, marca, veces, última y unidad', (L=>L.lat==='bi'&&L.type==='machine'&&L.gyms.join()==='PLAZA,NORTE'&&L.byGym.NORTE.brand==='nautilus'&&L.byGym.NORTE.n===1&&L.n===2&&L.last==='2026-09-15'&&L.unit==='lbs')(lg.leaves[0]));
+      A('su etiqueta: la marca (o el tipo) y el gym', catLeafLbl(lg.leaves[0])==='machine · PLAZA, nautilus · NORTE'&&catLeafLbl(lg.leaves[0],'NORTE')==='nautilus'&&catLeafLbl(m.leaves[0])==='free'&&catLeafLbl(X.byK['preacher curl'].leaves[0])==='precor · PLAZA');
       A('lo que está en el split y nunca se registró sale sin veces', (L=>L.n===0&&L.split&&L.lat==='bi'&&L.type==='bodyweight'&&!L.last)(X.byK.nordic.leaves[0]));
       A('…y también lo que solo quedó en una sesión sin series: ningún nombre conocido falta', (L=>L.n===0&&!L.split&&L.type==='cable')(X.byK['face pull'].leaves[0])&&knownExercises().every(o=>!!X.byK[nameKey(o.name)]));
       A('cardio: una hoja sin bitácora', (L=>X.byK.trote.leaves.length===1&&L.cardio&&L.n===1&&!exHistRows(L.key).length)(X.byK.trote.leaves[0]));
@@ -22533,16 +22532,16 @@ function _catalogoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHE
     // 5 · las vistas: se recuerdan y cambiar de vista no mueve la pestaña que tocaste
     { const tb=k=>q('[data-act="catview"][data-v="'+k+'"]'), y=top(tb('gym')); tap(tb('gym'));
       A('por gym: se recuerda y la pestaña sigue bajo el dedo', db.settings.catView==='gym'&&catView()==='gym'&&tb('gym').classList.contains('on')&&near(top(tb('gym')),y));
-      A('un grupo por gym (y lo que no tiene gym, aparte)', qa('.catgn').map(x=>x.textContent).join()==='AGON,CAMPESTRE,sin gym'&&qa('.catgb').every(b=>b.hidden));
-      tap(qa('.catgh')[0]); const lg=q('.catg[data-g="gym|AGON"] .catm[data-k="leg ext"]');
-      A('en cada gym, las hojas con los números de ESE gym', !!lg&&Array.from(lg.querySelectorAll('.catl')).map(x=>x.textContent).join()==='[bi]nautilus1×01 sep,[uni]nautilus1×08 sep'&&!q('.catg[data-g="gym|AGON"] .catm[data-k="preacher curl"]')&&!!q('.catg[data-g="gym|"] .catm[data-k="nordic"]'));
+      A('un grupo por gym (y lo que no tiene gym, aparte)', qa('.catgn').map(x=>x.textContent).join()==='NORTE,PLAZA,sin gym'&&qa('.catgb').every(b=>b.hidden));
+      tap(qa('.catgh')[0]); const lg=q('.catg[data-g="gym|NORTE"] .catm[data-k="leg ext"]');
+      A('en cada gym, las hojas con los números de ESE gym', !!lg&&Array.from(lg.querySelectorAll('.catl')).map(x=>x.textContent).join()==='[bi]nautilus1×01 sep,[uni]nautilus1×08 sep'&&!q('.catg[data-g="gym|NORTE"] .catm[data-k="preacher curl"]')&&!!q('.catg[data-g="gym|"] .catm[data-k="nordic"]'));
       tap(tb('az')); A('A–Z: sin grupos, por nombre', db.settings.catView==='az'&&!q('.catgh')&&qa('.catm').map(x=>x.dataset.k).join()==='curl mancuerna,db curl,face pull,leg ext,nordic,preacher curl,trote'&&qa('.catm').filter(x=>x.classList.contains('last')).length===1);
       tap(tb('mus')); A('y de vuelta a músculo, con lo abierto como lo dejaste', catView()==='mus'&&!q('.catg[data-g="mus|biceps"] .catgb').hidden); }
     // 6 · el buscador filtra en su lugar, por nombre, marca y gym
     { const root=q('.cat'), vis=()=>qa('.catm').filter(x=>!x.hidden&&!x.closest('[hidden]')).map(x=>x.dataset.k).join(), body=g=>q('.catg[data-g="mus|'+g+'"] .catgb');
       state._catOpen={'mus|biceps':true}; reRender(); const inp=q('[data-act="catq"]'), r2=q('.cat'), y=top(inp);
       type('nautilus'); A('por marca: sin repintar, y se abre el grupo con coincidencias', q('.cat')===r2&&vis()==='leg ext'&&!body('quads').hidden&&q('.catg[data-g="mus|biceps"]').hidden&&near(top(inp),y)&&mv('leg ext').classList.contains('last'));
-      type('campestre'); A('por gym', vis()==='db curl,curl mancuerna,preacher curl,leg ext');
+      type('plaza'); A('por gym', vis()==='db curl,curl mancuerna,preacher curl,leg ext');
       type('CURL'); A('por nombre, sin importar mayúsculas', vis()==='db curl,curl mancuerna,preacher curl'&&mv('preacher curl').classList.contains('last')&&!mv('db curl').classList.contains('last'));
       type('maquina'); A('ni acentos', vis()==='preacher curl,leg ext');
       type('zzz'); A('sin coincidencias lo dice', vis()===''&&!document.getElementById('catnone').hidden);
@@ -22570,32 +22569,32 @@ function _catalogoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHE
       el('mg_win_0').value=I('curl mancuerna','free',''); el('mg_note').value=N('curl mancuerna','free');
       A('lo que se elige es el REGISTRO (su clave), no la fuente', el('mg_win_0').value===I('curl mancuerna','free','')&&el('mg_note').value===N('curl mancuerna','free')&&/^curl mancuerna → banco 3$/.test(el('mg_win_0').selectedOptions[0].textContent));
       _snapT=false; tap(md().querySelector('[data-act="domerge"]')); tap(ask('ok'));
-      A('si la foto previa falla no se une nada y se dice', !!md()&&db.sessions[3].exercises[2].name==='curl mancuerna'&&!!db.machines.AGON[I('curl mancuerna','free','')]&&fresh().some(t=>/sin copia previa/.test(t.textContent))&&lats()===l0); wipe();
+      A('si la foto previa falla no se une nada y se dice', !!md()&&db.sessions[3].exercises[2].name==='curl mancuerna'&&!!db.machines.NORTE[I('curl mancuerna','free','')]&&fresh().some(t=>/sin copia previa/.test(t.textContent))&&lats()===l0); wipe();
       _snapT=true; tap(md().querySelector('[data-act="domerge"]')); tap(ask('ok'));
       A('con la foto hecha, se unen y vuelves al catálogo', !md()&&state.screen==='catalog'&&!state._catSel&&!window._mgSel.length&&db.sessions.every(s=>s.exercises.every(e=>e.name!=='curl mancuerna'))&&!catIndex().byK['curl mancuerna']);
-      A('la foto previa de unir se tomó ANTES de reescribir: conserva los nombres, la máquina y la nota de antes', (o=>!!o&&!!o.sessions&&!!o.machines&&!!o.exNotes&&/^pre-merge-\d+$/.test(_snapLast.key)&&o.sessions[3].exercises[2].name==='curl mancuerna'&&o.sessions[2].exercises[3].name==='curl mancuerna'&&o.machines.AGON[I('curl mancuerna','free','')].setup==='banco 3'&&o.machines.AGON[I('db curl','free','')].setup==='banco 1'&&o.exNotes[N('db curl','free')]==='supino')(_snapLast&&JSON.parse(_snapLast.s)));
+      A('la foto previa de unir se tomó ANTES de reescribir: conserva los nombres, la máquina y la nota de antes', (o=>!!o&&!!o.sessions&&!!o.machines&&!!o.exNotes&&/^pre-merge-\d+$/.test(_snapLast.key)&&o.sessions[3].exercises[2].name==='curl mancuerna'&&o.sessions[2].exercises[3].name==='curl mancuerna'&&o.machines.NORTE[I('curl mancuerna','free','')].setup==='banco 3'&&o.machines.NORTE[I('db curl','free','')].setup==='banco 1'&&o.exNotes[N('db curl','free')]==='supino')(_snapLast&&JSON.parse(_snapLast.s)));
       A('unir no cambia la lateralidad de ningún registro', lats()===l0&&latOf(db.sessions[2].exercises[3])==='uni'&&latOf(db.sessions[3].exercises[2])==='alt'&&db.sessions[3].exercises[2].name==='db curl');
       A('el ejercicio unido tiene sus tres hojas', catIndex().byK['db curl'].leaves.map(L=>L.lat+':'+L.n).join()==='bi:4,uni:1,alt:2'&&Array.from(mv('db curl').querySelectorAll('.catl')).length===3);
-      A('la máquina sigue al nombre nuevo; en el destino ocupado gana la que él eligió', db.machines.AGON[I('db curl','free','')].setup==='banco 3'&&!db.machines.AGON[I('curl mancuerna','free','')]&&db.machines.AGON[I('leg ext','machine','')].brand==='nautilus');
+      A('la máquina sigue al nombre nuevo; en el destino ocupado gana la que él eligió', db.machines.NORTE[I('db curl','free','')].setup==='banco 3'&&!db.machines.NORTE[I('curl mancuerna','free','')]&&db.machines.NORTE[I('leg ext','machine','')].brand==='nautilus');
       A('la nota sigue al nombre nuevo, la que él eligió', db.exNotes[N('db curl','free')]==='codo pegado'&&!(N('curl mancuerna','free') in db.exNotes));
       A('el catálogo de identidad no guarda lateralidad', !('unilateral' in db.exCat['db curl'])&&!('lat' in db.exCat['db curl'])&&db.exCat['db curl'].mergedFrom.join()==='curl mancuerna'); wipe(); }
     // 9 · renombrar: el nombre nuevo en todo, con su máquina; un nombre que ya existe se manda a unir
     { // filas que el re-vínculo de UNIR cambiaría: una instancia propia (con su marca guardada por '#exId') y una sin vincular
-      db.sessions[2].exercises[1].exId='eL9'; db.sessions[1].exercises[1].exId=null; db.machines.CAMPESTRE={'#eL9':{brand:'hoist',setup:'',na:false}}; bumpIdx();
+      db.sessions[2].exercises[1].exId='eL9'; db.sessions[1].exercises[1].exId=null; db.machines.PLAZA={'#eL9':{brand:'hoist',setup:'',na:false}}; bumpIdx();
       const ids=()=>JSON.stringify(db.sessions.map(s=>s.exercises.map(e=>e.exId===undefined?'—':e.exId))), seed=()=>{ db.rotIdx=0; state.selDay=null; return JSON.stringify(newWorkSession().exercises.map(e=>[variantKey(e),(e.sets||[]).map(s=>[s.w,s.r,s.side||''])])); }, i0=ids(), s0=seed();
-      A('antes de renombrar, la marca por instancia sale', machineRec('CAMPESTRE',{name:'leg ext',type:'machine'}).brand==='hoist');
+      A('antes de renombrar, la marca por instancia sale', machineRec('PLAZA',{name:'leg ext',type:'machine'}).brand==='hoist');
       const l0=lats(); tap(mv('leg ext').querySelector('.catmh')); pick('renombrar'); const inp=()=>document.getElementById('tp_in');
       A('renombrar abre un campo con el nombre', !!inp()&&inp().value==='leg ext');
       inp().value='db curl'; tap(document.getElementById('tp_ok')); A('un nombre que ya existe no se pisa', !!inp()&&!!catIndex().byK['leg ext']&&fresh().some(t=>/ya existe/.test(t.textContent))); wipe();
       inp().value='leg extension'; tap(document.getElementById('tp_ok'));
       A('queda renombrado en el split (con su id) y en las sesiones', !document.getElementById('modal')&&db.split.days[0].exercises[1].name==='leg extension'&&db.split.days[0].exercises[1].id==='eL'&&db.sessions.slice(0,3).every(s=>s.exercises[1].name==='leg extension')&&!catIndex().byK['leg ext']&&!!mv('leg extension'));
-      A('conserva tipo, lateralidades y su máquina', lats()===l0&&db.sessions[0].exercises[1].type==='machine'&&machineRec('AGON',{name:'leg extension',type:'machine'}).brand==='nautilus'&&!db.machines.AGON[I('leg ext','machine','')]&&catIndex().byK['leg extension'].leaves.map(L=>L.lat+':'+L.n).join()==='bi:2,uni:1');
+      A('conserva tipo, lateralidades y su máquina', lats()===l0&&db.sessions[0].exercises[1].type==='machine'&&machineRec('NORTE',{name:'leg extension',type:'machine'}).brand==='nautilus'&&!db.machines.NORTE[I('leg ext','machine','')]&&catIndex().byK['leg extension'].leaves.map(L=>L.lat+':'+L.n).join()==='bi:2,uni:1');
       A('renombrar no re-vincula nada: cada fila conserva su exId', ids()===i0&&db.sessions[2].exercises[1].exId==='eL9'&&db.sessions[1].exercises[1].exId===null);
       A('…la siguiente sesión sale con las mismas series sugeridas', seed()===s0);
-      A('…y la marca guardada por instancia (#exId) sigue saliendo', machineRec('CAMPESTRE',{name:'leg extension',type:'machine'}).brand==='hoist');
+      A('…y la marca guardada por instancia (#exId) sigue saliendo', machineRec('PLAZA',{name:'leg extension',type:'machine'}).brand==='hoist');
       A('la foto previa de renombrar trae el nombre de antes', (o=>!!o&&!!o.sessions&&!!o.split&&/^pre-rename-\d+$/.test(_snapLast.key)&&o.split.days[0].exercises[1].name==='leg ext'&&o.sessions[0].exercises[1].name==='leg ext')(_snapLast&&JSON.parse(_snapLast.s))); wipe(); }
     // 10 · corregir registros: mover bi ↔ alt con [deshacer] exacto; se salta las filas con series con lado
-    { db.activeWork={id:'w',date:'2026-09-30',dayId:'d1',gym:'AGON',startMs:Date.now(),exercises:[{exId:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,sets:[S(36,{done:false})]}]}; bumpIdx();
+    { db.activeWork={id:'w',date:'2026-09-30',dayId:'d1',gym:'NORTE',startMs:Date.now(),exercises:[{exId:'eC',name:'db curl',muscle:'biceps',type:'free',unilateral:false,sets:[S(36,{done:false})]}]}; bumpIdx();
       const b0=leafBtn(BI,'catlt'), u0=leafBtn(UNI,'catlt');
       A('toda hoja abre sus ajustes: [bi], [alt] y [uni]', b0.dataset.act==='catopen'&&leafBtn(ALT,'catlt').dataset.act==='catopen'&&u0.dataset.act==='catopen');
       tap(b0); A('…con su variante marcada y los bloques de la sesión', !!document.getElementById('ee_name')&&document.querySelector('#ee_uni .t.on').dataset.v==='0'&&!!document.getElementById('xs_note')&&!!document.getElementById('xs_mach'));
@@ -22620,9 +22619,9 @@ function _catalogoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHE
       A('una fila por nombre, con sus variantes', !!row&&/^\[bi·uni·alt\] db curl/.test(row.textContent.trim())&&Array.from(document.querySelectorAll('#modal .pickitem[data-act="axpick"]')).filter(o=>/db curl/.test(o.textContent)).length===1);
       A('al elegir entra la variante más usada ([bi]), no la última registrada ([alt])', !!x&&latOf(x)==='bi'&&latOf(knownExercises().filter(o=>o.name==='db curl')[0])==='alt'); closeModal();
       // un nombre con dos TIPOS: máquina [bi] ×3 y, lo último registrado, libre [uni] ×1 → entra la hoja más usada completa
-      ['2026-08-01','2026-08-08','2026-08-15'].forEach((d,i)=>db.sessions.push({id:'r'+i,date:d,gym:'AGON',exercises:[{exId:'a1',name:'row',muscle:'lats',type:'machine',machine:'prime',unilateral:false,sets:[S(120+i)]}]}));
-      db.sessions.push({id:'r9',date:'2026-09-29',gym:'AGON',exercises:[{exId:'a2',name:'row',muscle:'lats',type:'free',unilateral:true,startSide:'R',sets:[S(40,{side:'R'}),S(40,{side:'L'})]}]});
-      db.activeWork={id:'w2',date:'2026-09-30',dayId:null,gym:'AGON',startMs:Date.now(),exercises:[]}; bumpIdx();
+      ['2026-08-01','2026-08-08','2026-08-15'].forEach((d,i)=>db.sessions.push({id:'r'+i,date:d,gym:'NORTE',exercises:[{exId:'a1',name:'row',muscle:'lats',type:'machine',machine:'prime',unilateral:false,sets:[S(120+i)]}]}));
+      db.sessions.push({id:'r9',date:'2026-09-29',gym:'NORTE',exercises:[{exId:'a2',name:'row',muscle:'lats',type:'free',unilateral:true,startSide:'R',sets:[S(40,{side:'R'}),S(40,{side:'L'})]}]});
+      db.activeWork={id:'w2',date:'2026-09-30',dayId:null,gym:'NORTE',startMs:Date.now(),exercises:[]}; bumpIdx();
       openAddExStep2(null,'lats',null); const pk=()=>Array.from(document.querySelectorAll('#modal .pickitem[data-act="axpick"]')), y=(window._axList||[]).filter(o=>o.name==='row')[0], kn=knownExercises().filter(o=>o.name==='row')[0];
       A('con dos tipos entra la hoja más usada COMPLETA (máquina [bi]), no el último tipo cruzado con otra lateralidad', !!y&&exHistKey(y)==='row|machine|0|0|0'&&y.machine==='prime'&&!!kn&&exHistKey(kn)==='row|free|1|0|0');
       A('lo que ofrece el selector siempre tiene historia propia', (window._axList||[]).filter(o=>!isCardio(o)&&catIndex().byK[nameKey(o.name)].n>0).every(o=>exHistRows(exHistKey(o)).length>0));
@@ -22632,7 +22631,7 @@ function _catalogoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHE
     // 11b · el MISMO ejercicio partido por tipo (row: máquina y libre) se une él solo; uno de un solo tipo, no. Sus dos registros de
     // máquina y sus dos notas caen en un solo destino: se pregunta (antes no se preguntaba y los del otro tipo se perdían)
     { const md=()=>document.getElementById('modal'), el=id=>document.getElementById(id), bar=()=>document.getElementById('catbar'), l0=lats();
-      db.machines.AGON[I('row','machine','')]={brand:'',setup:'asiento 3',na:false}; db.machines.AGON[I('row','free','')]={brand:'',setup:'banco 5',na:false};
+      db.machines.NORTE[I('row','machine','')]={brand:'',setup:'asiento 3',na:false}; db.machines.NORTE[I('row','free','')]={brand:'',setup:'banco 5',na:false};
       db.exNotes[N('row','machine')]='pecho pegado'; db.exNotes[N('row','free')]='agarre neutro'; bumpIdx(); reRender();
       A('row está partido por tipo; db curl no', catTypes('row').join()==='machine,free'&&catTypes('db curl').join()==='free'&&mgCan(['row'])&&!mgCan(['db curl'])&&mgCan(['db curl','row'])&&!mgCan([]));
       catSelSet(true,'db curl'); A('con uno solo de un solo tipo, ▶ unir sigue apagado y no abre nada', /^1 elegido/.test(bar().textContent)&&bar().querySelector('.catgo').classList.contains('off')&&(tap(bar().querySelector('[data-act="openmerge"]')),!md())); wipe();
@@ -22643,7 +22642,7 @@ function _catalogoSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHE
       tap(md().querySelector('#mg_type [data-v="machine"]')); el('mg_win_0').value=I('row','machine',''); el('mg_note').value=N('row','free');
       tap(md().querySelector('[data-act="domerge"]')); A('la pregunta lo dice como es', /unir "row" en un solo tipo/.test((document.querySelector('#asklayer h3')||{}).textContent||'')); tap(ask('ok'));
       A('queda un solo tipo, cada registro con su lateralidad', !md()&&!state._catSel&&catTypes('row').join()==='machine'&&catIndex().byK.row.leaves.map(L=>L.type+':'+L.lat+':'+L.n).join()==='machine:bi:3,machine:uni:1'&&lats()===l0);
-      A('…y con la máquina y la nota que él eligió en el destino; el registro que no eligió no se borra', db.machines.AGON[I('row','machine','')].setup==='asiento 3'&&db.machines.AGON[I('row','free','')].setup==='banco 5'&&db.exNotes[N('row','machine')]==='agarre neutro'&&!(N('row','free') in db.exNotes));
+      A('…y con la máquina y la nota que él eligió en el destino; el registro que no eligió no se borra', db.machines.NORTE[I('row','machine','')].setup==='asiento 3'&&db.machines.NORTE[I('row','free','')].setup==='banco 5'&&db.exNotes[N('row','machine')]==='agarre neutro'&&!(N('row','free') in db.exNotes));
       A('…tras la foto previa, que trae los dos tipos de antes', (o=>!!o&&!!o.sessions&&!!o.machines&&!!o.exNotes&&/^pre-merge-\d+$/.test(_snapLast.key)&&o.sessions.filter(s=>s.id==='r9')[0].exercises[0].type==='free'&&o.exNotes[N('row','free')]==='agarre neutro')(_snapLast&&JSON.parse(_snapLast.s))); wipe(); }
     // 12 · el perfil abierto desde el catálogo cierra y te deja donde estabas
     { const mx=v.scrollHeight-v.clientHeight; v.scrollTop=Math.min(60,mx); const t0=v.scrollTop; tap(mv('db curl').querySelector('.catmh')); pick('perfil');
@@ -25271,7 +25270,7 @@ function _impSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK im
 // v381 · imp · lo que entra de fuera: sin llaves que envenenen objetos y sin nada que el navegador pueda leer como HTML. Tus textos normales no cambian («<5 g» o 12" se quedan).
 const IMP_BAD={__proto__:null,['__proto__']:1,constructor:1,prototype:1};
 const IMP_TIGHT={__proto__:null,id:1,sid:1,date:1,from:1,to:1,startDate:1,endDate:1,opened:1,time:1,startTime:1,endTime:1,startTs:1,exId:1,dayId:1};   // nunca llevan comillas ni signos y entran seguido a atributos
-function impStr(s,k){ if(s==='__proto__')return ''; if(k&&IMP_TIGHT[k])return IMP_BAD[s]?'':s.replace(/["'<>`]/g,''); return s.replace(/<(?=[a-zA-Z\/!?])/g,'‹').replace(/["'](?=\s*[\w-]+\s*=)/g,'”').replace(/\bon(?!zas?\b)[a-z]{3,}\s*=/gi,m=>m.replace('=','')); }
+function impStr(s,k){ if(s==='__proto__')return ''; if(k&&IMP_TIGHT[k])return IMP_BAD[s]?'':s.replace(/["'<>`]/g,''); return s.replace(/<(?=[a-zA-Z\/!?])/g,'‹').replace(/["'](?=[\s\/]*[\w-]+\s*=)/g,'”').replace(/\bon(?!zas?\b)[a-z]{3,}\s*=/gi,m=>m.replace('=','')); }
 function impScrub(o,depth,key){ depth=depth||0; if(depth>64)throw new Error('imp: demasiado anidado'); if(typeof o==='string')return impStr(o,key); if(Array.isArray(o))return o.map(x=>impScrub(x,depth+1,key)); if(o&&typeof o==='object'){ const n={}; Object.keys(o).forEach(k=>{ if(IMP_BAD[k])return; n[impStr(k)]=impScrub(o[k],depth+1,k); }); return n; } return o; }
 // la forma de un respaldo de gym//TRK: devuelve por qué no lo es, o '' si lo es. Lo viejo que no trae un apartado pasa; lo que lo trae de otro tipo, no.
 const IMP_MAX=40*1024*1024, IMP_ARR=['gyms','sessions','foods','mealTags','stack','phases','goalSched'], IMP_OBJ=['settings','machines','meals','steps','bodyweight','goalHist','lastUsed','sleep','mealMeta','adhoc','health','exCat','muscleMap','gymPick','dayMarks','dayModes','dayOpen'];
@@ -25285,6 +25284,28 @@ function impCheck(d){ const obj=x=>!!x&&typeof x==='object'&&!Array.isArray(x), 
 // antes de reemplazar tus datos: que el respaldo sí se pueda pintar. Si truena, tus datos ni se tocan.
 function impTrial(inc){ const prev=db, w0=state.work; try{ db=inc; bumpIdx(); [renderHome,renderMacros,renderProgress,renderHistory,renderStack,renderSettings,renderCatalog,renderAgenda].forEach(r=>r()); if(inc.activeWork){ state.work=inc.activeWork; renderWorkout(); } return ''; }catch(e){ return String((e&&e.message)||e); }finally{ state.work=w0; db=prev; bumpIdx(); } }
 // un respaldo, venga de archivo o pegado, entra por aquí: limpia, valida, confirma, prueba que se pinte, guarda una copia de lo tuyo y reemplaza
+/* v385 · sec · una copia (nube o interna) entra como un respaldo: limpia y con la forma de gym//TRK. Una cuenta nueva aún sin split también pasa. null = no se aplica. */
+function _secSelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK sec: '+n); };
+  const good=JSON.parse(JSON.stringify(db)); A('tu copia pasa igual', !!copySane(good)&&JSON.stringify(copySane(good).profile)===JSON.stringify(good.profile));
+  A('una cuenta nueva sin split pasa', !!copySane({profile:{username:'t'}}));
+  const bad=JSON.parse(JSON.stringify(db)); bad.meals={'"><img src=x onerror=1>':[{name:'x'}]}; A('una copia con fechas hostiles no entra', copySane(bad)===null);
+  const nm=JSON.parse(JSON.stringify(db)); nm.foods=[{name:'<img src=x onerror=window.__pwn=1>'}]; const c=copySane(nm); A('el texto hostil se desarma', !!c&&!/<img/.test(c.foods[0].name)&&!/onerror=/.test(c.foods[0].name));
+  A('un arreglo o un texto no es copia', copySane([])===null&&copySane('x')===null&&copySane(null)===null);
+  A('una fecha de Salud que no existe no entra', !isoReal('2026-02-31')&&!isoReal('9999-12-31')&&!isoReal('1999-12-31')&&isoReal(calToday())&&!isoReal(shiftDate(calToday(),2)));
+  A('sin nombres de tus gyms', !new RegExp('\\b('+'ag'+'on|camp'+'estre|spar'+'tan)\\b','i').test(Array.from(document.scripts).map(s=>s.textContent).join('')));   // el código, no tus datos pintados
+  { const src=Array.from(document.scripts).map(s=>s.textContent).join(''); A('sin frases del dueño sobre su salud', ['su ca'+'so (respaldo','sus nombres re'+'ales','el Xa'+'nax','su mino'+'xidil','su noche del '+'12-oct','a tra'+'gar'].every(p=>src.indexOf(p)<0));
+    A('un enlace con datos pregunta', src.indexOf('else if(_hk){')>=0); }
+  A('sin el global de la app nativa', typeof window.gymtrkIngestHealth==='undefined');
+  { const b=progBadgeFromProg({pct:5,dir:'up'},'"><img src=x onerror=window.__pwn=1>'); A('el indicador de progreso escapa su texto', b.indexOf('<img')<0&&b.indexOf('&quot;&gt;')>=0||b.indexOf('<img')<0); }
+  A('una comilla con «/» ya no abre atributos', impStr('x"/style="a"').indexOf('x"')<0&&impStr("x'/data-act='y'").indexOf("x'")<0&&impStr('pollo "light"')==='pollo "light"');
+  console.log('sec self-check OK'); }
+async function _secCloudSelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK sec nube: '+n); };
+  const pack=async s=>{ const buf=await new Response(new Blob([s]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer(); return b64Enc(new Uint8Array(buf)); };
+  A('una copia normal se desempaca', (await cloudUnpack(await pack('{"a":1}'),'gz64'))==='{"a":1}');
+  let threw=false; try{ await cloudUnpack(await pack('x'.repeat(IMP_MAX+10)),'gz64'); }catch(_){ threw=true; } A('una bomba de compresión se corta', threw);
+  console.log('sec nube self-check OK'); }
+function copySane(x){ try{ if(!x||typeof x!=='object'||Array.isArray(x))return null; const d=impScrub(x); return impCheck(d&&d.split?d:Object.assign({},d,{split:{}}))?null:d; }catch(_){ return null; } }
+function copySoft(x){ const d=copySane(x); if(d)return d; try{ return (x&&typeof x==='object'&&!Array.isArray(x)&&x.profile)?impScrub(x):null; }catch(_){ return null; } }
 function impRead(text){ if(String(text||'').length>IMP_MAX)return {why:'demasiado grande'}; let d=null; try{ d=impScrub(JSON.parse(text)); }catch(_){ return {why:'no se puede leer'}; } const why=impCheck(d); return why?{why}:{d}; }
 function impApply(d,bad,done){ return confirmReplace(d,()=>{ let inc=null; try{ inc=migrate(d); kcalFix354(inc); }catch(e){ bad('respaldo dañado · tus datos no se tocaron'); return; } const b=impTrial(inc); if(b){ console.warn('imp · no se pudo pintar:',b); bad('respaldo dañado · tus datos no se tocaron'); return; } try{ idbSnap('import',db); }catch(_){} db=inc; bumpIdx(); done(save()); }); }
 // duplicate a whole meal: clones every item with new ids, optional new tag/name, target date (default today)
@@ -25628,8 +25649,8 @@ function prefApply(){ luzSetMtr(prefMtr()); luzSetStim(prefStim()); }
 // v382 · g3 · lo que el dueño pidió en gym, elegir gym, meta, historial, sesión pasada y sesión entrenada
 function _g3SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK g3: '+nm); }; const real=db, sv=save, K=['screen','selDay','previewDay','work','_paintedKey','_scroll','_viewScroll','_histOpen'], st0={}; K.forEach(k=>{ st0[k]=state[k]; });
   const v=document.getElementById('view'), T=todayISO(), D=n=>shiftDate(T,n), q=x=>document.querySelector(x), qa=x=>[...document.querySelectorAll(x)], H0=e=>e.getBoundingClientRect().height, BAD='<b>x"', st=(n)=>({w:n,r:10,rir:1,unit:'kg',done:true});
-  const ex=(n,t)=>({id:'e'+n,name:n,type:t,muscle:'chest',sets:3}), ses=(id,d,o)=>Object.assign({id,type:'workout',date:d,dayId:'d1',dayName:'push',gym:'Agon',metric:'rir',startTime:'10:00',endTime:'11:00',durSec:3600,exercises:[{name:'press',muscle:'chest',type:'machine',sets:[st(80),st(75)]}]},o||{});
-  const B=x=>{ db=migrate(Object.assign({_idfix:true,_fsfix:true,profile:{username:'t',goal:'maintain'},settings:{goals:{kcal:2003,protein:150,carbs:200,fat:67},goalSets:{cut:{protein:150,carbs:120,fat:60},bulk:{protein:150,carbs:300,fat:80}},acInv:{n:99,t:Date.now()}},rotIdx:0,gyms:['Agon',BAD],activeGym:'Agon',goalHist:{[D(-3)]:{kcal:1111,protein:1,carbs:1,fat:1}},split:{name:'s',days:[{id:'d1',name:'push',exercises:[ex('press','machine'),ex('curl','free')]}]},sessions:[]},x||{})); bumpIdx(); state.selDay=null; state.previewDay=false; state.work=null; state.screen='home'; closeAsk(true); closeModal(); render(); };
+  const ex=(n,t)=>({id:'e'+n,name:n,type:t,muscle:'chest',sets:3}), ses=(id,d,o)=>Object.assign({id,type:'workout',date:d,dayId:'d1',dayName:'push',gym:'Norte',metric:'rir',startTime:'10:00',endTime:'11:00',durSec:3600,exercises:[{name:'press',muscle:'chest',type:'machine',sets:[st(80),st(75)]}]},o||{});
+  const B=x=>{ db=migrate(Object.assign({_idfix:true,_fsfix:true,profile:{username:'t',goal:'maintain'},settings:{goals:{kcal:2003,protein:150,carbs:200,fat:67},goalSets:{cut:{protein:150,carbs:120,fat:60},bulk:{protein:150,carbs:300,fat:80}},acInv:{n:99,t:Date.now()}},rotIdx:0,gyms:['Norte',BAD],activeGym:'Norte',goalHist:{[D(-3)]:{kcal:1111,protein:1,carbs:1,fat:1}},split:{name:'s',days:[{id:'d1',name:'push',exercises:[ex('press','machine'),ex('curl','free')]}]},sessions:[]},x||{})); bumpIdx(); state.selDay=null; state.previewDay=false; state.work=null; state.screen='home'; closeAsk(true); closeModal(); render(); };
   const tap=s=>{ const b=typeof s==='string'?q(s):s; if(!b)throw new Error('SELFCHECK g3: no está '+s); b.click(); };
   try{ save=()=>true;
     // 1 · ver rutina
@@ -25639,20 +25660,20 @@ function _g3SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK g3:
     tap(vb); A('ver rutina: contrae igual', q('#dprev')===fd&&!fd.classList.contains('on')&&vb.textContent==='ver rutina'&&state.previewDay===false);
     // 2 · Start abre elegir gym
     tap('#view [data-act="start"]'); A('start: abre elegir gym y no arranca', qa('#modal .gprow').length===2&&!db.activeWork&&q('#gp_ok').textContent==='confirmar e iniciar');
-    A('elegir gym: el activo entre corchetes visibles, los demás los guardan', !!q('#modal .gprow.on')&&/Agon/.test(q('#modal .gprow.on').textContent)&&getComputedStyle(q('#modal .gprow.on .gpb'),'::before').visibility==='visible'&&getComputedStyle(q('#modal .gprow:not(.on) .gpb'),'::before').visibility==='hidden'&&getComputedStyle(q('#modal .gprow.on .gpb'),'::before').content==='"["');
+    A('elegir gym: el activo entre corchetes visibles, los demás los guardan', !!q('#modal .gprow.on')&&/Norte/.test(q('#modal .gprow.on').textContent)&&getComputedStyle(q('#modal .gprow.on .gpb'),'::before').visibility==='visible'&&getComputedStyle(q('#modal .gprow:not(.on) .gpb'),'::before').visibility==='hidden'&&getComputedStyle(q('#modal .gprow.on .gpb'),'::before').content==='"["');
     A('elegir gym: nombres escapados y toques de 44', !q('#modal .gprow b')&&qa('#modal .gprow').every(e=>H0(e)>=44)&&H0(q('#gp_new'))>=44);
     A('elegir gym: agregar va a la derecha', Math.abs(q('#gp_new').getBoundingClientRect().right-q('#gp_list').getBoundingClientRect().right)<=1);
-    tap('#modal [data-act="closemodal"]'); A('cancelar no arranca ni cambia nada', !db.activeWork&&db.activeGym==='Agon'&&db.gyms.length===2&&!q('#modal'));
-    tap('#view [data-act="start"]'); tap(qa('#modal .gprow')[1]); A('tocar solo elige', !db.activeWork&&db.activeGym==='Agon'&&qa('#modal .gprow.on').length===1&&!!qa('#modal .gprow')[1].classList.contains('on'));
+    tap('#modal [data-act="closemodal"]'); A('cancelar no arranca ni cambia nada', !db.activeWork&&db.activeGym==='Norte'&&db.gyms.length===2&&!q('#modal'));
+    tap('#view [data-act="start"]'); tap(qa('#modal .gprow')[1]); A('tocar solo elige', !db.activeWork&&db.activeGym==='Norte'&&qa('#modal .gprow.on').length===1&&!!qa('#modal .gprow')[1].classList.contains('on'));
     tap('#gp_ok'); A('confirmar arranca con ese gym', !!db.activeWork&&db.activeWork.gym===BAD&&db.activeGym===BAD&&state.screen==='workout'); db.activeWork=null;
     // 3 · agregar
-    B(); setExCat('press',{gyms:['Agon',BAD]}); const sh0=gyShared('press','agon',BAD); openGymPicker(); A('la casilla está plegada', !q('#gp_fold').classList.contains('on')&&q('#gp_fold').firstElementChild.inert===true);
+    B(); setExCat('press',{gyms:['Norte',BAD]}); const sh0=gyShared('press','norte',BAD); openGymPicker(); A('la casilla está plegada', !q('#gp_fold').classList.contains('on')&&q('#gp_fold').firstElementChild.inert===true);
     tap('#gp_new'); A('agregar despliega la casilla', q('#gp_fold').classList.contains('on')&&q('#gp_fold').firstElementChild.inert===false);
-    q('#ng_name').value=' AGON '; tap('#ng_add'); A('un gym que ya tienes no se duplica ni se renombra', qa('#modal .gprow').length===2&&/Agon/.test(q('#modal .gprow.on').textContent));
+    q('#ng_name').value=' NORTE '; tap('#ng_add'); A('un gym que ya tienes no se duplica ni se renombra', qa('#modal .gprow').length===2&&/Norte/.test(q('#modal .gprow.on').textContent));
     tap('#gp_new'); q('#ng_name').value='nuevo <i>'; tap('#ng_add'); A('el nuevo sale elegido y escapado, sin guardarse aún', qa('#modal .gprow').length===3&&/nuevo <i>/.test(q('#modal .gprow.on').textContent)&&!q('#modal .gprow i')&&db.gyms.length===2);
-    tap('#modal [data-act="closemodal"]'); A('cancelar no deja rastro', db.gyms.length===2&&db.activeGym==='Agon');
+    tap('#modal [data-act="closemodal"]'); A('cancelar no deja rastro', db.gyms.length===2&&db.activeGym==='Norte');
     openGymPicker(); tap('#gp_new'); q('#ng_name').value='nuevo'; tap('#ng_add'); tap('#gp_ok'); A('confirmar lo guarda y lo activa, sin arrancar', db.gyms.length===3&&db.gyms[2]==='nuevo'&&db.activeGym==='nuevo'&&!db.activeWork&&!q('#modal'));
-    A('agregar no toca gyShared', sh0===true&&gyShared('press','agon',BAD)===true&&gyShared('press','agon','nuevo')===false&&db.gyms[0]==='Agon'&&db.gyms[1]===BAD);
+    A('agregar no toca gyShared', sh0===true&&gyShared('press','norte',BAD)===true&&gyShared('press','norte','nuevo')===false&&db.gyms[0]==='Norte'&&db.gyms[1]===BAD);
     B({gyms:[],activeGym:null}); openGymPicker({start:()=>{ db._st=1; }}); A('sin gyms: la casilla ya abierta', q('#gp_fold').classList.contains('on')); tap('#gp_ok'); A('sin gyms: se puede iniciar igual', db._st===1); delete db._st;
     B(); db.activeGym=''; openGymPicker(); tap('#gp_ok'); A('con gyms hay que elegir uno', !!q('#modal')&&db.activeGym===''); closeModal();
     // 4 · meta
@@ -25676,7 +25697,7 @@ function _g3SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK g3:
     // 6 · sesión pasada
     B({sessions:[ses('h1',D(-2))]}); openSessionEdit('h1'); const m=q('#modal');
     A('sesión: sin casillas, cuatro datos entre corchetes', !m.querySelector('.obi,.obr')&&m.querySelectorAll('.fld').length===4&&getComputedStyle(m.querySelector('.fld .fldv'),'::before').content==='"["');
-    A('sesión: el dato se lee como texto', m.querySelectorAll('.fldt').length===4&&m.querySelectorAll('.fldt')[1].textContent==='10:00'&&m.querySelectorAll('.fldt')[3].textContent==='Agon'&&/\d+ \S+ \d{4}/.test(m.querySelector('.fldt').textContent)&&!m.querySelector('.fldt b'));
+    A('sesión: el dato se lee como texto', m.querySelectorAll('.fldt').length===4&&m.querySelectorAll('.fldt')[1].textContent==='10:00'&&m.querySelectorAll('.fldt')[3].textContent==='Norte'&&/\d+ \S+ \d{4}/.test(m.querySelector('.fldt').textContent)&&!m.querySelector('.fldt b'));
     A('sesión: el kilo va con su número y una sola letra', /80 kg×10/.test(m.querySelector('.ssx .sxs').textContent)&&!/· kg/.test(m.querySelector('.ssx .sxk').textContent)&&['.sxn','.sxk','.sxs'].every(c=>getComputedStyle(m.querySelector('.ssx '+c)).fontSize===getComputedStyle(m.querySelector('.fld')).fontSize));
     A('sesión: sin «en fresco»', !/en fresco/.test(m.textContent));
     A('sesión: toques de 44', [...m.querySelectorAll('.fld')].every(e=>H0(e)>=44)&&H0(m.querySelector('.ssx'))>=44);
@@ -25905,7 +25926,7 @@ async function aiPhoto(file,barcode){ if(!file)return; window._faTag=window._faT
     try{ r=await fetch(AI_PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:dataUrl,barcode:barcode||''}),signal:ctrl.signal}); }
     finally{ clearTimeout(to); }
     if(!r.ok) throw new Error('servidor '+r.status);
-    const j=await r.json(); if(!j||!j.ok||!j.data) throw new Error((j&&j.error)||'sin datos');
+    const j=impScrub(await r.json()); if(!j||!j.ok||!j.data) throw new Error(String((j&&j.error)||'sin datos').slice(0,80));   /* v385 · sec · lo que contesta el servidor se limpia igual que un respaldo */
     const d=j.data; const per=sanitizePer(d.per); const found=Array.isArray(d.found)?d.found.filter(Boolean):[];
     if(!(found.length||per.kcal||per.protein||per.carbs||per.fat)){ labelFallback(msg(),barcode,'la IA no encontró valores en esa foto. Acerca la tabla, de frente y con buena luz.'); return; }
     const basis=d.basis||'serving';
@@ -25933,8 +25954,8 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()).then(()=>{ setTimeout(verRebuildSoon,8000); setTimeout(()=>{ try{ if(!document.getElementById('modal'))posFixRun().catch(()=>{}); }catch(_){} },6000); }); }catch(_){ idbReleaseHold(); }   // v376 · SU1 · luego, una vez, la reconstrucción de las dosis con fecha
 try{ cloudBoot(); }catch(_){}   // v352 · cuentas y nube: apagada (CLOUD_CFG vacío) no hace nada
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ sdReopen(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search) && devHost()){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); _v367SelfCheck(); _h9SelfCheck(); _v370SelfCheck(); _v371SelfCheck(); _v373SelfCheck(); _sec5SelfCheck(); _doseHistSelfCheck(); _gymSplitSelfCheck(); _v376SelfCheck(); _fx1SelfCheck(); _mc10SelfCheck(); _rtSelfCheck(); _wsSelfCheck(); _h10SelfCheck(); _dmSelfCheck(); _dm2SelfCheck(); _fx377SelfCheck(); _sb0SelfCheck(); _mtrSelfCheck(); _macSelfCheck(); _serSelfCheck(); _rstSelfCheck(); _espSelfCheck(); _proSelfCheck(); _sysSelfCheck(); _ser2SelfCheck(); _numSelfCheck(); _luzSelfCheck(); _gy7SelfCheck(); _gy8SelfCheck(); _flxSelfCheck(); _faseSelfCheck(); _fin3SelfCheck(); _conpSelfCheck(); _impSelfCheck(); _t1SelfCheck(); _base2SelfCheck(); _s3SelfCheck(); _g3SelfCheck(); _b3SelfCheck(); _a3SelfCheck(); _i3SelfCheck(); _r3SelfCheck(); _f4SelfCheck(); _u4SelfCheck(); _d4SelfCheck(); _daySelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()).then(()=>_v374SelfCheck()).catch(e=>console.error(e)); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hasHistorical){ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos históricos',detail:'este link trae pasos, peso o sueño de varios días · acepta solo si viene de tu propio Atajo de iOS',ok:'importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
-applyDesign(); try{ if(/[?&]design\b/.test(location.search))localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
+try{ promptIdleSession(); }catch(_){} try{ sdReopen(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search) && devHost()){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); _v367SelfCheck(); _h9SelfCheck(); _v370SelfCheck(); _v371SelfCheck(); _v373SelfCheck(); _sec5SelfCheck(); _doseHistSelfCheck(); _gymSplitSelfCheck(); _v376SelfCheck(); _fx1SelfCheck(); _mc10SelfCheck(); _rtSelfCheck(); _wsSelfCheck(); _h10SelfCheck(); _dmSelfCheck(); _dm2SelfCheck(); _fx377SelfCheck(); _sb0SelfCheck(); _mtrSelfCheck(); _macSelfCheck(); _serSelfCheck(); _rstSelfCheck(); _espSelfCheck(); _proSelfCheck(); _sysSelfCheck(); _ser2SelfCheck(); _numSelfCheck(); _luzSelfCheck(); _gy7SelfCheck(); _gy8SelfCheck(); _flxSelfCheck(); _faseSelfCheck(); _fin3SelfCheck(); _conpSelfCheck(); _impSelfCheck(); _t1SelfCheck(); _base2SelfCheck(); _s3SelfCheck(); _g3SelfCheck(); _b3SelfCheck(); _a3SelfCheck(); _i3SelfCheck(); _r3SelfCheck(); _f4SelfCheck(); _u4SelfCheck(); _d4SelfCheck(); _daySelfCheck(); _secSelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()).then(()=>_v374SelfCheck()).then(()=>_secCloudSelfCheck()).catch(e=>console.error(e)); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hk){   /* v385 · sec · todo dato que llega por enlace pregunta, no solo el histórico */ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos de Salud',detail:'este enlace trae pasos, peso o sueño · acepta solo si viene de tu propio Atajo de iOS',ok:'importar',cancel:'no importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+applyDesign(); try{ if(/[?&]design\b/.test(location.search)&&devHost())localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
 try{ const r=JSON.parse(sessionStorage.getItem('gymtrk_resume')||'null'); if(r){ sessionStorage.removeItem('gymtrk_resume');
