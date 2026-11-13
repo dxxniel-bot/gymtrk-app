@@ -103,7 +103,7 @@
   .status .center{text-align:center; line-height:var(--lh-read);}
   .status .streak{font-size:var(--t-data); font-weight:800; color:var(--o50);}
   .status .streak.lv1 b{color:var(--o60);} .status .streak.lv2 b{color:var(--o70);} .status .streak.lv3 b{color:var(--fg);}   /* v341 · R2 · el nivel se lee en el número, sin texto de más */
-  .status .streak.lv4 b,.status .streak.lv5 b,.status .streak.lv6 b,.status .streak.lv7 b{padding:0 var(--s1); background:var(--fill); color:var(--on-fill);}
+  .status .streak.lv4 b,.status .streak.lv5 b,.status .streak.lv6 b,.status .streak.lv7 b{color:var(--fg);}
   .status .streak{position:relative; z-index:1;} .status .streak::after{content:''; position:absolute; left:calc(-1 * var(--s3)); right:calc(-1 * var(--s3)); bottom:calc(-1 * (var(--s2) + var(--s1))); height:44px;} .status .sgoal::after{top:0; height:28px;}   /* v341 · los dos toques de 44: la racha de 0 a 44 y `meta:` de 44 a 88 (debajo de la barra no hay nada que tocar) */
   .status .streak.lv0 b{color:var(--o50);}   /* v341 · el número sube parejo por nivel: 0 · 1 · 2 · 3 = o50 · o60 · o70 · fg; desde el 4, invertido */
   .status b{color:var(--o70); font-weight:inherit;}
@@ -1474,7 +1474,41 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .ob .obstack>.obk{padding:0; font-size:inherit; color:var(--o60);} .ob .obstack{padding:var(--s2) 0;} .ob .obstack .obch{justify-content:flex-start; margin-left:-.25ch;}
   .obch{display:inline-flex; gap:.25ch; flex-wrap:wrap; justify-content:flex-end;} .obc{appearance:none; -webkit-appearance:none; border:0; background:none; margin:0; padding:0 .25ch; min-height:44px; min-width:36px; font:inherit; color:var(--o40); cursor:pointer;} .obc.on{color:var(--fg);} .obc:focus-visible{outline:1px solid var(--fg); outline-offset:2px;}
   .obsec{margin:var(--s3,12px) 0 var(--s1,4px);} .obopts{display:block;} .obopts .gprow{padding:var(--s3) 0;} .obopts .obd{display:block; margin-top:2px; padding-left:1ch; font-size:var(--t-label); color:var(--o50); line-height:var(--lh-read);} .obopts .gprow.on .obd{color:var(--o60);} .obmetas .obv{flex-wrap:wrap; justify-content:flex-end;}
-  .ixgrp{font-size:var(--fs-label,11px); letter-spacing:.08em; text-transform:uppercase; opacity:.5; margin:10px 0 4px;} .ixr.ixlater{opacity:.62;}   /* v390 · e1 */
+  .ixgrp{font-size:var(--t-label); letter-spacing:.08em; text-transform:uppercase; color:var(--o50); margin:var(--s3) 0 var(--s1);} .ixr.ixlater{color:var(--o60);}
+/* v391 · m1 · menos ruido (Q1): la estructura baja de volumen, el dato queda */
+#view .section .h:not(.dnavh),#view .lhd .h{font-size:var(--t-label); font-weight:700; color:var(--o60); letter-spacing:.08em;}
+#view .section .h:not(.dnavh) .s,#view .lhd .h .s{color:var(--o40);}
+#view .stq .stqn{font-weight:400; color:var(--o70);}
+#view .stq .stqv{font-weight:400;}
+#view .stq .stqv.p{color:var(--o50);}
+#view .stq .mtrm{background:var(--o60);}
+#view .dmus .k{color:var(--o60);}
+#view .dmus{min-height:44px; display:flex; flex-direction:column; justify-content:center;}
+#view .stmore{margin-top:var(--s3);}
+#view .lact{min-width:0; padding:0 var(--s1); border-color:transparent; font-weight:400; color:var(--o60);}
+#view .lact .lb::before{content:'['; color:var(--o40);}
+#view .lact .lb::after{content:']'; color:var(--o40);}
+#view .lact.pri::after{top:0; bottom:0;}
+#view .lact[aria-disabled="true"]{color:var(--o30);}
+#view .lact.pri{min-width:128px; height:44px; padding:0 var(--s4); background:var(--fill); color:var(--on-fill); border-radius:var(--r-ctl); font-weight:700;}
+#view .mdtabs.lseg span:not(.on){font-weight:400;}
+#view .lhd .lv b{font-weight:400;}
+#view .ptile .sertile path:not(.serbase){stroke:var(--o60);}
+#view .prow{grid-column:1/-1; min-height:44px; height:44px; display:flex; flex-direction:row; align-items:center; justify-content:flex-start; gap:var(--s3); padding:0 var(--s1); background:none; border:0; border-bottom:var(--bw-sep) solid var(--o10); border-radius:0; text-align:left;}
+#view .prow>:not(.ptlh):not(.pval){display:none;}
+#view .prow .ptlh{flex:1; min-width:0; display:block; margin:0;}
+#view .prow .plbl{text-align:left;}
+#view .prow .pval{margin:0; flex:0 0 auto;}
+#view .prow .tn-tile{--tn-h:14px;}
+#view .prow .ptchev{display:none;}
+#view .prow.tap::after{content:'›'; color:var(--o40); flex:0 0 auto;}
+#view .prow:not(.tap)::after{content:'›'; visibility:hidden; flex:0 0 auto;}
+#view>.wfocus .srow:not(.qnext) .inp,#view>.wfocus .srow:not(.qnext) .pick,#view>.wfocus .fs:not(.on){border-color:transparent; background:transparent;}
+#view>.wfocus .srow:not(.qnext) .inp:focus,#view>.wfocus .srow:not(.qnext) .pick:focus{border-color:var(--o40);}
+#view>.wfocus .fs:not(.on){color:var(--o40);}
+#view>.wfocus .ex:not(.current) .thead{display:none;}
+#wfooter .fdone{margin-left:var(--s3); padding:0 var(--s4); background:var(--fill); color:var(--on-fill); border-radius:var(--r-ctl); font-size:var(--t-data); font-weight:700; text-align:center;}
+   /* v390 · e1 */
   .toasts{position:fixed; left:0; right:0; bottom:calc(var(--nav-clear) + env(safe-area-inset-bottom)); z-index:var(--z-toast); display:flex; flex-direction:column; align-items:center; gap:6px; padding:0 var(--sp-px); pointer-events:none;}
   .toast{max-width:100%; overflow:hidden; text-overflow:ellipsis; color:var(--fg); padding:10px var(--s5); border-radius:var(--r-toast); font-size:var(--t-data); font-weight:700; white-space:nowrap; pointer-events:auto; animation:toastin var(--dur-3) var(--ease-out);}   /* material: .glass-strong */
   .toast.out{animation:toastout var(--dur-3) var(--ease-in) forwards;}
@@ -2011,7 +2045,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v390';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v391';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -5859,12 +5893,13 @@ function dayRecovery(day,ms){ if(!day)return {score:null,rows:[]}; const src=day
 // muscleRecAt (100 = ya pasó su ventana de recuperación): el mismo de //STIMULUS y del detalle. El menos recuperado, arriba;
 // sin historial, "—"; lo que ya está al 100, apagado.
 const recPct=r=>r?r.p+'%':'—';
+const REC_ATT=70;   /* v391 · m1 · Q1 · desde aquí recovery y readiness van sin color: el color queda para lo que pide atención */
 const recByPct=(a,b)=>(a.r?a.r.p:101)-(b.r?b.r.p:101);
-function dayMusclesHTML(rc){ const rows=((rc&&rc.rows)||[]).slice().sort(recByPct); if(!rows.some(x=>x.r))return '';
-  return `<div class="dmus" role="button" tabindex="0" data-act="recovery">`+rows.map(x=>`<div class="line${!x.r||x.r.p>=100?' fr':''}"><span class="k">${escTxt(muscleLabel(x.id))}</span><span class="dots"></span><span class="v${x.r&&x.r.p<100?' ixt"'+mtrInd(x.r.p/100,'score'):'"'}>${recPct(x.r)}</span></div>`).join('')+`</div>`; }
+function dayMusclesHTML(rc){ const rows=((rc&&rc.rows)||[]).filter(x=>x.r&&x.r.p<100).sort(recByPct); if(!rows.length)return '';   /* v391 · m1 · U8 · solo lo que no está al 100: lo demás ya lo dice recovery y //STIMULUS */
+  return `<div class="dmus" role="button" tabindex="0" data-act="recovery">`+rows.map(x=>`<div class="line"><span class="k">${escTxt(muscleLabel(x.id))}</span><span class="dots"></span><span class="v${x.r.p<REC_ATT?' ixt"'+mtrInd(x.r.p/100,'score'):'"'}>${recPct(x.r)}</span></div>`).join('')+`</div>`; }
 // los dos puntajes en una fila (BRAND §4: 12/800, sin héroe ni color de veredicto) y, debajo, los músculos de hoy
 function dayScoresHTML(day){ const rc=dayRecovery(day);
-  const rcH=rc.score!=null?`<div class="ready rec" role="button" tabindex="0" data-act="recovery"><span class="rk">recovery</span><b class="ixt"${mtrInd(rc.score/100,'score')}>${rc.score}</b><span class="rl">›</span></div>`:'';
+  const rcH=rc.score!=null?`<div class="ready rec" role="button" tabindex="0" data-act="recovery"><span class="rk">recovery</span><b${rc.score<REC_ATT?' class="ixt"'+mtrInd(rc.score/100,'score'):''}>${rc.score}</b><span class="rl">›</span></div>`:'';
   const rdH=readinessLineHTML(todayISO()); if(!rcH&&!rdH)return '';
   return `<div class="scores">${rcH}${rdH}</div>`+dayMusclesHTML(rc); }
 // "si le picas puedes ver cómo va cada músculo": una fila por músculo en columnas (su % · cuánto lleva descansando); cada
@@ -6336,13 +6371,13 @@ function renderHome(){
     +foldHTML('dprev',!!state.previewDay,state.previewDay?dayPreviewHTML(day):'')   // v382 · g3 · con su animación
     +sessEntHTML()   // v382 · g3 · entre «ver rutina» y lo que sigue (schedule o start)
     +cta
-    +stimulusSection()
     +`<hr class="rule"/><div class="section u-mb10"><div class="h"><span class="s">//</span>STATS</div><div class="meta vb" role="button" data-act="settings">settings</div></div><div class="u-label u-o50 u-mt-n4 u-mb6 u-mx0">mi día · hoy</div>`
     +`<div class="line stat"><span class="k">sessions · 7d</span><span class="dots"></span><span class="v">${s7.count}</span></div>`
     +`<div class="line stat"><span class="k">uptime</span><span class="dots"></span><span class="v">${uptimeDays()}d</span></div>`
     +`<div class="line stat tap" role="button" tabindex="0" data-act="editsteps"><span class="k">steps · today</span><span class="dots"></span><span class="v">${(db.steps&&db.steps[dayStepsDay()])?db.steps[dayStepsDay()].toLocaleString():'— tap'}</span></div>`
     +`<div class="line stat tap" role="button" tabindex="0" data-act="logsleep"><span class="k">sleep · last night</span><span class="dots"></span><span class="v">${(db.sleep&&db.sleep[todayISO()])?(fmtSleep(db.sleep[todayISO()])||'—'):'— tap'}</span></div>`
-    +syncRowHTML();
+    +syncRowHTML()
+    +stimulusSection(isCurrent?dayRecovery(day).rows.map(x=>x.id):null);   /* v391 · m1 · X3 · el día arriba; //STIMULUS después, con los músculos de hoy */
 }
 // read-only preview of what starting this day would actually produce (without starting the workout)
 // — uses daySource(), the SAME source newWorkSession() seeds from, so this preview can never promise
@@ -6411,13 +6446,14 @@ const stimGlyph=sev=>`<span class="${sev==='warn'?'u-warn':'u-o60'}">⚠</span> 
 function stimulusRows(){ const t=todayISO(), d7=shiftDate(t,-6); const idx=muscleExposureIndex();
   const G=splitSigGoals(), ids=Object.keys(idx).filter(id=>idx[id].some(a=>a.date>=d7&&a.date<=t)); Object.keys(G).forEach(id=>{ if(G[id]>0&&MUSCLES[id]&&ids.indexOf(id)<0)ids.push(id); });   // v347 · E9 · también lo que tu split programa
   return ids.map(id=>{ const w=muscleWindowAgg(id,d7,t); return {m:muscleLabel(id),id,w,v:w.Ts||0,rec:muscleRecAt(id),hb:muscleHabit(id),g:splitSigGoal(id),gr:splitSigGoalRange(id)}; }).sort((a,b)=>b.v-a.v||(b.g||0)-(a.g||0)); }
-function stimulusSection(){ const rows=stimulusRows();
+function stimulusSection(today){ const all=stimulusRows(), tf=(today&&today.length)?all.filter(r=>today.indexOf(r.id)>=0):[], fold=tf.length>0&&all.length>tf.length, rows=(fold&&!state.stimAll)?tf:all;   /* v391 · m1 · X3 */
+  const more=fold?`<div class="stmore"><button type="button" data-act="stimall" class="vb" aria-expanded="${!!state.stimAll}">${state.stimAll?'solo los de hoy':'ver los '+all.length+' músculos'}</button></div>`:'';
   const head=`<hr class="rule"/><div class="section u-mb12"><div class="h"><span class="s">//</span>STIMULUS</div><div class="meta" data-gloss="stim">σ · unidad de tensión mecánica · 7 d</div></div>`;
   if(!rows.length)return head+`<div class="submeta u-py6 u-px0">aún sin series esta semana</div>`;
-  const CE=Math.max(0.1,...rows.map(r=>Math.max(r.v,r.gr?r.gr.g:0)))*1.1;   // una sola escala (E10): los medidores se comparan entre músculos · v378 · mtr · tu meta siempre cabe; un habitual que pasa del borde se corta plano
+  const CE=Math.max(0.1,...all.map(r=>Math.max(r.v,r.gr?r.gr.g:0)))*1.1;   // una sola escala (E10): los medidores se comparan entre músculos · v378 · mtr · tu meta siempre cabe; un habitual que pasa del borde se corta plano
   const lgH=rows.some(r=>r.hb), lgG=rows.some(r=>r.gr), lg=(lgH||lgG)?luzStimLegend(lgH,lgG):'';   /* v378 · luz · luz y tramado */   // v367 · E13 · el dueño: "no sé qué significa"; solo lo que hay en pantalla
   return head+lg+`<div class="stqh c2 hd"><span class="stqn">músculo</span><span class="stqv">σ</span><span class="stqv">recovery</span></div>`
-    +rows.map((r,i)=>`<div class="stq u-tap" role="button" tabindex="0" data-act="muscledetail" data-id="${escV(r.id)}"><div class="stqh c2"><span class="stqn">${escTxt(r.m)}</span><span class="stqv">${fmtSig(r.v)}</span><span class="stqv p${r.rec&&r.rec.p<100?' ixt"'+mtrInd(r.rec.p/100,'score'):'"'}>${recPct(r.rec)}</span></div>${luzHalf(sigBandHTML('stim:'+r.id,r.v,r.hb,r.gr,CE),i,rows.length)}</div>`).join(''); }   /* v353 · E10 · tu habitual (franja) y tu meta (raya con tope), sin texto: qué es cada cosa, en el glosario */   /* v347 · E9 · con meta, la barra es cuánto la cumples */   // la marca de tu habitual vive en el detalle (ahí se dice qué es): en la lista, nada sin explicar
+    +rows.map((r,i)=>`<div class="stq u-tap" role="button" tabindex="0" data-act="muscledetail" data-id="${escV(r.id)}"><div class="stqh c2"><span class="stqn">${escTxt(r.m)}</span><span class="stqv">${fmtSig(r.v)}</span><span class="stqv p${r.rec&&r.rec.p<REC_ATT?' ixt"'+mtrInd(r.rec.p/100,'score'):'"'}>${recPct(r.rec)}</span></div>${luzHalf(sigBandHTML('stim:'+r.id,r.v,r.hb,r.gr,CE),i,rows.length)}</div>`).join('')+more; }   /* v353 · E10 · tu habitual (franja) y tu meta (raya con tope), sin texto: qué es cada cosa, en el glosario */   /* v347 · E9 · con meta, la barra es cuánto la cumples */   // la marca de tu habitual vive en el detalle (ahí se dice qué es): en la lista, nada sin explicar
 // estímulo self-check (v285) — //STIMULUS = σ + recovery por músculo en columnas, sin pestañas ni avisos en la lista; tu
 // habitual (la mediana de tus semanas) como única referencia; el detalle en filas con [más]. db de juguete; se restaura todo.
 function _estimuloSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK estímulo: '+nm); };
@@ -7723,7 +7759,7 @@ function _dsRenderCheck(root){ root=root||document.getElementById('app'); const 
     const cs=getComputedStyle(e); if(cs.visibility==='hidden')return; const own=[...e.childNodes].filter(n=>n.nodeType===3&&n.nodeValue.trim()).map(n=>n.nodeValue).join('');
     if(own){ const fs=parseFloat(cs.fontSize);
       if(Math.abs(fs-13.333)<.01)note('ua',tag(e)+' 13.333px');
-      if(_sc.indexOf(Math.round(fs*100)/100)<0&&!e.closest('.ring,.ringc'))note('fsOff',tag(e)+' '+fs+'px');
+      if(_sc.indexOf(Math.round(fs*100)/100)<0&&!e.closest('.ring,.ringc,.dotn,.u-sr'))note('fsOff',tag(e)+' '+fs+'px');
       const m=cs.color.match(/rgba?\(\s*[\d.]+,\s*[\d.]+,\s*[\d.]+(?:,\s*([\d.]+))?\)/), al=m&&m[1]!=null?+m[1]:1;
       if(al<_fl&&fs<=16&&!/^[\s✓○▲▼⠿›‹▾▶↓✕↩~⚠▌·—]+$/.test(own))note('txt',tag(e)+' α'+al);
       for(const ch of own){ if(!okGlyph(ch)){ note('glyph',ch+' '+tag(e)); } } }
@@ -9911,7 +9947,7 @@ function _ser2SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK s
     A('tiles · la gráfica se asienta abajo (a --s4 del borde)', tl.filter(t=>t.querySelector(':scope>.sertile')).every(t=>(cs=>Math.abs(R(t).bottom-R(t.querySelector(':scope>.sertile')).bottom-parseFloat(cs.paddingBottom)-parseFloat(cs.borderBottomWidth))<=1.5)(getComputedStyle(t))));
     // 4 · //PROGRESS de verdad: una sola marca (línea) salvo el sueño
     window._labSleep='win'; v.style.width='357px'; P(renderProgress()); const vw=v, pt=[...vw.querySelectorAll('.ptile .sertile')];
-    A('//PROGRESS · toda gráfica es línea salvo el sueño ('+pt.length+')', pt.length>=5&&!vw.querySelector('.sercols')&&pt.every(s=>s.closest('.ptile[data-m="sleep"]')?s.classList.contains('sl'):s.classList.contains('ln')&&!!s.querySelector('path.serln')));
+    A('//PROGRESS · toda gráfica es línea salvo el sueño ('+pt.length+')', pt.length>=3&&!vw.querySelector('.sercols')&&pt.every(s=>s.closest('.ptile[data-m="sleep"]')?s.classList.contains('sl'):s.classList.contains('ln')&&!!s.querySelector('path.serln')));
     console.log('ser2 self-check OK');
   } finally{ db=real; bumpIdx(); window._labSleep=sv0; [window._mdRange,window._mdEnd,window._mdCustom,window._mdSel,window._mdKey,window._volWeeks,window._volEnd,window._volMode]=md0; v.remove(); state.screen=sc0; } }
 // v378 · num · TRKNum en Doto y un solo punto: alto por rol (caja de un dígito real), monoespaciado, la fuente (o su respaldo), un Ø de punto
@@ -14225,7 +14261,7 @@ function waterSecHTML(iso){
   const body=items.length?`<div class="lcg">${items.map(m=>{ const ml=Math.round((+m.water||0)*1000);
       return `<button type="button" class="lc" data-act="waterdel" data-id="${escTxt(m.id)}" data-rk="lw:${escTxt(m.id)}" aria-label="quitar ${ml} ml"><span class="t">${ml} ml</span>${m.time?`<span class="m">${escTxt(m.time)}</span>`:''}<span class="x" aria-hidden="true">✕</span></button>`; }).join('')}</div>`
     :`<div class="empty">no water logged</div>`;
-  return logSecHTML({k:'water',title:'WATER',v,act:`<button type="button" class="lact" data-act="waterpick">+ water</button>`,body,open:state._lfold.water}); }
+  return logSecHTML({k:'water',title:'WATER',v,act:`<button type="button" class="lact" data-act="waterpick"><span class="lb">+ water</span></button>`,body,open:state._lfold.water}); }
 // ---- supps: el momento en pestañas (Filter Grid de 21st.dev) y una rejilla que nunca se reordena ni se desplaza de lado.
 // El riel horizontal volvía al inicio en cada toque: render() rehace el DOM y el riel nuevo nace con scrollLeft = 0.
 const SUPP_SEG=[['AM','AM'],['PM','PM'],['entreno','ENTRENO'],['otros','EXTRA']];   // v326 · S-EXTRA: lo que no tiene momento y lo que tomas fuera de plan
@@ -14281,7 +14317,7 @@ function suppSecHTML(iso){
   if(!s.all.length&&!xs.length){ if(db.settings&&db.settings.suppHide)return '';
     if(!(db.stack||[]).some(x=>x&&suppStatus(x)==='active'))   // v275: solo cuentan los activos
     return logSecHTML({k:'supps',title:'SUSTANCIAS',v:'<span class="u-o40">—</span>',open:true,
-      act:'<button type="button" class="lact" data-act="suppadd">+ sustancia</button><button type="button" class="lsmore" data-act="suppmenu" aria-label="opciones de sustancias"><span class="dots3" aria-hidden="true"></span></button>',
+      act:'<button type="button" class="lact" data-act="suppadd"><span class="lb">+ sustancia</span></button><button type="button" class="lsmore" data-act="suppmenu" aria-label="opciones de sustancias"><span class="dots3" aria-hidden="true"></span></button>',
       body:'<div class="empty supempty">marca tus sustancias con un toque, aquí arriba de tus comidas</div>'}); }
   const seg=suppSegFor(iso,s);
   const tabs=SUPP_SEG.filter(([k])=>k==='otros'||s.all.some(t=>t.when===k)).map(([k,l])=>{ const its=s.all.filter(t=>t.when===k), d=its.filter(s.done).length, x=k==='otros'?xs.length:0;
@@ -14295,7 +14331,7 @@ function suppSecHTML(iso){
     return `<div class="lc sp on xt wide${i?'':' x1'}" data-rk="xt:${escTxt(a.id)}"><button type="button" class="lct" data-act="extraedit" data-id="${escTxt(a.id)}" data-d="${escV(iso)}" aria-label="extra · ${q} ${nm}${a.time?' · '+escTxt(a.time):''}"></button><span class="k" aria-hidden="true">✓</span><span class="lcq" aria-hidden="true">${q}</span><span class="t" aria-hidden="true">${suppNameHTML(nm)}</span>${a.time?`<span class="m" aria-hidden="true">${escTxt(a.time)}</span>`:''}</div>`; }).join(''):'';
   const lbl=(SUPP_SEG.find(x=>x[0]===seg)||['',''])[1];
   const act=seg==='otros'?''   // v348 · S-XLOG · en EXTRA el botón va DENTRO de la pestaña, al final de sus extras
-    :`<button type="button" class="lact" data-act="suppall" data-d="${escV(iso)}" data-seg="${seg}"${pendSeg?'':' aria-disabled="true"'}>✓ ${lbl}</button>`;
+    :`<button type="button" class="lact" data-act="suppall" data-d="${escV(iso)}" data-seg="${seg}"${pendSeg?'':' aria-disabled="true"'}><span class="lb">✓ ${lbl}</span></button>`;
   const v=s.all.length?`<b data-nk="lv-supps" data-nv="${s.n}">${s.n}</b> / ${s.all.length}`:(xs.length?'+'+xs.length:'<span class="u-o40">—</span>');
   return logSecHTML({k:'supps',title:'SUSTANCIAS',v,act,body:`<div class="mdtabs lseg" data-tk="supps" role="tablist">${tabs}</div><div class="lcg" role="group" aria-label="${lbl}">${cells}${xcells}${cells||xcells?'':'<div class="empty">sin extras</div>'}${seg==='otros'?`<div class="lcadd"><button type="button" class="vb" data-act="extraadd" data-d="${escV(iso)}">+ extra</button></div>`:''}</div>`,open:state._lfold.supps}); }
 // ---- comida: cada comida es UNA fila plegable con su total a 16/800; sus alimentos a 12/400 alineados bajo el total
@@ -14339,7 +14375,7 @@ function foodSecHTML(iso,items,dayKcal){
   // si le pone hora a otra meal sea 3/4 o si le quita pues 1/4": comidas con hora / comidas del día
   const n=tags.length, nt=mealsTimed(iso,tags);
   if(iso===todayISO()){ const sc=tags.filter(t=>mealSched(iso,t)).map(t=>mealTime(iso,t)).sort((a,b)=>{ const x=hmKey(iso,a), y=hmKey(iso,b); return x<y?-1:x>y?1:0; }); window._mealNext=sc[0]||null; }   // v317 · la próxima hora programada de hoy (la mira mealsTick)
-  return logSecHTML({k:'food',title:'MEALS',v:n?`<b data-nk="mealsdone" data-nv="${nt}">${nt}</b> / ${n}`:`<b>0</b> meals`,act:`<button type="button" class="lact" data-act="newmeal">+ meal</button>`,body:meals||`<div class="empty">no meals logged</div>`,open:state._lfold.food}); }
+  return logSecHTML({k:'food',title:'MEALS',v:n?`<b data-nk="mealsdone" data-nv="${nt}">${nt}</b> / ${n}`:`<b>0</b> meals`,act:`<button type="button" class="lact pri" data-act="newmeal">+ meal</button>`,body:meals||`<div class="empty">no meals logged</div>`,open:state._lfold.food}); }
 // v308 · M7 · una comida cuenta como hecha cuando tiene hora. [time] es de un toque: viendo hoy pone la hora de este momento
 // (con deshacer); viendo otro día pregunta la hora. Quitarla (··· → quitar la hora) la descuenta. Nada mueve la pantalla.
 // v317 · M8 · una comida con hora que aún no llega está PROGRAMADA ("si alguien quiere programar una comida a cierta hora"): se lee
@@ -14534,7 +14570,7 @@ function renderMacros(){
   const fold=(act,lbl,on,body)=>'<button type="button" class="line stat tap kp-rad kp-cc" data-act="'+act+'" aria-expanded="'+on+'"><span class="k">'+lbl+'</span><span class="dots"></span><span class="v">'+(on?'▾':'›')+'</span></button>'+(on?body:'');
   const _rw={low:'baja',mod:'normal',high:'alta'}[bl.label]||'normal';
   details+='<hr class="rule"/>'+(nutBody?fold('nutfold','nutrients',nopen,nutBody):'')+fold('micfold','micros',micOpen,micBody)
-    +'<button type="button" class="line stat tap kp-rad kp-cc mret" data-act="rettips" aria-expanded="'+!!state._retTips+'"><span class="k">retention</span><span class="dots"></span><span class="v">'+(_noK?'~':'')+(_retV||bl.sc)+' · '+_rw+' '+(state._retTips?'▾':'›')+'</span></button>'
+    +'<button type="button" class="line stat tap kp-rad kp-cc mret" data-act="rettips" aria-expanded="'+!!state._retTips+'"><span class="k">retention</span><span class="dots"></span><span class="v">'+(items.length?(_noK?'~':'')+((bl.label==='mod'?'':_retV)||bl.sc)+' · '+_rw:'—')+' '+(state._retTips?'▾':'›')+'</span></button>'
     +(state._retTips?'<div class="bltips">'+bl.tips.map(tp=>'<div class="bltip">› '+tp+'</div>').join('')+'</div>':'');
 
   // v256 · debajo del anillo, tres secciones idénticas (TRKLog), en el orden que pidió el dueño: SUPPS · MEALS · WATER
@@ -14542,10 +14578,10 @@ function renderMacros(){
   return statusBar(false)
     +`<hr class="rule"/>`
     +`<div class="section"><div class="h dnavh"><a data-act="dayprev" class="dnav">‹</a><span class="dnlbl-wrap"><span class="dnlbl">${dayLabel(curDate(),1)}</span><input type="date" class="dcal" data-act="daycal" value="${escV(curDate())}"/></span><a data-act="daynext" class="dnav">›</a></div><div class="meta"><a data-act="share" class="vb">share</a> <a data-act="editgoals" class="vb u-ml8">goals</a></div></div>`
-    +(_mmv?mmViewHTML(curDate(),items,t,g):'')+(_mmv?'':`<div class="card kpanel u-pt16 u-pb16 u-px16">${slider}${goalSecHidden('balance')?'':(function(){var b=balanceOf(g.kcal);return b?'<div class="hbal">'+(b.label==='mantenimiento'?'en mantenimiento':'<span class="u-w7">'+b.label+'</span> '+Math.round(Math.abs(b.delta)).toLocaleString('en-US')+' kcal')+' · mant. ≈ '+b.maint+'</div>':'';})()}${ccTagHTML(curDate(),g)}${mmTagHTML(curDate())}${gsTagHTML()}${details}</div>`)
-    +suppSecHTML(curDate())
+    +(_mmv?mmViewHTML(curDate(),items,t,g):'')+(_mmv?'':`<div class="card kpanel u-pt16 u-pb16 u-px16">${slider}${goalSecHidden('balance')?'':(function(){var b=balanceOf(g.kcal);return b?'<div class="hbal">'+(b.label==='mantenimiento'?'en mantenimiento':'<span class="u-w7">'+b.label+'</span> '+Math.round(Math.abs(b.delta)).toLocaleString('en-US')+' kcal')+' · mant. ≈ '+Math.round(+b.maint||0).toLocaleString('en-US')+'</div>':'';})()}${ccTagHTML(curDate(),g)}${mmTagHTML(curDate())}${gsTagHTML()}${details}</div>`)
     +(_mmv?'':foodSecHTML(curDate(),items.filter(m=>!isWaterItem(m)),t.kcal))
-    +waterSecHTML(curDate());   // orden del dueño: supps → meals → water al final
+    +suppSecHTML(curDate())
+    +waterSecHTML(curDate());   // v391 · m1 · X1 · meals → supps → water: `+ meal` queda a la vista al abrir (antes: supps → meals → water, v256)
 }
 // ---------- render: shareable summary (gym//TRK aesthetic, horizontal banner) ----------
 // display quantity: always grams/ml for weight-based units (clearer for screenshots); keep pieces for piece unit
@@ -15295,7 +15331,7 @@ function acctAct(a,el){
 
 // ---------- render: onboarding ----------
 // v268 · perfil en filas de terminal (.obr/.obk/.obi y las listas .oblist): v277 las reusa, un paso por pantalla.
-const OB_ACT=[['1.2','sedentario','sentado casi todo el día · menos de 5 000 pasos'],['1.375','ligero','5 000–7 500 pasos o 1–⁠3 entrenos por semana'],['1.55','moderado','7 500–10 000 pasos o 4–⁠5 entrenos'],['1.725','alto','más de 10 000 pasos, trabajo físico o 6–⁠7 entrenos']];   /* v388 · c9 · en pasos: la gente se sobreestima con «activo» */
+const OB_ACT=[['1.2','sedentario','sentado casi todo el día · menos de 5,000 pasos'],['1.375','ligero','5,000–7,500 pasos o 1–⁠3 entrenos por semana'],['1.55','moderado','7,500–10,000 pasos o 4–⁠5 entrenos'],['1.725','alto','más de 10,000 pasos, trabajo físico o 6–⁠7 entrenos']];   /* v388 · c9 · en pasos: la gente se sobreestima con «activo» */
 const OB_GOAL=[['cut','déficit','perder grasa · ~20 % bajo tu mantenimiento'],['maintain','mantener','recomposición · comes tu mantenimiento'],['bulk','volumen','ganar masa · ~10 % sobre tu mantenimiento']];
 // ---- v277 · alta paso a paso ----
 // El dueño: "pantalla por pantalla: usuario → biométricos → objetivo → split (ahora o después) → dieta (ahora o después) →
@@ -16386,7 +16422,7 @@ function leverBarHTML(pct,aria){ pct=Math.max(0,Math.min(100,+pct||0)); return t
 // (cuál falta lo dice su hoja, con [registrar] en la fila del sueño)
 function readinessLineHTML(date){ const r=readinessScore(date);
   if(r.score==null&&!Object.keys(r.parts).length&&!Object.keys(db.sleep||{}).length)return '';
-  return `<div class="ready rec" role="button" tabindex="0" data-act="readiness" data-d="${escV(date)}"><span class="rk">readiness</span><b${r.score!=null?' class="ixt"'+mtrInd(r.score/100,'score'):''}>${r.score!=null?r.score:'—'}</b>${r.why?`<span class="rw">${r.why}</span>`:''}<span class="rl">›</span></div>`; }
+  return `<div class="ready rec" role="button" tabindex="0" data-act="readiness" data-d="${escV(date)}"><span class="rk">readiness</span><b${r.score!=null&&r.score<REC_ATT?' class="ixt"'+mtrInd(r.score/100,'score'):''}>${r.score!=null?r.score:'—'}</b>${r.why?`<span class="rw">${r.why}</span>`:''}<span class="rl">›</span></div>`; }
 // ---- v298 · "en ti": lo que hiciste cada día contra cómo dormiste y cómo amaneciste ----
 // Qué pasó antes de una noche (a qué hora y cuánto se cenó, si se tomaron o no las sustancias para dormir) contra cómo se durmió. Descriptivo: días con contra días sin, la mediana
 // de cada lado y cuántos hay de cada uno; con pocos datos no dice nada. Correlación, no causa. Nunca cambia un número del
@@ -17988,13 +18024,13 @@ function volHTML(){
     mrows+=`<div class="mdline"><span class="mdk">${escTxt(m)}</span><span class="mddots"></span><span class="mdv">${c} sets <span class="mdsub" style="color:${col}">${d!==0?arr+Math.abs(d):'─'}</span>${tTxt}</span></div>`+trkMeter({key:'vd:'+m,v:c,max:_vm,cls:'vdm',aria:m+' '+c+' series'}); });
   const body=has?`
       <div id="voltop"><div class="mdval">${serHero(serNU(sg?'sig':'vol',cur))}</div>
-      <div class="mdmeta">${window._volEnd?'sem al '+fmtShort(vEnd)+' · ':''}${pct!=null?`<span class="${ch<0?'mdbad':ch>0?'mdgood':'mdflat'}">${fixPct(pct)} vs sem previa</span>`:'primera semana con datos'}</div></div>
+      <div class="mdmeta">${window._volEnd?'sem al '+fmtShort(vEnd)+' · ':''}${pct!=null?`<span class="${ch<0?'mdbad':ch>0?'mdgood':'mdflat'}">${ch<0?'▼':ch>0?'▲':'='}</span> <span class="mdflat">${fixPct(Math.abs(pct))} vs sem previa</span>`:'primera semana con datos'}</div></div>
       <div class="panbox panzone" id="volcw">${chart}</div>
       <div class="mdstats">
         <div class="mdline"><span class="mdk">promedio semanal</span><span class="mddots"></span><span class="mdv">${_vf(_vAvg||0)}</span></div>
         <div class="mdline"><span class="mdk">σ · esta sem</span><span class="mddots"></span><span class="mdv">σ ${fmtSig(tCur)}${tPrev>0?` <span class="mdsub">${fixPct(Math.round((tCur-tPrev)/tPrev*100))}</span>`:''}</span></div>
       </div>
-      ${muscles.length?`<div class="grp-label sub">BY MUSCLE · sets duros · T · esta sem vs previa</div><div class="mdstats">${mrows}</div>`:''}
+      ${muscles.length?`<div class="grp-label sub">BY MUSCLE · sets duros · σ · esta sem vs previa</div><div class="mdstats">${mrows}</div>`:''}
     `:`<div class="empty u-py32 u-px0">sin volumen registrado en este rango</div>`;
   return `<div class="mdetail">
     <div class="mdhd"><h3>${sg?'σ · semanal':'volumen'}</h3></div>
@@ -18086,9 +18122,10 @@ function wideTileHTML(k){   // v378 · ser · el doble es la MISMA tile con 30 d
   if(k==='age')return faTileHTML(true);
   if(k==='tdee'||k==='recov')return null;
   return serTile(k,true); }
+const PROG_CELLS=6;   /* v391 · m1 · Q1 · 3 filas de la rejilla van como tile (una doble cuenta 2); lo demás, en renglón con su número (el orden es el tuyo, en [edit]) */
 function progGridHTML(T,ed){ const L=ed||progLayout(), W=L.wide||[], isW=k=>W.indexOf(k)>=0, ks=L.order.filter(k=>L.hidden.indexOf(k)<0&&T[k]);
   const tile=k=>{ const w=isW(k)?wideTileHTML(k):null; return w||T[k]; };
-  if(!ed)return '<div class="pgrid">'+ks.map(k=>isW(k)?tile(k).replace(/^<div class="ptile/,'<div class="ptile w2'):T[k]).join('')+'</div>';
+  if(!ed)return '<div class="pgrid">'+(function(){ let c=0, rows=false; return ks.map(k=>{ let w=isW(k); if(!rows){ if(c>=PROG_CELLS)rows=true; else if(w&&c+2>PROG_CELLS)w=false; } if(!rows)c+=w?2:1; return rows?String(T[k]).replace(/^<div class="ptile/,'<div class="prow'):w?tile(k).replace(/^<div class="ptile/,'<div class="ptile w2'):T[k]; }).join(''); })()+'</div>';
   return '<div class="pgrid ped"'+(L._minH?' style="min-height:'+L._minH+'px"':'')+'>'+ks.map(k=>tile(k).replace(/^<div class="ptile[^"]*"[^>]*>/,'<div class="ptile ed'+(isW(k)?' w2':'')+'" data-pk="'+k+'" data-rk="pw:'+k+'"><button type="button" class="pdel" data-act="progdel" data-k="'+k+'" aria-label="quitar '+escTxt(PROG_LBL[k])+'">−</button><button type="button" class="psz" data-act="progsize" data-k="'+k+'" aria-label="'+(isW(k)?'hacer individual ':'hacer doble ')+escTxt(PROG_LBL[k])+'"><span></span></button><span class="pgrip" data-pgrip="'+k+'" role="button" aria-label="mover '+escTxt(PROG_LBL[k])+'">⠿</span>')).join('')+'</div>'; }
 // la rejilla de 2 columnas con empaque denso, simulada: {clave:[renglón, columna]} (un doble ocupa el renglón entero)
 function progCells(order,wide){ const occ=[], pos={}, free=(r,c)=>!(occ[r]&&occ[r][c]), take=(r,c)=>{ (occ[r]=occ[r]||[])[c]=1; };
@@ -18123,7 +18160,7 @@ function openProgAdd(){ const e=state.progEdit; if(!e)return; const hid=['consis
 PROG_KEYS.push('recov'); PROG_LBL.recov='recovery · readiness'; PROG_KEYS.push('compare'); PROG_LBL.compare='comparar'; PROG_KEYS.push('age'); PROG_LBL.age='fitness age';
 const RV_LADDER=[30,90,180,365], RV_TABS=[7,15,30,90,180,365];   // v378 · ser · las pestañas de toda serie diaria (7D · 15D · 30D · 3M · 6M · 1A); rvFirst sigue buscando desde 30
 // lo que se toca en E5/E6 (role="button") también responde a Enter / espacio con teclado
-const RV_KEYS='.ready.rec,.dmus,.rvr[role="button"],.ptile[data-act="recovdetail"],.cvxdh[role="button"],.cvxr[role="button"]';   /* v366 · D8 · y en //COVERAGE el nombre de un día y el renglón de un músculo */
+const RV_KEYS='.ready.rec,.dmus,.rvr[role="button"],.ptile[data-act="recovdetail"],.prow[data-act="recovdetail"],.cvxdh[role="button"],.cvxr[role="button"]';   /* v366 · D8 · y en //COVERAGE el nombre de un día y el renglón de un músculo */
 document.addEventListener('keydown',e=>{ const t=e.target; if((e.key!=='Enter'&&e.key!==' ')||!t||!t.matches||!t.matches(RV_KEYS))return; e.preventDefault(); t.click(); });
 function preSeries(days,end){ end=end||todayISO(); const from=daysEnding(days,end)[0];
   return (db.sessions||[]).filter(s=>s&&s.date>=from&&s.date<=end).map(sessionPre).filter(p=>p&&(p.rec!=null||p.rdy!=null)).sort((a,b)=>a.t-b.t); }
@@ -18246,9 +18283,8 @@ function _recovScoreSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFC
     A('recovery = promedio por series de los músculos de hoy', rc.rows.length===3&&rc.score===Math.round((q.p*3+100*1)/4));
     A('un músculo sin historial no tiene dato y no entra al promedio', rc.rows[2].id==='calves'&&rc.rows[2].r===null);
     const hB=dayMusclesHTML(rc);
-    A('gym: una fila por músculo con su % de recuperación, el menos recuperado arriba, sin barra ni palabras de estado', (hB.match(/class="line/g)||[]).length===3&&hB.indexOf('>quads<')<hB.indexOf('>biceps<')&&hB.indexOf('>biceps<')<hB.indexOf('>calves<')&&hB.indexOf((q.p<100?'<span class="v ixt"'+mtrInd(q.p/100,'score')+'>':'<span class="v">')+q.p+'%</span>')>0&&hB.indexOf('<span class="v">100%</span>')>0&&hB.indexOf('<span class="v">—</span>')>0&&!/falta|casi|fresco|[█░]|var\(--(warn|good|bad)\)|class="mtr/.test(hB));
-    A('lo que ya está al 100 y lo que no tiene dato van apagados', hB.indexOf('<div class="line"><span class="k">quads')>0&&(hB.match(/class="line fr"/g)||[]).length===2);
-    A('la lista sale también con todo al 100; sin ningún dato, no', /100%/.test(dayMusclesHTML(recoveryOf([{id:'biceps',sets:1}],now)))&&dayMusclesHTML(recoveryOf([{id:'calves',sets:1}],now))==='');
+    A('gym: bajo recovery solo los músculos que no están al 100, con su %, sin barra ni palabras de estado', (hB.match(/class="line/g)||[]).length===(q.p<100?1:0)&&(q.p>=100||hB.indexOf((q.p<REC_ATT?'<span class="v ixt"'+mtrInd(q.p/100,'score')+'>':'<span class="v">')+q.p+'%</span>')>0)&&hB.indexOf('100%')<0&&hB.indexOf('—')<0&&!/falta|casi|fresco|[█░]|var(--(warn|good|bad))|class="mtr/.test(hB));   /* v391 · m1 · U8 */
+    A('con todo al 100 o sin ningún dato, la lista no sale', dayMusclesHTML(recoveryOf([{id:'biceps',sets:1}],now))===''&&dayMusclesHTML(recoveryOf([{id:'calves',sets:1}],now))==='');
     A('el % es el de muscleRecAt (el mismo de //STIMULUS)', recPct(q)===q.p+'%'&&recPct(null)==='—');
     openRecovery(); const shR=(document.getElementById('modal')||{}).innerHTML||''; closeModal();
     A('v341 · RV1 · la hoja de recovery con el esqueleto de readiness: músculo · /100 · descanso, su barra (el que no tiene dato dice — sin barra), y cada fila abre su detalle', (shR.match(/class="rvr y u-tap"/g)||[]).length===3&&shR.indexOf('class="rvr y hd"')>0&&shR.indexOf('<span class="n">/100</span>')>0&&(shR.match(/class="mtr score lv"/g)||[]).length===2&&shR.indexOf('data-act="muscledetail" data-id="quads"')>0&&shR.indexOf('>'+q.p+'<')>0&&!/casi|fresco/.test(shR)&&/no es un diagnóstico/.test(shR));
@@ -19834,6 +19870,7 @@ function _render0(){ try{ ccFreezeTick(); }catch(_){} try{ if(!_sbx)prefSync(); 
   { let keep=_want!=null?_want:(_same?_prevTop:0); const ae=_anc?sigFind(v,_anc):null, ar=(!ae&&_anc)?rkFind(v,_anc.rk):null;
     if(ae)keep=(ae.getBoundingClientRect().top-v.getBoundingClientRect().top)+v.scrollTop-_anc.off; else if(ar)keep=(ar.getBoundingClientRect().top-v.getBoundingClientRect().top)+v.scrollTop-_anc.rkOff;
     if(_same&&_want==null)scrollHold(v,keep); else if(v.scrollTop!==keep)v.scrollTop=keep; state._paintedKey=_key; }
+  if(sc==='workout')try{ wNextMark(v); }catch(_){}   /* v391 · m1 · Q1 */
   if(state._autoScroll&&sc==='workout'){ state._autoScroll=false; const fp=v.querySelector('[data-act="setf"][data-f="rir"]:not([data-locked])'); if(fp)centerEl(fp); }
   // v223: tras confirmar una serie, a la vista la SIGUIENTE de ese ejercicio (no la primera del documento)
   if(state._focusSet&&sc==='workout'){ const f=state._focusSet; state._focusSet=null; const fe=v.querySelector('.setn[data-exi="'+f.exi+'"][data-si="'+f.si+'"]'); showEl(fe); }   // v285 · solo si la serie que sigue no se ve
@@ -19844,6 +19881,22 @@ function _render0(){ try{ ccFreezeTick(); }catch(_){} try{ if(!_sbx)prefSync(); 
 }
 // v285 · T1 · la llave de una vista = la pantalla + lo que la hace OTRA vista (otra bitácora, otra sesión del historial, otra
 // tarjeta de compartir, otro paso del alta). render() conserva la posición mientras la llave no cambie.
+/* v391 · m1 · la serie que sigue (currentSetTarget, la del pie): la única con cajas; lo demás se lee como renglón y enseña su caja al escribir */
+function wNextMark(v){ v=v||document.getElementById('view'); if(!v)return; v.querySelectorAll('.qnext').forEach(e=>e.classList.remove('qnext'));
+  const t=currentSetTarget(), c=t?v.querySelector('.wfocus [data-exi="'+t.exi+'"][data-si="'+t.si+'"]'):null;   /* la misma serie que confirma el pie */
+  const mark=c=>{ const p=c&&c.closest('.pair'), r=c&&(p||c.closest('.srow')); if(!r)return; r.classList.add('qnext'); if(p)p.querySelectorAll('.srow').forEach(x=>x.classList.add('qnext')); }; mark(c);
+  const cur=v.querySelector('.wfocus .ex.current'); if(cur&&!cur.querySelector('.qnext'))mark(cur.querySelector('.dchk:not(.done),.pairdone:not(.done)')); }   /* segunda pasada · el ejercicio enfocado nunca se queda sin campos */
+function _m1SelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK m1: '+n); }; const d0=db, s0=state.stimAll; try{
+    db=migrate({_idfix:true,_fsfix:true,profile:{username:'t',weightKg:70},split:{name:'t',days:[]},sessions:[],meals:{},adhoc:{},settings:{},stack:[]}); bumpIdx();
+    const m=dayMusclesHTML({rows:[{id:'chest',sets:3,r:{p:100}},{id:'quads',sets:3,r:{p:60}},{id:'bicep',sets:2,r:{p:84}}]});
+    A('U8 · bajo recovery solo lo que no está al 100', (m.match(/class="line"/g)||[]).length===2&&m.indexOf(muscleLabel('chest'))<0);
+    A('Q1 · el color solo bajo '+REC_ATT, (m.match(/ixt/g)||[]).length===1);
+    A('U8 · todo al 100 = sin lista', dayMusclesHTML({rows:[{id:'chest',sets:3,r:{p:100}}]})==='');
+    db.settings.progLayout={v:1,order:PROG_KEYS.slice(),hidden:[],wide:[]}; const T={}; PROG_KEYS.slice(0,8).forEach(k=>{ T[k]='<div class="ptile tap" data-k="'+k+'"></div>'; });
+    const g=progGridHTML(T); A('Q1 · progress: '+PROG_CELLS+' tiles y lo demás en renglones', (g.match(/class="prow/g)||[]).length===Math.max(0,Math.min(8,PROG_KEYS.length)-PROG_CELLS)&&(g.match(/<div class="ptile/g)||[]).length===Math.min(PROG_CELLS,8,PROG_KEYS.length));
+    A('U5 · los pasos del alta con coma', OB_ACT.every(x=>!/\d \d{3}/.test(x[2])));
+    state.stimAll=false; A('X3 · sin lista de hoy, //STIMULUS sale completo y sin botón', stimulusSection().indexOf('data-act="stimall"')<0);
+  } finally{ db=d0; state.stimAll=s0; try{ bumpIdx(); }catch(_){} } console.log('m1 self-check OK'); }
 function viewKey(sc){ sc=sc||state.screen; return sc+(sc==='exhist'?'|'+(state._exKey||''):sc==='histedit'?'|'+(state._histSessId||''):sc==='share'?'|'+(state.shareType||'')+'|'+(state.shareId||''):sc==='onboard'?'|'+((db&&db.onb&&db.onb.step)||0):''); }
 // volver a una pantalla a la altura donde la dejaste (render() la apuntó al salir de ella)
 function goBack(screen){ const y=(state._viewScroll||{})[viewKey(screen)]; state._scroll=y>0?y:null; go(screen); }
@@ -20663,7 +20716,7 @@ document.getElementById('app').addEventListener('click',e=>{
     const _sd=db.split&&(db.split.days||[])[selIdx()]; if(slotGate('start'))return;   // v364 · SP14 · fix · 16
     if(false){ trkAsk({title:'tu split y tu última sesión no coinciden',detail:'este día del split no es como lo entrenaste la última vez · ¿empiezas con tu split o como lo entrenaste?',ok:'mi split',cancel:'como lo entrené',dismiss:()=>{}},()=>{ _sd.mt=Date.now(); _go(); },()=>{ _sd.mt=1; _go(); }); return; }   // v355 · SP5 · una vez por día
     openGymPicker({start:_go}); }   // v382 · g3 · Start abre elegir gym; cancelar no arranca nada · v339 · CC3 · entrenar manda sobre el cambio a mano de hoy
-  else if(a==='togglepreview'){ state.previewDay=!state.previewDay; previewFold(el); }   // v382 · g3 · sin repintar: repintar se comería la animación
+  else if(a==='togglepreview'){ state.previewDay=!state.previewDay; previewFold(el); } else if(a==='stimall'){ state.stimAll=!state.stimAll; reRender(); focusEl(document.querySelector('#view [data-act="stimall"]')); }   /* v391 · m1 */   // v382 · g3 · sin repintar: repintar se comería la animación
   else if(a==='loglater'){ if(slotGate('loglater'))return;   /* v364 · fix · 16 */ const w=newWorkSession(); w.loggedAfter=true; w.startMs=null; const y=dayNow(); if(!dayBehind())y.setDate(y.getDate()-1); w.date=todayISO(y); db.activeWork=w; save(); go('workout'); }
   else if(a==='togglenoadv'){ if(db.activeWork){ db.activeWork.noAdvance=!db.activeWork.noAdvance; reRender(); } }
   else if(a==='resume'){ goBack('workout'); }   // v285 · a la serie donde ibas
@@ -21327,7 +21380,7 @@ function progReflow(){ const v=document.getElementById('view'), first=progFlipCa
     if(g&&state.progEdit){ ev.preventDefault(); if(d)up(null);   // un dedo anterior que nunca avisó que se levantó: lo suyo se queda donde iba
       d={k:g.dataset.pgrip,id:ev.pointerId,x0:ev.clientX,y0:ev.clientY,x:ev.clientX,y:ev.clientY,on:false}; try{ g.setPointerCapture(ev.pointerId); }catch(_){}
       window.addEventListener('pointermove',mv,{passive:false}); window.addEventListener('pointerup',up); window.addEventListener('pointercancel',up); return; }
-    if(state.screen!=='progress'||state.progEdit)return; const tile=ev.target.closest&&ev.target.closest('.pgrid .ptile'); if(!tile)return;
+    if(state.screen!=='progress'||state.progEdit)return; const tile=ev.target.closest&&ev.target.closest('.pgrid .ptile,.pgrid .prow'); if(!tile)return;
     lx=ev.clientX; ly=ev.clientY; clearTimeout(lp); lp=setTimeout(()=>{ lp=null; window._swipeGuard=Date.now()+300; try{ navigator.vibrate&&navigator.vibrate(20); }catch(_){} progEditStart(); },500); });
   app.addEventListener('pointermove',ev=>{ if(lp&&Math.hypot(ev.clientX-lx,ev.clientY-ly)>8){ clearTimeout(lp); lp=null; } });
   const lpEnd=()=>{ clearTimeout(lp); lp=null; }; app.addEventListener('pointerup',lpEnd); app.addEventListener('pointercancel',lpEnd);
@@ -26247,7 +26300,7 @@ try{ offerLivePending(livePendingSync()); }catch(_){}
 try{ withTO(idbBootCheck(),12000).catch(()=>idbReleaseHold()).then(()=>{ setTimeout(verRebuildSoon,8000); setTimeout(()=>{ try{ if(!document.getElementById('modal'))posFixRun().catch(()=>{}); }catch(_){} },6000); }); }catch(_){ idbReleaseHold(); }   // v376 · SU1 · luego, una vez, la reconstrucción de las dosis con fecha
 try{ cloudBoot(); }catch(_){}   // v352 · cuentas y nube: apagada (CLOUD_CFG vacío) no hace nada
 try{ growthLog(); }catch(_){}
-try{ promptIdleSession(); }catch(_){} try{ sdReopen(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search) && devHost()){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); _v367SelfCheck(); _h9SelfCheck(); _v370SelfCheck(); _v371SelfCheck(); _v373SelfCheck(); _sec5SelfCheck(); _doseHistSelfCheck(); _gymSplitSelfCheck(); _v376SelfCheck(); _fx1SelfCheck(); _mc10SelfCheck(); _rtSelfCheck(); _wsSelfCheck(); _h10SelfCheck(); _dmSelfCheck(); _dm2SelfCheck(); _fx377SelfCheck(); _sb0SelfCheck(); _mtrSelfCheck(); _macSelfCheck(); _serSelfCheck(); _rstSelfCheck(); _espSelfCheck(); _proSelfCheck(); _sysSelfCheck(); _ser2SelfCheck(); _numSelfCheck(); _luzSelfCheck(); _gy7SelfCheck(); _gy8SelfCheck(); _flxSelfCheck(); _faseSelfCheck(); _fin3SelfCheck(); _conpSelfCheck(); _impSelfCheck(); _t1SelfCheck(); _base2SelfCheck(); _s3SelfCheck(); _g3SelfCheck(); _b3SelfCheck(); _a3SelfCheck(); _i3SelfCheck(); _r3SelfCheck(); _f4SelfCheck(); _u4SelfCheck(); _d4SelfCheck(); _daySelfCheck(); _secSelfCheck(); _a6SelfCheck(); _b7SelfCheck(); _d8SelfCheck(); _c9SelfCheck(); _e1SelfCheck(); _e2SelfCheck(); _e3SelfCheck(); _e4SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()).then(()=>_v374SelfCheck()).then(()=>_f1SelfCheck()).then(()=>_secCloudSelfCheck()).catch(e=>console.error(e)); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hk){   /* v385 · sec · todo dato que llega por enlace pregunta, no solo el histórico */ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos de Salud',detail:'este enlace trae pasos, peso o sueño · acepta solo si viene de tu propio Atajo de iOS',ok:'importar',cancel:'no importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
+try{ promptIdleSession(); }catch(_){} try{ sdReopen(); }catch(_){} try{ if(typeof location!=='undefined' && /[?&]selftest=1/.test(location.search) && devHost()){ const _rawMain=(()=>{ try{ return localStorage.getItem(LS_KEY); }catch(_){ return null; } })(), _rawLive=(()=>{ try{ return localStorage.getItem(LS_LIVE); }catch(_){ return null; } })(), _lc0=_lastClosed; _sbx=true; try{ _identitySelfCheck(); _dropsetSelfCheck(); _baselineSelfCheck(); _variantSelfCheck(); _historyEditSelfCheck(); _idSelfCheck(); _cardioSelfCheck(); _tensionSelfCheck(); _healthSelfCheck(); _readinessSelfCheck(); _loggingSelfCheck(); _mergeSelfCheck(); _streakSelfCheck(); _chartSelfCheck(); _muscleSelfCheck(); _exProfileSelfCheck(); _recoverySelfCheck(); _diagSelfCheck(); _uiSelfCheck(); _v256SelfCheck(); _v257SelfCheck(); _sessSafetyCheck(); _storageSelfCheck(); _lateralitySelfCheck(); _v268SelfCheck(); _v269SelfCheck(); _healthPasteSelfCheck(); _v271SelfCheck(); _exStatusSelfCheck(); _scheduleSelfCheck(); _exHistSelfCheck(); _suppSelfCheck(); _macroVizSelfCheck(); _onbSelfCheck(); _tourSelfCheck(); _v279SelfCheck(); _shareSessSelfCheck(); _atajoSelfCheck(); _v282SelfCheck(); _pulgarSelfCheck(); _comidaSelfCheck(); _estimuloSelfCheck(); _recovScoreSelfCheck(); _scrollSelfCheck(); _altSelfCheck(); _catalogoSelfCheck(); _bioSyncSelfCheck(); _v288SelfCheck(); _catalogo2SelfCheck(); _v290SelfCheck(); _v291SelfCheck(); _v292SelfCheck(); _v293SelfCheck(); _v294SelfCheck(); _substanceSelfCheck(); _tomasSelfCheck(); _enTiSelfCheck(); _sigBarSelfCheck(); _whySelfCheck(); _restFocusSelfCheck(); _footDoneSelfCheck(); _camHugSelfCheck(); _mealsSelfCheck(); _rirCalSelfCheck(); _widgetsSelfCheck(); _prevSessSelfCheck(); _exGroupsSelfCheck(); _perfilSelfCheck(); _phaseSelfCheck(); _hojasSelfCheck(); _aparatoSelfCheck(); _detailSelfCheck(); _wideSelfCheck(); _compareSelfCheck(); _readiness2SelfCheck(); _ageSelfCheck(); _v324SelfCheck(); _doseDaySelfCheck(); _extraSelfCheck(); _adminSelfCheck(); _qtyAllSelfCheck(); _exportSelfCheck(); _v330SelfCheck(); _carbCycleSelfCheck(); _panSelfCheck(); _v333SelfCheck(); _v334SelfCheck(); _v335SelfCheck(); _v336SelfCheck(); _v337SelfCheck(); _v338SelfCheck(); _v339SelfCheck(); _v340SelfCheck(); _v342SelfCheck(); _v343SelfCheck(); _v344SelfCheck(); _v345SelfCheck(); _v346SelfCheck(); _v347SelfCheck(); _v348SelfCheck(); _v349SelfCheck(); _v350SelfCheck(); _v351SelfCheck(); _v352SelfCheck(); _v353SelfCheck(); _v354SelfCheck(); _v355SelfCheck(); _v356SelfCheck(); _v357SelfCheck(); _v358SelfCheck(); _v359SelfCheck(); _v360SelfCheck(); _v361SelfCheck(); _v362SelfCheck(); _v363hSelfCheck(); _v363SelfCheck(); _v364SelfCheck(); _v365SelfCheck(); _v366SelfCheck(); _v367SelfCheck(); _h9SelfCheck(); _v370SelfCheck(); _v371SelfCheck(); _v373SelfCheck(); _sec5SelfCheck(); _doseHistSelfCheck(); _gymSplitSelfCheck(); _v376SelfCheck(); _fx1SelfCheck(); _mc10SelfCheck(); _rtSelfCheck(); _wsSelfCheck(); _h10SelfCheck(); _dmSelfCheck(); _dm2SelfCheck(); _fx377SelfCheck(); _sb0SelfCheck(); _mtrSelfCheck(); _macSelfCheck(); _serSelfCheck(); _rstSelfCheck(); _espSelfCheck(); _proSelfCheck(); _sysSelfCheck(); _ser2SelfCheck(); _numSelfCheck(); _luzSelfCheck(); _gy7SelfCheck(); _gy8SelfCheck(); _flxSelfCheck(); _faseSelfCheck(); _fin3SelfCheck(); _conpSelfCheck(); _impSelfCheck(); _t1SelfCheck(); _base2SelfCheck(); _s3SelfCheck(); _g3SelfCheck(); _b3SelfCheck(); _a3SelfCheck(); _i3SelfCheck(); _r3SelfCheck(); _f4SelfCheck(); _u4SelfCheck(); _d4SelfCheck(); _daySelfCheck(); _secSelfCheck(); _a6SelfCheck(); _b7SelfCheck(); _d8SelfCheck(); _c9SelfCheck(); _e1SelfCheck(); _e2SelfCheck(); _e3SelfCheck(); _e4SelfCheck(); _m1SelfCheck(); } finally{ _sbx=false; _lastClosed=_lc0; try{ if(_rawLive==null)localStorage.removeItem(LS_LIVE); else localStorage.setItem(LS_LIVE,_rawLive); }catch(_){} } let _rawAfter=null; try{ _rawAfter=localStorage.getItem(LS_KEY); }catch(_){} const _same=(()=>{ if(_rawAfter===_rawMain)return true; try{ const a=JSON.parse(_rawAfter), b=_rawMain==null?JSON.parse(JSON.stringify(db)):JSON.parse(_rawMain);   /* v267 · almacén vacío: se compara contra la base real en memoria */ return !!a&&!!b&&((a.profile||{}).username===(b.profile||{}).username)&&((a.sessions||[]).length===(b.sessions||[]).length)&&(JSON.stringify(a.split)===JSON.stringify(b.split)); }catch(_){ return false; } })(); if(!_same)console.error(new Error('SELFCHECK sandbox: una base de juguete llegó a tu disco')); else console.log('sandbox self-check OK'); setTimeout(()=>{ Promise.resolve().then(()=>_idbSelfCheck()).catch(()=>{}).then(()=>_cuentasSelfCheck()).then(()=>_v374SelfCheck()).then(()=>_f1SelfCheck()).then(()=>_secCloudSelfCheck()).catch(e=>console.error(e)); },800);   /* v352 · cuentas, después de idb */ setTimeout(_dsRenderReport,1500); } }catch(e){ console.error(e); } try{ const _sp=new URLSearchParams(location.search); const _hasHistorical=_sp.has('stepsh')||_sp.has('weighth')||_sp.has('stepsq')||_sp.has('sleeph'); const _hk=['steps','stepsh','weight','weighth','stepsq','sleep','sleeph'].some(k=>_sp.has(k)); if(_hk&&!(db.profile&&db.profile.username)){ if(_bootJ)_bootJ.flags.push('urlImportEmpty'); if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ try{ toast('⚠ ese enlace abrió Safari, no tu app','err'); }catch(_){} },600); } else if(_hk){   /* v385 · sec · todo dato que llega por enlace pregunta, no solo el histórico */ const _hsp=_sp; if(history.replaceState)history.replaceState(null,'',location.pathname); setTimeout(()=>{ trkAsk({title:'importar datos de Salud',detail:'este enlace trae pasos, peso o sueño · acepta solo si viene de tu propio Atajo de iOS',ok:'importar',cancel:'no importar'},()=>{ try{ const _imp=importHealth(_hsp); if(_imp.length){ save(); render(); toast('✓ '+_imp.join(' · ')); } }catch(_){} }); },400); } else { const _imp=importHealth(_sp); if(_imp.length){ window._healthImported=_imp; if(history.replaceState)history.replaceState(null,'',location.pathname); } } }catch(_){} save(); render(); if(window._healthImported)setTimeout(()=>toast('✓ '+window._healthImported.join(' · ')),250); if(window._recoveredFromBackup)setTimeout(()=>{try{toast('⚠ se recuperó un respaldo local · revisa tus datos, podrían faltar cambios muy recientes','err');}catch(_){}},600);
 applyDesign(); try{ if(/[?&]design\b/.test(location.search)&&devHost())localStorage.setItem('gymtrk_designmode','1'); if(localStorage.getItem('gymtrk_designmode')==='1')openDesignPanel(); }catch(_){}
 // v285 · T1 · tras una recarga por versión nueva: la pantalla y la altura donde ibas (solo pantallas que se sostienen solas)
 const _bootAt=Date.now(); try{ document.addEventListener('pointerdown',()=>{ window._touched=1; },{capture:true,once:true,passive:true}); }catch(_){}
