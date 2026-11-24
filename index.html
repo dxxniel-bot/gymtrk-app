@@ -2045,7 +2045,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v393';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v394';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -11493,7 +11493,8 @@ function mmCur(){ const T=todayISO(), L=mmList(); return L.find(p=>!p.to)||L.fin
 function mmDays(p){ const to=p.to||todayISO(); return Math.max(1,Math.round((Date.parse(to+'T12:00:00')-Date.parse(p.from+'T12:00:00'))/864e5)+1); }
 function mmSpanTxt(p){ return fmtShort(p.from)+' – '+(p.to?fmtShort(p.to):'hoy')+' · '+mmDays(p)+(mmDays(p)===1?' día':' días'); }
 // prender: abre un periodo que empieza hoy; si el último terminó ayer u hoy, lo continúa (apagar y volver a prender no parte la fiesta)
-function mmStart(){ if(mmCur())return; state._mmNormal=null; const T=todayISO(), Y=shiftDate(T,-1); db.mamarre=mmList(); const last=db.mamarre.filter(p=>p.to&&p.to>=Y&&p.from<=T).sort((a,b)=>a.to<b.to?1:-1)[0];
+// v394 · MM7 · nunca calla: si ya estaba prendido lo dice; reabre solo un periodo que terminó HOY (antes también el de ayer, y el aviso decía «desde» una fecha vieja)
+function mmStart(){ const cur=mmCur(); if(cur){ toast('mamarre ya está prendido · desde '+(cur.from===todayISO()?'hoy':fmtShort(cur.from))); return; } state._mmNormal=null; const T=todayISO(); db.mamarre=mmList(); const last=db.mamarre.filter(p=>p.to&&p.to>=T&&p.from<=T).sort((a,b)=>a.to<b.to?1:-1)[0];
   let undo; if(last){ const prev=last.to; last.to=null; undo=()=>{ last.to=prev; }; } else { const p={id:uid(),from:T,to:null}; db.mamarre.push(p); undo=()=>{ db.mamarre=mmList().filter(x=>x!==p); }; }
   save(); reRender(); toast('✓ mamarre · desde '+(last?fmtShort(last.from):'hoy'),'ok',{undo}); }
 // apagar: el periodo termina hoy (o se quita si empezó hoy y nunca hubo nada que registrar en él… no: se queda, hoy fue mamarre)
@@ -11514,7 +11515,7 @@ function openMamarre(id){ const p=mmList().find(x=>x.id===id); if(!p)return; con
   m.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-ask]'); if(!b)return; ev.stopPropagation(); const k=b.dataset.ask;
     if(k==='no'){ closeAsk(); return; }
     if(k==='del'){ closeAsk(); const prev=mmList(); db.mamarre=prev.filter(x=>x!==p); save(); mmRefresh(); toast('✓ periodo mamarre quitado','ok',{undo:()=>{ db.mamarre=prev; setTimeout(mmRefresh,0); }}); return; }
-    const f=String((document.getElementById('mm_from')||{}).value||''), t=String((document.getElementById('mm_to')||{}).value||'');
+    const f=String((m.querySelector('#mm_from')||{}).value||''), t=String((m.querySelector('#mm_to')||{}).value||'');   /* v394 · de ESTA capa: una que se está cerrando sigue 200 ms en el DOM con los mismos ids */
     if(!/^\d{4}-\d{2}-\d{2}$/.test(f)){ toast('⚠ pon el inicio','err'); return; } if(f>T){ toast('⚠ el inicio no puede ser después de hoy','err'); return; }
     if(t&&(!/^\d{4}-\d{2}-\d{2}$/.test(t)||t<f)){ toast('⚠ el fin va el mismo día o después del inicio','err'); return; } if(t>T){ toast('⚠ el fin no puede ser después de hoy · vacío = sigue','err'); return; }
     if(mmList().some(x=>x!==p&&x.from<=(t||'9999-12-31')&&(!x.to||x.to>=f))){ toast('⚠ se encima con otro periodo mamarre','err'); return; }
@@ -18923,7 +18924,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
   root.querySelectorAll('#se_dayrow button').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
   { const pfs=document.getElementById('se_pform'), pu=document.getElementById('se_pu'); if(pfs&&pu)pfs.addEventListener('change',()=>{ pu.textContent=suppPU({form:pfs.value}); }); if(pfs)pfs.addEventListener('change',()=>{ const w=document.getElementById('se_ppmw'), kk=document.getElementById('se_ppmk'); if(w)w.hidden=!SR_PPM_FORMS[pfs.value]; if(kk&&SR_PPM_FORMS[pfs.value])kk.textContent=SR_PPM_FORMS[pfs.value]; }); }   /* v390 · e2 */
   { const a=document.getElementById('se_brandadd'); if(a)a.onclick=()=>openBrandAdd(it.id);
-    root.querySelectorAll('[data-pr]').forEach(b=>b.onclick=()=>{ const pr=suppProd(it,b.dataset.pr); if(!pr)return; if(b.dataset.do==='use'){ const un=suppUseProd(it,pr); save(); reRender(); openStackEdit(it.id,null,{openProd:true}); toast('✓ '+(pr.brand||'marca')+' · de siempre, desde hoy','ok',{undo:un}); } else { pr.off=1; save(); reRender(); openStackEdit(it.id,null,{openProd:true}); toast('✓ '+(pr.brand||'marca')+' ya no sale al tomarla','ok',{undo:()=>{ delete pr.off; }}); } }); }
+    root.querySelectorAll('[data-pr]').forEach(b=>b.onclick=()=>{ const pr=suppProd(it,b.dataset.pr); if(!pr)return; if(b.dataset.do==='use'){ const u0=suppParFromToday(it,pr.id), u1=suppUseProd(it,pr), un=()=>{ u1(); u0(); }; save(); reRender(); openStackEdit(it.id,null,{openProd:true}); toast('✓ '+(pr.brand||'marca')+' · de siempre, desde hoy','ok',{undo:un}); } else { pr.off=1; save(); reRender(); openStackEdit(it.id,null,{openProd:true}); toast('✓ '+(pr.brand||'marca')+' ya no sale al tomarla','ok',{undo:()=>{ delete pr.off; }}); } }); }
   const _stAct=(to,why)=>{ const sn=suppSnap(it); suppSetStatus(it,to,why); closeModal(); save(); reRender(); toast(it.name+(to==='paused'?' en pausa':' archivado · '+why),'',{undo:()=>suppRestore(it,sn)}); };
   { const b=document.getElementById('se_bottle'); if(b)b.onclick=()=>{ const p=suppProd(it), c=suppCont(it), sz=(p&&p.size)||(c&&c.size); if(!p||!(sz>0)){ toast('⚠ pon lo que trae el frasco','err'); return; }
       const sn=suppSnap(it); suppOpenContainer(it,p.id,sz,todayISO()); closeModal(); save(); reRender(); toast(it.name+' · frasco nuevo de '+sz+' '+suppPU(p),'',{undo:()=>suppRestore(it,sn)}); }; }
@@ -19105,11 +19106,18 @@ function suppBrandLbl(p){ const I=Array.isArray(p.ingredients)&&p.ingredients.le
 // las que puedes estar usando: sin retirar y sin frasco ya cerrado. Dos con la misma dosis dan igual: no se pregunta.
 function suppBrandsAll(it){ return ((it&&it.products)||[]).filter(p=>{ if(!p||p.off)return false; const C=(it.containers||[]).filter(c=>c&&c.prod===p.id); return !C.length||C.some(c=>!c.closed); }); }
 function suppBrandsNow(it){ const L=suppBrandsAll(it), sig=p=>[String(p.dose==null?'':p.dose),p.unit||'',+p.per||1,JSON.stringify((Array.isArray(p.ingredients)?p.ingredients:[]).map(x=>x&&[x.sid,+x.n,x.u]))].join('|'); return new Set(L.map(sig)).size>1?L:[]; }
-function suppTickPick(it,iso,done){ const L=suppBrandsNow(it); if(L.length<2){ done(null); return; } const cur=it.cur, O=L.slice().sort((a,b)=>(b.id===cur)-(a.id===cur));
-  trkMenu('¿cuál tomaste? · '+(it.name||'sustancia'),O.map(p=>[suppBrandLbl(p),()=>done(p)])); }
+// v394 · SU2 · ya no pregunta «¿cuál tomaste?»: la toma es de la marca que estás tomando (it.cur). Si su frasco se acabó y otra marca tiene frasco
+// abierto, esa pasa a ser la actual sola (el frasco vacío se cierra ayer) y lo avisa. Cambiar a mano sigue en su ficha (`use`).
+// el frasco de respaldo que entra cuenta desde hoy: si guardaba su fecha de alta, le cargaría las tomas pasadas sin marca y cambiaría la marca de días pasados
+function suppParFromToday(it,pid){ const T=todayISO(), k=(it.containers||[]).find(x=>x&&x.prod===pid&&!x.closed); if(!k||!(k.opened<T))return ()=>{}; const p0=k.opened; k.opened=T; return ()=>{ k.opened=p0; }; }
+function suppAutoCur(it){ const st=suppStock(it); if(!st||!st.out)return null; const nx=suppBrandsAll(it).find(p=>p.id!==it.cur&&(it.containers||[]).some(k=>k&&k.prod===p.id&&!k.closed)); if(!nx)return null;
+  const o=suppProd(it), c=suppCont(it), c0=c&&c.closed; if(c&&c.prod===it.cur&&!c.closed){ const y=shiftDate(todayISO(),-1); c.closed=y<c.opened?c.opened:y; } const u1=suppParFromToday(it,nx.id), u2=suppUseProd(it,nx);
+  return {from:o,to:nx,undo:()=>{ u2(); u1(); if(c){ if(c0===undefined||c0===null)delete c.closed; else c.closed=c0; } }}; }
+function suppTickPick(it,iso,done){ if(iso===todayISO()){ const sw=suppAutoCur(it); if(sw)toast('✓ '+(it.name||'')+' · se acabó '+(sw.from?(sw.from.brand||sw.from.name||'la anterior'):'la anterior')+' · ahora '+(sw.to.brand||sw.to.name||'la otra'),'ok',{undo:()=>{ sw.undo(); save(); reRender(); }}); }
+  const L=suppBrandsNow(it); done(L.length<2?null:(suppProd(it)||null)); }
 function suppUseProd(it,p){ const R=suppKeep(it), c0=it.cur, s0=it.nutrSrc, undo=()=>{ suppBack(R); it.cur=c0; if(s0===undefined)delete it.nutrSrc; else it.nutrSrc=s0; }, o=suppProd(it); if(o&&o!==p){ if(o.nutr===undefined&&it.nutr)o.nutr=JSON.parse(JSON.stringify(it.nutr)); if(o.dose===undefined){ o.dose=it.dose; o.unit=it.unit; } }   /* v383 · u4 · la que deja guarda lo suyo, para volver a ella */ it.cur=p.id; if(p.dose!==undefined){ it.dose=p.dose; it.unit=p.unit; } if(+p.per>0)it.qty=+p.per; if(p.nutr&&Object.keys(p.nutr).length){ it.nutr=JSON.parse(JSON.stringify(p.nutr)); it.nutrSrc='user'; } else { delete it.nutr; delete it.nutrSrc; } verSync(it); return undo; }
 function openBrandAdd(id){ const it=(db.stack||[]).find(x=>x&&x.id===id); if(!it)return; const r=subOfItem(it), multi=r.items.length>1, L0=ingOf(it)||[];
-  openModal('<h3>another brand <span class="u-o40 u-w4">· '+escTxt(it.name||'sustancia')+'</span></h3><div class="submeta u-mb6">sigue siendo la misma sustancia; al tomarla eliges cuál</div>'
+  openModal('<h3>another brand <span class="u-o40 u-w4">· '+escTxt(it.name||'sustancia')+'</span></h3><div class="submeta u-mb6">sigue siendo la misma sustancia; entra sola cuando se acabe la que tomas</div>'
     +fieldHTML({id:'ba_brand',k:'brand',v:'',attr:' placeholder="—" autocomplete="off"'})
     +(multi?'<div class="seh">por unidad</div><div id="ba_ing">'+ingRowsHTML(r.items.map(m=>{ const x=L0.find(y=>y&&y.sid===m.s.id); return {sid:m.s.id,name:m.s.name,n:x?x.n:'',u:x?x.u:(m.s.unit||'mg')}; }))+'</div>':fieldHTML({id:'ba_dose',k:'dose',v:'',attr:' placeholder="—" inputmode="decimal" autocomplete="off"'})+fieldHTML({id:'ba_unit',k:'unidad',v:it.unit||'mg',opts:[['','—']].concat(['mg','g','mcg','UI','ml','cap','tab','gotas','scoop','puff','%','bebida'].map(u=>[u,u]))}))
     +fieldHTML({id:'ba_per',k:'units per dose',v:'1',attr:' inputmode="decimal" autocomplete="off"'})
@@ -19119,11 +19127,13 @@ function openBrandAdd(id){ const it=(db.stack||[]).find(x=>x&&x.id===id); if(!it
   const R=document.getElementById('modal'); seFldText(R);
   document.getElementById('ba_back').onclick=()=>openStackEdit(id,null,{openProd:true});
   document.getElementById('ba_ok').onclick=()=>{ const brand=val('ba_brand').trim(); if(!brand){ toast('⚠ pon la marca','err'); return; } const ing=multi?ingRead(document.getElementById('ba_ing')):null, dose=multi?'':val('ba_dose').trim(); if(!multi&&!dose){ toast('⚠ pon su dosis','err'); return; } if(multi&&!ing.length){ toast('⚠ pon la dosis de cada una','err'); return; }
-    const sn=JSON.stringify([it.products,it.cur,it.containers]); it.products=it.products||[];
+    const sn=JSON.stringify([it.products,it.cur,it.containers]), st0=suppStock(it); it.products=it.products||[];
     if(!suppProd(it)){ const b0={id:uid(),brand:'',name:'',form:'cápsulas',per:suppPer(it),size:null,dose:it.dose,unit:it.unit,added:it.startDate||todayISO()}; if(it.nutr&&Object.keys(it.nutr).length)b0.nutr=JSON.parse(JSON.stringify(it.nutr)); it.products.push(b0); it.cur=b0.id; }   // lo de hoy pasa a ser una de las dos
     const size=parseFloat(String(val('ba_size')||'').replace(',','.'))||0, np={id:uid(),brand,name:'',form:val('ba_form')||'cápsulas',per:qtyParse(val('ba_per'))||1,size:size||null,dose:multi?(it.dose||''):dose,unit:multi?(it.unit||''):val('ba_unit'),added:todayISO()}; if(ing&&ing.length)np.ingredients=ing;
     it.products.push(np); if(size>0)(it.containers=it.containers||[]).push({id:uid(),prod:np.id,opened:todayISO(),size,par:1});
-    save(); reRender(); openStackEdit(id,null,{openProd:true}); toast('✓ '+brand+' · al tomarla eliges cuál','ok',{undo:()=>{ const a=JSON.parse(sn); it.products=a[0]; if(a[1]==null)delete it.cur; else it.cur=a[1]; if(a[2]==null)delete it.containers; else it.containers=a[2]; if(!it.products)delete it.products; }}); }; }
+    // v394 · SU2 · sin frasco que contar o con el frasco ya vacío, la nueva es la que tomas desde hoy (el vacío se cierra); con stock, entra sola cuando se acabe
+    let uu=null; const now=!st0||st0.out; if(now){ const c=suppCont(it); if(st0&&st0.out&&c&&c.prod!==np.id&&!c.closed){ const y=shiftDate(todayISO(),-1); c.closed=y<c.opened?c.opened:y; } uu=suppUseProd(it,np); }
+    save(); reRender(); openStackEdit(id,null,{openProd:true}); toast('✓ '+brand+(now?' · es la que tomas desde hoy':size>0?' · entra cuando se acabe la actual':' · sin frasco: cámbiala desde su ficha (use)'),'ok',{undo:()=>{ if(uu)uu(); const a=JSON.parse(sn); it.products=a[0]; if(a[1]==null)delete it.cur; else it.cur=a[1]; if(a[2]==null)delete it.containers; else it.containers=a[2]; if(!it.products)delete it.products; }}); }; }
 // ---- mismo nombre, una activa y una archivada ----
 function suppTwinOf(X){ const k=nameKey(X&&X.name); if(!k)return null; return (db.stack||[]).find(y=>y&&y!==X&&suppStatus(y)==='active'&&nameKey(y.name)===k)||null; }
 function suppTwins(){ const skip=(db.settings&&db.settings.dupSkip)||{}, out=[]; (db.stack||[]).forEach(X=>{ if(!X||suppStatus(X)!=='archived')return; const A=suppTwinOf(X); if(!A)return; const g={k:'tw|'+X.id,A,X,sig:A.id+','+X.id}; if(skip[g.k]!==g.sig)out.push(g); }); return out; }
@@ -19369,6 +19379,7 @@ function _e2SelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK e2: '
     _subProf={[s.id]:P};
     const it={id:'mx',name:'minoxidil 5%',category:'meds',dose:'1',unit:'',when:['AM'],periodization:{type:'daily'},products:[{id:'p',form:'spray',per:8,dose:'1',unit:''}],cur:'p',perMl:8};
     const R=subRealDose(it,s,P); A('8 pulsaciones con 8 por ml = 1 ml = 50 mg', R&&R.ml===1&&R.mg===50&&R.pc===5);
+    { const it2=Object.assign({},it,{tickQty:{[todayISO()]:{q:12,b:8}}}), R2=subRealDose(it2,s,P); A('v394 · SU3 · 12 hoy con 8 por ml = 1.5 ml = 75 mg', R2&&R2.ml===1.5&&R2.mg===75); }
     A('llega a la sangre 0.15–2.25 mg (0.3–4.5 %)', R.ab&&Math.abs(R.ab.min-0.15)<1e-9&&Math.abs(R.ab.max-2.25)<1e-9);
     const v=document.createElement('div'); v.innerHTML=subCardBody(P,s,it,{s,dose:null,tier:'name'}); const t=v.textContent;
     A('la ficha lo dice', /8 pulsaciones = 1 ml/.test(t)&&/50 mg/.test(t)&&/0\.15–2\.25 mg/.test(t));
@@ -19384,7 +19395,8 @@ function subConcOf(it){ const p=suppProd(it), txt=[it&&it.name,p&&p.name].filter
 function subR2(x){ x=+x||0; return String(x>=10?Math.round(x*10)/10:x>=1?Math.round(x*100)/100:Math.round(x*1000)/1000); }
 function subRealDose(it,s,P){ if(!it)return null; const p=suppProd(it), form=String((p&&p.form)||it.form||''), u=subUnitKey(it.unit||''); let ml=null, how='';
   if(SR_PPM_FORMS[form]&&form==='gotas'&&!(s&&itemTopical(it,s))&&!subConcOf(it))return null;   /* v390 · e3 */
-  if(SR_PPM_FORMS[form]){ const per=suppPer(it), ppm=subPerMl(it); if(!ppm)return {need:'ppm',form,per}; ml=per/ppm; how=qtyTxt(per)+' '+SR_PPM_FORMS[form]+' = '+subR2(ml)+' ml'; }
+  if(SR_PPM_FORMS[form]){ let qd=null; try{ const t0=(takesOf(it,todayISO())||[])[0]; qd=t0?takeDayQty(t0,todayISO()):null; }catch(_){}   /* v394 · SU3 · si hoy pusiste otra cantidad (12 en vez de 8), la ficha la usa: 12 ÷ 8 = 1.5 ml */
+    const per=qd||suppPer(it), ppm=subPerMl(it); if(!ppm)return {need:'ppm',form,per}; ml=per/ppm; how=qtyTxt(per)+' '+SR_PPM_FORMS[form]+' = '+subR2(ml)+' ml'; }
   else if(u==='ml'){ const d=subItemDose(it); if(!d||!(d.n>0))return null; ml=d.n; how=subR2(ml)+' ml'; }
   else return null;
   const pc=subConcOf(it); if(!pc)return {need:'conc',ml,how};
@@ -19657,7 +19669,9 @@ function openSessionEdit(id){
     +'<div class="sheetbtns"><button class="ok" data-act="ss_save">save</button><button class="cancel" data-act="closemodal">close</button></div>','ssheet'); ssRetype(ty); fldChain(['ss_start','ss_end']); fldText(document.querySelector('#modal .sheet')); }
 // v382 · g3 · el dato de fieldHTML como texto: fecha «27 oct 2026», hora «14:48», el gym tal como lo escribiste. El control nativo sigue siendo el que guarda (ssApply lo lee igual)
 function fldShow(c){ const v=c.value; if(c.tagName==='SELECT'){ const o=c.options[c.selectedIndex]; return o?o.text:'—'; } if(!v)return '—'; if(c.type==='date'){ const p=v.split('-'); return +p[2]+' '+String(MON[+p[1]-1]||p[1]).toLowerCase()+' '+p[0]; } return v; }
-function fldText(box){ if(!box)return; box.querySelectorAll('.fld').forEach(l=>{ const c=l.querySelector('input,select'), w=l.querySelector('.fldv'); if(!c||!w||w.querySelector('.fldt'))return; const t=document.createElement('span'); t.className='fldt'; w.insertBefore(t,c); l.classList.add('fldx'); const up=()=>{ t.textContent=fldShow(c); }; up(); c.addEventListener('input',up); c.addEventListener('change',up); if(c.tagName!=='SELECT'&&!isIOS())c.addEventListener('click',()=>fldOpen(c)); }); }
+function fldText(box){ if(!box)return; box.querySelectorAll('.fld').forEach(l=>{ const c=l.querySelector('input,select'), w=l.querySelector('.fldv'); if(!c||!w||w.querySelector('.fldt'))return; const t=document.createElement('span'); t.className='fldt'; w.insertBefore(t,c); l.classList.add('fldx'); const up=()=>{ t.textContent=fldShow(c); }; up(); c.addEventListener('input',up); c.addEventListener('change',up); if(c.tagName!=='SELECT'&&!isIOS())c.addEventListener('click',()=>fldOpen(c));
+    // v394 · EX1 · el control es invisible: sin cursor ni selección a la vista no había cómo quitar el «1». Al enfocar se selecciona todo y lo que escribes lo reemplaza
+    if(c.tagName==='INPUT'&&/^(text|number|search|tel)$/.test(c.type))c.addEventListener('focus',()=>setTimeout(()=>{ try{ c.setSelectionRange(0,c.value.length); }catch(_){ try{ c.select(); }catch(__){} } },0)); }); }
 // v371 · WS2 · WS3 · la hoja al terminar la sesión. El dueño (21-oct): "Cuando terminen crear una sesión [...] estaría bien que se utilice como una ventana
 // emergente" · "que siga habiendo dos ventanas" · "que también estuviéramos accesible para cargar el file de feedback [...] una vez cargado, pues que [...]
 // actualice". Al guardar sale la hoja de esa sesión con dos pestañas: resumen (los ejercicios como en el historial) y FC (la de Fitbit: su gráfica, su pico
@@ -23936,23 +23950,26 @@ function openApproxMeal(preset){
   openModal(`<h3>approx meal</h3>
    ${foodRingsHTML()}
    <input id="am_tag" type="hidden" value="${escTxt(preset||'comida')}"/>${destRowHTML('am_tagv',preset||'comida')}
-   ${formRow('am_p','protein','g',{num:1,ph:'0'})}${formRow('am_c','carbs','g',{num:1,ph:'0'})}${formRow('am_f','fat','g',{num:1,ph:'0'})}
+   ${formRow('am_p','protein','g',{num:1,ph:'0'})}${formRow('am_c','carbs','g',{num:1,ph:'0'})}${formRow('am_f','fat','g',{num:1,ph:'0'})}${formRow('am_a','alcohol','g',{num:1,ph:'0'})}
    <div id="am_kcal" class="submeta u-mt2 u-mb10 u-mx0 u-data">= 0 kcal</div>
+   <div class="u-mb10"><button type="button" class="b" id="am_drink">+ drink</button> <span class="u-label u-o50">shot, beer, wine…</span></div>
    <div class="sheetbtns"><button class="ok" id="am_go">add</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
-  const upd=()=>{ const P=parseFloat(val('am_p'))||0,C=parseFloat(val('am_c'))||0,F=parseFloat(val('am_f'))||0; const e=document.getElementById('am_kcal'); if(e)e.innerHTML='= <b class="u-fg">'+Math.round(P*4+C*4+F*9)+'</b> kcal'; foodRingsSet({kcal:P*4+C*4+F*9,protein:P,carbs:C,fat:F}); };
-  ['am_p','am_c','am_f'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('input',upd); });
+  // v394 · AL2 · el alcohol también: casilla en gramos (7 kcal/g) y `+ drink` abre los tragos de un toque (los de mamarre; no hace falta prenderlo)
+  const upd=()=>{ const P=parseFloat(val('am_p'))||0,C=parseFloat(val('am_c'))||0,F=parseFloat(val('am_f'))||0,A=parseFloat(val('am_a'))||0; const e=document.getElementById('am_kcal'); if(e)e.innerHTML='= <b class="u-fg">'+Math.round(P*4+C*4+F*9+A*7)+'</b> kcal'; foodRingsSet({kcal:P*4+C*4+F*9+A*7,protein:P,carbs:C,fat:F}); };
+  { const d=document.getElementById('am_drink'); if(d)d.onclick=()=>{ if(['am_p','am_c','am_f','am_a'].some(id=>String(val(id)||'').trim())){ toast('⚠ primero guarda esta comida (add); luego + drink','err'); return; } openMmDrink(); }; }
+  ['am_p','am_c','am_f','am_a'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('input',upd); });
   destRowWire('am_tagv',t=>{ const e=document.getElementById('am_tag'); if(e)e.value=t; });   /* v344 · FD1 · la comida, con el cuadro de nombres de siempre (mealPick) */
   const go=document.getElementById('am_go'); if(go)go.onclick=()=>{
-    const P=parseFloat(val('am_p'))||0,C=parseFloat(val('am_c'))||0,F=parseFloat(val('am_f'))||0;
-    if(P<=0&&C<=0&&F<=0){ toast('⚠ pon al menos un macro (P, C o G)','err'); return; }
+    const P=parseFloat(val('am_p'))||0,C=parseFloat(val('am_c'))||0,F=parseFloat(val('am_f'))||0,A=parseFloat(val('am_a'))||0;
+    if(P<=0&&C<=0&&F<=0&&A<=0){ toast('⚠ pon al menos un macro (P, C, G o alcohol)','err'); return; }
     const tag=((val('am_tag')||'comida').trim())||'comida';
     // G2 · los micronutrientes de una comida aproximada NO se conocen: se guardan como null (antes 0 real, que
     // falseaba el sodio y el Na:K del día) y la fila se lee con `~`.
-    const food={ base:'g', name:'Comida aproximada', brand:'', per100:{kcal:P*4+C*4+F*9,protein:P,carbs:C,fat:F}, sizes:{serving:100}, servingLabel:'porción' };
+    const food={ base:'g', name:'Comida aproximada', brand:'', per100:{kcal:P*4+C*4+F*9+A*7,protein:P,carbs:C,fat:F,alcohol:A}, sizes:{serving:100}, servingLabel:'porción' };
     const nut=computeNutrients(food,'serving',1);            // grams=100 -> nut = los totales exactos
     const t=curDate(); db.meals[t]=db.meals[t]||[]; snapshotGoal(t);
     const item={id:uid(), at:Date.now(), tag:tag, name:'Comida aproximada', qty:1, serving:'porción', approx:true};
-    MACROKEYS.forEach(k=>item[k]=(k==='kcal'||k==='protein'||k==='carbs'||k==='fat')?nut[k]:null); item.water=0;
+    MACROKEYS.forEach(k=>item[k]=(k==='kcal'||k==='protein'||k==='carbs'||k==='fat'||(k==='alcohol'&&A>0))?nut[k]:null); item.water=0;
     item._food={base:'g',per100:food.per100,sizes:food.sizes,servingLabel:'porción',name:food.name,brand:''}; item._unit='serving';
     db.meals[t].push(item); savedToast('✓ comida guardada'); closeModal(); reRender();
   };
@@ -24374,6 +24391,24 @@ const BASE_FOODS=(function(){ const L=[];
   add('Guinness',35,0.1,2.8,0,{br:'Guinness',en:'beer cerveza stout dark',sv:355,base:'ml',alc:3.3}); // P 0.3->0.1 per myfooddiary (0.3 g/12 oz = 0.08/100ml)
   add('Cerveza',43,0.5,3.6,0,{alc:3.6,na:4,k:27,base:'ml',sv:355,en:'beer generic'});   // v354 · K1 · su alcohol (41.6 ≈ 43)
   add('Vino tinto',85,0.1,2.6,0,{s:0.6,na:4,k:127,base:'ml',sv:150,en:'red wine',alc:10.6});
+  // v394 · AL1 · destilados y tragos preparados: «tequila», «shot», «alcohol» no encontraban nada fuera de mamarre. Por 100 ml; un destilado al 40 % = 31.6 g
+  // de alcohol (un shot de 45 ml ≈ 14 g, el trago estándar de MM_DRINKS). kcal = 4·P + 4·C + 9·G + 7·alcohol, siempre cuadran
+  const SPIRIT='shot caballito trago alcohol licor destilado spirit drink';
+  add('Tequila',221,0,0,0,{base:'ml',sv:45,sl:'1 shot',alc:31.6,en:'tequila '+SPIRIT});
+  add('Mezcal',221,0,0,0,{base:'ml',sv:45,sl:'1 shot',alc:31.6,en:'mezcal '+SPIRIT});
+  add('Whisky',221,0,0,0,{base:'ml',sv:45,sl:'1 shot',alc:31.6,en:'whisky whiskey bourbon '+SPIRIT});
+  add('Vodka',221,0,0,0,{base:'ml',sv:45,sl:'1 shot',alc:31.6,en:'vodka '+SPIRIT});
+  add('Ron',221,0,0,0,{base:'ml',sv:45,sl:'1 shot',alc:31.6,en:'rum '+SPIRIT});
+  add('Ginebra',221,0,0,0,{base:'ml',sv:45,sl:'1 shot',alc:31.6,en:'gin '+SPIRIT});
+  add('Brandy',199,0,0,0,{base:'ml',sv:45,sl:'1 shot',alc:28.4,en:'brandy cognac '+SPIRIT});
+  add('Shot (destilado)',221,0,0,0,{base:'ml',sv:45,sl:'1 shot',alc:31.6,en:SPIRIT});
+  add('Vino blanco',77,0.1,2.6,0,{s:1.0,na:5,k:71,base:'ml',sv:150,sl:'1 copa',en:'white wine copa alcohol drink',alc:9.5});
+  add('Michelada',38,0.3,3.6,0,{na:150,base:'ml',sv:355,en:'michelada cerveza preparada beer alcohol drink',alc:3.2});
+  add('Cuba (ron con cola)',75,0,8.6,0,{s:8.6,base:'ml',sv:250,sl:'1 vaso',en:'cuba libre ron cola rum coke cubata alcohol trago drink',alc:5.8});
+  add('Paloma',67,0,8.5,0,{s:8.5,base:'ml',sv:300,sl:'1 vaso',en:'paloma tequila toronja squirt alcohol trago drink',alc:4.7});
+  add('Gin tonic',77,0,6.7,0,{s:6.7,base:'ml',sv:200,sl:'1 vaso',en:'gin tonic ginebra alcohol trago drink',alc:7.2});
+  add('Margarita',136,0,16.5,0,{s:15,base:'ml',sv:200,sl:'1 copa',en:'margarita tequila coctel cocktail alcohol trago drink',alc:10});
+  add('Piña colada',174,0.4,22.7,1.9,{s:22,base:'ml',sv:200,sl:'1 copa',en:'pina colada ron coco coctel cocktail alcohol trago drink',alc:9.2});
   // PREPARADOS & PLATILLOS — composite dishes vary widely; values are reasonable consensus averages.
   add('Guacamole',153,2,8.5,13.5,{fi:6,na:300,k:330,sv:30,en:'guacamole'}); // tiny adjust
   add('Quesadilla',280,12,28,14,{na:540,pc:120,en:'quesadilla'});
@@ -24431,7 +24466,7 @@ function foodRingsSeed(){ window._frAdd={}; const el=document.getElementById('fr
 function openFoodAdd(preset, lockTag){
   const tag=preset||nextMealTag(); window._faLock=!!lockTag;
   openModal(`<div class="fa-wrap">
-     <h3 class="u-mb10">add food</h3>
+     <h3 class="u-mb10"><a data-act="closemodal" class="vb u-mr8" title="cerrar">‹ back</a>add food</h3>
      ${foodRingsHTML()}
      <div class="fa-meal">to <b id="fa_tagname">#${escTxt(tag)}</b>${lockTag?'':'<a data-act="famealwheel">change</a>'}</div>
      <input type="hidden" id="fa_tagtxt" value="${escTxt(tag+'')}"/>
@@ -25583,10 +25618,10 @@ function openNavMenu(){
      ${item('músculos · cómo los cuenta el motor'+(_un?' · '+_un+' sin asignar':''),'muscles')}
      ${item('sustancias · administrar','stack')}
      ${item('compartir el día','sharefood')}
-     ${item('mamarre · '+(mmCur()?'on · desde '+fmtShort(mmCur().from):'off'),'mamarre')}
+     ${item('mamarre · '+(mmCur()?'on · desde '+fmtShort(mmCur().from):'off · turn on'),'mamarre')}
    </div>`);
   document.querySelectorAll('#modal .nvm').forEach(el=>el.onclick=()=>{ const a=el.dataset.nav;
-    if(a==='mamarre'){ closeModal(); mmMenu(); return; }   // v350 · MM1 · su menú: prender o apagar, y las fechas de cada periodo
+    if(a==='mamarre'){ closeModal(); if(mmCur())mmMenu(); else mmStart(); return; }   /* v394 · MM7 · apagado: un toque lo prende desde hoy (con deshacer); prendido: su menú */   // v350 · MM1 · su menú: prender o apagar, y las fechas de cada periodo
     if(a==='muscles'){ openMuscleMap(); return; } if(a==='catalog'){ window._mgSel=[]; openExerciseDirectory(); return; } closeModal();
     if(a==='settings')go('settings'); else if(a==='history')go('history'); else if(a==='splitedit')go('splitedit'); else if(a==='stack')go('stack');
     else if(a==='sharefood'){ state.shareType='food'; go('share'); } });
@@ -26162,7 +26197,7 @@ function _u4SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK u4:
     { const c=it('c'), t=takeOf(c,''), mn=suppBrandsNow(c); A('dos marcas de dosis distinta: se pregunta; la misma dosis, no', mn.length===2&&(()=>{ const s=c.products[0].dose; c.products[0].dose='200'; c.products[0].nutr={caffeine:200}; const z=suppBrandsNow(c).length===0; c.products[0].dose=s; c.products[0].nutr={caffeine:100}; return z; })());
       const old=JSON.stringify(suppNutrOn(c,D(2),takeOf(c,'',D(2)))); takeMark(t,T,'taken',true); t.o.tickProd={[T]:tickProdSnap(c.products[0],c)}; A('la marca elegida da sus nutrientes ese día y los otros días no cambian', suppNutrOn(c,T,takeOf(c,'',T)).caffeine===100&&JSON.stringify(suppNutrOn(c,D(2),takeOf(c,'',D(2))))===old);
       takeMark(t,T,null); A('desmarcar quita la marca del día', !t.o.tickProd);
-      let asked=''; const tm=trkMenu; trkMenu=(tl,its)=>{ asked=tl; its[0][1](); }; try{ suppQuickTick('c',T,''); } finally{ trkMenu=tm; } A('al tomarla pregunta cuál, y la de siempre va primero', /¿cuál tomaste/.test(asked)&&t.o.tickProd[T].p==='c2'); takeMark(t,T,null);
+      let asked=''; const tm=trkMenu; trkMenu=(tl,its)=>{ asked=tl; its[0][1](); }; try{ suppQuickTick('c',T,''); } finally{ trkMenu=tm; } A('v394 · SU2 · al tomarla no pregunta: queda la marca actual', !asked&&t.o.tickProd[T].p===c.cur); takeMark(t,T,null);
       c.products[1].off=1; A('una marca retirada ya no sale', suppBrandsNow(c).length===0); delete c.products[1].off;
       const e=extraSave(T,c,2,'12:00',c.products[0]); A('extra con marca: su dosis y su nutriente', e.prod==='c1'&&e.nutr.caffeine===200); extraDel(T,e.id); }
     // adherencia
@@ -26213,8 +26248,13 @@ function _u4SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK u4:
       { const arch=Object.assign(sel(),{status:'archived',archived:true,notes:'nota nueva'}); delete arch.sepOf; const R=cuStack([mk()],[arch],{n:0}), a=R.find(y=>y.id==='ua'); A('final 1 · archivado sin sello: queda la toma, con sus marcas y lo que le cambiaste', !R.some(y=>y.id==='ux')&&a.more[0].was.notes==='nota nueva'&&!!a.more[0].ticks[D(1)]&&a.more[0].end>=D(1)); }
       { const a2=mk(); a2.more[0].id='m2'; a2.more[0].was.sepOf='mu'; const v=Object.assign(sel(),{status:'archived',archived:true}), R=cuStack([a2],[v],{n:0}); A('final 1 · unida otra vez después de separar: no revive', !R.some(y=>y.id==='ux')&&R.find(y=>y.id==='ua').more.length===1); }
       { const r9=suppUnite(it('a'),it('x')), b9=suppSplitTake(it('a'),r9.take); A('final 1 · separar sella el registro', b9.sepOf===r9.take); delete b9.sepOf; } }
-    { const K={id:'nb',name:'zz etiqueta',category:'supp',dose:'1',unit:'cap',when:['AM'],periodization:{type:'daily'},startDate:D(10),ticks:{},nutr:{sodium:33},nutrSrc:'user'}; db.stack.push(K); verSync(K); openBrandAdd('nb'); const M=document.getElementById('modal'); M.querySelector('#ba_brand').value='B'; M.querySelector('#ba_dose').value='9'; M.querySelector('#ba_ok').click(); closeModal(); const b0=suppProd(K); A('final 3 · la marca de siempre nace con tu etiqueta', b0.nutr&&b0.nutr.sodium===33&&K.products.length===2);
+    { const K={id:'nb',name:'zz etiqueta',category:'supp',dose:'1',unit:'cap',when:['AM'],periodization:{type:'daily'},startDate:D(10),ticks:{},nutr:{sodium:33},nutrSrc:'user'}; db.stack.push(K); verSync(K); openBrandAdd('nb'); const M=document.getElementById('modal'); M.querySelector('#ba_brand').value='B'; M.querySelector('#ba_dose').value='9'; M.querySelector('#ba_ok').click(); closeModal(); const b0=K.products[0]; A('final 3 · la marca de siempre nace con tu etiqueta', b0.nutr&&b0.nutr.sodium===33&&K.products.length===2); A('v394 · SU2 · sin frasco que contar, la marca nueva es la que tomas', K.cur===K.products[1].id); suppUseProd(K,b0);   /* lo de abajo prueba la de siempre como actual */
       const t=takeOf(K,''); takeMark(t,T,'taken',true); t.o.tickProd={[T]:tickProdSnap(b0,K)}; A('final 3 · marcarla da su etiqueta, no cero', suppNutrOn(K,T,takeOf(K,'',T)).sodium===33); delete b0.nutr; t.o.tickProd={[T]:tickProdSnap(b0,K)}; A('final 3 · también en un producto viejo sin nutr', suppNutrOn(K,T,takeOf(K,'',T)).sodium===33); const e=extraSave(T,K,2,'',b0); A('final 3 · y en un extra', e.nutr.sodium===66); extraDel(T,e.id); takeMark(t,T,null); db.stack=db.stack.filter(x=>x!==K); }
+    { const K={id:'ac',name:'zz auto',category:'supp',dose:'100',unit:'mg',when:['AM'],periodization:{type:'daily'},startDate:D(10),ticks:{},products:[{id:'a',brand:'A',per:1,dose:'100',unit:'mg',form:'cápsulas',size:10},{id:'b',brand:'B',per:1,dose:'100',unit:'mg',form:'cápsulas',size:30}],cur:'a',containers:[{id:'ca',prod:'a',opened:D(10),size:10},{id:'cb',prod:'b',opened:D(8),size:30,par:1}]};   // v394 · SU2
+      db.stack.push(K); verSync(K); const t=takeOf(K,''); for(let i=10;i>=1;i--)takeMark(t,D(i),'taken',false); bumpIdx(); const p5=(suppProdOn(K,D(5))||{}).id;
+      let asked=''; const tm=trkMenu; trkMenu=tl=>{ asked=tl; }; try{ stackToggleTick('ac',T,''); } finally{ trkMenu=tm; }
+      A('v394 · SU2 · se acabó A: pasa sola a B sin preguntar, B empieza hoy (29) y los días pasados siguen siendo A', !asked&&K.cur==='b'&&suppLeft(K).left===29&&(suppProdOn(K,D(5))||{}).id===p5&&p5==='a'&&K.containers[0].closed===D(1));
+      db.stack=db.stack.filter(x=>x!==K); }
     { const K={id:'nc',name:'zz par',category:'supp',dose:'1',unit:'cap',when:['AM'],periodization:{type:'daily'},startDate:D(10),ticks:days(1,2),products:[{id:'qa',brand:'A',form:'cápsulas',per:1,size:30,dose:'1',unit:'cap'}],cur:'qa',containers:[{id:'ka',prod:'qa',opened:D(5),size:30}]}; db.stack.push(K); verSync(K); const q0=takeUnits(takeOf(K,''),T), L0=suppLeft(K).left; openBrandAdd('nc'); const M=document.getElementById('modal'); M.querySelector('#ba_brand').value='B'; M.querySelector('#ba_dose').value='3'; M.querySelector('#ba_per').value='3'; M.querySelector('#ba_size').value='60'; M.querySelector('#ba_ok').click(); closeModal(); const t=takeOf(K,''); A('final 4 · otra marca con frasco no cambia lo de hoy', takeUnits(t,T)===q0&&q0===1&&suppProdOn(K,T).id==='qa'&&verSync(K)===0); takeMark(t,T,'taken',true); A('final 4 · marcar gasta lo de siempre', suppLeft(K).left===L0-1); takeMark(t,T,null);
       const pb=K.products.find(x=>x.brand==='B'), un=suppUseProd(K,pb); A('final 4 · si la haces de siempre, sí cuenta', suppProdOn(K,T).id===pb.id&&takeUnits(takeOf(K,''),T)===3); un();
       suppSetStatus(K,'archived','se acabó'); A('BAJO · se acabó cierra el suyo y deja el de la otra', K.containers.find(c=>c.id==='ka').closed===T&&K.containers.filter(c=>!c.closed).length===1); suppReactivate(K); A('BAJO · reactivar abre el suyo aunque haya otro paralelo', K.containers.filter(c=>!c.closed).length===2&&suppCont(K).prod==='qa'); db.stack=db.stack.filter(x=>x!==K); }
