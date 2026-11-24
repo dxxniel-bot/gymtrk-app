@@ -2045,7 +2045,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v394';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v395';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -19372,7 +19372,7 @@ function subMiniHTML(Pm,r,T){ return r.items.map(m=>{ const P=Pm&&Pm[m.s.id], s=
       +G.map(x=>subLineHTML(subSideG('grave'),x.text,x.dose||'')).join(''); }).join('')+SUB_DISCLAIM; }
 // la ficha completa
 /* v390 · e2 · dosis real: unidades de una toma → ml → mg de la sustancia */
-const SR_PPM_FORMS={spray:'pulsaciones',gotas:'gotas'};
+const SR_PPM_FORMS={spray:'pulsaciones',gotas:'gotas'}, SPRAY_PPM=8;
 function _e2SelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK e2: '+n); }; const p0=_subProf; try{
     const s=subOfName({name:'minoxidil'}).items[0].s;
     const P={route:['topica','oral'],absorb:[{route:'topica',min:0.3,max:4.5,ctx:'piel sana',src:[1]}],sources:[{n:1,cite:'x'}],doses:[{kind:'ficha',ctx:'tópica',min:1,max:1,unit:'ml',per:'aplicacion',route:'topica'},{kind:'ficha',ctx:'oral',min:5,max:40,unit:'mg',per:'dia',route:'oral'}]};
@@ -19384,7 +19384,8 @@ function _e2SelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK e2: '
     const v=document.createElement('div'); v.innerHTML=subCardBody(P,s,it,{s,dose:null,tier:'name'}); const t=v.textContent;
     A('la ficha lo dice', /8 pulsaciones = 1 ml/.test(t)&&/50 mg/.test(t)&&/0\.15–2\.25 mg/.test(t));
     A('contra la dosis tópica de la ficha, no la oral', /dentro de la dosis de la ficha/.test(t)&&!/por debajo/.test(t)); { const w=document.createElement('div'); w.innerHTML=subCardBody(P,s,it,{s,dose:{n:5,u:'%'},tier:'name'}); A('el 5 % del nombre no es tu dosis: son los ml', w.textContent.split(' ').join('').indexOf('tudosis1ml')>=0&&/dentro de la dosis de la ficha/.test(w.textContent)); }
-    const n1=Object.assign({},it); delete n1.perMl; A('sin pulsaciones por ml: lo pide, sin inventar', subRealDose(n1,s,P).need==='ppm'&&!/50 mg/.test((()=>{ const w=document.createElement('div'); w.innerHTML=subCardBody(P,s,n1,{s,dose:null,tier:'name'}); return w.textContent; })()));
+    const n1=Object.assign({},it); delete n1.perMl; { const Rs=subRealDose(n1,s,P); A('v395 · spray sin pulsaciones por ml: 8 por ml, marcado con ~', Rs&&Rs.ml===1&&Rs.mg===50&&/^~/.test(Rs.how)); }
+    { const n2=Object.assign({},n1,{products:[{id:'p',form:'gotas',per:8,dose:'1',unit:''}]}); A('sin gotas por ml: lo pide, sin inventar', subRealDose(n2,s,P).need==='ppm'&&!/50 mg/.test((()=>{ const w=document.createElement('div'); w.innerHTML=subCardBody(P,s,n2,{s,dose:null,tier:'name'}); return w.textContent; })())); }
     A('sin concentración en el nombre: da ml, no mg', subRealDose(Object.assign({},it,{name:'minoxidil'}),s,P).need==='conc');
     A('en tabletas no hay ml que sacar', subRealDose({name:'minoxidil 5 mg',dose:'5',unit:'mg',products:[{id:'q',form:'tabletas',per:1}],cur:'q'},s,P)===null);
     A('oral en tabletas: se compara con la oral', /dentro de la dosis de la ficha/.test(String((subDoseVerdict(P,s,{name:'minoxidil',dose:'10',unit:'mg',category:'meds',periodization:{type:'daily'},products:[{id:'q',form:'tabletas',per:1}],cur:'q'},{n:10,u:'mg'})||{}).t)));
@@ -19396,7 +19397,8 @@ function subR2(x){ x=+x||0; return String(x>=10?Math.round(x*10)/10:x>=1?Math.ro
 function subRealDose(it,s,P){ if(!it)return null; const p=suppProd(it), form=String((p&&p.form)||it.form||''), u=subUnitKey(it.unit||''); let ml=null, how='';
   if(SR_PPM_FORMS[form]&&form==='gotas'&&!(s&&itemTopical(it,s))&&!subConcOf(it))return null;   /* v390 · e3 */
   if(SR_PPM_FORMS[form]){ let qd=null; try{ const t0=(takesOf(it,todayISO())||[])[0]; qd=t0?takeDayQty(t0,todayISO()):null; }catch(_){}   /* v394 · SU3 · si hoy pusiste otra cantidad (12 en vez de 8), la ficha la usa: 12 ÷ 8 = 1.5 ml */
-    const per=qd||suppPer(it), ppm=subPerMl(it); if(!ppm)return {need:'ppm',form,per}; ml=per/ppm; how=qtyTxt(per)+' '+SR_PPM_FORMS[form]+' = '+subR2(ml)+' ml'; }
+    // v395 · en spray, sin dato tuyo: 8 pulsaciones = 1 ml (lo común en minoxidil en spray), con `~` y cómo cambiarlo. Gotas sigue pidiendo el dato
+    const per=qd||suppPer(it); let ppm=subPerMl(it), est=false; if(!ppm&&form==='spray'){ ppm=SPRAY_PPM; est=true; } if(!ppm)return {need:'ppm',form,per}; ml=per/ppm; how=(est?'~':'')+qtyTxt(per)+' '+SR_PPM_FORMS[form]+' = '+subR2(ml)+' ml'+(est?' · 8 por ml es lo común en spray; si el tuyo es otro, cámbialo al editar':''); }
   else if(u==='ml'){ const d=subItemDose(it); if(!d||!(d.n>0))return null; ml=d.n; how=subR2(ml)+' ml'; }
   else return null;
   const pc=subConcOf(it); if(!pc)return {need:'conc',ml,how};
