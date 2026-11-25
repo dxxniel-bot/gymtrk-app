@@ -97,6 +97,7 @@
   .sgoal b{font-weight:400; color:var(--o70);} .sgoal .cv{color:var(--o40); margin-left:var(--s1);} .sgoal:active{opacity:var(--op-press);}
   .sgoal::after{content:''; position:absolute; left:-12px; right:-8px; top:-4px; height:44px;}
   .status .uname{font-weight:800; font-size:var(--t-data); color:var(--fg);}
+  .status .uname{position:relative;} .status .uname::after{content:''; position:absolute; left:-8px; right:-8px; top:-14px; height:44px;}   /* v397 · U4 · `u/usuario` medía 144×16: el toque llega a 44 sin mover nada */
   .status .back{position:relative; display:inline-block; margin-top:var(--s2); font-size:var(--t-data); color:var(--o60); padding:var(--s3) 0; cursor:pointer;}   /* v267 · [‹ back] como acción de texto (antes caja) */
   .status .back::before{content:'['; color:var(--o40);} .status .back::after{content:']'; color:var(--o40);} .status .back:active{color:var(--fg);}
   .status .back>i{position:absolute; left:-8px; right:-8px; top:-6px; bottom:-6px;}
@@ -104,7 +105,7 @@
   .status .streak{font-size:var(--t-data); font-weight:800; color:var(--o50);}
   .status .streak.lv1 b{color:var(--o60);} .status .streak.lv2 b{color:var(--o70);} .status .streak.lv3 b{color:var(--fg);}   /* v341 · R2 · el nivel se lee en el número, sin texto de más */
   .status .streak.lv4 b,.status .streak.lv5 b,.status .streak.lv6 b,.status .streak.lv7 b{color:var(--fg);}
-  .status .streak{position:relative; z-index:1;} .status .streak::after{content:''; position:absolute; left:calc(-1 * var(--s3)); right:calc(-1 * var(--s3)); bottom:calc(-1 * (var(--s2) + var(--s1))); height:44px;} .status .sgoal::after{top:0; height:28px;}   /* v341 · los dos toques de 44: la racha de 0 a 44 y `meta:` de 44 a 88 (debajo de la barra no hay nada que tocar) */
+  .status .streak{position:relative; z-index:1;} .status .streak::after{content:''; position:absolute; left:calc(-1 * var(--s3)); right:calc(-1 * var(--s3)); bottom:calc(-1 * (var(--s2) + var(--s1))); height:44px;} .status .sgoal::after{top:0; height:44px;}   /* v341 · los dos toques de 44: la racha de 0 a 44 y `meta:` de 44 a 88 (debajo de la barra no hay nada que tocar) */
   .status .streak.lv0 b{color:var(--o50);}   /* v341 · el número sube parejo por nivel: 0 · 1 · 2 · 3 = o50 · o60 · o70 · fg; desde el 4, invertido */
   .status b{color:var(--o70); font-weight:inherit;}
   /* v370 · UI1 · "el header, es donde está el usuario, el horario, el streak y la meta, eso debe siempre estar fixeado… en todos los screens": la cabecera queda
@@ -186,7 +187,7 @@
   .line{display:flex; align-items:baseline; gap:10px; font-size:var(--t-data); padding:var(--s2) 0;}
   .line .k{color:var(--o60);} .line .dots{flex:1; border-bottom:var(--bw-leader) dotted var(--line); transform:translateY(-3px);} .line .v{color:var(--fg);}
   .line.stat .k{color:var(--o50);} .line.stat .v{font-weight:700;}
-  .line.stat.tap{cursor:pointer;}   /* v270 · el renglón entero se toca (antes solo el número); mismo alto que sus vecinos */
+  .line.stat.tap{cursor:pointer; min-height:44px; align-items:center;}   /* v397 · U4 · pasos, sueño y sync medían 24 de alto */   /* v270 · el renglón entero se toca (antes solo el número); mismo alto que sus vecinos */
   .vrow{margin-bottom:var(--s4);} .vtop{display:flex;justify-content:space-between;align-items:baseline;font-size:var(--t-data);margin-bottom:6px;} .vm{color:var(--fg);} .vn{color:var(--o50);font-size:var(--t-label);} .vd{color:var(--o40);}
   /* v228 · landmarks reales en //EFFECTIVE VOLUME + pantalla de músculos */
   .mmrow{display:flex; align-items:center; justify-content:space-between; gap:var(--s3); padding:6px 0; border-bottom:var(--bw-sep) solid var(--o10);}
@@ -619,7 +620,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .lact:active{background:var(--o10);} .lact[aria-disabled="true"]{color:var(--o30); border-color:var(--o10);}
   .lbody{padding-bottom:var(--s2);}
   .lcg{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:var(--s3);}
-  .lc{display:flex; align-items:center; gap:var(--s3); min-width:0; min-height:36px; padding:0 var(--s2) 0 0; border:0; border-bottom:var(--bw-sep) solid var(--o10); background:none; color:var(--fg); font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
+  .lc{display:flex; align-items:center; gap:var(--s3); min-width:0; min-height:44px; padding:0 var(--s2) 0 0; border:0; border-bottom:var(--bw-sep) solid var(--o10); background:none; color:var(--fg); font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
   .lc .k{flex:0 0 auto; color:var(--o40);} .lc .t{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .lc .m{flex:0 0 auto; font-size:var(--t-label); color:var(--o50);} .lc .x{flex:0 0 auto; color:var(--o40);}
   .lc.on{color:var(--o40);} .lc.on .k{color:var(--good);} .lc:active{background:var(--o10);}   /* v325 · tomado va en --o40 (antes --o35: bajo el piso de texto de B-11) */
@@ -627,8 +628,8 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
      siempre regrese al siguiente día a la dosis gestionada" · "solo el número de cantidad de pastilla, 2, 3 etc, no los mg". La celda es
      `○ 2 melatonina`: toda ella marca (un botón de fondo) y el NÚMERO es su propio toque (cuántas hoy, o cuántas siempre). El de siempre va
      en gris; el cambiado hoy, en blanco. */
-  .lc.sp{position:relative;} .lc.sp>.lct{position:absolute; inset:0; margin:0; padding:0; border:0; background:none; color:inherit; font:inherit; cursor:pointer;}
-  .lcq{position:relative; z-index:1; flex:0 0 auto; align-self:stretch; min-width:44px; margin:calc(-1 * var(--s2)) calc(-1 * var(--s3)); padding:0 var(--s2); border:0; background:none; color:var(--o60); font-family:inherit; font-size:var(--t-data); font-weight:700; letter-spacing:var(--ls-num); text-align:center; white-space:nowrap; cursor:pointer;}   /* 2.ª vuelta · su toque mide 44 × 44 (antes 33 × 35) */
+  .lc.sp{position:relative;} .lc.sp>.lct{position:absolute; inset:0 0 calc(-1 * var(--bw-sep)) 0; margin:0; padding:0; border:0; background:none; color:inherit; font:inherit; cursor:pointer;}
+  .lcq{position:relative; z-index:1; flex:0 0 auto; align-self:stretch; min-width:44px; min-height:44px; margin:calc(-1 * var(--s2)) calc(-1 * var(--s3)); padding:0 var(--s2); border:0; background:none; color:var(--o60); font-family:inherit; font-size:var(--t-data); font-weight:700; letter-spacing:var(--ls-num); text-align:center; white-space:nowrap; cursor:pointer;}   /* 2.ª vuelta · su toque mide 44 × 44 (antes 33 × 35) */
   .lcq.chg{color:var(--fg);} .lc.on .lcq{color:inherit;} .lc.on .lcq.chg{color:var(--o60);}
   .lc.sp{min-height:calc(44px + var(--bw-sep)); padding-top:var(--s2); padding-bottom:var(--s2);} .lc.sp .k{min-width:var(--s5);}   /* el glifo en su casilla: ○ y ✓ miden distinto y recorrían el número; y deja 12 px de marcar antes del número */
   /* v326 · S-EXTRA · un extra registrado se lee como una toma hecha (✓, tenue): cuántas delante y su hora al final; tocarlo abre su hoja */
@@ -710,7 +711,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .dots3{display:block; width:2px; height:2px; margin-right:10px; border-radius:50%; background:currentColor; box-shadow:5px 0 0 currentColor, 10px 0 0 currentColor/*ds:exempt*/;}   /* la "sombra" dibuja los puntos 2 y 3 */
   .mlbody{margin-left:calc(var(--s5) + var(--s2)); padding-bottom:var(--s2); border-left:var(--bw-rule) solid var(--o20);}   /* v324 · M10 · "no se diferencia entre los alimentos de la meal y el título": los alimentos van con sangría y una guía, como hijos de su comida */
   .mlbody .mdmeal{padding-left:var(--s4);}
-  .mit{display:flex; align-items:center; gap:var(--s3); width:100%; min-height:36px; padding:0 0 0 var(--s4); border:0; background:none; color:inherit; font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
+  .mit{display:flex; align-items:center; gap:var(--s3); width:100%; min-height:44px; padding:0 0 0 var(--s4); border:0; background:none; color:inherit; font-family:inherit; font-size:var(--t-data); text-align:left; cursor:pointer;}
   .mit .nm{flex:1; min-width:0; overflow-wrap:anywhere; color:var(--o70);} .mit .q{font-weight:700; color:var(--o70);} .mit .kc{flex:0 0 auto; color:var(--o50);}
   .mit:active,.mit.exp{background:var(--o10);}
   .mit .nm1{display:block;} .mit .mmac{display:block; font-size:var(--t-label); color:var(--o50); line-height:var(--lh-tight); margin-top:1px;} .mit .mmac b{color:var(--fg); font-weight:700;}   /* v271 · macros por alimento, el principal en blanco */
@@ -833,6 +834,7 @@ button.chrs{cursor:pointer;} button.chrs::after{content:''; position:absolute; l
   .md3 .mdfl{grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:var(--s3); min-height:44px; color:var(--o70); cursor:pointer;}   /* v285 · fatiga acumulada: una fila que abre su hoja */
   .md3{display:grid; grid-template-columns:max-content max-content minmax(0,1fr); column-gap:var(--s4); row-gap:var(--s4); align-items:baseline; font-size:var(--t-data); padding:var(--s2) 0;} .md3 .mdbar{grid-column:1/-1; margin:0;} .mscd .md3 .mdv{text-align:left; white-space:nowrap; font-weight:700;} .mscd .md3 .mdsub{margin-left:0; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   /* v256 · modo enfoque: solo el ejercicio en curso se lee; lo demás queda tenue (tocarlo lo vuelve el actual) */
+  .wline::after{content:''; position:absolute; left:0; right:0; top:-6px; bottom:-6px;}   /* v397 · U4 · 32 → 44 sin mover la línea */
   .wline{position:relative; display:flex; align-items:center; gap:var(--s3); width:100%; height:32px; margin:var(--s3) 0 var(--s4); padding:0; border:0; background:none; color:var(--fg); font-family:inherit; text-align:left; cursor:pointer;}
   .wline .wtn{font-size:var(--t-section); font-weight:800; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .wline .wtm{margin-left:auto; font-size:var(--t-label); color:var(--o50); white-space:nowrap;} .wline .wtx{font-size:var(--t-label); color:var(--o50);} .wline .wtx.up{display:inline-block; transform:rotate(180deg);}
@@ -1360,7 +1362,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   #fa_q{width:100%; height:44px; border:var(--bw-field) solid var(--o40); border-radius:var(--r-ctl); background:transparent; color:var(--fg); font-size:var(--t-field); padding:0 var(--s4); margin-bottom:10px;}
   /* U2 · atajos del sheet como una fila de acciones de texto (MFP pone buscar arriba y los atajos en fila) */
   .fa-acts{display:flex; gap:var(--s5); align-items:center; padding:var(--s2) var(--s1) 0;}
-  .fa-acts a{font-size:var(--t-label); color:var(--o60); cursor:pointer; display:inline-flex; align-items:center; min-height:44px; margin:calc(-1 * var(--s4)) 0; padding:0;}   /* v344 · toque de 44 */
+  .fa-acts a{font-size:var(--t-label); color:var(--o60); cursor:pointer; display:inline-flex; align-items:center; min-height:44px; min-width:44px; margin:calc(-1 * var(--s4)) 0; padding:0;}   /* v344 · toque de 44 */
   .fa-meal{display:flex; align-items:center; gap:var(--s3); margin:0 0 var(--s3); font-size:var(--t-data); color:var(--o50);}
   .fa-meal b{color:var(--fg); font-weight:700;} .fa-meal a{font-size:var(--t-label); color:var(--o60); cursor:pointer; display:inline-flex; align-items:center; min-height:44px; padding:0 var(--s2); margin:calc(-1 * (var(--s5) + var(--s2) + var(--s1))) 0 calc(-1 * (var(--s2) + var(--s1)));}   /* v344 · 44 de toque hacia arriba: el renglón sigue de 16 y no tapa el buscador de abajo */
   .fa-btns{display:flex; gap:var(--s3);}
@@ -1403,8 +1405,8 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .tprog{white-space:nowrap; color:var(--o60); font-variant-numeric:tabular-nums;} .tprog b{font-weight:400; color:var(--fg); letter-spacing:0;} .tprog i{font-style:normal; color:var(--o50);}
   /* day navigator (macros) */
   .dnavh{display:flex; align-items:center; gap:var(--s1);}
-  .dnlbl-wrap{position:relative; display:inline-flex;} .dnlbl-wrap .dcal{position:absolute; inset:0; width:100%; height:100%; opacity:0; border:0; padding:0; margin:0; background:none; color:transparent; cursor:pointer; -webkit-appearance:none; appearance:none;}
-  .dnav{font-size:var(--t-section); color:var(--o50); cursor:pointer; padding:6px 10px; line-height:var(--lh-tight); user-select:none; display:inline-flex; align-items:center; min-height:44px;}   /* v256: la flecha no pesa más que la fecha que mueve (22 → 16) */ .dnav:active{color:var(--fg);}
+  .dnlbl-wrap{position:relative; display:inline-flex; align-items:center; min-height:44px;}   /* v397 · U4 · la fecha (con su calendario invisible encima) medía 18 de alto */ .dnlbl-wrap .dcal{position:absolute; inset:0; width:100%; height:100%; opacity:0; border:0; padding:0; margin:0; background:none; color:transparent; cursor:pointer; -webkit-appearance:none; appearance:none;}
+  .dnav{font-size:var(--t-section); color:var(--o50); cursor:pointer; padding:6px 10px; line-height:var(--lh-tight); user-select:none; display:inline-flex; align-items:center; justify-content:center; min-height:44px; min-width:44px;}   /* v256: la flecha no pesa más que la fecha que mueve (22 → 16) */ .dnav:active{color:var(--fg);}
   .dnlbl{font-size:var(--t-section); font-weight:800; letter-spacing:var(--ls-ui); cursor:pointer; min-width:96px; text-align:center;}
   /* ── design mode: live spacing editor (?design=1) ── */
   .dz{position:fixed; left:8px; right:8px; bottom:8px; z-index:var(--z-dev); background:var(--card); border:var(--bw-chrome) solid var(--border); border-radius:var(--r-float); padding:10px var(--s4); max-height:48vh; overflow-y:auto; -webkit-overflow-scrolling:touch; box-shadow:var(--shadow-float); font-family:'JetBrains Mono',monospace;}
@@ -1568,7 +1570,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .sprq{flex:0 0 auto; min-width:var(--s5); color:var(--o60); font-weight:700; letter-spacing:var(--ls-num); text-align:center;}
   .sprn{flex:1; min-width:0; overflow-wrap:anywhere; line-height:var(--lh-ui);}
   .sprv{flex:0 0 auto; max-width:50%; font-size:var(--t-label); color:var(--o50); text-align:right; line-height:var(--lh-ui);}
-  .sprc{grid-column:5; min-width:var(--s6); min-height:44px; margin:0; padding:0; border:0; background:none; color:var(--o40); font-family:inherit; font-size:var(--t-data); text-align:right; cursor:pointer;}   /* el › en su columna: alineado en todos los renglones, y abre la misma hoja */
+  .sprc{grid-column:5; min-width:44px; min-height:44px; margin:0; padding:0; border:0; background:none; color:var(--o40); font-family:inherit; font-size:var(--t-data); text-align:right; cursor:pointer;}   /* el › en su columna: alineado en todos los renglones, y abre la misma hoja */
   .sprow.off .sprq,.sprow.off .sprn,.sprow.sprdz .sprn{color:var(--o50);} .sprow.on .sprn,.sprow.on .sprq,.sprow.sk .sprn,.sprow.sk .sprq{color:var(--o50);}
   .sprt{grid-column:3; min-width:44px; min-height:44px; margin:0; padding:0 var(--s2); border:0; background:none; color:var(--o50); font-family:inherit; font-size:var(--t-label); letter-spacing:var(--ls-num); cursor:pointer;}
   .sprow>.vb{grid-column:4; align-self:center; margin:0 0 0 var(--s2);}   /* sin los márgenes negativos de .vb: no pisa a sus vecinos */
@@ -1901,7 +1903,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 .pfd{display:grid; grid-template-columns:minmax(0,1fr) 15ch 8ch; column-gap:var(--s3); align-items:baseline; margin-top:var(--s1); font-size:var(--t-data); font-variant-numeric:tabular-nums;} .pfe{color:var(--o70);} .pfs{color:var(--o70);} .pfn{color:var(--o50); text-align:right; white-space:nowrap;}
 
   /* v382 · a3 · ajustes: filas de 32 con toque de 44 (::after); toda la pantalla al mismo ritmo */
-  .stt .line{min-height:36px; padding:0; align-items:center; position:relative; gap:var(--s2);}
+  .stt .line{min-height:44px; padding:0; align-items:center; position:relative; gap:var(--s2);}
   .stt .line[data-act]::after{content:''; position:absolute; left:0; right:0; top:0; bottom:0;}   /* v382 · r3 · toda la fila, sin encimarse con la vecina */
   .stt .line .k{min-width:0;} .stt .line .dots{min-width:var(--s3);} .stt .line .v{font-weight:400; text-align:right; max-width:75%; overflow-wrap:break-word;} .stt .line .rchev{margin-left:0;}
   .stt .sthint{font-size:var(--t-label); color:var(--o50); line-height:var(--lh-ui); margin:calc(-1 * var(--s1)) 0 var(--s1);}
@@ -2045,7 +2047,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v396';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v397';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -7769,6 +7771,7 @@ function _dsRenderCheck(root){ root=root||document.getElementById('app'); const 
     const bf=cs.backdropFilter||cs.webkitBackdropFilter; if(bf&&bf!=='none'&&!e.closest(DS_CHROME))note('blur',tag(e));
     if(e.matches('button,a,input,select,textarea,[data-act],[role=button],[role=tab]')&&!(e.parentElement&&e.parentElement.closest('button,[data-act]'))){
       let w=r.width, h=r.height; const af=getComputedStyle(e,'::after'); if(af&&af.content&&af.content!=='none'&&af.position==='absolute'){ w=Math.max(w,parseFloat(af.width)||0); h=Math.max(h,parseFloat(af.height)||0); }
+      { const hi=e.querySelector(':scope>i:empty'); if(hi&&getComputedStyle(hi).position==='absolute'){ const ir=hi.getBoundingClientRect(); w=Math.max(w,ir.width); h=Math.max(h,ir.height); } }   /* v397 · U4 · el `‹ back` de la cabecera lleva su toque en un <i> */
       if(w<44||h<44)note('hit',tag(e)+' '+Math.round(w)+'×'+Math.round(h)); } });
   return out; }
 // v268 · barra de progreso, ticker del spinner, cola del arranque y el perfil nuevo (en sandbox: nada llega a tu disco)
