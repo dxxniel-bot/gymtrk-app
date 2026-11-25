@@ -2036,6 +2036,39 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .m-on{--mt:var(--good);} .m-over{--mt:var(--bad);} .m-under{--mt:var(--warn);} .cm4 .cd.m-on::after,.cm4 .cd.m-over::after,.cm4 .cd.m-under::after{background:var(--mt);}
   .c4l{display:grid; grid-template-columns:1fr 1fr; gap:var(--s2) var(--s3); margin-top:var(--s3); font-size:var(--t-label); color:var(--o60); line-height:var(--lh-ui);} .c4l span{display:flex; align-items:center; gap:var(--s2); min-width:0;} .c4l i{flex:0 0 16px; height:12px; border-radius:var(--r-mark); background:var(--pt,var(--track));} .c4l i.tr{height:3px; background:var(--mt);}
   .c4d{display:flex; align-items:baseline; gap:var(--s2); padding:var(--s1) 0; font-size:var(--t-data);} .c4d .k{color:var(--o60); white-space:nowrap;} .c4d .dots{flex:1; min-width:var(--s3);} .c4d .v{color:var(--fg); text-align:right;}
+
+/* v398 · FM1 · el renglón grande (B, elegido por el dueño el 24-nov): un solo estilo para escribir en todas las hojas. El renglón entero se toca
+   (56 de alto), la etiqueta a la izquierda en minúscula, el valor a la derecha (los números grandes), sin cajas ni corchetes; al escribir, su
+   línea de abajo se pone blanca. Cubre los tres estilos viejos sin tocar su HTML: .fld (fieldHTML), .obr (formRow) y .field (etiqueta arriba). */
+#modal .fld,#asklayer .fld,#modal .obr:not(.obstack),#asklayer .obr:not(.obstack),
+#modal .field:has(> label):has(> input:not([type=range]):not([type=checkbox])),#modal .field:has(> label):has(> select),#asklayer .field:has(> label):has(> input),
+#modal .field.row2>div:has(> label):has(> input),#modal .field.row2>div:has(> label):has(> select),#modal .field.row3>div:has(> label):has(> input),#modal .qar{display:flex; align-items:center; gap:var(--s3); min-height:56px; margin:0; padding:0; border-bottom:var(--bw-sep) solid var(--o10); font-size:var(--t-data); cursor:text;}
+#modal .field.row2,#modal .field.row3{display:block; margin:0;}
+#modal .fld:focus-within,#asklayer .fld:focus-within,#modal .obr:focus-within,#asklayer .obr:focus-within,#modal .field:focus-within,#asklayer .field:focus-within,#modal .field>div:focus-within,#modal .qar:focus-within{border-bottom-color:var(--fg);}
+#modal .field label,#asklayer .field label{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+#modal .fld .k,#asklayer .fld .k,#modal .obk,#asklayer .obk,#modal .field label,#asklayer .field label{flex:0 1 auto; min-width:0; margin:0; padding:0; font-size:var(--t-data); font-weight:400; color:var(--o60); letter-spacing:0; text-transform:lowercase;}
+#modal .fld:focus-within .k,#asklayer .fld:focus-within .k,#modal .obr:focus-within .obk,#modal .field:focus-within label{color:var(--fg);}
+#modal .obk::before,#asklayer .obk::before{content:none;} #modal .obk,#asklayer .obk{padding-left:0;}
+#modal .fld .dots,#asklayer .fld .dots{display:none;}
+#modal .fld .fldv,#asklayer .fld .fldv{margin-left:auto; font-size:var(--t-field); font-weight:700; text-align:right;}
+#modal .fld .fldv::before,#modal .fld .fldv::after,#asklayer .fld .fldv::before,#asklayer .fld .fldv::after{content:none;}
+#modal .fld.fnum .fldv,#asklayer .fld.fnum .fldv{font-size:var(--t-display); font-weight:800; letter-spacing:var(--ls-num);}
+#modal .obv,#asklayer .obv{flex:1 1 auto; justify-content:flex-end;}
+#modal .obr .obi,#asklayer .obr .obi,#modal .field:has(> label)>input,#modal .field:has(> label)>select,#asklayer .field:has(> label)>input,#modal .field>div:has(> label)>input,#modal .field>div:has(> label)>select,#modal .qar .qai{flex:1 1 auto; width:auto; min-width:0; height:54px; margin:0; padding:0; border:0; border-radius:0; background:none; text-align:right; font-size:var(--t-field); font-weight:700; color:var(--fg);}
+#modal .obr .obi[inputmode=decimal],#modal .obr .obi[inputmode=numeric],#modal .obr .obi[type=number],#modal .field:has(> label)>input[type=number],#modal .field:has(> label)>input[inputmode=decimal],#modal .field:has(> label)>input[inputmode=numeric],#modal .field>div:has(> label)>input[type=number],#asklayer .field:has(> label)>input[type=number],#modal .qar .qai{font-size:var(--t-display); font-weight:800; letter-spacing:var(--ls-num);}
+#modal .ssheet .fld + .fld{border-top:0;}
+#modal .senf .k,#modal .seing .k{text-transform:none;}
+#modal .sheet:has(.sheetbtns.xsave){scroll-padding-bottom:88px;}   /* al escribir, el campo no queda debajo del guardar fijo */
+#modal .obr .obi::placeholder,#modal .field input::placeholder,#modal .fld input::placeholder,#asklayer .field input::placeholder{font-size:var(--t-data); font-weight:400; color:var(--o40); letter-spacing:0;}   /* el ejemplo no grita: va chico y tenue aunque el número sea grande */
+#modal .sheetbtns.xsave{margin-left:calc(-1 * var(--sp-sheet)); margin-right:calc(-1 * var(--sp-sheet)); padding-left:var(--sp-sheet); padding-right:var(--sp-sheet);}   /* el guardar fijo cubre todo el ancho de la hoja (los chips con margen negativo se asomaban) */
+/* menos y más: las cantidades se resuelven sin teclado; tocar el número deja escribir */
+.fmst{position:relative; z-index:1; flex:0 0 44px; width:44px; height:44px; padding:0; border:var(--bw-ctl) solid var(--o20); border-radius:var(--r-ctl); background:none; color:var(--o70); font-family:inherit; font-size:var(--t-display); line-height:1; cursor:pointer;}
+.fmst:active{background:var(--o10); color:var(--fg);}
+#modal .fstep .fmst.m{margin-left:auto;} #modal .fstep .fldv{margin-left:0; min-width:5ch; justify-content:center; text-align:center;}
+#modal .fstep>input,#modal .fstep .qai,#modal .fstep .obi{flex:0 0 5ch; text-align:center;}
+/* el error junto a su campo */
+#modal .fmerr,#asklayer .fmerr{border-bottom-color:var(--fg) !important;} .fmerr .k,.fmerr label,.fmerr .obk{color:var(--fg) !important;}   /* el color solo en el ⚠ (canon §2.5: bordes y frases sin color) */
+.fmerrt{padding:var(--s1) 0 var(--s2); font-size:var(--t-label); color:var(--o70);}
 </style>
 </head>
 <body>
@@ -2047,7 +2080,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v397';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v398';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -10662,7 +10695,7 @@ function _extraSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
     openExtraAdd(T); let m=document.getElementById('modal'), rows=[...m.querySelectorAll('.nvm[data-x]')];
     A('+ extra abre tu lista con tus nombres: lo activo y lo que está en pausa (lo archivado no), y [otra…] pegado abajo junto a cerrar', rows.map(r=>r.dataset.x).join()==='k1,z1'&&/^potasio/.test(rows[0].textContent)&&/paused/.test(rows[1].textContent)&&/other…/.test(m.querySelector('.sheetbtns.xsave.spl #ex_other').textContent)&&!/mg/.test(rows[0].textContent));
     rows[0].click(); m=document.getElementById('modal'); A('al elegir uno pide cuántas (las de una toma de siempre) y la hora (ahora)', !!m.querySelector('#ex_q')&&m.querySelector('#ex_q').value==='2'&&/^\d\d:\d\d$/.test(m.querySelector('#ex_t').value)&&/tu toma de siempre: 2$/.test(m.querySelector('#ex_sum').textContent));
-    m.querySelector('#ex_q').value='0'; m.querySelector('#ex_ok').click(); A('sin cuántas no guarda', !!document.getElementById('modal')&&/^⚠/.test(msg));
+    m.querySelector('#ex_q').value='0'; m.querySelector('#ex_ok').click(); A('sin cuántas no guarda y lo dice junto al campo (v398 · FM1)', !!document.getElementById('modal')&&!!m.querySelector('.fmerr #ex_q')&&/pon cuántas/.test((m.querySelector('.fmerrt')||{}).textContent||''));
     const k0=extrasOn(T).length; m.querySelector('#ex_q').value='5'; m.querySelector('#ex_ok').click(); m.querySelector('#ex_ok').click();   // el segundo toque (o Enter) mientras se cierra no registra otro
     A('guardar lo registra UNA vez, cierra, deja la pestaña EXTRA a la vista y avisa corto, con deshacer', extrasOn(T).length===k0+1&&extrasOn(T)[k0].qty===5&&!document.getElementById('modal')&&state.suppSeg==='otros'&&msg==='✓ extra · 5 potasio'&&msg.length<=29&&typeof undo==='function');
     undo(); A('…y el deshacer lo quita', extrasOn(T).length===k0);
@@ -11519,7 +11552,7 @@ function openMamarre(id){ const p=mmList().find(x=>x.id===id); if(!p)return; con
     if(k==='no'){ closeAsk(); return; }
     if(k==='del'){ closeAsk(); const prev=mmList(); db.mamarre=prev.filter(x=>x!==p); save(); mmRefresh(); toast('✓ periodo mamarre quitado','ok',{undo:()=>{ db.mamarre=prev; setTimeout(mmRefresh,0); }}); return; }
     const f=String((m.querySelector('#mm_from')||{}).value||''), t=String((m.querySelector('#mm_to')||{}).value||'');   /* v394 · de ESTA capa: una que se está cerrando sigue 200 ms en el DOM con los mismos ids */
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(f)){ toast('⚠ pon el inicio','err'); return; } if(f>T){ toast('⚠ el inicio no puede ser después de hoy','err'); return; }
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(f)){ fmErr('mm_from','pon el inicio'); return; } if(f>T){ toast('⚠ el inicio no puede ser después de hoy','err'); return; }
     if(t&&(!/^\d{4}-\d{2}-\d{2}$/.test(t)||t<f)){ toast('⚠ el fin va el mismo día o después del inicio','err'); return; } if(t>T){ toast('⚠ el fin no puede ser después de hoy · vacío = sigue','err'); return; }
     if(mmList().some(x=>x!==p&&x.from<=(t||'9999-12-31')&&(!x.to||x.to>=f))){ toast('⚠ se encima con otro periodo mamarre','err'); return; }
     closeAsk(); const pf=p.from, pt=p.to; p.from=f; p.to=t||null; save(); mmRefresh(); toast('✓ mamarre · '+mmSpanTxt(p),'ok',{undo:()=>{ p.from=pf; p.to=pt; setTimeout(mmRefresh,0); }}); }); }
@@ -11615,7 +11648,7 @@ function openMmDrinkOther(){ openModal('<h3>drink · other</h3>'+formRow('mo_n',
     +'<div class="sheetbtns"><button class="ok" id="mo_go">add</button><button class="cancel" id="mo_back">‹ drinks</button></div>');
   document.getElementById('mo_back').onclick=()=>openMmDrink();
   document.getElementById('mo_go').onclick=()=>{ const n=String(val('mo_n')||'').trim()||'trago', ml=parseFloat(String(val('mo_ml')||'').replace(',','.'))||0, pc=parseFloat(String(val('mo_pc')||'').replace(',','.'))||0;
-    if(!(ml>0)||!(pc>0)||pc>96){ toast('⚠ pon cuánto (ml) y su % de alcohol','err'); return; } const a=Math.round(ml*pc/100*0.789*10)/10, kk=parseFloat(String(val('mo_k')||'').replace(',','.'))||0, cb=kk>a*7?Math.round((kk-a*7)/4*10)/10:0;
+    if(!(ml>0)){ fmErr('mo_ml','pon cuántos ml'); return; } if(!(pc>0)){ fmErr('mo_pc','pon su % de alcohol'); return; } if(pc>96){ fmErr('mo_pc','el % de alcohol va de 1 a 96'); return; } const a=Math.round(ml*pc/100*0.789*10)/10, kk=parseFloat(String(val('mo_k')||'').replace(',','.'))||0, cb=kk>a*7?Math.round((kk-a*7)/4*10)/10:0;
     const it=mmPush({tag:'tragos',name:n,serving:numTxt(ml)+' ml',approx:true,protein:0,carbs:cb,fat:0,alcohol:a,kcal:mmKcal(0,cb,0,a),water:Math.round(ml/1000*1000)/1000});
     mmGuard(); closeModal(); mmSaved('✓ '+n+' · '+a+' g de alcohol',()=>{ mmDropId(it.id); }); }; }
 // comida aproximada en dos toques: el tipo y el tamaño en una tabla (cada botón dice sus kcal); [macros a mano] abre la de siempre
@@ -14452,7 +14485,7 @@ function openExtraQty(iso,sid){ const it=(db.stack||[]).find(x=>x&&x.id===sid); 
   const paint=()=>{ const pu=puOf(), e=document.getElementById('ex_pu'); if(e)e.textContent=pu&&pu!=='u'?pu:''; const q=qtyParse(val('ex_q'))||perOf(), I=(pk&&Array.isArray(pk.ingredients)?pk.ingredients:null)||ingOf(it), s=document.getElementById('ex_sum'); if(s)s.textContent=(I?ingTxt(I,q)+' · ':'')+'tu toma de siempre: '+qtyTxt(perOf())+(subOfItem(it).items.length>1&&!I?' · dosis de cada sustancia sin poner: la pones en su ficha de edición':''); };
   paint(); document.getElementById('ex_q').addEventListener('input',paint);
   R.querySelectorAll('#ex_br [data-br]').forEach(b=>b.onclick=()=>{ R.querySelectorAll('#ex_br button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); pk=suppProd(it,b.dataset.br); const e=document.getElementById('ex_q'); if(e){ e.value=qtyTxt(perOf()); e.dispatchEvent(new Event('input',{bubbles:true})); } });
-  const go=()=>{ if(busy)return; const n=qtyParse(val('ex_q')); if(!n){ toast('⚠ pon cuántas','err'); return; } busy=true; extraDone(iso,extraSave(iso,it,n,val('ex_t'),pk)); };
+  const go=()=>{ if(busy)return; const n=qtyParse(val('ex_q')); if(!n){ fmErr('ex_q','pon cuántas'); return; } busy=true; extraDone(iso,extraSave(iso,it,n,val('ex_t'),pk)); };
   document.getElementById('ex_ok').onclick=go; document.getElementById('ex_back').onclick=()=>openExtraAdd(iso);
   ['ex_q','ex_t'].forEach(id=>{ const e=document.getElementById(id); if(e)e.addEventListener('keydown',ev=>{ if(ev.key==='Enter')go(); }); }); }
 // `otro…`: algo que no está en tu lista (nombre y cuántas). Si es un mineral con sales conserva la forma química de la toma puntual de antes.
@@ -14466,7 +14499,7 @@ function openExtraOther(iso,pre){ pre=pre||{};   // v348 · S-XLOG · pre = {nam
     strip.innerHTML='<span class="u-good u-label">✓</span> <span class="u-label u-o60">'+escTxt(R.map(x=>x.s.name).join(' + '))+'</span>';
     if(s.forms&&R.length<2){ const df=detectForm(nm,s); fb.innerHTML='<div class="field row2 u-mt6"><div><label>FORMA QUÍMICA</label><select id="ad_form">'+Object.keys(s.forms).map(fk=>'<option value="'+escTxt(fk)+'"'+(fk===df?' selected':'')+'>'+escTxt(fk)+' · '+Math.round(s.forms[fk]*100)+'%</option>').join('')+'</select></div><div><label>MG POR PASTILLA</label><input id="ad_dose" type="text" inputmode="decimal" autocomplete="off"/></div></div>'; } };
   document.getElementById('ad_name').addEventListener('input',paint); if(pre.cat){ document.getElementById('modal').dataset.xcat='1'; paint(); }
-  const go=()=>{ if(busy)return; const name=val('ad_name'); if(!name){ toast('⚠ pon un nombre','err'); return; } const qty=qtyParse(val('ad_qty')); if(!qty){ toast('⚠ pon cuántas','err'); return; } busy=true;
+  const go=()=>{ if(busy)return; const name=val('ad_name'); if(!name){ fmErr('ad_name','pon un nombre'); return; } const qty=qtyParse(val('ad_qty')); if(!qty){ toast('⚠ pon cuántas','err'); return; } busy=true;
     const o={name,qty,time:val('ad_time')||''}, mg=parseFloat(String(val('ad_dose')||'').replace(',','.')); let nutr=null;
     if(se&&se.forms&&se.elem&&mg>0){ const form=val('ad_form'), em=Math.round(elementalMg(mg,se,form)*qty*100)/100; o.elem=se.elem; o.form=form; o.compoundMg=mg; o.elementalMg=em; nutr={}; nutr[se.elem]=em; }
     { const IL=ib?ingRead(ib):[]; if(IL.length){ o.ing=IL; nutr=nutrScale(subItemNutr({name,category:'supp',_ing:IL,_q:1}),qty); } }   /* v383 · u4 · dos sustancias en una unidad */
@@ -14480,7 +14513,7 @@ function openExtraEdit(iso,id){ const a=extrasOn(iso).find(x=>x&&x.id===id); if(
     +fieldHTML({id:'ex_q2',k:'how many',v:qtyTxt(extraQty(a)),attr:' inputmode="decimal" autocomplete="off"'})+fieldHTML({id:'ex_t2',k:'time',type:'time',v:a.time||''})+(Array.isArray(a.ing)&&a.ing.length?'<div class="sehint">'+escTxt(ingTxt(a.ing,extraQty(a)))+'</div>':'')
     +'<div class="sheetbtns"><button class="ok" id="ex_ok2">save</button><button class="cancel danger" id="ex_del">remove</button><button class="cancel" data-act="closemodal">cancel</button></div>','sub4');
   seFldText(document.getElementById('modal')); const back=()=>{ const L=extrasOn(iso), i=L.findIndex(x=>x&&x.id===id); if(i>=0)L[i]=JSON.parse(snap); };
-  const go=()=>{ const n=qtyParse(val('ex_q2')); if(!n){ toast('⚠ pon cuántas','err'); return; } if(n!==extraQty(a))extraSetQty(iso,a,n); a.time=val('ex_t2')||''; rkAnchor('ls:supps'); save(); closeModal(); reRender(); _lastTap=null;
+  const go=()=>{ const n=qtyParse(val('ex_q2')); if(!n){ fmErr('ex_q2','pon cuántas'); return; } if(n!==extraQty(a))extraSetQty(iso,a,n); a.time=val('ex_t2')||''; rkAnchor('ls:supps'); save(); closeModal(); reRender(); _lastTap=null;
     toast('✓ extra · '+qtyTxt(extraQty(a))+' '+(a.name||''),'ok',{undo:back}); };
   document.getElementById('ex_ok2').onclick=go; ['ex_q2','ex_t2'].forEach(k=>{ const e=document.getElementById(k); if(e)e.addEventListener('keydown',ev=>{ if(ev.key==='Enter')go(); }); });
   document.getElementById('ex_del').onclick=()=>{ const x=extraDel(iso,id); if(!x)return; rkAnchor('ls:supps'); save(); closeModal(); reRender(); _lastTap=null; toast('✓ extra quitado','ok',{undo:()=>{ extraPut(iso,x); }}); }; }
@@ -19017,7 +19050,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
     if(d0!==d1)out.push('dosis: '+(d0||'—')+' → '+(d1||'—'));
     return out; };
   root.querySelector('#se_save').onclick=()=>{
-    const name=val('se_name'); if(!name){ toast('⚠ pon un nombre','err'); return; }
+    const name=val('se_name'); if(!name){ fmErr('se_name','pon un nombre'); return; }
     // v275 · volver con otra marca: si el nombre ya estaba en pausa o archivado, se retoma ESE (sus tomas y su historial siguen)
     const dor=isNew&&!opt.forceNew?suppFindDormant(name):null;
     if(dor){ const dp=suppProd(dor); trkMenu('"'+dor.name+'" ya estaba '+(suppStatus(dor)==='paused'?'en pausa':'archivado')+(dp&&dp.brand?' · '+dp.brand:''),[
@@ -19129,7 +19162,7 @@ function openBrandAdd(id){ const it=(db.stack||[]).find(x=>x&&x.id===id); if(!it
     +'<div class="sheetbtns"><button class="ok" id="ba_ok">save</button><button class="cancel" id="ba_back">‹ back</button></div>','sub4');
   const R=document.getElementById('modal'); seFldText(R);
   document.getElementById('ba_back').onclick=()=>openStackEdit(id,null,{openProd:true});
-  document.getElementById('ba_ok').onclick=()=>{ const brand=val('ba_brand').trim(); if(!brand){ toast('⚠ pon la marca','err'); return; } const ing=multi?ingRead(document.getElementById('ba_ing')):null, dose=multi?'':val('ba_dose').trim(); if(!multi&&!dose){ toast('⚠ pon su dosis','err'); return; } if(multi&&!ing.length){ toast('⚠ pon la dosis de cada una','err'); return; }
+  document.getElementById('ba_ok').onclick=()=>{ const brand=val('ba_brand').trim(); if(!brand){ fmErr('ba_brand','pon la marca'); return; } const ing=multi?ingRead(document.getElementById('ba_ing')):null, dose=multi?'':val('ba_dose').trim(); if(!multi&&!dose){ toast('⚠ pon su dosis','err'); return; } if(multi&&!ing.length){ toast('⚠ pon la dosis de cada una','err'); return; }
     const sn=JSON.stringify([it.products,it.cur,it.containers]), st0=suppStock(it); it.products=it.products||[];
     if(!suppProd(it)){ const b0={id:uid(),brand:'',name:'',form:'cápsulas',per:suppPer(it),size:null,dose:it.dose,unit:it.unit,added:it.startDate||todayISO()}; if(it.nutr&&Object.keys(it.nutr).length)b0.nutr=JSON.parse(JSON.stringify(it.nutr)); it.products.push(b0); it.cur=b0.id; }   // lo de hoy pasa a ser una de las dos
     const size=parseFloat(String(val('ba_size')||'').replace(',','.'))||0, np={id:uid(),brand,name:'',form:val('ba_form')||'cápsulas',per:qtyParse(val('ba_per'))||1,size:size||null,dose:multi?(it.dose||''):dose,unit:multi?(it.unit||''):val('ba_unit'),added:todayISO()}; if(ing&&ing.length)np.ingredients=ing;
@@ -19716,7 +19749,7 @@ function openSessionEdit(id){
     +'<div class="sheetbtns"><button class="ok" data-act="ss_save">save</button><button class="cancel" data-act="closemodal">close</button></div>','ssheet'); ssRetype(ty); fldChain(['ss_start','ss_end']); fldText(document.querySelector('#modal .sheet')); }
 // v382 · g3 · el dato de fieldHTML como texto: fecha «27 oct 2026», hora «14:48», el gym tal como lo escribiste. El control nativo sigue siendo el que guarda (ssApply lo lee igual)
 function fldShow(c){ const v=c.value; if(c.tagName==='SELECT'){ const o=c.options[c.selectedIndex]; return o?o.text:'—'; } if(!v)return '—'; if(c.type==='date'){ const p=v.split('-'); return +p[2]+' '+String(MON[+p[1]-1]||p[1]).toLowerCase()+' '+p[0]; } return v; }
-function fldText(box){ if(!box)return; box.querySelectorAll('.fld').forEach(l=>{ const c=l.querySelector('input,select'), w=l.querySelector('.fldv'); if(!c||!w||w.querySelector('.fldt'))return; const t=document.createElement('span'); t.className='fldt'; w.insertBefore(t,c); l.classList.add('fldx'); const up=()=>{ t.textContent=fldShow(c); }; up(); c.addEventListener('input',up); c.addEventListener('change',up); if(c.tagName!=='SELECT'&&!isIOS())c.addEventListener('click',()=>fldOpen(c));
+function fldText(box){ if(!box)return; if(box.nodeType)fmWire(box); box.querySelectorAll('.fld').forEach(l=>{ const c=l.querySelector('input,select'), w=l.querySelector('.fldv'); if(!c||!w||w.querySelector('.fldt'))return; const t=document.createElement('span'); t.className='fldt'; w.insertBefore(t,c); l.classList.add('fldx'); const up=()=>{ t.textContent=fldShow(c); }; up(); c.addEventListener('input',up); c.addEventListener('change',up); if(c.tagName!=='SELECT'&&!isIOS())c.addEventListener('click',()=>fldOpen(c));
     // v394 · EX1 · el control es invisible: sin cursor ni selección a la vista no había cómo quitar el «1». Al enfocar se selecciona todo y lo que escribes lo reemplaza
     if(c.tagName==='INPUT'&&/^(text|number|search|tel)$/.test(c.type))c.addEventListener('focus',()=>setTimeout(()=>{ try{ c.setSelectionRange(0,c.value.length); }catch(_){ try{ c.select(); }catch(__){} } },0)); }); }
 // v371 · WS2 · WS3 · la hoja al terminar la sesión. El dueño (21-oct): "Cuando terminen crear una sesión [...] estaría bien que se utilice como una ventana
@@ -21949,8 +21982,8 @@ function openModal(html,cls){ const cur=document.getElementById('modal'); const 
   _sheetIn=true; try{ closeModal(); } finally { _sheetIn=false; }
   // DS-3: si había un sheet (abierto o saliendo) esto es un cambio de contenido → sin animación de entrada
   const g=window._modalGhost; const swap=had||!!(g&&g.isConnected); if(g){ try{g.remove();}catch(_){} window._modalGhost=null; }
-  const m=document.createElement('div'); m.className='modal'+(sheetLow(html,cls)?' low':'')+(swap?'':' in'); m.id='modal'; m.innerHTML=`<div class="sheet glass-strong ${cls||''}">${html}</div>`; if(!/\bnodismiss\b/.test(cls||''))m.addEventListener('click',ev=>{if(ev.target===m){ closeModal(); closeRefresh(); }}); document.getElementById('app').appendChild(m); { const s1=m.querySelector('.sheet'); if(s1&&m.classList.contains('low')&&s1.scrollHeight>s1.clientHeight+1)m.classList.remove('low'); }   /* más alta que su tope: arriba, como antes (abajo el corte caía en el borde de la pantalla) */
-  { const s2=m.querySelector('.sheet'); if(s2&&old&&old.low&&old.h>0&&m.classList.contains('low')&&old.key===sheetKey(s2))s2.style.minHeight=old.h+'px'; } try{ sheetRestore(m,old,back,had); }catch(_){} sheetFootWatch(m); afterPaint(m,swap); }
+  const m=document.createElement('div'); m.className='modal'+(sheetLow(html,cls)?' low':'')+(swap?'':' in'); m.id='modal'; m.innerHTML=`<div class="sheet glass-strong ${cls||''}">${html}</div>`; if(!/\bnodismiss\b/.test(cls||''))m.addEventListener('click',ev=>{if(ev.target===m){ closeModal(); closeRefresh(); }}); document.getElementById('app').appendChild(m); fmWire(m); { const s1=m.querySelector('.sheet'); if(s1&&m.classList.contains('low')&&s1.scrollHeight>s1.clientHeight+1)m.classList.remove('low'); }   /* más alta que su tope: arriba, como antes (abajo el corte caía en el borde de la pantalla) */
+  { const s2=m.querySelector('.sheet'); if(s2&&old&&old.low&&old.h>0&&m.classList.contains('low')&&old.key===sheetKey(s2))s2.style.minHeight=old.h+'px'; } try{ sheetRestore(m,old,back,had); }catch(_){} sheetFootWatch(m); fmFoot(m); afterPaint(m,swap); }
 /* v389 · f1 · cerrar sin repintar lo que no cambió */
 async function _f1SelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK f1: '+n); }; const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   window._f1On=true; let nr=0; const r0=reRender; reRender=function(){ nr++; return r0.apply(this,arguments); };
@@ -24008,7 +24041,7 @@ function openApproxMeal(preset){
   destRowWire('am_tagv',t=>{ const e=document.getElementById('am_tag'); if(e)e.value=t; });   /* v344 · FD1 · la comida, con el cuadro de nombres de siempre (mealPick) */
   const go=document.getElementById('am_go'); if(go)go.onclick=()=>{
     const P=parseFloat(val('am_p'))||0,C=parseFloat(val('am_c'))||0,F=parseFloat(val('am_f'))||0,A=parseFloat(val('am_a'))||0;
-    if(P<=0&&C<=0&&F<=0&&A<=0){ toast('⚠ pon al menos un macro (P, C, G o alcohol)','err'); return; }
+    if(P<=0&&C<=0&&F<=0&&A<=0){ fmErr('am_p','pon al menos un macro: P, C, G o alcohol',['am_c','am_f','am_a']); return; }
     const tag=((val('am_tag')||'comida').trim())||'comida';
     // G2 · los micronutrientes de una comida aproximada NO se conocen: se guardan como null (antes 0 real, que
     // falseaba el sodio y el Na:K del día) y la fila se lee con `~`.
@@ -25961,6 +25994,26 @@ function doImport(){
 
 // v382 · base2 · piezas para las pantallas: dato sin casilla y pliegue animado. Todo valor se escapa aquí.
 // fieldHTML({id,k,type,v,attr,opts:[[valor,texto]]}) · sin opts: <input>; con opts: <select>. fldChain(['a','b']): al confirmar uno se abre el siguiente.
+// v398 · FM1 · lo que el renglón grande necesita en cada hoja: números grandes, menos y más en las cantidades y el guardar fijo abajo
+const FM_STEP=/^(ex_q|ex_q2|ad_qty|dd_v|se_per|ba_per)$/;
+function fmWire(root){ if(!root||!root.querySelectorAll)return; try{
+  root.querySelectorAll('.fld').forEach(l=>{ const c=l.querySelector('input'); if(c&&(c.type==='number'||/^(decimal|numeric)$/.test(c.getAttribute('inputmode')||'')))l.classList.add('fnum'); });
+  root.querySelectorAll('input').forEach(c=>{ if(c._fmst||!(FM_STEP.test(c.id)||c.classList.contains('qai')||c.hasAttribute('data-step')))return; c._fmst=1; const row=c.closest('.fld,.qar,.obr,.field>div,.field')||c.parentElement; row.classList.add('fstep');
+    const mk=(t,d,cl)=>{ const b=document.createElement('button'); b.type='button'; b.className='fmst '+cl; b.textContent=t; b.setAttribute('aria-label',d<0?'una menos':'una más');
+      b.addEventListener('click',ev=>{ ev.preventDefault(); ev.stopPropagation(); const st=parseFloat(c.dataset.step||'1')||1, v=qtyParse(c.value)||0, n=d<0?Math.max(Math.min(st,v||st),Math.round((v-st)*100)/100):Math.min(99,Math.round((v+st)*100)/100); c.value=qtyTxt(n); c.dispatchEvent(new Event('input',{bubbles:true})); c.dispatchEvent(new Event('change',{bubbles:true})); }); return b; };
+    const a=c.closest('.fldv')||c; a.parentNode.insertBefore(mk('−',-1,'m'),a); a.parentNode.insertBefore(mk('+',1,'p'),a.nextSibling); });
+} catch(_){} }
+// el guardar fijo abajo: hojas con campos que no caben en su alto (las que caben ya lo enseñan). Fuera: filas con [borrar] o con un [más] que abre lo de abajo, y
+// con algo a la vista después (lo taparía), como en sheetFoot
+function fmFoot(m){ try{ const sh=m&&m.querySelector('.sheet'); if(!sh||!(sh.scrollHeight>sh.clientHeight+1))return; if(!sh.querySelector('input:not([type=hidden]):not([type=checkbox]):not([type=range]),textarea,select'))return;
+  const L=[...sh.querySelectorAll('.sheetbtns')].filter(b=>b.offsetParent!==null), b=L[L.length-1]; if(!b||b.classList.contains('xsave')||b.querySelector('.danger,[aria-expanded]'))return;
+  for(let e=b; e&&e!==sh; e=e.parentElement){ for(let x=e.nextElementSibling; x; x=x.nextElementSibling){ if(!x.classList.contains('vpad')&&x.offsetParent!==null&&x.getBoundingClientRect().height>0)return; } }
+  b.classList.add('xsave'); }catch(_){} }
+// el error junto a su campo (borde y una línea debajo); se quita al escribir. Sin el campo a la vista, cae al aviso de siempre
+function fmErr(id,msg,also){ const c=document.getElementById(id), row=c&&c.closest('.fld,.qar,.obr,.field>div,.field'); if(!row){ toast('⚠ '+msg,'err'); return false; }
+  { const sh=row.closest('.sheet'), a=row.getBoundingClientRect(), b=sh&&sh.getBoundingClientRect(); if(row.offsetParent===null||(b&&(a.bottom<b.top+8||a.top>b.bottom-64)))toast('⚠ '+msg,'err'); }   // fuera de la vista: también el aviso (sin mover el scroll)
+  row.classList.add('fmerr'); let t=row.nextElementSibling; if(!(t&&t.classList.contains('fmerrt'))){ t=document.createElement('div'); t.className='fmerrt'; t.setAttribute('role','alert'); row.after(t); } t.innerHTML='<span class="ixn3">⚠</span> '+escTxt(msg);
+  const clr=()=>{ row.classList.remove('fmerr'); if(t.isConnected)t.remove(); c.removeEventListener('input',clr); c.removeEventListener('change',clr); }; c.addEventListener('input',clr); c.addEventListener('change',clr); (also||[]).forEach(x=>{ const o=document.getElementById(x); if(o)o.addEventListener('input',clr,{once:true}); }); return false; }
 function fieldHTML(o){ o=o||{}; const v=o.v==null?'':o.v, id=escV(o.id), ctl=o.opts?'<select id="'+id+'"'+(o.attr||'')+'>'+o.opts.map(x=>'<option value="'+escV(x[0])+'"'+(String(x[0])===String(v)?' selected':'')+'>'+escV(x[1])+'</option>').join('')+'</select>':'<input id="'+id+'" type="'+escV(o.type||'text')+'" value="'+escV(v)+'"'+(o.attr||'')+'/>'; return '<label class="fld" for="'+id+'"><span class="k">'+escV(o.k)+'</span><span class="dots"></span><span class="fldv">'+ctl+'</span></label>'; }
 function _r3SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK r3: '+nm); }; const v=document.createElement('div'); document.getElementById('app').appendChild(v); let hit=0; const fo=fldOpen;
   try{ v.innerHTML=foldHTML('r3f',false,'<input id="r3i">'); A('un pliegue cerrado no se puede enfocar', getComputedStyle(v.querySelector('.trkfold>div')).visibility==='hidden'||!!v.querySelector('.trkfold:not(.on)')); foldToggle('r3f',true); A('abierto sí', !!v.querySelector('.trkfold.on'));
@@ -26134,7 +26187,7 @@ function _g3SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK g3:
     B({sessions:[ses('h1',D(-2))]}); v.innerHTML=histBodyHTML(db.sessions[0]); const sx=v.querySelector('.sxs'); A('historial: sin series, con ejercicio e indicadores', !!v.querySelector('.sxh .sxn')&&!/×/.test(v.textContent)&&!!sx&&getComputedStyle(sx).display==='none'&&/σ/.test(v.querySelector('.sxk').textContent)&&!/· kg/.test(v.querySelector('.sxk').textContent)&&!!v.querySelector('[data-act="vieweditsession"]'));
     // 6 · sesión pasada
     B({sessions:[ses('h1',D(-2))]}); openSessionEdit('h1'); const m=q('#modal');
-    A('sesión: sin casillas, cuatro datos entre corchetes', !m.querySelector('.obi,.obr')&&m.querySelectorAll('.fld').length===4&&getComputedStyle(m.querySelector('.fld .fldv'),'::before').content==='"["');
+    A('sesión: sin casillas, cuatro datos en renglón grande (v398 · FM1: sin corchetes, renglón de 56)', !m.querySelector('.obi,.obr')&&m.querySelectorAll('.fld').length===4&&getComputedStyle(m.querySelector('.fld .fldv'),'::before').content==='none'&&m.querySelector('.fld').getBoundingClientRect().height>=56);
     A('sesión: el dato se lee como texto', m.querySelectorAll('.fldt').length===4&&m.querySelectorAll('.fldt')[1].textContent==='10:00'&&m.querySelectorAll('.fldt')[3].textContent==='Norte'&&/\d+ \S+ \d{4}/.test(m.querySelector('.fldt').textContent)&&!m.querySelector('.fldt b'));
     A('sesión: el kilo va con su número y una sola letra', /80 kg×10/.test(m.querySelector('.ssx .sxs').textContent)&&!/· kg/.test(m.querySelector('.ssx .sxk').textContent)&&['.sxn','.sxk','.sxs'].every(c=>getComputedStyle(m.querySelector('.ssx '+c)).fontSize===getComputedStyle(m.querySelector('.fld')).fontSize));
     A('sesión: sin «en fresco»', !/en fresco/.test(m.textContent));
