@@ -2057,6 +2057,11 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 #modal .obr .obi,#asklayer .obr .obi,#modal .field:has(> label)>input,#modal .field:has(> label)>select,#asklayer .field:has(> label)>input,#modal .field>div:has(> label)>input,#modal .field>div:has(> label)>select,#modal .qar .qai{flex:1 1 auto; width:auto; min-width:0; height:54px; margin:0; padding:0; border:0; border-radius:0; background:none; text-align:right; font-size:var(--t-field); font-weight:700; color:var(--fg);}
 #modal .obr .obi[inputmode=decimal],#modal .obr .obi[inputmode=numeric],#modal .obr .obi[type=number],#modal .field:has(> label)>input[type=number],#modal .field:has(> label)>input[inputmode=decimal],#modal .field:has(> label)>input[inputmode=numeric],#modal .field>div:has(> label)>input[type=number],#asklayer .field:has(> label)>input[type=number],#modal .qar .qai{font-size:var(--t-display); font-weight:800; letter-spacing:var(--ls-num);}
 #modal .ssheet .fld + .fld{border-top:0;}
+/* v399 · U4 · el nombre del ejercicio y su máquina/nota en la sesión: cada uno con su toque de 44. Se separan 30 px (antes 4) y la fila de
+   abajo 16 más; el toque crece con ::after, sin mover nada más (el dueño: «sí, sepáralos», 24-nov) */
+.exhead .n.u-tap{position:relative;} .exhead .n.u-tap::after{content:''; position:absolute; left:-4px; right:-4px; top:-13px; bottom:-13px;}
+.exsub{margin:calc(30px - var(--s2)) 0 calc(var(--s3) + 16px);}
+.exsub [data-act]{position:relative;} .exsub [data-act]::after{content:''; position:absolute; left:-4px; right:-4px; top:-16px; bottom:-16px;} .exsub .mset::after{left:-24px; right:-8px;}   /* el «15» de la máquina: lo de la izquierda es la misma máquina (mismo toque) */
 #modal .senf .k,#modal .seing .k{text-transform:none;}
 #modal .sheet:has(.sheetbtns.xsave){scroll-padding-bottom:88px;}   /* al escribir, el campo no queda debajo del guardar fijo */
 #modal .obr .obi::placeholder,#modal .field input::placeholder,#modal .fld input::placeholder,#asklayer .field input::placeholder{font-size:var(--t-data); font-weight:400; color:var(--o40); letter-spacing:0;}   /* el ejemplo no grita: va chico y tenue aunque el número sea grande */
@@ -2080,7 +2085,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v398';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v399';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
