@@ -2042,10 +2042,10 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
    línea de abajo se pone blanca. Cubre los tres estilos viejos sin tocar su HTML: .fld (fieldHTML), .obr (formRow) y .field (etiqueta arriba). */
 #modal .fld,#asklayer .fld,#modal .obr:not(.obstack),#asklayer .obr:not(.obstack),
 #modal .field:has(> label):has(> input:not([type=range]):not([type=checkbox])),#modal .field:has(> label):has(> select),#asklayer .field:has(> label):has(> input),
-#modal .field.row2>div:has(> label):has(> input),#modal .field.row2>div:has(> label):has(> select),#modal .field.row3>div:has(> label):has(> input),#modal .qar{display:flex; align-items:center; gap:var(--s3); min-height:56px; margin:0; padding:0; border-bottom:var(--bw-sep) solid var(--o10); font-size:var(--t-data); cursor:text;}
-#modal .field.row2,#modal .field.row3{display:block; margin:0;}
+#modal .field>div:has(> label):has(> input:not([type=range]):not([type=checkbox])),#modal .field>div:has(> label):has(> select),#modal .qar{display:flex; align-items:center; gap:var(--s3); min-height:56px; margin:0; padding:0; border-bottom:var(--bw-sep) solid var(--o10); font-size:var(--t-data); cursor:text;}
+#modal .field.row2,#modal .field.row3,#modal .field:has(> div > label){display:block; margin:0;}
 #modal .fld:focus-within,#asklayer .fld:focus-within,#modal .obr:focus-within,#asklayer .obr:focus-within,#modal .field:focus-within,#asklayer .field:focus-within,#modal .field>div:focus-within,#modal .qar:focus-within{border-bottom-color:var(--fg);}
-#modal .field label,#asklayer .field label{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+#modal .field:has(> input:not([type=range]):not([type=checkbox]))>label,#modal .field:has(> select)>label,#modal .field>div:has(> input:not([type=range]):not([type=checkbox]))>label,#modal .field>div:has(> select)>label,#asklayer .field:has(> input)>label{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:0 0 auto !important; max-width:62%;}
 #modal .fld .k,#asklayer .fld .k,#modal .obk,#asklayer .obk,#modal .field label,#asklayer .field label{flex:0 1 auto; min-width:0; margin:0; padding:0; font-size:var(--t-data); font-weight:400; color:var(--o60); letter-spacing:0; text-transform:lowercase;}
 #modal .fld:focus-within .k,#asklayer .fld:focus-within .k,#modal .obr:focus-within .obk,#modal .field:focus-within label{color:var(--fg);}
 #modal .obk::before,#asklayer .obk::before{content:none;} #modal .obk,#asklayer .obk{padding-left:0;}
@@ -2057,6 +2057,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 #modal .obr .obi,#asklayer .obr .obi,#modal .field:has(> label)>input,#modal .field:has(> label)>select,#asklayer .field:has(> label)>input,#modal .field>div:has(> label)>input,#modal .field>div:has(> label)>select,#modal .qar .qai{flex:1 1 auto; width:auto; min-width:0; height:54px; margin:0; padding:0; border:0; border-radius:0; background:none; text-align:right; font-size:var(--t-field); font-weight:700; color:var(--fg);}
 #modal .obr .obi[inputmode=decimal],#modal .obr .obi[inputmode=numeric],#modal .obr .obi[type=number],#modal .field:has(> label)>input[type=number],#modal .field:has(> label)>input[inputmode=decimal],#modal .field:has(> label)>input[inputmode=numeric],#modal .field>div:has(> label)>input[type=number],#asklayer .field:has(> label)>input[type=number],#modal .qar .qai{font-size:var(--t-display); font-weight:800; letter-spacing:var(--ls-num);}
 #modal .ssheet .fld + .fld{border-top:0;}
+#modal .fmdt{position:relative;} #modal .fmdt>input{position:absolute !important; inset:0; width:100% !important; height:100% !important; opacity:0; cursor:pointer;} #modal .fmdv{margin-left:auto; font-size:var(--t-field); font-weight:700; color:var(--fg);}   /* v400 · FM1 · fechas y horas como en el resto: `24 nov 2026` a la derecha y el renglón abre el selector */
 /* v399 · U4 · el nombre del ejercicio y su máquina/nota en la sesión: cada uno con su toque de 44. Se separan 30 px (antes 4) y la fila de
    abajo 16 más; el toque crece con ::after, sin mover nada más (el dueño: «sí, sepáralos», 24-nov) */
 .exhead .n.u-tap{position:relative;} .exhead .n.u-tap::after{content:''; position:absolute; left:-4px; right:-4px; top:-13px; bottom:-13px;}
@@ -2085,7 +2086,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v399';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v400';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -10751,7 +10752,7 @@ function _adminSelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
     openStackEdit('k1'); let m=document.getElementById('modal');
     A('u4 · la hoja abre plegada: dosis y frecuencia, marca y presentación (se acaba: abierta), nutrientes dentro de ella y notas', ['cuanto','prod','nutr','notas'].map(k=>k+':'+!m.querySelector('#se_sec_'+k).hidden).join()==='cuanto:false,prod:true,nutr:false,notas:false'&&!!m.querySelector('#se_sec_prod #se_sec_nutr')&&m.querySelectorAll('button.sef[data-act="sefold"]').length>=4);
     A('todos sus campos siguen ahí con sus ids (el guardado no cambió)', ['se_name','se_dose','se_unit','se_per','se_start','se_when','se_pt','se_tk','se_cat','se_meds','se_chart','se_brand','se_pname','se_pform','se_size','se_opened','se_left','se_n_kcal','se_notes','se_save','se_more'].every(id=>!!m.querySelector('#'+id)));
-    A('una sección plegada dice su resumen; abierta, no lo repite', /5 g/.test(m.querySelector('#se_sum_cuanto').textContent)&&m.querySelector('#se_sum_prod').textContent===''&&m.querySelector('#se_sum_notas').textContent==='—');
+    A('una sección plegada dice su resumen; abierta, no lo repite', /daily|set days|every|cycle|range|occasional/.test(m.querySelector('#se_sum_cuanto').textContent)&&m.querySelector('#se_sum_prod').textContent===''&&m.querySelector('#se_sum_notas').textContent==='—');
     A('CUÁNTAS trae las de una toma y sin texto de instrucciones impreso', m.querySelector('#se_per').value==='1'&&!/· opcional|para avisarte|lo que aporta UNA dosis|PRODUCTO · FRASCO/.test(m.textContent));
     closeModal();
     openStackEdit('k3'); m=document.getElementById('modal'); m.querySelector('#se_per').value='2'; m.querySelector('#se_save').click();
@@ -11550,8 +11551,8 @@ function mmMenu(){ const p=mmCur(), past=mmList().filter(x=>x!==p).sort((a,b)=>a
 // las fechas de un periodo (desde el menú): inicio, fin (vacío = sigue) o quitarlo
 function openMamarre(id){ const p=mmList().find(x=>x.id===id); if(!p)return; const T=todayISO();
   const m=askLayer('<h3>mamarre · '+escTxt(mmSpanTxt(p))+'</h3>'
-    +'<div class="field"><label>INICIO</label><input id="mm_from" type="date" value="'+escTxt(p.from)+'" max="'+T+'"/></div>'
-    +'<div class="field"><label>FIN · vacío = sigue</label><input id="mm_to" type="date" value="'+escTxt(p.to||'')+'" max="'+T+'"/></div>'
+    +'<div class="field"><label>START</label><input id="mm_from" type="date" value="'+escTxt(p.from)+'" max="'+T+'"/></div>'
+    +'<div class="field"><label>END · empty = ongoing</label><input id="mm_to" type="date" value="'+escTxt(p.to||'')+'" max="'+T+'"/></div>'
     +'<div class="sheetbtns"><button class="ok" data-ask="ok">save</button><button class="cancel danger" data-ask="del">remove</button><button class="cancel" data-ask="no">cancel</button></div>');
   m.addEventListener('click',ev=>{ const b=ev.target.closest&&ev.target.closest('[data-ask]'); if(!b)return; ev.stopPropagation(); const k=b.dataset.ask;
     if(k==='no'){ closeAsk(); return; }
@@ -14502,7 +14503,7 @@ function openExtraOther(iso,pre){ pre=pre||{};   // v348 · S-XLOG · pre = {nam
   sheetHold(); let se=null, busy=false, _adK=null; const strip=document.getElementById('ad_idstrip'), fb=document.getElementById('ad_formbox'), ib=document.getElementById('ad_ing'), xb=document.getElementById('ad_x'); seFldText(document.getElementById('modal'));
   const paint=()=>{ const nm=val('ad_name'), R=subOfItem({name:nm,category:'supp'}).items, s=R.length?R[0].s:null; strip.innerHTML=''; fb.innerHTML=''; se=s; const ky=R.length>=2?R.map(m=>m.s.id+':'+(m.dose?m.dose.n+m.dose.u:'')).join():''; if(ky!==_adK){ _adK=ky; ib.innerHTML=ky?'<div class="sehint">la dosis de cada una en 1 unidad</div>'+ingRowsHTML(R.map(m=>({sid:m.s.id,name:m.s.name,n:m.dose?m.dose.n:'',u:m.dose?m.dose.u:(m.s.unit||'mg')}))):''; seFldText(ib); } if(xb){ if(_subProf)xb.innerHTML=R.length?subCrossHTML(R.map(m=>m.s),null):''; else if(R.length)subProfiles().then(()=>{ if(document.getElementById('ad_x'))paint(); }).catch(()=>{}); } if(!s||nm.trim().length<2)return;
     strip.innerHTML='<span class="u-good u-label">✓</span> <span class="u-label u-o60">'+escTxt(R.map(x=>x.s.name).join(' + '))+'</span>';
-    if(s.forms&&R.length<2){ const df=detectForm(nm,s); fb.innerHTML='<div class="field row2 u-mt6"><div><label>FORMA QUÍMICA</label><select id="ad_form">'+Object.keys(s.forms).map(fk=>'<option value="'+escTxt(fk)+'"'+(fk===df?' selected':'')+'>'+escTxt(fk)+' · '+Math.round(s.forms[fk]*100)+'%</option>').join('')+'</select></div><div><label>MG POR PASTILLA</label><input id="ad_dose" type="text" inputmode="decimal" autocomplete="off"/></div></div>'; } };
+    if(s.forms&&R.length<2){ const df=detectForm(nm,s); fb.innerHTML='<div class="field row2 u-mt6"><div><label>CHEMICAL FORM</label><select id="ad_form">'+Object.keys(s.forms).map(fk=>'<option value="'+escTxt(fk)+'"'+(fk===df?' selected':'')+'>'+escTxt(fk)+' · '+Math.round(s.forms[fk]*100)+'%</option>').join('')+'</select></div><div><label>MG PER PILL</label><input id="ad_dose" type="text" inputmode="decimal" autocomplete="off"/></div></div>'; } };
   document.getElementById('ad_name').addEventListener('input',paint); if(pre.cat){ document.getElementById('modal').dataset.xcat='1'; paint(); }
   const go=()=>{ if(busy)return; const name=val('ad_name'); if(!name){ fmErr('ad_name','pon un nombre'); return; } const qty=qtyParse(val('ad_qty')); if(!qty){ toast('⚠ pon cuántas','err'); return; } busy=true;
     const o={name,qty,time:val('ad_time')||''}, mg=parseFloat(String(val('ad_dose')||'').replace(',','.')); let nutr=null;
@@ -17492,7 +17493,7 @@ function openWeightLog(day){ day=day||calToday(); const ks=Object.keys(db.bodywe
   const recent=ks.slice(-8).reverse();
   const rows=recent.map(d=>`<div class="line u-py6 u-px0"><span class="k u-tap u-ul" data-act="editbw" data-d="${escV(d)}">${escV(d)}</span><span class="dots"></span><span class="v">${bwShow(db.bodyweight[d])} ${bwU()} <span data-act="delbw" data-d="${escV(d)}" class="u-o40 u-tap u-ml8">✕</span></span></div>`).join('');
   openModal(`<h3>body weight</h3>
-   <div class="field row2"><div><label>PESO (${bwU()})</label><input id="bw_kg" type="number" inputmode="decimal" value="${escV(day===calToday()?(last?bwShow(last):''):((db.bodyweight&&db.bodyweight[day])?bwShow(db.bodyweight[day]):''))}" placeholder="${escV(bwU()==='lbs'?'ej. 160':'ej. 72.5')}"/></div><div><label>FECHA</label><input id="bw_date" type="date" value="${escV(day)}" max="${calToday()}"/></div></div>
+   <div class="field row2"><div><label>WEIGHT (${bwU()})</label><input id="bw_kg" type="number" inputmode="decimal" value="${escV(day===calToday()?(last?bwShow(last):''):((db.bodyweight&&db.bodyweight[day])?bwShow(db.bodyweight[day]):''))}" placeholder="${escV(bwU()==='lbs'?'ej. 160':'ej. 72.5')}"/></div><div><label>DATE</label><input id="bw_date" type="date" value="${escV(day)}" max="${calToday()}"/></div></div>
    <div class="bwsl"><input type="range" class="gslider" id="bw_rng" aria-label="peso"/>${bwSwHTML()}</div>
    <div class="sheetbtns u-mb6"><button class="ok" id="bw_save">save</button><button class="cancel" data-act="logclose">close</button></div>
    ${recent.length?`<div class="grp-label sub">RECENT LOGS</div>`+rows+``:''}`);
@@ -17510,7 +17511,7 @@ function openHealthNumLog(key,day){ const C=HLOG[key]; if(!C)return; const h=H()
     return `<div class="line u-py6 u-px0"><span class="k u-tap u-ul" data-act="edithlog" data-m="${key}" data-d="${escV(d)}">${escV(d)}</span><span class="dots"></span><span class="v">${C.get(x)} ${C.u}${man?'':' <span class="u-o40">· sync</span>'} <span data-act="delhlog" data-m="${key}" data-d="${escV(d)}" class="u-o40 u-tap u-ml8">✕</span></span></div>`; }).join('');
   openModal(`<h3>${C.t}</h3>
    <div class="submeta u-mb10">si tu reloj lo sincroniza después, se queda tu número</div>
-   <div class="field row2"><div><label>${C.u.toUpperCase()}</label><input id="hl_v" type="number" inputmode="decimal" step="${C.step}" placeholder="${escV(C.ph)}"/></div><div><label>FECHA</label><input id="hl_date" type="date" value="${escV(day)}" max="${calToday()}"/></div></div>
+   <div class="field row2"><div><label>${C.u.toUpperCase()}</label><input id="hl_v" type="number" inputmode="decimal" step="${C.step}" placeholder="${escV(C.ph)}"/></div><div><label>DATE</label><input id="hl_date" type="date" value="${escV(day)}" max="${calToday()}"/></div></div>
    <div class="sheetbtns u-mb6"><button class="ok" id="hl_save">save</button><button class="cancel" data-act="logclose">close</button></div>
    ${recent.length?`<div class="grp-label sub">RECENT LOGS</div>`+rows:''}`);
   const load=d=>{ const el=document.getElementById('hl_v'); if(el){ const v=C.get(H().daily[d]); el.value=v>0?v:''; } };
@@ -17625,7 +17626,7 @@ function openSleepLog(day,chain){ day=day||(dayNowMin()<DAY_WAKE?todayISO():calT
     return `<div class="line u-py6 u-px0"><span class="k u-tap u-ul" data-act="editsleep" data-d="${escV(d)}">${escV(d)}</span><span class="dots"></span><span class="v">${fmtSleep(db.sleep[d])||'—'}${n>1?' · '+n+' bloques':''} <span data-act="delsleep" data-d="${escV(d)}" class="u-o40 u-tap u-ml8">✕</span></span></div>`; }).join('');
   openModal(`<h3>sleep</h3>
    <div class="submeta u-mb8">noche + siestas · el total del día es la suma de los bloques</div>
-   <div class="field sldf"><label>FECHA (despertar)</label><input id="sl_date" type="date" value="${escV(day)}" max="${calToday()}"${chain?' data-chain="1"':''}/></div>
+   <div class="field sldf"><label>DATE · wake-up</label><input id="sl_date" type="date" value="${escV(day)}" max="${calToday()}"${chain?' data-chain="1"':''}/></div>
    <div class="grp-label first">BLOCKS</div>
    <div id="sl_blocks"></div>
    <div class="u-flex u-gap12 u-aic u-mt8 u-mb4 u-mx0"><button class="b u-f0" id="sl_add">+ nap</button><a id="sl_manual" class="u-data u-o50 u-tap u-ul">no time? hours →</a><span id="sl_total" class="submeta u-mlauto">total —</span></div>
@@ -18763,7 +18764,7 @@ function stackToggleTick(id, iso, tk){
 function openSuppTime(id, iso, tk){ iso=iso||todayISO(); const it=(db.stack||[]).find(x=>x.id===id), t=it&&takeOf(it,tk); if(!t) return;
   const cur=takeTime(t,iso)||nowHM(), dl=t.id?takeDoseTxt(t):'';
   openModal(`<h3>intake time</h3><div class="submeta u-mb10">${escTxt(it.name||'sustancia')}${dl?' · '+escTxt(dl):''} · ${escTxt(iso)}</div>
-   <div class="field"><label>HORA REAL</label><input id="sut_time" type="time" value="${escTxt(cur)}"/></div>
+   <div class="field"><label>ACTUAL TIME</label><input id="sut_time" type="time" value="${escTxt(cur)}"/></div>
    <div class="sheetbtns u-mt12"><button class="ok" id="sut_save">save</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
   document.getElementById('sut_save').onclick=()=>{ const v=val('sut_time'), o=t.o; o.tickTimes=o.tickTimes||{};
     if(v) o.tickTimes[iso]=v; else delete o.tickTimes[iso];
@@ -18884,7 +18885,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
   const p=it.periodization||{type:'daily'}; const nv=k=>{ const o=it.nutr||{}; return (k in o)?o[k]:''; };
   const catBtn=(k,l)=>`<button class="t ${it.category===k?'on':''}" data-cat="${k}" type="button">${l}</button>`;
   const whenOpts=['AM','PM','entreno','comidas'];
-  const whenBtn=l=>`<button class="t ${(it.when||[]).indexOf(l)>=0?'on':''}" data-when="${l}" type="button">${l}</button>`;
+  const WHEN_LBL={entreno:'workout',comidas:'meals'}, whenBtn=l=>`<button class="t ${(it.when||[]).indexOf(l)>=0?'on':''}" data-when="${l}" type="button">${WHEN_LBL[l]||l}</button>`;   // v400 · rótulo en inglés; se guarda igual
   const dayLbl=['D','L','M','M','J','V','S'];
   const dayBtn=i=>`<button class="t ${(p.type==='weekly'&&(p.value||[]).indexOf(i)>=0)?'on':''}" data-day="${i}" type="button">${dayLbl[i]}</button>`;
   const ptBtn=(k,l)=>`<button class="t ${p.type===k?'on':''}" data-pt="${k}" type="button">${l}</button>`;
@@ -18896,18 +18897,18 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
   const _pf=(_PB&&_PB.form)||'cápsulas', _brands=[...new Set((it.products||[]).map(p=>p.brand).filter(Boolean))], _per=(+it.qty>0||(_PB&&+_PB.per>0))?qtyTxt(suppPer(it,_PB)):'';   // v325 · cuántas es una toma (lo que ves en la lista)
   const _formOpts=SUPP_FORMS.map(([f,u])=>`<option value="${escV(f)}"${_pf===f?' selected':''}>${f===u?f:f+' · '+u}</option>`).join('');
   // v383 · u4 · «marca y presentación»: tus marcas, y los datos de la que está en uso. Los ids son los de siempre.
-  const _PL=opt.newBrand?[]:suppBrandsAll(it), _plist=(_PL.length>1||(_PL.length===1&&_PL[0].brand))?'<div class="seh">tus marcas</div>'+_PL.map(pr=>'<div class="sepr'+(pr.id===it.cur?' on':'')+'"><span class="sepn">'+escV(suppBrandLbl(pr))+'</span>'+(pr.id===it.cur?'<span class="seps">de siempre</span>':'<button type="button" class="vb" data-pr="'+escV(pr.id)+'" data-do="use">the usual</button><button type="button" class="vb" data-pr="'+escV(pr.id)+'" data-do="off">no longer</button>')+'</div>').join('')+'<div class="sehint">al marcarla eliges cuál, si tienen dosis distinta</div>':'';
+  const _PL=opt.newBrand?[]:suppBrandsAll(it), _plist=(_PL.length>1||(_PL.length===1&&_PL[0].brand))?'<div class="seh">your brands</div>'+_PL.map(pr=>'<div class="sepr'+(pr.id===it.cur?' on':'')+'"><span class="sepn">'+escV(suppBrandLbl(pr))+'</span>'+(pr.id===it.cur?'<span class="seps">de siempre</span>':'<button type="button" class="vb" data-pr="'+escV(pr.id)+'" data-do="use">the usual</button><button type="button" class="vb" data-pr="'+escV(pr.id)+'" data-do="off">no longer</button>')+'</div>').join('')+'<div class="sehint">al marcarla eliges cuál, si tienen dosis distinta</div>':'';
   const _prodHTML=(opt.newBrand?'<div class="submeta u-mb6">otra marca de '+escTxt(it.name)+' · su historial sigue aquí</div>':'')+_plist+(opt.newBrand||isNew?'':'<div class="spradd"><button type="button" class="vb" id="se_brandadd">+ another brand</button></div>')
     +'<div class="seh">'+(_PL.length>1?'usual brand':'details')+'</div>'
     +fieldHTML({id:'se_brand',k:'brand',v:(_PP&&_PP.brand)||'',attr:' list="se_brands" placeholder="—" autocomplete="off"'})+'<datalist id="se_brands">'+_brands.map(b=>'<option value="'+escTxt(b)+'"></option>').join('')+'</datalist>'
-    +fieldHTML({id:'se_pname',k:'producto',v:(_PP&&_PP.name)||'',attr:' placeholder="—" autocomplete="off"'})
+    +fieldHTML({id:'se_pname',k:'product',v:(_PP&&_PP.name)||'',attr:' placeholder="—" autocomplete="off"'})
     +fieldHTML({id:'se_pform',k:'form',v:_pf,opts:SUPP_FORMS.map(([f,u])=>[f,f===u?f:f+' · '+u])})
     +fieldHTML({id:'se_size',k:'bottle contains',v:(_C&&_C.size)||((_PB&&_PB.size)||''),attr:' placeholder="—" inputmode="decimal" autocomplete="off"'})
-    +fieldHTML({id:'se_opened',k:'lo abriste',type:'date',v:(_C&&_C.opened)||todayISO()})
-    +fieldHTML({id:'se_left',k:'quedan hoy',v:_L?Math.max(0,_L.left):'',attr:' data-v0="'+escV(_L?Math.max(0,_L.left):'')+'" placeholder="'+escV(_L?'—':'lo que trae')+'" inputmode="decimal" autocomplete="off"'})
+    +fieldHTML({id:'se_opened',k:'opened',type:'date',v:(_C&&_C.opened)||todayISO()})
+    +fieldHTML({id:'se_left',k:'left today',v:_L?Math.max(0,_L.left):'',attr:' data-v0="'+escV(_L?Math.max(0,_L.left):'')+'" placeholder="'+escV(_L?'—':'lo que trae')+'" inputmode="decimal" autocomplete="off"'})
     +(_L?'<div class="submeta u-mt-n2 u-mb6">'+(_SK&&(_SK.low||_SK.out)?'<span class="u-warn">⚠</span> ':'')+escTxt(_SK?suppStockTxt(_SK):('quedan '+Math.max(0,_L.left)+' '+_L.pu))+' · abierto el '+escTxt(fmtShort(_C.opened))+'</div>'
       +'<div class="u-flex u-gap8 u-wrap u-mb8"><button type="button" class="b" id="se_bottle">opened a new bottle</button>'+(_SK&&_SK.out?'<button type="button" class="b" id="se_finish">ran out · archive</button><button type="button" class="b" id="se_pause">pause</button>':'')+'</div>':'');
-  const _NF=[['kcal','kcal'],['protein','proteína g'],['carbs','carbos g'],['fat','grasa g'],['sugar','azúcar g'],['fiber','fibra g'],['sodium','sodio mg'],['potassium','potasio mg'],['caffeine','cafeína mg'],['alcohol','alcohol g']].concat(MICROS.map(mi=>[mi.k,mi.l+' '+mi.u]));
+  const _NF=[['kcal','kcal'],['protein','protein g'],['carbs','carbs g'],['fat','fat g'],['sugar','sugar g'],['fiber','fiber g'],['sodium','sodium mg'],['potassium','potassium mg'],['caffeine','caffeine mg'],['alcohol','alcohol g']].concat(MICROS.map(mi=>[mi.k,mi.l+' '+mi.u]));
   const _nutrHTML='<div class="sehint" id="se_nchk"></div><div class="senf">'+_NF.map(([k,l])=>fieldHTML({id:'se_n_'+k,k:l,type:'number',v:nv(k),attr:' inputmode="decimal" placeholder="—"'})).join('')+'</div>';
   const _PT_HINT={daily:'todos los días, desde el inicio',weekly:'solo los días que marques',everyN:'cuenta desde el inicio',cycle:'días que sí y días de descanso, desde el inicio',range:'todos los días, entre el inicio y una fecha',occasional:'sin pauta: cuando la necesites · no cuenta en la adherencia'};
   // v327 · la hoja de un suplemento en secciones que se despliegan (antes una pila de ~26 campos a la vista): arriba el nombre y `cuánto y
@@ -18917,22 +18918,23 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
     +'<div class="toggles setags" id="se_cat" role="group" aria-label="tipo">'+[['skin','skincare'],['supp','supplement'],['meds','pharma'],['hormone','hormone'],['peptide','peptide'],['other','other']].map(([k,l])=>catBtn(k,'#'+l)).join('')+'</div>'
     +'<div class="field"><label for="se_name">NAME</label><input id="se_name" value="'+escTxt(it.name||'')+'" placeholder="ej. creatina, D3 + K2" autocomplete="off"/></div>'
     +'<div class="field u-mt-n2"><div id="se_idstrip" style="min-height:14px"></div><div id="se_idcard"></div></div><div id="se_xalert"></div><div id="se_ing"></div>'
-    +_sec('cuanto','dose and frequency',!!opt.newBrand,
-      fieldHTML({id:'se_dose',k:'dose',v:it.dose||'',attr:' placeholder="'+escV(dosePh)+'" inputmode="decimal" autocomplete="off"'})
-      +fieldHTML({id:'se_unit',k:'unidad',v:it.unit||'',opts:UNITS.map(u=>[u,u||'—'])})
-      +'<label class="fld" for="se_per"><span class="k">unidades por toma <span id="se_pu" class="u-o40 u-w4">'+(_PB?escTxt(suppPU(_PB)):'')+'</span></span><span class="dots"></span><span class="fldv"><input id="se_per" value="'+escV(_per)+'" placeholder="'+escV(qtyTxt(suppDerive(it,_PB)||1))+'" inputmode="decimal" autocomplete="off"/></span></label>'
-      +(()=>{ const pf=String((_PB&&_PB.form)||''), k=SR_PPM_FORMS[pf]||'pulsaciones'; return '<div id="se_ppmw"'+(SR_PPM_FORMS[pf]?'':' hidden')+'>'+'<label class="fld" for="se_ppm"><span class="k"><span id="se_ppmk">'+k+'</span> por ml</span><span class="dots"></span><span class="fldv"><input id="se_ppm" value="'+escV(it.perMl||((_PB&&_PB.perMl)||''))+'" placeholder="—" inputmode="decimal" autocomplete="off"/></span></label>'+'</div>'; })()   /* v390 · e2 */
-      +'<div class="seh">frecuencia</div><div class="toggles" id="se_pt">'+ptBtn('daily','diaria')+ptBtn('weekly','días por semana')+ptBtn('everyN','cada X días')+ptBtn('cycle','ciclo')+ptBtn('range','rango')+ptBtn('occasional','ocasional')+'</div><div class="sehint" id="se_phint"></div>'
+    /* v400 · FM1 · lo esencial a la vista: dosis, unidad, cuántas y cuándo; la pauta plegada */
+    +fieldHTML({id:'se_dose',k:'dose',v:it.dose||'',attr:' placeholder="'+escV(dosePh)+'" inputmode="decimal" autocomplete="off"'})
+      +fieldHTML({id:'se_unit',k:'unit',v:it.unit||'',opts:UNITS.map(u=>[u,u||'—'])})
+      +'<label class="fld" for="se_per"><span class="k">units per dose <span id="se_pu" class="u-o40 u-w4">'+(_PB?escTxt(suppPU(_PB)):'')+'</span></span><span class="dots"></span><span class="fldv"><input id="se_per" value="'+escV(_per)+'" placeholder="'+escV(qtyTxt(suppDerive(it,_PB)||1))+'" inputmode="decimal" autocomplete="off"/></span></label>'
+      +(()=>{ const pf=String((_PB&&_PB.form)||''), k=PPM_LBL[pf]||'sprays'; return '<div id="se_ppmw"'+(SR_PPM_FORMS[pf]?'':' hidden')+'>'+'<label class="fld" for="se_ppm"><span class="k"><span id="se_ppmk">'+k+'</span> per ml</span><span class="dots"></span><span class="fldv"><input id="se_ppm" value="'+escV(it.perMl||((_PB&&_PB.perMl)||''))+'" placeholder="—" inputmode="decimal" autocomplete="off"/></span></label>'+'</div>'; })()   /* v390 · e2 */
+      +'<div id="se_whenbox"><div class="seh">when</div><div class="toggles" id="se_when">'+whenOpts.map(whenBtn).join('')+'</div><div class="sehint" id="se_whint"></div>'
+      +'<div class="field" id="se_tkbox"><div class="seh">another dose per day</div><div id="se_tk"></div><div id="se_tkend"></div><div class="spradd"><button type="button" class="vb" id="se_tkadd">+ another dose</button></div></div></div>'
+    +_sec('cuanto','schedule',false,
+      '<div class="seh">frequency</div><div class="toggles" id="se_pt">'+ptBtn('daily','daily')+ptBtn('weekly','set days')+ptBtn('everyN','every N days')+ptBtn('cycle','cycle')+ptBtn('range','range')+ptBtn('occasional','occasional')+'</div><div class="sehint" id="se_phint"></div>'
       +'<div id="se_pwk"'+(p.type==='weekly'?'':' hidden')+'><div class="toggles" id="se_dayrow">'+[1,2,3,4,5,6,0].map(dayBtn).join('')+'</div></div>'
-      +'<div id="se_pn"'+(p.type==='everyN'?'':' hidden')+'>'+fieldHTML({id:'se_pnv',k:'cada cuántos días',type:'number',v:p.type==='everyN'?(p.value||2):2,attr:' inputmode="numeric"'})+'</div>'
-      +'<div id="se_pcy"'+(p.type==='cycle'?'':' hidden')+'>'+fieldHTML({id:'se_pcon',k:'días que sí',type:'number',v:p.type==='cycle'&&p.value?(p.value.on||21):21,attr:' inputmode="numeric"'})+fieldHTML({id:'se_pcoff',k:'días de descanso',type:'number',v:p.type==='cycle'&&p.value?(p.value.off||7):7,attr:' inputmode="numeric"'})+'</div>'
-      +'<div id="se_prg"'+(p.type==='range'?'':' hidden')+'>'+fieldHTML({id:'se_pend',k:'hasta',type:'date',v:it.endDate||''})+'</div>'
-      +fieldHTML({id:'se_start',k:'start',type:'date',v:it.startDate||todayISO()})
-      +'<div id="se_whenbox"><div class="seh">momento</div><div class="toggles" id="se_when">'+whenOpts.map(whenBtn).join('')+'</div><div class="sehint" id="se_whint"></div>'
-      +'<div class="field" id="se_tkbox"><div class="seh">otra toma al día</div><div class="sehint">otro momento del mismo día: cada una lleva su check, su hora y su dosis</div><div id="se_tk"></div><div id="se_tkend"></div><div class="spradd"><button type="button" class="vb" id="se_tkadd">+ another dose</button></div></div></div>')
+      +'<div id="se_pn"'+(p.type==='everyN'?'':' hidden')+'>'+fieldHTML({id:'se_pnv',k:'every N days',type:'number',v:p.type==='everyN'?(p.value||2):2,attr:' inputmode="numeric"'})+'</div>'
+      +'<div id="se_pcy"'+(p.type==='cycle'?'':' hidden')+'>'+fieldHTML({id:'se_pcon',k:'days on',type:'number',v:p.type==='cycle'&&p.value?(p.value.on||21):21,attr:' inputmode="numeric"'})+fieldHTML({id:'se_pcoff',k:'days off',type:'number',v:p.type==='cycle'&&p.value?(p.value.off||7):7,attr:' inputmode="numeric"'})+'</div>'
+      +'<div id="se_prg"'+(p.type==='range'?'':' hidden')+'>'+fieldHTML({id:'se_pend',k:'until',type:'date',v:it.endDate||''})+'</div>'
+      +fieldHTML({id:'se_start',k:'start',type:'date',v:it.startDate||todayISO()}))
     +_sec('prod','brand and form',!!(opt.newBrand||opt.openProd||(_SK&&(_SK.low||_SK.out))),_prodHTML+_sec('nutr','nutrients · per dose',false,_nutrHTML))
     +_sec('notas','notes',false,fieldHTML({id:'se_notes',k:'notes',v:it.notes||'',attr:' placeholder="—" autocomplete="off"'})
-      +'<div id="se_meds"'+((it.category==='meds'||it.category==='hormone'||it.category==='peptide')?'':' hidden')+'>'+fieldHTML({id:'se_doc',k:'recetado por',v:(it.med&&it.med.doctor)||'',attr:' placeholder="—" autocomplete="off"'})+fieldHTML({id:'se_dur',k:'duración',v:(it.med&&it.med.duration)||'',attr:' placeholder="ej. 8 sem · indef" autocomplete="off"'})+'</div>'
+      +'<div id="se_meds"'+((it.category==='meds'||it.category==='hormone'||it.category==='peptide')?'':' hidden')+'>'+fieldHTML({id:'se_doc',k:'prescribed by',v:(it.med&&it.med.doctor)||'',attr:' placeholder="—" autocomplete="off"'})+fieldHTML({id:'se_dur',k:'duration',v:(it.med&&it.med.duration)||'',attr:' placeholder="ej. 8 sem · indef" autocomplete="off"'})+'</div>'
       +(on=>'<div class="line pfr"><span class="k">in charts</span><span class="dots"></span><span class="v toggles" id="se_chart"><button type="button" class="t '+(on?'on':'')+'" data-act="optpick" data-v="1">yes</button><button type="button" class="t '+(on?'':'on')+'" data-act="optpick" data-v="0">no</button></span></div>')(it.chart===true||(it.chart!==false&&/^(hormone|peptide)$/.test(it.category||''))))
     +'<div class="sheetbtns"><button class="ok" id="se_save">save</button>'+(isNew?'':'<button class="cancel" id="se_more">more</button>')+'<button class="cancel" data-act="closemodal">cancel</button></div>','sub4');
   const root=document.getElementById('modal'); if(!root) return;
@@ -18950,7 +18952,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
   // v297 · otras tomas del mismo día: cada una con su momento, su dosis y (ya guardada) su propio check
   const _today=todayISO(), _mo=(it.more||[]).filter(m=>m&&!(m.end&&m.end<=_today)).map(m=>({id:m.id,when:m.when||'',dose:m.dose==null?'':String(m.dose),unit:m.unit||'',was:!!m.was,per:takePerKey(m)}));
   const _tkPaint=()=>{ const box=document.getElementById('se_tk'); if(!box)return;
-    const WH=[['','sin momento'],['AM','AM'],['PM','PM'],['entreno','entreno'],['comidas','comidas']];
+    const WH=[['','no time'],['AM','AM'],['PM','PM'],['entreno','workout'],['comidas','meals']];
     box.innerHTML=_mo.map((m,i)=>`<div class="tkrow" data-i="${i}"><select data-k="when" aria-label="momento de la toma ${i+2}">${WH.map(([v,l])=>`<option value="${escV(v)}"${(m.when||'')===v?' selected':''}>${l}</option>`).join('')}</select><input data-k="dose" value="${escTxt(m.dose)}" placeholder="dosis" inputmode="decimal" autocomplete="off" aria-label="dosis de la toma ${i+2}"/><select data-k="unit" aria-label="unidad de la toma ${i+2}">${UNITS.map(u=>`<option value="${escV(u)}"${(m.unit||'')===u?' selected':''}>${u||'—'}</option>`).join('')}</select><button type="button" class="b" data-k="del" aria-label="${m.was?'separar':'quitar'} la toma ${i+2}">${m.was?'separar':'quitar'}</button><select class="tkp" data-k="per" aria-label="cada cuánto va la toma ${i+2}">${TAKE_PER.concat(m.per==='keep'?[['keep','su propio periodo']]:[]).map(([v,l])=>`<option value="${escV(v)}"${(m.per||'')===v?' selected':''}>${l}</option>`).join('')}</select></div>`).join('');
     box.querySelectorAll('.tkrow').forEach(r=>{ const m=_mo[+r.dataset.i]; r.querySelectorAll('select,input').forEach(e=>e.addEventListener(e.tagName==='INPUT'?'input':'change',()=>{ m[e.dataset.k]=e.value; if(e.dataset.k==='when')_whSync(); }));
       r.querySelector('[data-k="del"]').onclick=()=>{ _mo.splice(+r.dataset.i,1); _tkPaint(); _whSync(); }; }); };
@@ -18963,7 +18965,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
   });
   _ptSync();
   root.querySelectorAll('#se_dayrow button').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
-  { const pfs=document.getElementById('se_pform'), pu=document.getElementById('se_pu'); if(pfs&&pu)pfs.addEventListener('change',()=>{ pu.textContent=suppPU({form:pfs.value}); }); if(pfs)pfs.addEventListener('change',()=>{ const w=document.getElementById('se_ppmw'), kk=document.getElementById('se_ppmk'); if(w)w.hidden=!SR_PPM_FORMS[pfs.value]; if(kk&&SR_PPM_FORMS[pfs.value])kk.textContent=SR_PPM_FORMS[pfs.value]; }); }   /* v390 · e2 */
+  { const pfs=document.getElementById('se_pform'), pu=document.getElementById('se_pu'); if(pfs&&pu)pfs.addEventListener('change',()=>{ pu.textContent=suppPU({form:pfs.value}); }); if(pfs)pfs.addEventListener('change',()=>{ const w=document.getElementById('se_ppmw'), kk=document.getElementById('se_ppmk'); if(w)w.hidden=!SR_PPM_FORMS[pfs.value]; if(kk&&SR_PPM_FORMS[pfs.value])kk.textContent=PPM_LBL[pfs.value]; }); }   /* v390 · e2 */
   { const a=document.getElementById('se_brandadd'); if(a)a.onclick=()=>openBrandAdd(it.id);
     root.querySelectorAll('[data-pr]').forEach(b=>b.onclick=()=>{ const pr=suppProd(it,b.dataset.pr); if(!pr)return; if(b.dataset.do==='use'){ const u0=suppParFromToday(it,pr.id), u1=suppUseProd(it,pr), un=()=>{ u1(); u0(); }; save(); reRender(); openStackEdit(it.id,null,{openProd:true}); toast('✓ '+(pr.brand||'marca')+' · de siempre, desde hoy','ok',{undo:un}); } else { pr.off=1; save(); reRender(); openStackEdit(it.id,null,{openProd:true}); toast('✓ '+(pr.brand||'marca')+' ya no sale al tomarla','ok',{undo:()=>{ delete pr.off; }}); } }); }
   const _stAct=(to,why)=>{ const sn=suppSnap(it); suppSetStatus(it,to,why); closeModal(); save(); reRender(); toast(it.name+(to==='paused'?' en pausa':' archivado · '+why),'',{undo:()=>suppRestore(it,sn)}); };
@@ -19002,7 +19004,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
       if(!_catTouched&&_catNow()!==_cat0){ const b0=root.querySelector('#se_cat [data-cat="'+_cat0+'"]'); if(b0){ root.querySelectorAll('#se_cat button').forEach(x=>x.classList.remove('on')); b0.classList.add('on'); _catSync(_cat0); } }
       strip.innerHTML=r.amb.length?'<span class="u-o50 u-label">'+(r.guess?'¿es esta?':'¿cuál es?')+'</span> '+r.amb.slice(0,4).map(s=>'<button type="button" class="b sbpk" data-sb="'+escV(s.id)+'">'+escTxt(s.name)+'</button>').join(''):(nm.length>=3?'<span class="u-o50 u-label">sin identificar · se guarda igual</span>':'');
       strip.querySelectorAll('.sbpk').forEach(b=>b.onclick=()=>{ _pick=b.dataset.sb; _renderId(); });
-      if(_cardFor!==k0){ _cardFor=k0; card.innerHTML=nm.length>=3&&(!r.amb.length||r.guess)?'<div class="field u-mt6"><label>¿QUÉ ES? · opcional</label><input id="se_sbq" value="'+escTxt(_findQ)+'" placeholder="busca: ashwagandha, BPC-157, minoxidil…" autocomplete="off"/></div><div id="se_sbres" class="sbres"></div>':'';
+      if(_cardFor!==k0){ _cardFor=k0; card.innerHTML=nm.length>=3&&(!r.amb.length||r.guess)?'<div class="field u-mt6"><label>WHAT IS IT · optional</label><input id="se_sbq" value="'+escTxt(_findQ)+'" placeholder="busca: ashwagandha, BPC-157, minoxidil…" autocomplete="off"/></div><div id="se_sbres" class="sbres"></div>':'';
         const q=document.getElementById('se_sbq'); if(q){ const paint=()=>{ _findQ=q.value; const box=document.getElementById('se_sbres'); if(!box)return; box.innerHTML=subSearch(q.value,6).map(s=>'<button type="button" class="sbrow" data-sb="'+escV(s.id)+'"><span>'+escTxt(s.name)+'</span><span class="u-o50 u-label">'+escTxt(SUB_CAT[s.scat]||'')+'</span></button>').join('');
             box.querySelectorAll('.sbrow').forEach(b=>b.onclick=()=>{ _pick=b.dataset.sb; _findQ=''; _renderId(); }); }; q.addEventListener('input',paint); paint(); } }
       return; }
@@ -19019,7 +19021,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
     const one=r.items.length===1?r.items[0].s:null, key=r.items.map(m=>m.s.id).join()+'|'+_fichaOpen;
     if(_cardFor!==key){ _cardFor=key; let html='';
       if(one&&one.forms){ const nf=subFormIn(T.name,one), cur=nf||(it.form&&one.forms[it.form]?it.form:'');
-        html+='<div class="field u-mt6"><label>FORMA QUÍMICA</label><select id="se_form"><option value="_e"'+(cur?'':' selected')+'>la dosis ya es '+escTxt(one.name.toLowerCase())+' elemental</option>'+Object.keys(one.forms).map(fk=>'<option value="'+escV(fk)+'"'+(fk===cur?' selected':'')+'>'+escTxt(fk)+' · '+Math.round(one.forms[fk]*100)+'% elemental</option>').join('')+'</select></div>'; }
+        html+='<div class="field u-mt6"><label>CHEMICAL FORM</label><select id="se_form"><option value="_e"'+(cur?'':' selected')+'>la dosis ya es '+escTxt(one.name.toLowerCase())+' elemental</option>'+Object.keys(one.forms).map(fk=>'<option value="'+escV(fk)+'"'+(fk===cur?' selected':'')+'>'+escTxt(fk)+' · '+Math.round(one.forms[fk]*100)+'% elemental</option>').join('')+'</select></div>'; }
       html+='<div class="submeta u-o50" id="se_nprev"></div>'+(_fichaOpen?'<div id="se_fmini" class="sbmini">'+trkSpinHTML('abriendo la ficha')+'</div>':'');
       card.innerHTML=html; const fsel=document.getElementById('se_form'); if(fsel)fsel.onchange=_renderId;
       if(_fichaOpen&&!_subProf) subProfiles().then(()=>_renderId()).catch(()=>{ const el=document.getElementById('se_fmini'); if(el)el.innerHTML='<span class="u-o50 u-label">la ficha completa se baja con internet</span>'; }); }
@@ -19037,7 +19039,7 @@ function openStackEdit(id, presetCat, opt){ opt=opt||{};   // opt.newBrand: volv
   window._seSum=()=>{ const S=(k,t)=>{ const e=document.getElementById('se_sum_'+k), b=document.getElementById('se_sec_'+k); if(e)e.textContent=b&&!b.hidden?'':t; };
     const on=s=>Array.from(root.querySelectorAll(s)).map(b=>b.textContent.trim());
     root.querySelectorAll('.fldx').forEach(l=>{ const c=l.querySelector('input,select'), t=l.querySelector('.fldt'); if(c&&t)t.textContent=fldShow(c); });   // lo que la app escribe sola (4 gotas ⇄ unidades) también se ve
-    S('cuanto',[[val('se_dose'),val('se_unit')].filter(Boolean).join(' '),val('se_per')?'× '+val('se_per'):'',on('#se_pt .on')[0]||'',on('#se_when button.on').join('/')].filter(Boolean).join(' · '));
+    S('cuanto',[on('#se_pt .on')[0]||'',val('se_start')?'from '+fmtShort(val('se_start')):''].filter(Boolean).join(' · '));   /* v400 · la dosis y el momento ya están arriba */
     S('prod',[val('se_brand'),val('se_size')?val('se_size')+' '+suppPU({form:val('se_pform')}):''].filter(Boolean).join(' · ')||'—');
     S('nutr',_labelTyped()?'de tu etiqueta':(subOfItem(_tmp()).items.length?'del catálogo':'—'));
     S('notas',val('se_notes')?'1':'—');
@@ -19413,7 +19415,7 @@ function subMiniHTML(Pm,r,T){ return r.items.map(m=>{ const P=Pm&&Pm[m.s.id], s=
       +G.map(x=>subLineHTML(subSideG('grave'),x.text,x.dose||'')).join(''); }).join('')+SUB_DISCLAIM; }
 // la ficha completa
 /* v390 · e2 · dosis real: unidades de una toma → ml → mg de la sustancia */
-const SR_PPM_FORMS={spray:'pulsaciones',gotas:'gotas'}, SPRAY_PPM=8;
+const SR_PPM_FORMS={spray:'pulsaciones',gotas:'gotas'}, SPRAY_PPM=8, PPM_LBL={spray:'sprays',gotas:'drops'};   /* v400 · el rótulo en inglés; la prosa sigue diciendo pulsaciones */
 function _e2SelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK e2: '+n); }; const p0=_subProf; try{
     const s=subOfName({name:'minoxidil'}).items[0].s;
     const P={route:['topica','oral'],absorb:[{route:'topica',min:0.3,max:4.5,ctx:'piel sana',src:[1]}],sources:[{n:1,cite:'x'}],doses:[{kind:'ficha',ctx:'tópica',min:1,max:1,unit:'ml',per:'aplicacion',route:'topica'},{kind:'ficha',ctx:'oral',min:5,max:40,unit:'mg',per:'dia',route:'oral'}]};
@@ -20942,7 +20944,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='stkfold'){ const k=el.dataset.k; state._stkOpen=state._stkOpen||{}; state._stkOpen[k]=!state._stkOpen[k]; state._enter={sel:'.sprlist[data-sk="'+k+'"] .sprow'}; reRender(); }
   else if(a==='sefold'){ const b=document.getElementById('se_sec_'+el.dataset.k); if(b){ const op=b.hidden; keepUnder(el,()=>{ b.hidden=!op; el.setAttribute('aria-expanded',op?'true':'false'); const c=el.querySelector('.rchev'); if(c)c.textContent=op?'▾':'›'; if(window._seSum)window._seSum(); }); if(op)revealAnim(b); } }
   else if(a==='chartpt'){ try{ const pts=JSON.parse(el.dataset.pts||'[]'); if(pts.length){ const r=el.getBoundingClientRect(); const x=(e.clientX-r.left)/(r.width||1); let best=pts[0],bd=9; pts.forEach(p=>{ const d=Math.abs(p.f-x); if(d<bd){bd=d;best=p;} }); if(best&&best.l)toast(best.l); } }catch(_){} }
-  else if(a==='editbw'){ const d=el.dataset.d; const dt=document.getElementById('bw_date'), kg=document.getElementById('bw_kg'); if(dt)dt.value=d; if(kg){ kg.value=(db.bodyweight&&db.bodyweight[d])?bwShow(db.bodyweight[d]):''; bwSliderSync(); focusEl(kg); } }   /* v382 · a3 · en tu unidad, no en kg */
+  else if(a==='editbw'){ const d=el.dataset.d; const dt=document.getElementById('bw_date'), kg=document.getElementById('bw_kg'); if(dt){ dt.value=d; dt.dispatchEvent(new Event('change')); } if(kg){ kg.value=(db.bodyweight&&db.bodyweight[d])?bwShow(db.bodyweight[d]):''; bwSliderSync(); focusEl(kg); } }   /* v382 · a3 · en tu unidad, no en kg */
   else if(a==='delbw'){ const d=el.dataset.d; trkAsk({title:'borrar el peso del '+fmtShort(d),ok:'delete',danger:true},()=>{ if(db.bodyweight){ const m=H().src.weight[d]; if(m&&m!=='manual')H().src.weight[d]='del'; delete db.bodyweight[d]; }   /* v369 · H9 · el del atajo que borras no vuelve */ const allk=Object.keys(db.bodyweight||{}).sort(); if(db.profile)db.profile.weightKg=allk.length?db.bodyweight[allk[allk.length-1]]:db.profile.weightKg; save(); openWeightLog((document.getElementById('bw_date')||{}).value||null); }); }   /* v364 · H8 · se queda en su fecha */
   else if(a==='settings'){ go('settings'); }
   else if(a==='profile'||a==='editprofile'){ goPerfil(); }
@@ -21571,7 +21573,7 @@ function openExEdit(di,ei,liveExi,cat){
   const xo={liveEx:live||null,key:cat?cat.key:null,gym:live?(db.activeWork.gym||db.activeGym||''):(catGym||(exSheetGyms(e.name).indexOf(db.activeGym)>=0?db.activeGym:''))};
   // SETS solo al crear o en el editor de split; el texto libre MACHINE/NOTE solo al crear (después la marca vive en el bloque de máquina, por gym)
   const xsHid='<input id="ee_machine" type="hidden" value="'+escTxt(e.machine||'')+'"/>';
-  const xsSets=(live||cat)?xsHid:('<div class="field'+(isNew?' row2':'')+'"><div><label>SERIES</label><input id="ee_sets" type="number" value="'+escV((Array.isArray(e.sets)?e.sets.length:(e.sets||2)))+'"/></div>'+(isNew?'<div><label>MÁQUINA · NOTA</label><input id="ee_machine" value="'+escTxt(e.machine||'')+'" placeholder="opcional"/></div>':xsHid)+'</div>');
+  const xsSets=(live||cat)?xsHid:('<div class="field'+(isNew?' row2':'')+'"><div><label>SETS</label><input id="ee_sets" type="number" value="'+escV((Array.isArray(e.sets)?e.sets.length:(e.sets||2)))+'"/></div>'+(isNew?'<div><label>MACHINE · NOTE</label><input id="ee_machine" value="'+escTxt(e.machine||'')+'" placeholder="opcional"/></div>':xsHid)+'</div>');
   const xsBtns=cat?'<div class="sheetbtns"><button class="cancel" data-act="xs_merge">merge</button><button class="cancel" data-act="xs_arch">'+(rep.L.arch?'restore':'archive')+'</button></div>':'';
   const muscles=muscleSuggest();
   const knowns=knownExercises();
@@ -21587,21 +21589,21 @@ function openExEdit(di,ei,liveExi,cat){
      <div class="inline-row"><select id="ee_mus${k}sel" class="grow">${opts(cv)}</select><input id="ee_mus${k}w" type="number" inputmode="decimal" step="0.05" min="0" max="1" class="w72" value="${escV(m?m.weight:0.5)}" placeholder="0.5"/><button class="cancel u-py4 u-px10 u-f0" data-act="ee_musk_off" data-k="${k}">×</button></div>
      <input id="ee_mus${k}" type="hidden" value="${escTxt(cv)}"/><input id="ee_mus${k}_new" placeholder="escribe el músculo nuevo" class="u-mt6" style="display:none"/></div>`; };
      return `
-   <div class="field"><label>MÚSCULO 1 · primario · serie completa</label>
+   <div class="field"><label>MUSCLE 1 · primary · full set</label>
      <select id="ee_muscle_sel">${opts(cur1)}</select>
      <input id="ee_muscle" type="hidden" value="${escTxt(cur1)}"/>
      <input id="ee_muscle_new" placeholder="escribe el músculo nuevo" class="u-mt6" style="display:none"/></div>`
-     +`<div class="field" id="ee_secs" style="display:${ML.length>1?'block':'none'}"><label>SECUNDARIOS · cuánto cuenta la serie (0–1)</label>`+[2,3,4].map(sec).join('')+'</div>'+`<div id="ee_mus2_addwrap" style="margin:2px 0 12px;display:${ML.length>=4?'none':'block'}"><button class="b u-w100" data-act="ee_mus2_on">+ add secondary muscle</button></div>`;
+     +`<div class="field" id="ee_secs" style="display:${ML.length>1?'block':'none'}"><label>SECONDARY · how much the set counts (0–1)</label>`+[2,3,4].map(sec).join('')+'</div>'+`<div id="ee_mus2_addwrap" style="margin:2px 0 12px;display:${ML.length>=4?'none':'block'}"><button class="b u-w100" data-act="ee_mus2_on">+ add secondary muscle</button></div>`;
    })()}
-   <div class="field"><label>TIPO</label><div class="toggles u-wrap u-gap4" id="ee_type">${types.map(([v,lbl])=>`<button class="t ${canonType(e.type)===v||(v==='free'&&!e.type)?'on':''} u-fhalf u-min0" data-act="optpick" data-v="${v}">${lbl}</button>`).join('')}</div></div>
+   <div class="field"><label>TYPE</label><div class="toggles u-wrap u-gap4" id="ee_type">${types.map(([v,lbl])=>`<button class="t ${canonType(e.type)===v||(v==='free'&&!e.type)?'on':''} u-fhalf u-min0" data-act="optpick" data-v="${v}">${lbl}</button>`).join('')}</div></div>
    ${xsSets}
-   <div class="field" id="ee_uniwrap" style="display:${isCardioEdit?'none':'block'}"><label>VARIANTE</label><div class="toggles" id="ee_uni"><button class="t ${!e.unilateral&&e.lat!=='alt'?'on':''}" data-act="optpick" data-v="0">bilateral</button><button class="t ${e.unilateral?'on':''}" data-act="optpick" data-v="1">unilateral (R/L)</button><button class="t ${!e.unilateral&&e.lat==='alt'?'on':''}" data-act="optpick" data-v="2">alternating</button></div></div>
-   <div class="field" id="ee_startwrap" style="display:${!isCardioEdit&&e.unilateral?'block':'none'}"><label>UNILATERAL · EMPEZAR POR</label><div class="toggles" id="ee_start"><button class="t ${e.startSide!=='L'?'on':''}" data-act="optpick" data-v="R">R first</button><button class="t ${e.startSide==='L'?'on':''}" data-act="optpick" data-v="L">L first</button></div></div>
-   <div class="field" id="ee_bwflags" style="display:${canonType(e.type)==='bodyweight'?'block':'none'}"><label>PESO CORPORAL · variante</label>
+   <div class="field" id="ee_uniwrap" style="display:${isCardioEdit?'none':'block'}"><label>VARIANT</label><div class="toggles" id="ee_uni"><button class="t ${!e.unilateral&&e.lat!=='alt'?'on':''}" data-act="optpick" data-v="0">bilateral</button><button class="t ${e.unilateral?'on':''}" data-act="optpick" data-v="1">unilateral (R/L)</button><button class="t ${!e.unilateral&&e.lat==='alt'?'on':''}" data-act="optpick" data-v="2">alternating</button></div></div>
+   <div class="field" id="ee_startwrap" style="display:${!isCardioEdit&&e.unilateral?'block':'none'}"><label>UNILATERAL · START WITH</label><div class="toggles" id="ee_start"><button class="t ${e.startSide!=='L'?'on':''}" data-act="optpick" data-v="R">R first</button><button class="t ${e.startSide==='L'?'on':''}" data-act="optpick" data-v="L">L first</button></div></div>
+   <div class="field" id="ee_bwflags" style="display:${canonType(e.type)==='bodyweight'?'block':'none'}"><label>BODYWEIGHT · variant</label>
      <label class="u-label u-o50 u-block u-mb4"><input type="checkbox" id="ee_assisted" ${e.assisted?'checked':''} class="u-vam u-wauto"/> asistido (máquina de asistencia)</label>
      <label class="u-label u-o50 u-block u-mb10"><input type="checkbox" id="ee_weighted" ${e.weighted?'checked':''} class="u-vam u-wauto"/> con lastre (weighted)</label>
    </div>
-   <div class="field" id="ee_cardio" style="display:${isCardioEdit?'block':'none'}"><label>CARDIO · subtipo</label>
+   <div class="field" id="ee_cardio" style="display:${isCardioEdit?'block':'none'}"><label>CARDIO · subtype</label>
      <div class="toggles u-wrap u-gap4" id="ee_cardiosub">${Object.keys(CARDIO_SUBS).map(k=>`<button class="t ${curCardioSub===k?'on':''} u-min0 u-fthird" data-act="optpick" data-v="${k}">${CARDIO_SUBS[k].l}</button>`).join('')}</div>
    </div>
    ${(!isNew&&live)?'<div class="submeta u-mt8 u-mb4 u-mx0 u-o40">lo de arriba, por defecto, solo cambia la sesión de hoy</div><label class="u-label u-o60 u-block u-mb10"><input type="checkbox" id="ee_tosplit" class="u-vam u-wauto"/> guardar también en el split de este día</label>':''}
@@ -22021,7 +22023,7 @@ function openGymPicker(o){ o=o||{}; const L=[...new Set([].concat(db.gyms||[],db
   const rows=()=>L.length?L.map((g,i)=>'<button type="button" class="gprow'+(i===sel?' on':'')+'" data-gi="'+i+'" aria-pressed="'+(i===sel)+'"><span class="gpb">'+escTxt(String(g))+'</span></button>').join(''):'<div class="submeta u-mb8">aún no hay gyms</div>';
   openModal('<h3>'+(o.start?'¿en qué gym?':'gym')+'</h3><div id="gp_list">'+rows()+'</div>'
     +'<div class="gpadd">'+(L.length?'<button type="button" class="b gpm" id="gp_mach">machines</button>':'')+'<button type="button" class="b" id="gp_new" aria-expanded="'+!L.length+'">add new gym</button></div>'
-    +foldHTML('gp_fold',!L.length,'<div class="gpnew"><div class="field"><label>NUEVO GYM</label><input id="ng_name" placeholder="nombre del gym" autocomplete="off" maxlength="60"/></div><div class="gpadd"><button type="button" class="b" id="ng_add">add gym</button></div></div>')
+    +foldHTML('gp_fold',!L.length,'<div class="gpnew"><div class="field"><label>NEW GYM</label><input id="ng_name" placeholder="nombre del gym" autocomplete="off" maxlength="60"/></div><div class="gpadd"><button type="button" class="b" id="ng_add">add gym</button></div></div>')
     +'<div class="sheetbtns"><button type="button" class="ok" id="gp_ok">'+(o.start?'confirm and start':'confirm')+'</button><button class="cancel" data-act="closemodal">cancel</button></div>');
   const q=id=>document.getElementById(id), inner=q('gp_fold').firstElementChild, list=q('gp_list'); inner.inert=!!L.length;
   const paint=()=>{ list.innerHTML=rows(); };
@@ -22550,19 +22552,19 @@ function xsMachState(e,gym){ const X=window._exEdit||{}, D=X.mdraft=X.mdraft||{}
 // C3 · el pliegue `aparato ›` dentro del bloque de máquina de ESE gym: abierto si ya tiene ficha (o si lo abriste)
 function apBlockHTML(d){ const X=window._exEdit||{}, a=d.ap||{}, op=X.apOpen!=null?!!X.apOpen:apHas(a), t=(id,v,cur,lbl)=>'<button type="button" class="t '+(cur===v?'on':'')+'" data-act="optflip" data-v="'+v+'">'+lbl+'</button>';
   return '<div><button type="button" class="b" data-act="xs_apfold" aria-expanded="'+(op?'true':'false')+'">aparato '+(op?'▾':'›')+'</button></div><div id="xs_ap"'+(op?'':' hidden')+'>'
-    +'<div class="field"><label>MODELO</label><input id="mc_model" value="'+escTxt(a.model||'')+'" placeholder="ej. MTS Row, Pure Strength" autocomplete="off"/></div>'
-    +'<div class="field"><label>CÓDIGO</label><input id="mc_code" value="'+escTxt(a.code||'')+'" placeholder="el de su etiqueta" autocomplete="off"/></div>'
-    +'<div class="field"><label>QUÉ SE AJUSTA</label><input id="mc_adj" value="'+escTxt(a.adj||'')+'" placeholder="asiento · respaldo · apoyo de pies" autocomplete="off"/></div>'
+    +'<div class="field"><label>MODEL</label><input id="mc_model" value="'+escTxt(a.model||'')+'" placeholder="ej. MTS Row, Pure Strength" autocomplete="off"/></div>'
+    +'<div class="field"><label>CODE</label><input id="mc_code" value="'+escTxt(a.code||'')+'" placeholder="el de su etiqueta" autocomplete="off"/></div>'
+    +'<div class="field"><label>WHAT ADJUSTS</label><input id="mc_adj" value="'+escTxt(a.adj||'')+'" placeholder="asiento · respaldo · apoyo de pies" autocomplete="off"/></div>'
     +'<div class="line pfr"><span class="k">load</span><span class="dots"></span><span class="v toggles" id="mc_stack">'+t('mc_stack','pin',a.stack||'','pin')+t('mc_stack','discos',a.stack||'','discos')+'</span></div>'
-    +'<div class="field"><label>PESO POR PLACA</label><input id="mc_plate" type="number" inputmode="decimal" step="0.5" min="0" value="'+escTxt(a.plate||'')+'" placeholder="—"/></div>'
+    +'<div class="field"><label>WEIGHT PER PLATE</label><input id="mc_plate" type="number" inputmode="decimal" step="0.5" min="0" value="'+escTxt(a.plate||'')+'" placeholder="—"/></div>'
     +'<div class="line pfr"><span class="k">each plate in</span><span class="dots"></span><span class="v toggles" id="mc_plateu">'+t('mc_plateu','kg',a.plateU||'','kg')+t('mc_plateu','lbs',a.plateU||'','lbs')+'</span></div></div>'; }
 function exMachBodyHTML(e,gym){ const ty=canonType(e.type); if(ty==='cardio')return '';
   const d=xsMachState(e,gym), mach=isMachType(ty);
   const un=XS_UNITS.map(u=>'<button type="button" class="t '+(d.unit===u?'on':'')+'" data-act="optpick" data-v="'+u+'">'+u+'</button>').join('');
-  return (mach?`<div class="field"><label>MÁQUINA · MARCA</label><input id="mc_brand" value="${escTxt(d.brand)}" placeholder="ej. Hammer Strength, Technogym" autocomplete="off" list="mc_brands"/><datalist id="mc_brands">${machBrandList().map(b=>'<option value="'+escTxt(b)+'"></option>').join('')}</datalist></div>
-   <div class="field"><label>AJUSTE</label><textarea id="mc_setup" class="ta sm" placeholder="asiento 4 · respaldo 2 · pin 60">${escTxt(d.setup)}</textarea></div>
+  return (mach?`<div class="field"><label>MACHINE · BRAND</label><input id="mc_brand" value="${escTxt(d.brand)}" placeholder="ej. Hammer Strength, Technogym" autocomplete="off" list="mc_brands"/><datalist id="mc_brands">${machBrandList().map(b=>'<option value="'+escTxt(b)+'"></option>').join('')}</datalist></div>
+   <div class="field"><label>SETTING</label><textarea id="mc_setup" class="ta sm" placeholder="asiento 4 · respaldo 2 · pin 60">${escTxt(d.setup)}</textarea></div>
    <label class="xsck"><input type="checkbox" id="xs_na" ${d.na?'checked':''}/> sin máquina en este gym</label>${apBlockHTML(d)}`:'')
-   +(ty==='bodyweight'?'':`<div class="field"><label>UNIDAD</label><div class="toggles" id="xs_unit"${d.unitT?' data-touched="1"':''}>${un}</div></div>`)
+   +(ty==='bodyweight'?'':`<div class="field"><label>UNIT</label><div class="toggles" id="xs_unit"${d.unitT?' data-touched="1"':''}>${un}</div></div>`)
    +profRowHTML('mc_rp','rp',d.rp||'unk',d.rpT?'user':d.rpSrc,(profileFor(e,gym)||{}).why,d.rpT); }
 function xsType(){ const x=document.querySelector('#ee_type .t.on'); return x?x.dataset.v:'free'; }
 function xsGym(){ const s=document.getElementById('xs_gym'); return (s&&s.value)||((window._exEdit||{}).gym0)||''; }
@@ -22583,7 +22585,7 @@ function profMotorHTML(e,gym){ const p=profileFor(e,gym), tg=targetsFor(e);
   const sec=tg.slice(1).map((t,i)=>'<div class="pfsec"><select class="pfsel" data-sec="'+i+'"><option value="">— quitar —</option>'+mOpt(t.id)+'</select><input class="pfw" data-secw="'+i+'" type="number" inputmode="decimal" step="0.05" min="0" max="1" value="'+escV(t.w)+'"/></div>').join('');
   const tSrc=tg[0]?(tg[0].src==='user'?'fijado':tg[0].src==='inferred'?'~ deducido del nombre':tg[0].src==='auto'?'de tu etiqueta':'sin resolver'):'sin músculo';
   return `<div class="field"><label>PRIME MOVER · ${tSrc}</label><select id="pf_prim" class="pfsel"><option value="">— sin resolver —</option>${mOpt(tg[0]&&tg[0].id)}</select></div>
-   <div class="field"><label>SECONDARY · cuánto cuenta la serie (0–1)</label><div id="pf_secs">${sec}</div><button type="button" class="addbtn u-mt4" data-act="pf_addsec">+ secondary</button></div>`; }
+   <div class="field"><label>SECONDARY · how much the set counts (0–1)</label><div id="pf_secs">${sec}</div><button type="button" class="addbtn u-mt4" data-act="pf_addsec">+ secondary</button></div>`; }
 // v300 · GYMS. En máquina/polea/smith, un gym donde ya lo entrenaste es un DATO (`gym ···· marca · N×`, y `otra marca` si no es la que tienes
 // a la vista), no una casilla: cada gym tiene su máquina. En peso libre y corporal son casillas (el mismo ejercicio en todos lados).
 // La casilla de un gym con historial sigue en la hoja (oculta) para que lo que se lee al guardar no cambie.
@@ -22604,7 +22606,7 @@ function exSheetExtraHTML(e,o){ const X=window._exEdit, gyms=exSheetGyms(e.name)
    ${gymRow}
    <div id="xs_mach">${exMachBodyHTML(e,gym)}</div>
    ${isCardio(e)?'':(p=>profRowHTML('pf_len','len',p.len,p.lenSrc,p.why))(profileFor(e,gym))}
-   <div class="field"><label>NOTA</label><input id="xs_note" value="${escTxt(note)}" placeholder="agarre, asiento, sensación…" autocomplete="off"/></div>
+   <div class="field"><label>NOTE</label><input id="xs_note" value="${escTxt(note)}" placeholder="agarre, asiento, sensación…" autocomplete="off"/></div>
    <div><button type="button" class="b" data-act="xs_fold" aria-expanded="false">engine ›</button></div>
    <div id="xs_motor" hidden>${profMotorHTML(e,gym)}</div>
    ${gyms.length?'<div class="field u-mt8 u-mb4"><label>GYMS</label></div><div class="u-mb10" id="xs_gyms">'+xsGymsHTML(e,e.type)+'</div>':''}
@@ -23133,13 +23135,13 @@ function openMergeModal(){
    <div class="submeta u-mb8">un solo nombre y tipo · cada registro conserva su lateralidad</div>
    <div class="u-mb10">${rows.map(r=>`<div class="u-flex u-gap8 u-data u-py4 u-px0 u-sep"><span class="u-f1">${(l=>l&&l.length?'['+l.join('·')+'] ':'')((catIndex().byK[r._k]||{}).lats)}${escTxt(r.name)}${(ts=>ts.length?` <span class="u-o40">· ${escTxt(ts.join(' · '))}</span>`:'')((ts=>ts.length>1?ts:(r.type?[r.type]:[]))(catTypes(r._k)))}</span><span class="u-o50 u-nowrap">${r._sess} ses · ${r._sets} series</span></div>`).join('')}</div>
    <div class="field"><label>FINAL NAME</label><input id="mg_name" value="${escTxt(win.name||'')}" list="mg_namelist"/><datalist id="mg_namelist">${rows.map(r=>`<option value="${escTxt(r.name)}"></option>`).join('')}</datalist></div>
-   <div class="field"><label>MÚSCULO</label><select id="mg_muscle">${[...new Set([curM,...muscles].filter(Boolean))].map(m=>`<option value="${escTxt(m)}"${m===curM?' selected':''}>${escTxt(m)}</option>`).join('')}</select></div>
+   <div class="field"><label>MUSCLE</label><select id="mg_muscle">${[...new Set([curM,...muscles].filter(Boolean))].map(m=>`<option value="${escTxt(m)}"${m===curM?' selected':''}>${escTxt(m)}</option>`).join('')}</select></div>
    <div class="field"><label>TYPE</label><div class="toggles u-wrap u-gap4" id="mg_type">${types.map(([v,lbl])=>`<button class="t ${defT===v?'on':''} u-fhalf u-min0" data-act="optpick" data-v="${v}">${lbl}</button>`).join('')}</div></div>
-   <div class="field"><label>UNIDAD POR DEFECTO</label><select id="mg_unit">${uOpts}</select></div>
-   <div class="field"><label>EN QUÉ GYMS EXISTE</label>${window._mgGyms.length?window._mgGyms.map((g,i)=>`<button type="button" class="xck${pre.has(g)?' on':''}" id="mg_g_${i}" data-act="xm_mgchk" aria-pressed="${pre.has(g)}"><span class="xckb">${pre.has(g)?'[x]':'[ ]'}</span><span class="k">${escTxt(g)}</span></button>`).join(''):'<div class="submeta">sin gyms registrados</div>'}
+   <div class="field"><label>DEFAULT UNIT</label><select id="mg_unit">${uOpts}</select></div>
+   <div class="field"><label>GYMS WHERE IT EXISTS</label>${window._mgGyms.length?window._mgGyms.map((g,i)=>`<button type="button" class="xck${pre.has(g)?' on':''}" id="mg_g_${i}" data-act="xm_mgchk" aria-pressed="${pre.has(g)}"><span class="xckb">${pre.has(g)?'[x]':'[ ]'}</span><span class="k">${escTxt(g)}</span></button>`).join(''):'<div class="submeta">sin gyms registrados</div>'}
      <div class="submeta u-mt2 u-o40">solo etiqueta y ordena los pickers · nunca esconde el ejercicio si entrenas en otro lado</div></div>
-   ${window._mgConf.length?`<div class="field"><label>MARCA DE MÁQUINA · hay dos registros en el mismo gym</label>${window._mgConf.map((c,i)=>`<div class="u-mb6"><div class="u-label u-o50">${escTxt(c.gym)}</div><select id="mg_win_${i}">${c.recs.map((x,j)=>{ const k=c.keys[j], r=(db.machines[c.gym]||{})[x]||{}; const lb=(typeof r==='string')?r:[r.brand,r.setup].filter(Boolean).join(' · ')||'sin marca'; const ty=(x!==k&&c.keys.indexOf(k)!==c.keys.lastIndexOf(k))?' · '+x.slice(k.length+2).split(MACH_SEP)[0]:''; return '<option value="'+escTxt(x)+'"'+((x===winK||x.indexOf('='+winN+MACH_SEP)===0)?' selected':'')+'>'+escTxt(k+ty)+' → '+escTxt(lb)+'</option>'; }).join('')}</select></div>`).join('')}</div>`:''}
-   ${notes.length>1?`<div class="field"><label>NOTA · hay dos</label><select id="mg_note">${notes.map(o=>'<option value="'+escTxt(o.x)+'"'+(o.x===winN?' selected':'')+'>'+escTxt(o.t.length>48?o.t.slice(0,48)+'…':o.t)+'</option>').join('')}</select></div>`:''}
+   ${window._mgConf.length?`<div class="field"><label>MACHINE BRAND · two records in this gym</label>${window._mgConf.map((c,i)=>`<div class="u-mb6"><div class="u-label u-o50">${escTxt(c.gym)}</div><select id="mg_win_${i}">${c.recs.map((x,j)=>{ const k=c.keys[j], r=(db.machines[c.gym]||{})[x]||{}; const lb=(typeof r==='string')?r:[r.brand,r.setup].filter(Boolean).join(' · ')||'sin marca'; const ty=(x!==k&&c.keys.indexOf(k)!==c.keys.lastIndexOf(k))?' · '+x.slice(k.length+2).split(MACH_SEP)[0]:''; return '<option value="'+escTxt(x)+'"'+((x===winK||x.indexOf('='+winN+MACH_SEP)===0)?' selected':'')+'>'+escTxt(k+ty)+' → '+escTxt(lb)+'</option>'; }).join('')}</select></div>`).join('')}</div>`:''}
+   ${notes.length>1?`<div class="field"><label>NOTE · there are two</label><select id="mg_note">${notes.map(o=>'<option value="'+escTxt(o.x)+'"'+(o.x===winN?' selected':'')+'>'+escTxt(o.t.length>48?o.t.slice(0,48)+'…':o.t)+'</option>').join('')}</select></div>`:''}
    <div class="submeta u-mt8 u-mb10 u-mx0 u-o50">lo que ya quedó grabado en cada sesión (marca, setup, pesos, fechas) NO se toca · se guarda un respaldo antes de unir</div>
    <div class="sheetbtns"><button class="ok" data-act="domerge">merge</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
 }
@@ -23165,8 +23167,8 @@ function openScheduleModal(di){
   if(!db.split||!db.split.days[di])return; const day=db.split.days[di]; const defISO=nextDateForDay(di)||todayISO();   // v273 · la fecha real de ese día con tu plan
   openModal(`<h3>schedule · ${escTxt(day.name)}</h3>
    <div class="submeta u-mb8">descarga .ics y tu sistema lo añade al calendario</div>
-   <div class="field row2"><div><label>FECHA</label><input id="sc_date" type="date" value="${escV(defISO)}"/></div><div><label>HORA</label><input id="sc_time" type="time" value="08:00"/></div></div>
-   <div class="field"><label>DURACIÓN (min)</label><input id="sc_dur" type="number" value="60"/></div>
+   <div class="field row2"><div><label>DATE</label><input id="sc_date" type="date" value="${escV(defISO)}"/></div><div><label>TIME</label><input id="sc_time" type="time" value="08:00"/></div></div>
+   <div class="field"><label>DURATION (min)</label><input id="sc_dur" type="number" value="60"/></div>
    <div class="submeta u-o50 u-mb10">${day.exercises.length} ejercicios · ${escTxt(db.activeGym||'sin gym')}</div>
    <div class="sheetbtns"><button class="ok" data-act="dl_ics" data-di="${di}">download .ics</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
 }
@@ -23290,15 +23292,15 @@ function replaceExFromKnown(exi,x){
 function axFormHTML(afterExi,muscle){ const exs=knownExercises(); const muscles=muscleSuggest();
   const w0=db.activeWork; const seedMuscle = muscle || (afterExi!=null && w0 && w0.exercises[afterExi] && w0.exercises[afterExi].muscle) || '';
   const types=[['free','freeweight'],['machine','machine'],['smith','smith'],['cable','cable'],['bodyweight','bodyweight'],['cardio','cardio']];
-  return `<div class="field"><label>NOMBRE · escribe o elige uno previo</label><input id="fx_name" list="fx_namelist" placeholder="cable pushdown"/><datalist id="fx_namelist">${exs.map(x=>`<option value="${escTxt(x.name)}"></option>`).join('')}</datalist></div>
-   <div class="field row2"><div><label>MÚSCULO</label><input id="fx_muscle" value="${escTxt(seedMuscle)}" placeholder="chest" autocomplete="off"/></div><div><label>SETS</label><input id="fx_sets" type="number" value="2"/></div></div>
+  return `<div class="field"><label>NAME · type or pick a previous one</label><input id="fx_name" list="fx_namelist" placeholder="cable pushdown"/><datalist id="fx_namelist">${exs.map(x=>`<option value="${escTxt(x.name)}"></option>`).join('')}</datalist></div>
+   <div class="field row2"><div><label>MUSCLE</label><input id="fx_muscle" value="${escTxt(seedMuscle)}" placeholder="chest" autocomplete="off"/></div><div><label>SETS</label><input id="fx_sets" type="number" value="2"/></div></div>
    ${foldHTML('fx_msf',false,'<div class="chips u-mb12 u-mx0" id="fx_msugg">'+muscles.map(mm=>'<span class="chip" data-v="'+escTxt(mm)+'">'+escTxt(mm)+'</span>').join('')+'</div>')}
    <div class="xmblk" id="xm_fsec">${xmSecsHTML([])}</div>
    <div class="field"><label>TYPE</label><div class="toggles u-wrap u-gap4" id="fx_type">${types.map(([v,lbl])=>`<button class="t ${v==='free'?'on':''} u-fhalf u-min0" data-act="optpick" data-v="${v}"${v==='cardio'?' style="display:none"':''}>${lbl}</button>`).join('')}</div></div>
-   <div class="field"><label>MACHINE (OPCIONAL)</label><input id="fx_machine" placeholder="hammer strength"/></div>
-   <div class="field" id="fx_uniwrap"><label>VARIANTE</label><div class="toggles" id="fx_uni"><button class="t on" data-act="optpick" data-v="0">bilateral</button><button class="t" data-act="optpick" data-v="1">unilateral (R/L)</button><button class="t" data-act="optpick" data-v="2">alternating</button></div></div>
-   <div class="field u-mt8" id="fx_startwrap" style="display:none"><label>UNILATERAL · EMPEZAR POR</label><div class="toggles" id="fx_start"><button class="t on" data-act="optpick" data-v="R">R first</button><button class="t" data-act="optpick" data-v="L">L first</button></div></div>
-   <div class="field" id="fx_cardio" style="display:none"><label>CARDIO · subtipo</label>
+   <div class="field"><label>MACHINE · optional</label><input id="fx_machine" placeholder="hammer strength"/></div>
+   <div class="field" id="fx_uniwrap"><label>VARIANT</label><div class="toggles" id="fx_uni"><button class="t on" data-act="optpick" data-v="0">bilateral</button><button class="t" data-act="optpick" data-v="1">unilateral (R/L)</button><button class="t" data-act="optpick" data-v="2">alternating</button></div></div>
+   <div class="field u-mt8" id="fx_startwrap" style="display:none"><label>UNILATERAL · START WITH</label><div class="toggles" id="fx_start"><button class="t on" data-act="optpick" data-v="R">R first</button><button class="t" data-act="optpick" data-v="L">L first</button></div></div>
+   <div class="field" id="fx_cardio" style="display:none"><label>CARDIO · subtype</label>
      <div class="toggles u-wrap u-gap4" id="fx_cardiosub">${Object.keys(CARDIO_SUBS).map((k,i)=>`<button class="t ${i===0?'on':''} u-min0 u-fthird" data-act="optpick" data-v="${k}">${CARDIO_SUBS[k].l}</button>`).join('')}</div>
    </div><div id="xm_fgy"></div>`; }
 function axNewOpen(now){ const c=window._axCtx||{}, f=document.getElementById('ax_newf'), b=f&&f.firstElementChild; if(!f){ openAddExForm(c.afterExi,c.muscle,c.replaceExi); return; }
@@ -23409,8 +23411,8 @@ function openMachineEdit(exi){
   const w=db.activeWork; if(!w)return; const ex=w.exercises[exi]; if(!ex)return; const rec=machineRec(w.gym,ex);
   const _fr=canonType(ex.type)==='free'; openModal(`<h3>${_fr?'equipo / setup':'machine / setup'}</h3>
    <div class="submeta u-mb10">${escTxt(ex.name)} · en <b>${escTxt(w.gym)}</b></div>
-   <div class="field"><label>${_fr?'EQUIPO':'MÁQUINA / MARCA'}</label><input id="mc_brand" value="${escTxt(rec.brand||'')}" placeholder="${_fr?'mancuerna, barra…':'ej. Hammer Strength, Technogym'}" autocomplete="off"/></div>
-   <div class="field"><label>SETUP (opcional)</label><textarea id="mc_setup" class="ta sm" placeholder="asiento 4 · respaldo 2 · pin 60kg">${escTxt(rec.setup||'')}</textarea></div>
+   <div class="field"><label>${_fr?'EQUIPMENT':'MACHINE / BRAND'}</label><input id="mc_brand" value="${escTxt(rec.brand||'')}" placeholder="${_fr?'mancuerna, barra…':'ej. Hammer Strength, Technogym'}" autocomplete="off"/></div>
+   <div class="field"><label>SETUP · optional</label><textarea id="mc_setup" class="ta sm" placeholder="asiento 4 · respaldo 2 · pin 60kg">${escTxt(rec.setup||'')}</textarea></div>
    ${(p=>profRowHTML('mc_rp','rp',p.rp,p.rpSrc,p.why))(profileFor(ex,w.gym))}
    <div class="submeta u-mt2 u-mb10 u-mx0">queda guardado para <b>${escTxt(ex.name)}</b> en <b>${escTxt(w.gym)}</b> · sale igual en todos los días donde tengas este ejercicio</div>
    <div class="sheetbtns"><button class="ok" id="mc_save">save</button><button class="cancel" id="mc_na">N/A</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
@@ -24065,7 +24067,7 @@ function logWater(ml){ if(!(ml>0))return; const t=curDate(); db.meals[t]=db.meal
 function openDrink(){
   openModal(`<h3>add drink</h3>
    <div class="submeta u-mb10">agua y bebidas · suma a líquidos</div>
-   <div class="field"><label>AGUA (ml)</label><input id="dr_ml" type="number" inputmode="numeric" value="500"/></div>
+   <div class="field"><label>WATER (ml)</label><input id="dr_ml" type="number" inputmode="numeric" value="500"/></div>
    <div class="chips" id="dr_chips">${[250,500,750,1000].map(v=>`<span class="chip" data-act="drml" data-v="${v}">${v} ml</span>`).join('')}</div>
    <div class="sheetbtns u-mt10"><button class="ok" id="dr_go">add water</button><button class="cancel" data-act="drinkcal">drink with kcal →</button></div>`);
   document.getElementById('dr_go').onclick=()=>{ logWater(parseFloat(val('dr_ml'))||0); closeModal(); reRender(); };
@@ -24642,7 +24644,7 @@ function openBarcode(){
   openModal(`<h3>scan code</h3>
    <div id="bc_cam" class="u-w100 u-flex u-aic" style="position:relative;height:260px;overflow:hidden;border-radius:var(--r-ctl);background:var(--bg);justify-content:center"></div>
    <div id="bc_msg" class="submeta u-my8 u-mx0" style="min-height:30px">iniciando cámara…</div>
-   <div class="field"><label>O ESCRIBE EL CÓDIGO</label><input id="bc_code" inputmode="numeric" placeholder="7501..." autocomplete="off"/></div>
+   <div class="field"><label>OR TYPE THE CODE</label><input id="bc_code" inputmode="numeric" placeholder="7501..." autocomplete="off"/></div>
    <div class="sheetbtns"><button class="ok" id="bc_go">look up</button><button class="cancel" id="bc_cap">capture</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
   const doLookup=async()=>{ const code=val('bc_code'); if(!code)return;
     if(gtinLike(code)&&!gtinOk(code)&&!window._bcForce){ trkAsk({title:'el código no cuadra',detail:'el dígito verificador no coincide · revisa el número',ok:'search anyway'},()=>{ window._bcForce=1; doLookup(); }); return; } window._bcForce=0;   /* v342 · BC2 */ const m=document.getElementById('bc_msg'); if(m)m.innerHTML=trkSpinHTML('buscando');
@@ -24967,7 +24969,7 @@ function openMealCode(){
   openModal(`<h3>barcodes</h3>
    <div class="submeta u-mb10">${escTxt(m.name||'')} · varias presentaciones del mismo producto pueden tener distintos códigos</div>
    <div class="u-mb12">${codeList}</div>
-   <div class="field"><label>AÑADIR CÓDIGO</label><input id="mc_code" inputmode="numeric" placeholder="escanea o escribe los dígitos" autocomplete="off"/></div>
+   <div class="field"><label>ADD CODE</label><input id="mc_code" inputmode="numeric" placeholder="escanea o escribe los dígitos" autocomplete="off"/></div>
    <button class="b u-w100 u-mb10" id="mc_scan">scan code (photo)</button>
    <div class="sheetbtns"><button class="ok" id="mc_add">+ add</button><button class="cancel" data-act="closemodal">close</button></div>`);
   document.getElementById('mc_scan').onclick=()=>scanCodeToInput('mc_code');
@@ -25778,9 +25780,9 @@ function openDupMeal(tag){
   const sugg=mealSuggestions().filter(s=>s!==tag);
   openModal(`<h3>duplicar #${escTxt(tag)}</h3>
    <div class="submeta u-mb10">${items.length} alimento${items.length>1?'s':''} · clona la meal completa</div>
-   <div class="field"><label>NUEVA MEAL · nombre</label><input id="dm_tag" value="${escTxt(tag)}" placeholder="ej. desayuno"/>
+   <div class="field"><label>NEW MEAL · name</label><input id="dm_tag" value="${escTxt(tag)}" placeholder="ej. desayuno"/>
    <div class="chips" id="dm_sugg">${sugg.slice(0,8).map(s=>`<span class="chip" data-act="dmtag" data-v="${escTxt(s)}">${escTxt(s)}</span>`).join('')}</div></div>
-   <div class="field"><label>FECHA</label><input id="dm_date" type="date" value="${escV(src)}"/></div>
+   <div class="field"><label>DATE</label><input id="dm_date" type="date" value="${escV(src)}"/></div>
    <div class="sheetbtns"><button class="ok" id="dm_go">duplicate</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
   document.querySelectorAll('#dm_sugg .chip').forEach(c=>c.onclick=()=>{ const inp=document.getElementById('dm_tag'); inp.value=c.dataset.v; });
   document.getElementById('dm_go').onclick=()=>{
@@ -26002,6 +26004,8 @@ function doImport(){
 // v398 · FM1 · lo que el renglón grande necesita en cada hoja: números grandes, menos y más en las cantidades y el guardar fijo abajo
 const FM_STEP=/^(ex_q|ex_q2|ad_qty|dd_v|se_per|ba_per)$/;
 function fmWire(root){ if(!root||!root.querySelectorAll)return; try{
+  root.querySelectorAll('.field input[type=date],.field input[type=time]').forEach(c=>{ if(c._fmdt)return; const row=c.parentElement; if(!row||!row.querySelector(':scope>label'))return; c._fmdt=1; row.classList.add('fmdt');
+    const t=document.createElement('span'); t.className='fmdv'; row.insertBefore(t,c); const up=()=>{ t.textContent=fldShow(c); }; up(); c.addEventListener('input',up); c.addEventListener('change',up); if(!isIOS())c.addEventListener('click',()=>fldOpen(c)); });   /* v400 · FM1 */
   root.querySelectorAll('.fld').forEach(l=>{ const c=l.querySelector('input'); if(c&&(c.type==='number'||/^(decimal|numeric)$/.test(c.getAttribute('inputmode')||'')))l.classList.add('fnum'); });
   root.querySelectorAll('input').forEach(c=>{ if(c._fmst||!(FM_STEP.test(c.id)||c.classList.contains('qai')||c.hasAttribute('data-step')))return; c._fmst=1; const row=c.closest('.fld,.qar,.obr,.field>div,.field')||c.parentElement; row.classList.add('fstep');
     const mk=(t,d,cl)=>{ const b=document.createElement('button'); b.type='button'; b.className='fmst '+cl; b.textContent=t; b.setAttribute('aria-label',d<0?'una menos':'una más');
@@ -26371,9 +26375,9 @@ function _u4SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK u4:
     { const v=document.createElement('div'); v.innerHTML='<div class="scan-reticle"><div class="scl"></div></div>'; document.getElementById('app').appendChild(v); const cs=getComputedStyle(v.querySelector('.scl')); A('BAJO 18 · la línea del escáner sigue de 2 px', cs.height==='2px'&&cs.paddingTop==='0px'); v.remove(); }
     // la palabra y el formulario
     { state.screen='stack'; const hh=renderStack(); A('la palabra: sustancias en el título y en el alta', /<\/span>SUSTANCIAS/.test(hh)&&/\+ sustancia</.test(hh)&&!/\+ supp</.test(hh)); }
-    openStackEdit('a'); const F=document.getElementById('modal'), F0=F.textContent; A('el formulario: tipo arriba como etiquetas, nombre, y luego sus pliegues', !!F.querySelector('#se_cat button.on')&&/^#/.test(F.querySelector('#se_cat button').textContent)&&(F.querySelector('#se_cat').compareDocumentPosition(F.querySelector('#se_name'))&Node.DOCUMENT_POSITION_FOLLOWING)>0&&/dose and frequency/.test(F0)&&/brand and form/.test(F0)&&!/producto y frasco|cuánto y cuándo|qué es/.test(F0));
+    openStackEdit('a'); const F=document.getElementById('modal'), F0=F.textContent; A('el formulario: tipo arriba como etiquetas, nombre, y luego sus pliegues', !!F.querySelector('#se_cat button.on')&&/^#/.test(F.querySelector('#se_cat button').textContent)&&(F.querySelector('#se_cat').compareDocumentPosition(F.querySelector('#se_name'))&Node.DOCUMENT_POSITION_FOLLOWING)>0&&/schedule/.test(F0)&&/brand and form/.test(F0)&&!!F.querySelector('#se_dose')&&!F.querySelector('#se_sec_cuanto #se_dose')&&!F.querySelector('#se_sec_cuanto #se_when')&&!/producto y frasco|cuánto y cuándo|qué es/.test(F0));
     A('todo plegado al abrir', ['cuanto','prod','nutr','notas'].every(k=>F.querySelector('#se_sec_'+k).hidden));
-    A('frecuencia en palabras claras', ['diaria','días por semana','cada X días','ciclo','rango','ocasional'].every(w=>[...F.querySelectorAll('#se_pt button')].some(b=>b.textContent===w)));
+    A('frecuencia en palabras claras (v400: rótulos en inglés)', ['daily','set days','every N days','cycle','range','occasional'].every(w=>[...F.querySelectorAll('#se_pt button')].some(b=>b.textContent===w)));
     { const pm=[...F.querySelectorAll('#se_when button')].find(b=>b.dataset.when==='PM'); pm.click(); A('la segunda ficha de momento agrega otra toma', F.querySelectorAll('#se_tk .tkrow').length===(it('a').more||[]).filter(m=>!m.end).length+1&&pm.classList.contains('tkc')); pm.click(); A('…y quitarla la quita', F.querySelectorAll('#se_tk .tkrow').length===(it('a').more||[]).filter(m=>!m.end).length&&!pm.classList.contains('on')); }
     closeModal();
     { openStackEdit('d'); const G=document.getElementById('modal'); A('dos sustancias: se ofrece su dosis por unidad', G.querySelectorAll('#se_ing .seing').length===2&&/2 sustancias en una unidad/.test(G.querySelector('#se_ing').textContent)&&G.querySelector('#se_sec_ing').hidden); const snap=JSON.stringify(it('d')); G.querySelector('#se_save').click(); const a=JSON.parse(snap), b=it('d'); A('abrir y guardar sin tocar no agrega ingredientes', !b.ingredients&&!a.ingredients&&JSON.stringify(a.ticks)===JSON.stringify(b.ticks));
