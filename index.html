@@ -1472,6 +1472,9 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
   .obf{border-bottom:var(--bw-sep) solid var(--o10);} .obf .fldv input{min-width:1ch;} .obf .fldv input:placeholder-shown{min-width:4ch;} .obf .flu{color:var(--o50); margin-left:.5ch;}
   #view:has(.ob.onb){padding-bottom:0;}
   .obf:focus-within .k,.obf:focus-within .fldv::before,.obf:focus-within .fldv::after{color:var(--fg);} .obf .fldv input{max-width:min(14ch,42vw);}
+  .ob .fld.obf{min-height:56px; gap:var(--s3); cursor:text;} .ob .fld.obf .dots{display:none;} .ob .fld.obf>.obch{margin-left:auto;} .ob .fld.obf .k{font-size:var(--t-data); color:var(--o60);} .ob .fld.obf:focus-within{border-bottom-color:var(--fg);}
+  .ob .fld.obf .fldv{margin-left:auto; font-size:var(--t-field); font-weight:700;} .ob .fld.obf .fldv::before,.ob .fld.obf .fldv::after{content:none;} .ob .fld.obf .fldv input{max-width:min(18ch,52vw); text-align:right;}
+  .ob .fld.obf:has(input[inputmode]) .fldv{font-size:var(--t-display); font-weight:800; letter-spacing:var(--ls-num);}   /* v401 · FM1 · el alta escribe como las hojas: renglón de 56, valor a la derecha, números grandes, sin corchetes */
   .ob .obr.obstack{font-size:inherit;} .onbfoot .onberr{margin:0 0 var(--s1);}
   .ob .obstack>.obk{padding:0; font-size:inherit; color:var(--o60);} .ob .obstack{padding:var(--s2) 0;} .ob .obstack .obch{justify-content:flex-start; margin-left:-.25ch;}
   .obch{display:inline-flex; gap:.25ch; flex-wrap:wrap; justify-content:flex-end;} .obc{appearance:none; -webkit-appearance:none; border:0; background:none; margin:0; padding:0 .25ch; min-height:44px; min-width:36px; font:inherit; color:var(--o40); cursor:pointer;} .obc.on{color:var(--fg);} .obc:focus-visible{outline:1px solid var(--fg); outline-offset:2px;}
@@ -2086,7 +2089,7 @@ button.exstar,button.exrp{cursor:pointer;} button.exstar::after,button.exrp::aft
 
 <script>
 "use strict";
-const APP_V='v400';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
+const APP_V='v401';   // versión visible (arranque); R-DOC la compara con sw.js y con DESIGN_SYSTEM.md línea 3
 const LS_KEY='gymtrk_db_v1';
 // BRAND.md §3 · diccionario cerrado de glifos de interfaz (un glifo = un significado). tools/ds-audit.cjs (R-GLY) lee
 // esta constante: cualquier otro símbolo no ASCII en un literal de interfaz es una desviación. Las etiquetas que el
@@ -15411,7 +15414,7 @@ function onbCheck(k,d){ const n=v=>parseFloat(String(v==null?'':v).replace(',','
   return ''; }
 function _c9SelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK c9: '+n); }; const d0=db; try{
     db=migrate({_idfix:true,_fsfix:true,profile:{},sessions:[],settings:{}}); const d=onbD(); db.onb.step=1; const h1=renderOnboard();
-    A('primera pantalla: //PERFIL con usuario, sexo, edad, estatura y peso', /\/\/<\/span>PERFIL/.test(h1)&&/data-od="name"/.test(h1)&&/data-od="age"/.test(h1)&&/data-od="h"/.test(h1)&&/data-od="w"/.test(h1)&&/>usuario</.test(h1)&&!/¿/.test(h1));
+    A('primera pantalla: //PERFIL con usuario, sexo, edad, estatura y peso', /\/\/<\/span>PERFIL/.test(h1)&&/data-od="name"/.test(h1)&&/data-od="age"/.test(h1)&&/data-od="h"/.test(h1)&&/data-od="w"/.test(h1)&&/>username</.test(h1)&&!/¿/.test(h1));
     A('sin sugerencias ni cantidades antes de tus datos', !/placeholder="[^" ]/.test(h1)&&!/kcal/.test(h1)&&!/class="gprow on"/.test(h1));
     A('sin elegir sexo, edad, estatura y peso no avanza', onbCheck('perfil',Object.assign({},d,{name:'a'}))==='elige sexo'&&onbCheck('perfil',Object.assign({},d,{name:'a',sex:'F'}))==='completa edad, estatura y peso'&&onbCheck('perfil',Object.assign({},d,{name:'a',sex:'F',age:'30',h:'165',w:'60'}))==='');
     db.onb.step=2; const h2a=renderOnboard(); A('objetivo sin elegir: nada marcado y sin cantidades', !/class="gprow on"/.test(h2a)&&!/kcal/.test(h2a)&&onbCheck('obj',d)==='elige tu actividad');
@@ -15536,7 +15539,7 @@ function renderOnboard(){ const d=onbD(), N=ONB_STEPS.length, i=Math.max(1,Math.
   const L=(f,opts)=>`<div class="obopts" role="radiogroup" aria-label="${ONB_LBL[f]||f}">${opts.map(([v,l,x])=>`<button type="button" class="gprow${on(f,v)?' on':''}" data-act="onbpick" data-f="${f}" data-v="${v}" role="radio" aria-checked="${on(f,v)}"><span class="gpb">${l}</span>${x?`<span class="obd">${x}</span>`:''}</button>`).join('')}</div>`;   /* v388 · c9 · el estilo del selector de gym */
   const I=(f,k,o)=>`<label class="fld obf"><span class="k">${k}</span><span class="dots"></span><span class="fldv"><input class="obi" data-od="${f}" value="${escTxt(d[f]==null?'':String(d[f]))}" aria-label="${escV(k)}" placeholder=" "${o.n?' type="number" inputmode="'+(o.dec?'decimal':'numeric')+'"':' autocapitalize="off" autocorrect="off" spellcheck="false"'} autocomplete="trk-${f}" enterkeyhint="${o.last?'done':'next'}"/></span>${o.u?`<span class="flu">${o.u}</span>`:''}</label>`;   /* v388 · c9 · el renglón de Ajustes */
   const P=onbProfile(d); let body='';
-  if(S.k==='me'||S.k==='perfil') body=I('name','usuario',{ph:''})+`<div class="fld obf"><span class="k">sex</span><span class="dots"></span>${T('sex',[['M','male'],['F','female']])}</div>`+I('age','age',{n:1,ph:'',u:'yrs'})+I('h','height',{n:1,ph:'',u:'cm'})
+  if(S.k==='me'||S.k==='perfil') body=I('name','username',{ph:''})+`<div class="fld obf"><span class="k">sex</span><span class="dots"></span>${T('sex',[['M','male'],['F','female']])}</div>`+I('age','age',{n:1,ph:'',u:'yrs'})+I('h','height',{n:1,ph:'',u:'cm'})
       +`<label class="fld obf"><span class="k">weight</span><span class="dots"></span><span class="fldv"><input class="obi" data-od="w" value="${escTxt(d.w==null?'':String(d.w))}" aria-label="peso" placeholder=" " type="number" inputmode="decimal" autocomplete="trk-w" enterkeyhint="done"/></span>${T('bwu',[['kg','kg'],['lbs','lb']])}</label>`+`<div class="obprev" id="onb_prev">${onbPrevTxt(d)}</div>`;
   else if(S.k==='obj'){ const g=onbGoalsOf(d,P), r=n=>Math.round(n).toLocaleString('en-US');
     body='<div class="submeta obsec">actividad</div>'+L('act',OB_ACT)+'<div class="submeta u-mb10">si dudas, elige la menor · se corrige con tus registros</div>'
@@ -19923,7 +19926,7 @@ function _a3SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK a3:
       tap(m.querySelector('[data-act="axnewmus"]')); A('agregar · + músculo nuevo despliega ahí mismo', m.isConnected&&m.querySelector('#ax_newf').classList.contains('on')&&m.querySelector('[data-act="axnewmus"]').getAttribute('aria-expanded')==='true');
       tap(m.querySelector('.pickitem[data-v="chest"]')); m=document.getElementById('modal'); A('agregar · la lista del músculo, con el formulario cerrado y vacío', m.querySelectorAll('.pickitem[data-act="axpick"]').length>=1&&!m.querySelector('#fx_name')&&!m.querySelector('#ax_newf').classList.contains('on'));
       tap(m.querySelector('[data-act="axnewex"]')); const nm=m.querySelector('#fx_name'); A('agregar · + ejercicio nuevo despliega el formulario en la misma hoja', document.getElementById('modal')===m&&!!nm&&m.querySelector('#ax_newf').classList.contains('on')&&!!m.querySelector('[data-act="okaddex"]'));
-      A('agregar · [machine] opcional, sin nota', /MACHINE \(OPCIONAL\)/.test(m.textContent)&&!/NOTE/.test(m.textContent));
+      A('agregar · [machine] opcional, sin nota', /MACHINE · optional/.test(m.textContent)&&!/NOTE/.test(m.textContent));
       const cb=m.querySelector('#fx_type [data-v="cardio"]'); A('agregar · cardio no sale en el selector, y sí se crea en el editor', cb.style.display==='none'&&/\['cardio','cardio'\]/.test(openExEdit.toString()));
       A('agregar · los músculos salen al tocar la casilla', !m.querySelector('#fx_msf').classList.contains('on')&&(m.querySelector('#fx_muscle').dispatchEvent(new Event('focus')),m.querySelector('#fx_msf').classList.contains('on'))&&(tap(m.querySelector('#fx_msugg .chip')),!m.querySelector('#fx_msf').classList.contains('on')));
       nm.value='trote'; nm.dispatchEvent(new Event('input',{bubbles:true})); A('agregar · un cardio que ya existe sigue siendo cardio', m.querySelector('#fx_type .t.on').dataset.v==='cardio'&&cb.style.display!=='none');
@@ -20942,7 +20945,7 @@ document.getElementById('app').addEventListener('click',e=>{
   else if(a==='qtyall'){ openQtyAll(); }
   else if(a==='stackseg'){ window._stackTab=el.dataset.v; state._enter={sel:'.sprlist .sprow'}; reRender(); }   // v327 · las pestañas de administrar
   else if(a==='stkfold'){ const k=el.dataset.k; state._stkOpen=state._stkOpen||{}; state._stkOpen[k]=!state._stkOpen[k]; state._enter={sel:'.sprlist[data-sk="'+k+'"] .sprow'}; reRender(); }
-  else if(a==='sefold'){ const b=document.getElementById('se_sec_'+el.dataset.k); if(b){ const op=b.hidden; keepUnder(el,()=>{ b.hidden=!op; el.setAttribute('aria-expanded',op?'true':'false'); const c=el.querySelector('.rchev'); if(c)c.textContent=op?'▾':'›'; if(window._seSum)window._seSum(); }); if(op)revealAnim(b); } }
+  else if(a==='sefold'){ const b=document.getElementById('se_sec_'+el.dataset.k); if(b){ const op=b.hidden; sheetFreeze(el); keepUnder(el,()=>{ b.hidden=!op; el.setAttribute('aria-expanded',op?'true':'false'); const c=el.querySelector('.rchev'); if(c)c.textContent=op?'▾':'›'; if(window._seSum)window._seSum(); }); if(op)revealAnim(b); } }
   else if(a==='chartpt'){ try{ const pts=JSON.parse(el.dataset.pts||'[]'); if(pts.length){ const r=el.getBoundingClientRect(); const x=(e.clientX-r.left)/(r.width||1); let best=pts[0],bd=9; pts.forEach(p=>{ const d=Math.abs(p.f-x); if(d<bd){bd=d;best=p;} }); if(best&&best.l)toast(best.l); } }catch(_){} }
   else if(a==='editbw'){ const d=el.dataset.d; const dt=document.getElementById('bw_date'), kg=document.getElementById('bw_kg'); if(dt){ dt.value=d; dt.dispatchEvent(new Event('change')); } if(kg){ kg.value=(db.bodyweight&&db.bodyweight[d])?bwShow(db.bodyweight[d]):''; bwSliderSync(); focusEl(kg); } }   /* v382 · a3 · en tu unidad, no en kg */
   else if(a==='delbw'){ const d=el.dataset.d; trkAsk({title:'borrar el peso del '+fmtShort(d),ok:'delete',danger:true},()=>{ if(db.bodyweight){ const m=H().src.weight[d]; if(m&&m!=='manual')H().src.weight[d]='del'; delete db.bodyweight[d]; }   /* v369 · H9 · el del atajo que borras no vuelve */ const allk=Object.keys(db.bodyweight||{}).sort(); if(db.profile)db.profile.weightKg=allk.length?db.bodyweight[allk[allk.length-1]]:db.profile.weightKg; save(); openWeightLog((document.getElementById('bw_date')||{}).value||null); }); }   /* v364 · H8 · se queda en su fecha */
@@ -21584,7 +21587,7 @@ function openExEdit(di,ei,liveExi,cat){
    <div class="field"><label>NAME${isNew?' · type or pick a previous one':''}</label><input id="ee_name" value="${escTxt(e.name||'')}" list="ee_namelist" placeholder="bb incline"/><datalist id="ee_namelist">${knowns.map(x=>`<option value="${escTxt(x.name)}"></option>`).join('')}</datalist></div>
    ${(()=>{
      const ML=exMuscles(e), cur1=(ML[0]||{}).name||'';   // v356 · SP8 · hasta 3 secundarios (filas 2–4)
-     const opts=(curv)=>`<option value=""${!curv?' selected':''}>— pick muscle —</option>`+[...new Set([curv,...muscles].filter(Boolean))].map(m=>`<option value="${escTxt(m)}"${m===curv?' selected':''}>${escTxt(m)}</option>`).join('')+`<option value="__new__">+ nuevo músculo…</option>`;
+     const opts=(curv)=>`<option value=""${!curv?' selected':''}>— pick muscle —</option>`+[...new Set([curv,...muscles].filter(Boolean))].map(m=>`<option value="${escTxt(m)}"${m===curv?' selected':''}>${escTxt(m)}</option>`).join('')+`<option value="__new__">+ new muscle…</option>`;
      const sec=k=>{ const m=ML[k-1], cv=m?m.name:''; return `<div class="u-mt6" id="ee_mus${k}wrap" style="display:${m?'block':'none'}">
      <div class="inline-row"><select id="ee_mus${k}sel" class="grow">${opts(cv)}</select><input id="ee_mus${k}w" type="number" inputmode="decimal" step="0.05" min="0" max="1" class="w72" value="${escV(m?m.weight:0.5)}" placeholder="0.5"/><button class="cancel u-py4 u-px10 u-f0" data-act="ee_musk_off" data-k="${k}">×</button></div>
      <input id="ee_mus${k}" type="hidden" value="${escTxt(cv)}"/><input id="ee_mus${k}_new" placeholder="escribe el músculo nuevo" class="u-mt6" style="display:none"/></div>`; };
@@ -21600,16 +21603,18 @@ function openExEdit(di,ei,liveExi,cat){
    <div class="field" id="ee_uniwrap" style="display:${isCardioEdit?'none':'block'}"><label>VARIANT</label><div class="toggles" id="ee_uni"><button class="t ${!e.unilateral&&e.lat!=='alt'?'on':''}" data-act="optpick" data-v="0">bilateral</button><button class="t ${e.unilateral?'on':''}" data-act="optpick" data-v="1">unilateral (R/L)</button><button class="t ${!e.unilateral&&e.lat==='alt'?'on':''}" data-act="optpick" data-v="2">alternating</button></div></div>
    <div class="field" id="ee_startwrap" style="display:${!isCardioEdit&&e.unilateral?'block':'none'}"><label>UNILATERAL · START WITH</label><div class="toggles" id="ee_start"><button class="t ${e.startSide!=='L'?'on':''}" data-act="optpick" data-v="R">R first</button><button class="t ${e.startSide==='L'?'on':''}" data-act="optpick" data-v="L">L first</button></div></div>
    <div class="field" id="ee_bwflags" style="display:${canonType(e.type)==='bodyweight'?'block':'none'}"><label>BODYWEIGHT · variant</label>
-     <label class="u-label u-o50 u-block u-mb4"><input type="checkbox" id="ee_assisted" ${e.assisted?'checked':''} class="u-vam u-wauto"/> asistido (máquina de asistencia)</label>
-     <label class="u-label u-o50 u-block u-mb10"><input type="checkbox" id="ee_weighted" ${e.weighted?'checked':''} class="u-vam u-wauto"/> con lastre (weighted)</label>
+     <label class="u-label u-o50 u-block u-mb4"><input type="checkbox" id="ee_assisted" ${e.assisted?'checked':''} class="u-vam u-wauto"/> assisted (machine)</label>
+     <label class="u-label u-o50 u-block u-mb10"><input type="checkbox" id="ee_weighted" ${e.weighted?'checked':''} class="u-vam u-wauto"/> weighted</label>
    </div>
    <div class="field" id="ee_cardio" style="display:${isCardioEdit?'block':'none'}"><label>CARDIO · subtype</label>
      <div class="toggles u-wrap u-gap4" id="ee_cardiosub">${Object.keys(CARDIO_SUBS).map(k=>`<button class="t ${curCardioSub===k?'on':''} u-min0 u-fthird" data-act="optpick" data-v="${k}">${CARDIO_SUBS[k].l}</button>`).join('')}</div>
    </div>
    ${(!isNew&&live)?'<div class="submeta u-mt8 u-mb4 u-mx0 u-o40">lo de arriba, por defecto, solo cambia la sesión de hoy</div><label class="u-label u-o60 u-block u-mb10"><input type="checkbox" id="ee_tosplit" class="u-vam u-wauto"/> guardar también en el split de este día</label>':''}
-   ${isNew?'':exSheetExtraHTML(e,xo)}
-   ${xsBtns}<div class="sheetbtns${isNew?'':' xsave'}"><button class="ok" data-act="okexedit">save</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
+   ${isNew?'':'<div class="line u-tap kp-rad" role="button" tabindex="0" id="ee_xmore" aria-expanded="false" aria-controls="ee_xbox"><span class="k">gym, machine and profile</span><span class="dots"></span><span class="v">'+escTxt(xo.gym||'—')+' ›</span></div>'+foldHTML('ee_xbox',false,exSheetExtraHTML(e,xo))}
+   ${xsBtns}<div class="sheetbtns${isNew?'':' xsave'}"><button class="ok" data-act="okexedit">save</button><button class="cancel" data-act="closemodal">cancel</button></div>`,'top');   /* v401 · FM1 · con pliegues: arriba */
   if(!isNew)exSheetWire();
+  { const xm=document.getElementById('ee_xmore'); if(xm){ xm.onclick=()=>{ const on=foldToggle('ee_xbox'); xm.setAttribute('aria-expanded',on?'true':'false'); };
+      const gv=()=>{ const v=xm.querySelector('.v'); if(v)v.textContent=(xsGym()||'—')+' ›'; }; gv(); const gs=document.getElementById('xs_gym'); if(gs)gs.addEventListener('change',gv); } }
   if(cat&&!rep.R.split.length){ const sw=document.getElementById('ee_startwrap'); if(sw)sw.remove(); }   // el lado inicial vive en el split: sin instancia ahí, no hay dónde guardarlo
   // muscle dropdowns: picking "+ nuevo músculo…" reveals a free-text input that feeds a hidden canonical field
   function wireMuscleSelect(selId,newId,hidId){ const sel=document.getElementById(selId),nw=document.getElementById(newId),hid=document.getElementById(hidId); if(!sel||!nw||!hid)return;
@@ -24882,31 +24887,37 @@ function openVerify(food, opts){
   const pieceSel=OP(FOOD_PL,plc).map(x=>'<option value="'+escV(x[0])+'"'+(x[0]===plc?' selected':'')+'>'+escV(x[1])+'</option>').join('');
   openModal(`<h3>${window._faCtx?'<a data-act="faback" class="vb u-mr8" title="volver a la búsqueda">‹ back</a>':''}register food</h3>
    <div class="vf">
-   ${T('v_name','name',fd.name||'','galletas marías')}${T('v_brand','brand',fd.brand||'','optional')}
-   <div class="vcod">${T('v_barcode','code',window._verify.barcode||'','optional',' inputmode="numeric"')}<button type="button" class="b" id="v_bc_scan">scan</button></div>
-   <div class="vlbl"><span class="grp-label">FORM</span></div>
-   <input type="hidden" id="v_base" value="${base}"/>
-   <div class="vtu"><span class="toggles" id="v_bt" role="group" aria-label="sólido o líquido"><button type="button" class="t${base==='g'?' on':''}" data-v="g" aria-pressed="${base==='g'}">solid</button><button type="button" class="t${base==='ml'?' on':''}" data-v="ml" aria-pressed="${base==='ml'}">liquid</button></span><span class="toggles" id="v_ut" role="group" aria-label="unidad">${vUnitsHTML(base,base)}</span></div>
-   ${fieldHTML({id:'v_cl',k:'viene en',v:clc,opts:OP(FOOD_CL,clc)})}
-   ${N('v_pack_g','contenido',VU,fd.sizes.container)}${N('v_pack_servings','yields','servings',packServings)}${N('v_serv_g','one serving',VU,sg)}
-   ${T('v_serv_label','se sirve como',fd.servingLabel||'',base==='ml'?'1 vaso':'4 galletas')}
-   <div class="fld"><span class="k">each</span><span class="fldv"><select id="v_pl">${pieceSel}</select></span><span class="dots"></span><label class="fldv" for="v_piece_g"><input id="v_piece_g" type="number" inputmode="decimal" value="${escV(fd.sizes.piece?numTxt(fd.sizes.piece):'')}" placeholder="—"/></label><span class="vfu">${VU}</span></div>
+   ${T('v_name','name',fd.name||'','galletas marías')}
    <div class="vlbl"><span class="grp-label">NUTRITION LABEL</span><button type="button" class="b" id="v_label_photo">label photo</button></div>
    <div class="fld vbb"><span class="k">per</span><span class="dots"></span><span class="toggles" id="v_vb"><button type="button" class="t${unk0?'':' on'}" data-v="100">100 <span class="vbu">${base}</span></button><button type="button" class="t${unk0?' on':''}" data-v="serving">serving</button><button type="button" class="t" data-v="container"><span id="v_vbc">${escV(clc)}</span></button></span></div>
    ${N('v_kcal','kcal','',disp.kcal,'0')}${N('v_protein','protein','g',disp.protein,'0')}${N('v_carbs','carbs','g',disp.carbs,'0')}${N('v_fat','fat','g',disp.fat,'0')}
    <div class="line u-tap kp-rad" role="button" tabindex="0" id="v_more" aria-expanded="${more}" aria-controls="v_morebox"><span class="k">more</span><span class="dots"></span><span class="v">sugar · fiber · sodium… ›</span></div>
    ${foldHTML('v_morebox',more,N('v_sugar','sugar','g',disp.sugar,'0')+N('v_fiber','fiber','g',disp.fiber,'0')+N('v_sodium','sodium','mg',disp.sodium,'0')+N('v_potassium','potassium','mg',disp.potassium,'0')+N('v_caffeine','caffeine','mg',disp.caffeine,'0')+N('v_alcohol','alcohol','g',disp.alcohol,'0'))}
+   <div class="line u-tap kp-rad" role="button" tabindex="0" id="v_pkg" aria-expanded="${unk0}" aria-controls="v_pkgbox"><span class="k">package and serving</span><span class="dots"></span><span class="v" id="v_pkgsum">brand · code · serving ›</span></div>
+   ${foldHTML('v_pkgbox',unk0,`${T('v_brand','brand',fd.brand||'','optional')}
+   <div class="vcod">${T('v_barcode','code',window._verify.barcode||'','optional',' inputmode="numeric"')}<button type="button" class="b" id="v_bc_scan">scan</button></div>
+   <div class="vlbl"><span class="grp-label">FORM</span></div>
+   <input type="hidden" id="v_base" value="${base}"/>
+   <div class="vtu"><span class="toggles" id="v_bt" role="group" aria-label="sólido o líquido"><button type="button" class="t${base==='g'?' on':''}" data-v="g" aria-pressed="${base==='g'}">solid</button><button type="button" class="t${base==='ml'?' on':''}" data-v="ml" aria-pressed="${base==='ml'}">liquid</button></span><span class="toggles" id="v_ut" role="group" aria-label="unidad">${vUnitsHTML(base,base)}</span></div>
+   ${fieldHTML({id:'v_cl',k:'comes in',v:clc,opts:OP(FOOD_CL,clc)})}
+   ${N('v_pack_g','content',VU,fd.sizes.container)}${N('v_pack_servings','yields','servings',packServings)}${N('v_serv_g','one serving',VU,sg)}
+   ${T('v_serv_label','served as',fd.servingLabel||'',base==='ml'?'1 vaso':'4 galletas')}
+   <div class="fld"><span class="k">each</span><span class="fldv"><select id="v_pl">${pieceSel}</select></span><span class="dots"></span><label class="fldv" for="v_piece_g"><input id="v_piece_g" type="number" inputmode="decimal" value="${escV(fd.sizes.piece?numTxt(fd.sizes.piece):'')}" placeholder="—"/></label><span class="vfu">${VU}</span></div>
+`)}
    </div>
    <div id="v_reg_sum" class="submeta u-mt6 u-mb4 u-mx0"></div>
    ${opts.ocrText?`<details class="u-mb8"><summary class="submeta u-tap">qué leyó la IA</summary><pre class="u-label u-o50 u-mt6 u-mb0 u-mx0" style="white-space:pre-wrap;max-height:120px;overflow:auto">${(opts.ocrText||'').replace(/[<&]/g,c=>c==='<'?'&lt;':'&amp;')}</pre></details>`:''}
-   <div class="sheetbtns"><button class="ok" data-act="vcontinue">continue → log</button><button class="cancel" data-act="closemodal">cancel</button></div>`);
+   <div class="sheetbtns"><button class="ok" data-act="vcontinue">continue → log</button><button class="cancel" data-act="closemodal">cancel</button></div>`,'top');   /* v401 · FM1 · con pliegues: arriba, al desplegar nada se mueve */
   const $=id=>document.getElementById(id);
   const rsum=()=>{ const f=readRegister(); const s=$('v_reg_sum'); document.querySelectorAll('#modal .vbu').forEach(x=>{ x.textContent=f.base; }); { const uu=V_UL[vUnitCur()]||f.base; document.querySelectorAll('#modal .vuu').forEach(x=>{ x.textContent=uu; }); const vc=$('v_vbc'); if(vc)vc.textContent=val('v_cl')||'envase'; }   /* v382 · i3 */
     if(s){ const c=f.sizes.container||0; s.innerHTML='por 100 '+f.base+': <b class="u-fg">'+Math.round(f.per100.kcal)+'</b> kcal'+(c?' · '+escTxt(f.containerLabel||'envase')+' ('+numTxt(c)+' '+f.base+') = <b class="u-fg">'+Math.round(f.per100.kcal*c/100)+'</b> kcal':'')+(f._short?' · sin el tamaño '+(f._short==='serving'?'de la porción':'del envase')+': 1 '+(f._short==='serving'?'porción':escTxt(f.containerLabel||'envase'))+' = lo que dice la etiqueta':''); if(kcalLowFood(f))s.innerHTML+=' · ⚠ tus macros suman <b class="u-fg">'+Math.round(kcalFromMacros(f.per100))+'</b> · ¿falta un macro?'; } };   // v354 · K1
   ['v_serv_g','v_kcal','v_protein','v_carbs','v_fat','v_sugar','v_fiber','v_sodium','v_potassium','v_caffeine','v_alcohol','v_pack_g','v_pack_servings','v_piece_g'].forEach(id=>{ const e=$(id); if(e)e.addEventListener('input',rsum); });
   ['v_base','v_cl','v_pl'].forEach(id=>{ const e=$(id); if(e)e.addEventListener('change',rsum); });
-  document.querySelectorAll('#v_vb .t').forEach(b=>b.addEventListener('click',()=>{ document.querySelectorAll('#v_vb .t').forEach(x=>x.classList.toggle('on',x===b)); rsum(); }));
-  const mo=$('v_more'); if(mo)mo.onclick=()=>{ const on=foldToggle('v_morebox'); mo.setAttribute('aria-expanded',on?'true':'false'); };   /* v382 · i3 */
+  document.querySelectorAll('#v_vb .t').forEach(b=>b.addEventListener('click',()=>{ document.querySelectorAll('#v_vb .t').forEach(x=>x.classList.toggle('on',x===b)); rsum(); if(readRegister()._short){ foldToggle('v_pkgbox',true); const pk=$('v_pkg'); if(pk)pk.setAttribute('aria-expanded','true'); } }));   /* v401 · pide el tamaño: se ve dónde ponerlo */
+  const mo=$('v_more'); if(mo)mo.onclick=()=>{ const on=foldToggle('v_morebox'); mo.setAttribute('aria-expanded',on?'true':'false'); };
+  { const pk=$('v_pkg'); if(pk)pk.onclick=()=>{ const on=foldToggle('v_pkgbox'); pk.setAttribute('aria-expanded',on?'true':'false'); };   /* v401 · FM1 · el empaque plegado; su renglón dice lo que ya trae */
+    const pks=()=>{ const ps=$('v_pkgsum'); if(!ps)return; const b=val('v_brand'), c=val('v_barcode'), g=val('v_serv_g'); const L=[b,c?'code '+c:'',g?'serving '+g+' '+(val('v_base')||'g'):''].filter(Boolean); ps.textContent=(L.length?L.join(' · '):'brand · code · serving')+' ›'; };
+    pks(); ['v_brand','v_barcode','v_serv_g'].forEach(id=>{ const e=$(id); if(e)e.addEventListener('input',pks); }); }   /* v382 · i3 */
   { const ut=$('v_ut'), bt=$('v_bt'); if(ut)ut.onclick=ev=>{ const b=ev.target.closest('.t'); if(b){ vUnitSet(b.dataset.v); rsum(); } }; if(bt)bt.onclick=ev=>{ const b=ev.target.closest('.t'); if(b){ vBaseSet(b.dataset.v); rsum(); } }; }   /* v382 · r3 · escribir un macro no debe saltar a otro */
   const bcs=$('v_bc_scan'); if(bcs)bcs.onclick=()=>scanCodeToInput('v_barcode');
   const lph=$('v_label_photo'); if(lph)lph.onclick=()=>{ window._faTag=(window._verify||{}).tag||window._faTag; const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.setAttribute('capture','environment'); inp.onchange=()=>{ if(inp.files&&inp.files[0])labelPhoto(inp.files[0], val('v_barcode')); }; inp.click(); };
@@ -26034,7 +26045,11 @@ function _r3SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK r3:
 function fldOpen(el){ try{ el.focus(); if(el.showPicker)el.showPicker(); }catch(_){} }
 function fldChain(ids){ ids.forEach((id,i)=>{ const e=document.getElementById(id), nx=ids[i+1]; if(!e||!nx)return; let ch=false; e.addEventListener('change',()=>{ ch=true; }); e.addEventListener('blur',ev=>{ if(!ch)return; ch=false; if(ev.relatedTarget&&ev.relatedTarget!==document.body)return; const n=document.getElementById(nx); if(n)setTimeout(()=>{ const a=document.activeElement; if(!a||a===document.body||a===e)fldOpen(n); },120); }); }); }   /* v382 · r3 */
 function foldHTML(id,on,body){ return '<div class="trkfold'+(on?' on':'')+'" id="'+escV(id)+'"><div>'+body+'</div></div>'; }
-function foldToggle(id,on){ if(id&&id.nodeType)return foldMore(id,on);   /* v382 · i3 · el `más ›` de siempre pasa elementos */ const e=document.getElementById(id); if(!e)return false; const n=on==null?!e.classList.contains('on'):!!on; e.classList.toggle('on',n); return n; }
+// v401 · FM1 · al desplegar algo en una hoja centrada, la hoja se queda donde está y crece hacia abajo (nada de arriba se mueve)
+function sheetFreeze(el){ try{ const sh=el&&el.closest&&el.closest('.modal > .sheet'); if(!sh||sh.dataset.frz)return; const m=sh.parentElement, cs=getComputedStyle(m); if(cs.alignItems!=='center')return;
+  const top=sh.getBoundingClientRect().top-m.getBoundingClientRect().top-(parseFloat(cs.paddingTop)||0); if(!(top>1))return; sh.dataset.frz='1'; m.style.alignItems='flex-start'; sh.style.marginTop=top+'px'; sh.style.maxHeight='calc(100% - '+top+'px)'; }catch(_){} }
+function foldToggle(id,on){ if(id&&id.nodeType)return foldMore(id,on);   /* v382 · i3 · el `más ›` de siempre pasa elementos */ const e=document.getElementById(id); if(!e)return false; sheetFreeze(e);
+  { const md=e.closest&&e.closest('#modal'); if(md)setTimeout(()=>fmFoot(md),reducedMotion()?0:380); }   /* v401 · creció: si ya no cabe, el guardar se queda abajo */ const n=on==null?!e.classList.contains('on'):!!on; e.classList.toggle('on',n); return n; }
 function _d4SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK d4: '+nm); }; const real=db, T=todayISO(), D=k=>shiftDate(T,-k), W0=window._strkWin, M0=window._strkM;
   const food=(p,c)=>({id:'m'+Math.random(),protein:p,carbs:c,fat:0});   // kcal = 4·P + 4·C
   const mk=o=>migrate(Object.assign({_idfix:true,_fsfix:true,profile:{username:'t'},meals:{},sessions:[],settings:{goals:{kcal:2000,protein:150}}},o));
@@ -26130,7 +26145,7 @@ function _base2SelfCheck(){ const A=(nm,c)=>{ if(!c) throw new Error('SELFCHECK 
     v.innerHTML=foldHTML('b2f',false,'<i>x</i>'); A('el pliegue abre y cierra', foldToggle('b2f')===true&&v.querySelector(".trkfold").classList.contains('on')&&foldToggle('b2f')===false&&foldToggle('nada')===false);
   } finally{ v.remove(); } console.log('base2 self-check OK'); }
 // v382 · base2 · lo que tapa el teclado: las hojas se centran arriba de él
-function kbWatch(){ const vv=window.visualViewport; if(!vv)return; const set=()=>{ const kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop), on=window.innerHeight-vv.height>80, st=document.documentElement.style; st.setProperty('--kb',on?Math.round(kb)+'px':'0px'); st.setProperty('--kbt',on?Math.round(vv.offsetTop)+'px':'0px'); };   /* v382 · r3 */ vv.addEventListener('resize',set); vv.addEventListener('scroll',set); set(); }
+function kbWatch(){ const vv=window.visualViewport; if(!vv)return; const set=()=>{ const kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop), on=window.innerHeight-vv.height>80, st=document.documentElement.style; st.setProperty('--kb',on?Math.round(kb)+'px':'0px'); st.setProperty('--kbt',on?Math.round(vv.offsetTop)+'px':'0px'); if(on)document.querySelectorAll('#modal > .sheet[data-frz]').forEach(sh=>{ sh.style.marginTop=''; sh.style.maxHeight=''; delete sh.dataset.frz; if(sh.parentElement)sh.parentElement.style.alignItems=''; }); };   /* v382 · r3 */ vv.addEventListener('resize',set); vv.addEventListener('scroll',set); set(); }
 // v382 · base2 · preferencia del usuario: tramado por omisión
 function prefMtr(){ const s=(db&&db.settings)||{}; return s.mtrStyle==='bar'?'bar':'dither'; } function prefStim(){ const s=(db&&db.settings)||{}; return s.stimStyle==='light'?'light':'dither'; }
 function _d8SelfCheck(){ const A=(n,c)=>{ if(!c)throw new Error('SELFCHECK d8: '+n); }; const s0=db.settings.numStyle, root=document.documentElement;
